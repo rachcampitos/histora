@@ -7,8 +7,8 @@ import {
 } from './schema/clinical-history.schema';
 import { ClinicalHistoryService } from './clinical-history.service';
 import { ClinicalHistoryController } from './clinical-history.controller';
-import { Doctor, DoctorSchema } from 'src/doctors/schema/doctor.schema';
-import { Patient, PatientSchema } from 'src/patients/schemas/patients.schema';
+import { Doctor, DoctorSchema } from '../doctors/schema/doctor.schema';
+import { Patient, PatientSchema } from '../patients/schemas/patients.schema';
 
 @Module({
   imports: [

@@ -7,8 +7,8 @@ import {
   ClinicalHistoryDocument,
 } from './schema/clinical-history.schema';
 import { CreateClinicalHistoryDto } from './dto/create-clinical-history.dto';
-import { Doctor, DoctorDocument } from 'src/doctors/schema/doctor.schema';
-import { Patient, PatientDocument } from 'src/patients/schemas/patients.schema';
+import { Doctor, DoctorDocument } from '../doctors/schema/doctor.schema';
+import { Patient, PatientDocument } from '../patients/schemas/patients.schema';
 
 @Injectable()
 export class ClinicalHistoryService {
