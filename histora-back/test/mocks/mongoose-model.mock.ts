@@ -18,6 +18,8 @@ export interface MockModel<T = any> {
   findById: jest.Mock;
   findByIdAndUpdate: jest.Mock;
   findByIdAndDelete: jest.Mock;
+  findOneAndUpdate: jest.Mock;
+  findOneAndDelete: jest.Mock;
   create: jest.Mock;
   countDocuments: jest.Mock;
   aggregate: jest.Mock;
@@ -78,6 +80,8 @@ export function createMockModel<T = any>(): MockModel<T> {
   MockModel.findById = jest.fn().mockImplementation(() => createMockQuery(null));
   MockModel.findByIdAndUpdate = jest.fn().mockImplementation(() => createMockQuery(null));
   MockModel.findByIdAndDelete = jest.fn().mockImplementation(() => createMockQuery(null));
+  MockModel.findOneAndUpdate = jest.fn().mockImplementation(() => createMockQuery(null));
+  MockModel.findOneAndDelete = jest.fn().mockImplementation(() => createMockQuery(null));
   MockModel.create = jest.fn().mockResolvedValue({});
   MockModel.countDocuments = jest.fn().mockImplementation(() => createMockQuery(0));
   MockModel.aggregate = jest.fn().mockImplementation(() => createMockQuery([]));
@@ -92,6 +96,8 @@ export function resetMockModel(model: MockModel): void {
   model.findById.mockClear();
   model.findByIdAndUpdate.mockClear();
   model.findByIdAndDelete.mockClear();
+  model.findOneAndUpdate.mockClear();
+  model.findOneAndDelete.mockClear();
   model.create.mockClear();
   model.countDocuments.mockClear();
   model.aggregate.mockClear();
@@ -116,4 +122,16 @@ export function configureMockFindByIdAndUpdate<T>(model: MockModel<T>, data: T |
 
 export function configureMockFindByIdAndDelete<T>(model: MockModel<T>, data: T | null): void {
   model.findByIdAndDelete.mockImplementation(() => createMockQuery(data));
+}
+
+export function configureMockFindOneAndUpdate<T>(model: MockModel<T>, data: T | null): void {
+  model.findOneAndUpdate.mockImplementation(() => createMockQuery(data));
+}
+
+export function configureMockFindOneAndDelete<T>(model: MockModel<T>, data: T | null): void {
+  model.findOneAndDelete.mockImplementation(() => createMockQuery(data));
+}
+
+export function configureMockCountDocuments(model: MockModel, count: number): void {
+  model.countDocuments.mockImplementation(() => createMockQuery(count));
 }
