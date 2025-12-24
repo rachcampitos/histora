@@ -63,6 +63,22 @@ histora-app/
 
 ---
 
+## 🧬 Relaciones entre entidades
+
+Cada `ClinicalHistory` está asociada a:
+
+- Un `Patient` (referencia por ObjectId)
+- Un `Doctor` (referencia por ObjectId)
+
+Estas relaciones se manejan con `populate()` en el servicio para obtener los datos completos.
+
+```ts
+.find({ isDeleted: false })
+.populate('patient')
+.populate('doctor')
+
+---
+
 ## 🧠 Consideraciones Técnicas
 
 - MongoDB Atlas como base de datos
