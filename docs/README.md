@@ -1,58 +1,78 @@
-# 📚 Documentación Técnica – Histora
+# Histora - Documentación
 
-Este directorio contiene recursos visuales y técnicos que explican la arquitectura y los flujos de la aplicación **Histora**, facilitando el entendimiento del sistema tanto para desarrolladores como para colaboradores externos.
+Sistema SaaS para gestión de consultorios médicos independientes.
 
----
+## Descripción
 
-## 📁 Contenido
+**Histora** es una plataforma donde médicos pueden:
+- Comprar suscripciones para sus consultorios
+- Invitar colegas a trabajar en su consultorio
+- Gestionar pacientes, citas y consultas
+- Ofrecer un portal para pacientes con acceso a su historial
+- Aparecer en un directorio público con reseñas
 
-- `architecture.md` – Diagrama de arquitectura del backend
-- `patient-flow.md` – Flujo completo del CRUD de pacientes
-- `assets/` – Imágenes del sistema y módulos médicos (pacientes, doctores, historias clínicas, citas, recetas, etc.)
+## Índice
 
----
+### Arquitectura
+- [Arquitectura del Sistema](./architecture.md) - Visión general de la arquitectura
+- [Modelos de Datos](./data-models.md) - Schemas y relaciones
 
-## 🧱 Arquitectura del Backend
+### API Reference
+- [Autenticación](./api/auth.md) - Login, registro, JWT
+- [Pacientes](./api/patients.md) - CRUD de pacientes
+- [Doctores](./api/doctors.md) - CRUD de doctores
+- [Citas](./api/appointments.md) - Gestión de citas
+- [Suscripciones](./api/subscriptions.md) - Planes y suscripciones
+- [Historia Clínica](./api/clinical-history.md) - Historiales médicos
 
-El archivo `architecture.md` contiene un diagrama en formato **Mermaid** que representa la estructura modular del backend, incluyendo:
+### Guías
+- [Getting Started](./guides/getting-started.md) - Configuración del proyecto
+- [Multi-tenancy](./guides/multi-tenancy.md) - Aislamiento de datos por clínica
+- [Autenticación](./guides/authentication.md) - Flujo de autenticación y roles
 
-- **Controllers** – Encargados de recibir las solicitudes HTTP
-- **Services** – Contienen la lógica de negocio
-- **Repositories** – Interactúan directamente con la base de datos
-- **Database** – MongoDB (actual) y PostgreSQL (opcional/futuro)
+### Changelog
+- [CHANGELOG](./CHANGELOG.md) - Historial de versiones
 
-```mermaid
-graph TD
-  subgraph Controllers
-    C1[PatientController]
-    C2[DoctorController]
-    C3[ClinicalHistoryController]
-  end
+## Stack Tecnológico
 
-  subgraph Services
-    S1[PatientService]
-    S2[DoctorService]
-    S3[ClinicalHistoryService]
-  end
+| Componente | Tecnología |
+|------------|------------|
+| Backend | NestJS 11 |
+| Base de datos | MongoDB (Mongoose 8) |
+| Autenticación | JWT + Passport |
+| Frontend | Angular 19 (pendiente) |
+| Testing | Jest |
 
-  subgraph Repositories
-    R1[PatientRepository]
-    R2[DoctorRepository]
-    R3[ClinicalHistoryRepository]
-  end
+## Módulos del Sistema
 
-  subgraph Database
-    DB[(MongoDB)]
-  end
+| Módulo | Estado | Descripción |
+|--------|--------|-------------|
+| Auth | ✅ | Autenticación y autorización |
+| Users | ✅ | Gestión de usuarios |
+| Clinics | ✅ | Consultorios/tenants |
+| Subscriptions | ✅ | Planes y suscripciones |
+| Patients | ✅ | Gestión de pacientes |
+| Doctors | ✅ | Gestión de doctores |
+| Appointments | ✅ | Citas médicas |
+| Clinical History | ✅ | Historiales clínicos |
+| Consultations | 🔜 | Consultas/atenciones |
+| Vitals | 🔜 | Signos vitales |
+| Reviews | 🔜 | Reseñas de pacientes |
 
-  C1 --> S1
-  C2 --> S2
-  C3 --> S3
+## Roles de Usuario
 
-  S1 --> R1
-  S2 --> R2
-  S3 --> R3
+| Rol | Descripción |
+|-----|-------------|
+| `platform_admin` | Administrador de Histora |
+| `clinic_owner` | Dueño del consultorio (compra suscripción) |
+| `clinic_doctor` | Médico invitado al consultorio |
+| `clinic_staff` | Recepcionista/asistente |
+| `patient` | Paciente con acceso al portal |
 
-  R1 --> DB
-  R2 --> DB
-  R3 --> DB
+## Planes de Suscripción
+
+| Plan | Doctores | Pacientes | Precio |
+|------|----------|-----------|--------|
+| Basic | 1 | 100 | $29/mes |
+| Professional | 3 | 500 | $59/mes |
+| Clinic | 10 | Ilimitado | $99/mes |
