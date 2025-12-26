@@ -8,6 +8,8 @@ import { Model } from 'mongoose';
 import { Subscription, SubscriptionDocument, SubscriptionStatus } from './schema/subscription.schema';
 import { Plan, PlanDocument, PlanName, BillingCycle } from './schema/plan.schema';
 import { CreateSubscriptionDto, UpgradeSubscriptionDto } from './dto/create-subscription.dto';
+import { Doctor, DoctorDocument } from '../doctors/schema/doctor.schema';
+import { Patient, PatientDocument } from '../patients/schemas/patients.schema';
 
 @Injectable()
 export class SubscriptionsService {
@@ -18,6 +20,10 @@ export class SubscriptionsService {
     private subscriptionModel: Model<SubscriptionDocument>,
     @InjectModel(Plan.name)
     private planModel: Model<PlanDocument>,
+    @InjectModel(Doctor.name)
+    private doctorModel: Model<DoctorDocument>,
+    @InjectModel(Patient.name)
+    private patientModel: Model<PatientDocument>,
   ) {}
 
   async createTrialSubscription(clinicId: string, plan: PlanName = PlanName.PROFESSIONAL): Promise<Subscription> {
@@ -124,9 +130,11 @@ export class SubscriptionsService {
       throw new NotFoundException('Plan not found');
     }
 
-    // TODO: Implement actual counts from doctors and patients collections
-    const currentDoctors = 0;
-    const currentPatients = 0;
+    // Count actual doctors and patients for this clinic
+    const [currentDoctors, currentPatients] = await Promise.all([
+      this.doctorModel.countDocuments({ clinicId, isDeleted: { $ne: true } }),
+      this.patientModel.countDocuments({ clinicId, isDeleted: { $ne: true } }),
+    ]);
 
     return {
       canAddDoctor: currentDoctors < plan.maxDoctors,
@@ -136,6 +144,16 @@ export class SubscriptionsService {
       currentDoctors,
       currentPatients,
     };
+  }
+
+  async canAddDoctor(clinicId: string): Promise<boolean> {
+    const limits = await this.checkSubscriptionLimits(clinicId);
+    return limits.canAddDoctor;
+  }
+
+  async canAddPatient(clinicId: string): Promise<boolean> {
+    const limits = await this.checkSubscriptionLimits(clinicId);
+    return limits.canAddPatient;
   }
 
   async isSubscriptionActive(clinicId: string): Promise<boolean> {
