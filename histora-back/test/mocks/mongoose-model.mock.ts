@@ -1,14 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { jest } from '@jest/globals';
 
 export interface MockQuery<T = any> {
-  exec: jest.Mock<Promise<T | null>>;
+  exec: jest.Mock;
   populate: jest.Mock;
   select: jest.Mock;
   sort: jest.Mock;
   limit: jest.Mock;
   skip: jest.Mock;
   lean: jest.Mock;
-  then: (resolve: (value: T | null) => void, reject?: (reason?: any) => void) => Promise<T | null>;
+  then: (
+    onfulfilled?: (value: T | null) => any,
+    onrejected?: (reason?: any) => any
+  ) => Promise<any>;
 }
 
 export interface MockModel<T = any> {
@@ -35,56 +39,56 @@ export interface MockModelInstance<T = any> {
 
 // Creates a thenable mock query that works with both await and .exec()
 function createMockQuery<T>(resolvedValue: T | null): MockQuery<T> {
-  const execMock = jest.fn().mockResolvedValue(resolvedValue);
+  const execMock = jest.fn<any>().mockResolvedValue(resolvedValue as any);
 
   const query: MockQuery<T> = {
     exec: execMock,
-    populate: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    sort: jest.fn().mockReturnThis(),
-    limit: jest.fn().mockReturnThis(),
-    skip: jest.fn().mockReturnThis(),
-    lean: jest.fn().mockReturnThis(),
-    // Make it thenable so it works with await directly
+    populate: jest.fn(),
+    select: jest.fn(),
+    sort: jest.fn(),
+    limit: jest.fn(),
+    skip: jest.fn(),
+    lean: jest.fn(),
     then: (resolve, reject) => execMock().then(resolve, reject),
   };
 
-  // Make populate, select, sort, etc. also thenable
-  query.populate = jest.fn().mockImplementation(() => query);
-  query.select = jest.fn().mockImplementation(() => query);
-  query.sort = jest.fn().mockImplementation(() => query);
-  query.limit = jest.fn().mockImplementation(() => query);
-  query.skip = jest.fn().mockImplementation(() => query);
-  query.lean = jest.fn().mockImplementation(() => query);
+  // Make populate, select, sort, etc. return the query (chainable)
+  query.populate.mockReturnValue(query);
+  query.select.mockReturnValue(query);
+  query.sort.mockReturnValue(query);
+  query.limit.mockReturnValue(query);
+  query.skip.mockReturnValue(query);
+  query.lean.mockReturnValue(query);
 
   return query;
 }
 
 export function createMockModel<T = any>(): MockModel<T> {
-  const mockSave = jest.fn();
+  const mockSave = jest.fn<any>();
 
   // Constructor function that simulates `new Model(data)`
   function MockModelConstructor(this: MockModelInstance<T>, data?: Partial<T>) {
     Object.assign(this, data);
-    this._id = data?.['_id'] || 'mock-id-' + Math.random().toString(36).substr(2, 9);
-    this.save = mockSave.mockResolvedValue({ ...data, _id: this._id });
+    const id = (data as any)?._id || 'mock-id-' + Math.random().toString(36).substr(2, 9);
+    this._id = id;
+    this.save = mockSave.mockResolvedValue({ ...data, _id: id } as any);
     this.populate = jest.fn().mockReturnThis();
-    this.toObject = jest.fn().mockReturnValue({ ...data, _id: this._id });
+    this.toObject = jest.fn().mockReturnValue({ ...data, _id: id });
   }
 
   const MockModel = MockModelConstructor as unknown as MockModel<T>;
 
   // Static methods - return thenable queries
-  MockModel.find = jest.fn().mockImplementation(() => createMockQuery([]));
-  MockModel.findOne = jest.fn().mockImplementation(() => createMockQuery(null));
-  MockModel.findById = jest.fn().mockImplementation(() => createMockQuery(null));
-  MockModel.findByIdAndUpdate = jest.fn().mockImplementation(() => createMockQuery(null));
-  MockModel.findByIdAndDelete = jest.fn().mockImplementation(() => createMockQuery(null));
-  MockModel.findOneAndUpdate = jest.fn().mockImplementation(() => createMockQuery(null));
-  MockModel.findOneAndDelete = jest.fn().mockImplementation(() => createMockQuery(null));
-  MockModel.create = jest.fn().mockResolvedValue({});
-  MockModel.countDocuments = jest.fn().mockImplementation(() => createMockQuery(0));
-  MockModel.aggregate = jest.fn().mockImplementation(() => createMockQuery([]));
+  MockModel.find = jest.fn().mockImplementation(() => createMockQuery<T[]>([]));
+  MockModel.findOne = jest.fn().mockImplementation(() => createMockQuery<T>(null));
+  MockModel.findById = jest.fn().mockImplementation(() => createMockQuery<T>(null));
+  MockModel.findByIdAndUpdate = jest.fn().mockImplementation(() => createMockQuery<T>(null));
+  MockModel.findByIdAndDelete = jest.fn().mockImplementation(() => createMockQuery<T>(null));
+  MockModel.findOneAndUpdate = jest.fn().mockImplementation(() => createMockQuery<T>(null));
+  MockModel.findOneAndDelete = jest.fn().mockImplementation(() => createMockQuery<T>(null));
+  MockModel.create = jest.fn<any>().mockResolvedValue({} as any);
+  MockModel.countDocuments = jest.fn().mockImplementation(() => createMockQuery<number>(0));
+  MockModel.aggregate = jest.fn().mockImplementation(() => createMockQuery<T[]>([]));
 
   return MockModel;
 }

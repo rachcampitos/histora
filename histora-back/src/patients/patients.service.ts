@@ -26,6 +26,33 @@ export class PatientsService {
       .exec();
   }
 
+  async findAllPaginated(
+    clinicId: string,
+    search?: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<Patient[]> {
+    const query: any = { clinicId, isDeleted: false };
+
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { email: searchRegex },
+        { phone: searchRegex },
+        { documentNumber: searchRegex },
+      ];
+    }
+
+    return this.patientModel
+      .find(query)
+      .sort({ lastName: 1, firstName: 1 })
+      .skip(offset)
+      .limit(limit)
+      .exec();
+  }
+
   async findOne(id: string, clinicId: string): Promise<Patient> {
     const patient = await this.patientModel
       .findOne({ _id: id, clinicId, isDeleted: false })
@@ -101,7 +128,20 @@ export class PatientsService {
       .exec();
   }
 
-  async countByClinic(clinicId: string): Promise<number> {
-    return this.patientModel.countDocuments({ clinicId, isDeleted: false }).exec();
+  async countByClinic(clinicId: string, search?: string): Promise<number> {
+    const query: any = { clinicId, isDeleted: false };
+
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { email: searchRegex },
+        { phone: searchRegex },
+        { documentNumber: searchRegex },
+      ];
+    }
+
+    return this.patientModel.countDocuments(query).exec();
   }
 }

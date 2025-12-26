@@ -1,1 +1,112 @@
-/* You can add global styles to this file, and also import other style files */
+/* Ionic Theme Variables */
+@import './theme/variables.css';
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ion-color-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ion-color-medium);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ion-color-medium-shade);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+a {
+  color: var(--ion-color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Form Elements */
+ion-input,
+ion-textarea,
+ion-select {
+  --padding-start: 12px !important;
+}
+
+/* Cards */
+ion-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Buttons */
+ion-button {
+  --border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Lists */
+ion-list {
+  background: transparent;
+}
+
+ion-item {
+  --border-radius: 8px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+}
+
+/* Utilities */
+.ion-text-center {
+  text-align: center;
+}
+
+.ion-text-left {
+  text-align: left;
+}
+
+.ion-text-right {
+  text-align: right;
+}
+
+/* Status Colors */
+.status-scheduled {
+  color: var(--ion-color-medium);
+}
+
+.status-confirmed {
+  color: var(--ion-color-primary);
+}
+
+.status-in-progress {
+  color: var(--ion-color-warning);
+}
+
+.status-completed {
+  color: var(--ion-color-success);
+}
+
+.status-cancelled {
+  color: var(--ion-color-danger);
+}

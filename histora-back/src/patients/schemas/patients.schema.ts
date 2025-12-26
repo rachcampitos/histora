@@ -18,7 +18,7 @@ export class Patient {
   lastName?: string;
 
   @Prop()
-  birthDate?: Date;
+  dateOfBirth?: Date;
 
   @Prop({ enum: ['male', 'female', 'other'] })
   gender?: string;
@@ -70,8 +70,17 @@ export class Patient {
   @Prop({ type: [String], default: [] })
   chronicConditions: string[];
 
+  @Prop({ type: [String], default: [] })
+  currentMedications: string[];
+
   @Prop({ trim: true })
   bloodType?: string;
+
+  @Prop({ trim: true })
+  insuranceProvider?: string;
+
+  @Prop({ trim: true })
+  insuranceNumber?: string;
 
   @Prop()
   notes?: string;

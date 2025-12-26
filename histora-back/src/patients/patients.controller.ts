@@ -40,11 +40,24 @@ export class PatientsController {
 
   @Get()
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
-  async findAll(@CurrentUser() user: CurrentUserData): Promise<Patient[]> {
+  async findAll(
+    @CurrentUser() user: CurrentUserData,
+    @Query('search') search?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<{ data: Patient[]; total: number; limit: number; offset: number }> {
     if (!user.clinicId) {
       throw new ForbiddenException('User must be associated with a clinic');
     }
-    return this.patientsService.findAll(user.clinicId);
+    const limitNum = limit ? parseInt(limit, 10) : 20;
+    const offsetNum = offset ? parseInt(offset, 10) : 0;
+
+    const [data, total] = await Promise.all([
+      this.patientsService.findAllPaginated(user.clinicId, search, limitNum, offsetNum),
+      this.patientsService.countByClinic(user.clinicId, search),
+    ]);
+
+    return { data, total, limit: limitNum, offset: offsetNum };
   }
 
   @Get('search')

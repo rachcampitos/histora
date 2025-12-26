@@ -142,7 +142,7 @@ export class PublicDirectoryService {
 
     // Hide patient info for anonymous reviews
     const mappedReviews = reviews.map((review) => {
-      const reviewObj = review.toObject();
+      const reviewObj = review.toObject() as any;
       if (review.isAnonymous) {
         reviewObj.patientId = { firstName: 'Paciente', lastName: 'Anónimo' };
       }

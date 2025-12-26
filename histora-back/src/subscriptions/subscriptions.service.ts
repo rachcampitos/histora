@@ -59,7 +59,7 @@ export class SubscriptionsService {
     return subscription;
   }
 
-  async upgrade(clinicId: string, dto: UpgradeSubscriptionDto): Promise<Subscription> {
+  async upgrade(clinicId: string, dto: UpgradeSubscriptionDto): Promise<Subscription | null> {
     const subscription = await this.getActiveSubscription(clinicId);
 
     const plan = await this.planModel.findOne({ name: dto.plan, isActive: true });
@@ -95,7 +95,7 @@ export class SubscriptionsService {
     ).exec();
   }
 
-  async cancel(clinicId: string, reason?: string): Promise<Subscription> {
+  async cancel(clinicId: string, reason?: string): Promise<Subscription | null> {
     const subscription = await this.getActiveSubscription(clinicId);
 
     return this.subscriptionModel.findByIdAndUpdate(
