@@ -417,4 +417,46 @@ export class AppointmentsService {
       .sort({ startTime: 1 })
       .exec();
   }
+
+  async linkConsultation(
+    id: string,
+    clinicId: string,
+    consultationId: string,
+  ): Promise<Appointment | null> {
+    const appointment = await this.appointmentModel
+      .findOneAndUpdate(
+        { _id: id, clinicId, isDeleted: false },
+        {
+          consultationId,
+          status: AppointmentStatus.IN_PROGRESS,
+        },
+        { new: true },
+      )
+      .exec();
+
+    if (!appointment) {
+      throw new NotFoundException(`Appointment with ID ${id} not found`);
+    }
+
+    return appointment;
+  }
+
+  async completeFromConsultation(
+    id: string,
+    clinicId: string,
+  ): Promise<Appointment | null> {
+    const appointment = await this.appointmentModel
+      .findOneAndUpdate(
+        { _id: id, clinicId, isDeleted: false },
+        { status: AppointmentStatus.COMPLETED },
+        { new: true },
+      )
+      .exec();
+
+    if (!appointment) {
+      throw new NotFoundException(`Appointment with ID ${id} not found`);
+    }
+
+    return appointment;
+  }
 }

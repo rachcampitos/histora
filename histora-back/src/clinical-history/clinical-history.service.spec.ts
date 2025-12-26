@@ -3,48 +3,43 @@ import { getModelToken } from '@nestjs/mongoose';
 import { NotFoundException } from '@nestjs/common';
 import { ClinicalHistoryService } from './clinical-history.service';
 import { ClinicalHistory } from './schema/clinical-history.schema';
-import { Patient } from '../patients/schemas/patients.schema';
-import { Doctor } from '../doctors/schema/doctor.schema';
 import {
   createMockModel,
-  configureMockFindById,
   configureMockFind,
-  configureMockFindByIdAndUpdate,
+  configureMockFindOne,
+  configureMockFindOneAndUpdate,
   MockModel,
 } from '../../test/mocks/mongoose-model.mock';
 
 describe('ClinicalHistoryService', () => {
   let service: ClinicalHistoryService;
   let clinicalHistoryModel: MockModel;
-  let patientModel: MockModel;
-  let doctorModel: MockModel;
 
-  const mockPatient = {
-    _id: 'patient-id-123',
-    firstName: 'Juan',
-    lastName: 'Pérez',
-  };
-
-  const mockDoctor = {
-    _id: 'doctor-id-456',
-    name: 'Dra. María García',
-  };
+  const mockClinicId = 'clinic-id-123';
+  const mockPatientId = 'patient-id-456';
+  const mockDoctorId = 'doctor-id-789';
 
   const mockClinicalHistory = {
-    _id: 'history-id-789',
-    patientId: 'patient-id-123',
-    doctorId: 'doctor-id-456',
-    date: '2025-01-15',
+    _id: 'history-id-123',
+    clinicId: mockClinicId,
+    patientId: mockPatientId,
+    doctorId: mockDoctorId,
+    date: new Date(),
     reasonForVisit: 'Dolor de cabeza persistente',
     diagnosis: 'Migraña tensional',
     treatment: 'Paracetamol 500mg cada 8 horas',
+    allergies: [{ allergen: 'Penicilina', severity: 'severe' }],
+    chronicConditions: [{ condition: 'Hipertensión', status: 'controlled' }],
+    vaccinations: [{ vaccine: 'COVID-19', doseNumber: 2 }],
     isDeleted: false,
+    save: jest.fn().mockImplementation(function () {
+      return Promise.resolve(this);
+    }),
   };
 
   const mockCreateDto = {
-    patientId: 'patient-id-123',
-    doctorId: 'doctor-id-456',
-    date: '2025-01-15',
+    patientId: mockPatientId,
+    doctorId: mockDoctorId,
     reasonForVisit: 'Dolor de cabeza persistente',
     diagnosis: 'Migraña tensional',
     treatment: 'Paracetamol 500mg cada 8 horas',
@@ -52,8 +47,6 @@ describe('ClinicalHistoryService', () => {
 
   beforeEach(async () => {
     clinicalHistoryModel = createMockModel();
-    patientModel = createMockModel();
-    doctorModel = createMockModel();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -61,14 +54,6 @@ describe('ClinicalHistoryService', () => {
         {
           provide: getModelToken(ClinicalHistory.name),
           useValue: clinicalHistoryModel,
-        },
-        {
-          provide: getModelToken(Patient.name),
-          useValue: patientModel,
-        },
-        {
-          provide: getModelToken(Doctor.name),
-          useValue: doctorModel,
         },
       ],
     }).compile();
@@ -85,171 +70,232 @@ describe('ClinicalHistoryService', () => {
   });
 
   describe('create', () => {
-    it('should create a clinical history when patient and doctor exist', async () => {
-      configureMockFindById(patientModel, mockPatient);
-      configureMockFindById(doctorModel, mockDoctor);
+    it('should create a clinical history', async () => {
+      const result = await service.create(mockClinicId, mockCreateDto);
 
-      const result = await service.create(mockCreateDto);
-
-      expect(patientModel.findById).toHaveBeenCalledWith(mockCreateDto.patientId);
-      expect(doctorModel.findById).toHaveBeenCalledWith(mockCreateDto.doctorId);
       expect(result).toBeDefined();
-      expect(result.patientId).toBe(mockCreateDto.patientId);
-      expect(result.doctorId).toBe(mockCreateDto.doctorId);
+      expect(result.clinicId).toBe(mockClinicId);
+      expect(result.reasonForVisit).toBe(mockCreateDto.reasonForVisit);
     });
 
-    it('should throw NotFoundException when patient does not exist', async () => {
-      configureMockFindById(patientModel, null);
-      configureMockFindById(doctorModel, mockDoctor);
+    it('should set date to now if not provided', async () => {
+      const result = await service.create(mockClinicId, mockCreateDto);
 
-      await expect(service.create(mockCreateDto)).rejects.toThrow(NotFoundException);
+      expect(result.date).toBeDefined();
     });
+  });
 
-    it('should throw NotFoundException when doctor does not exist', async () => {
-      configureMockFindById(patientModel, mockPatient);
-      configureMockFindById(doctorModel, null);
+  describe('createFromConsultation', () => {
+    it('should create clinical history from consultation data', async () => {
+      const consultationData = {
+        consultationId: 'consultation-id-123',
+        patientId: mockPatientId,
+        doctorId: mockDoctorId,
+        chiefComplaint: 'Control mensual',
+        diagnoses: [{ code: 'G43.9', description: 'Migraña' }],
+        treatmentPlan: 'Continuar medicación',
+      };
 
-      await expect(service.create(mockCreateDto)).rejects.toThrow(NotFoundException);
-    });
+      const result = await service.createFromConsultation(mockClinicId, consultationData);
 
-    it('should throw NotFoundException when both patient and doctor do not exist', async () => {
-      configureMockFindById(patientModel, null);
-      configureMockFindById(doctorModel, null);
-
-      await expect(service.create(mockCreateDto)).rejects.toThrow(NotFoundException);
+      expect(result).toBeDefined();
+      expect(result.clinicId).toBe(mockClinicId);
+      expect(result.consultationId).toBe(consultationData.consultationId);
     });
   });
 
   describe('findAll', () => {
-    it('should return an array of clinical histories excluding deleted ones', async () => {
-      const mockHistories = [mockClinicalHistory];
-      configureMockFind(clinicalHistoryModel, mockHistories);
+    it('should return all clinical histories for clinic', async () => {
+      configureMockFind(clinicalHistoryModel, [mockClinicalHistory]);
 
-      const result = await service.findAll();
+      const result = await service.findAll(mockClinicId);
 
-      expect(clinicalHistoryModel.find).toHaveBeenCalledWith({ isDeleted: false });
-      expect(result).toEqual(mockHistories);
+      expect(result).toHaveLength(1);
     });
 
-    it('should return empty array when no clinical histories exist', async () => {
-      configureMockFind(clinicalHistoryModel, []);
+    it('should filter by patientId', async () => {
+      configureMockFind(clinicalHistoryModel, [mockClinicalHistory]);
 
-      const result = await service.findAll();
+      await service.findAll(mockClinicId, { patientId: mockPatientId });
 
-      expect(result).toEqual([]);
+      expect(clinicalHistoryModel.find).toHaveBeenCalled();
+    });
+
+    it('should filter by date range', async () => {
+      configureMockFind(clinicalHistoryModel, [mockClinicalHistory]);
+
+      await service.findAll(mockClinicId, {
+        startDate: new Date('2025-01-01'),
+        endDate: new Date('2025-12-31'),
+      });
+
+      expect(clinicalHistoryModel.find).toHaveBeenCalled();
     });
   });
 
   describe('findOne', () => {
-    it('should return a clinical history with populated patient and doctor', async () => {
-      const populatedHistory = {
-        ...mockClinicalHistory,
-        patientId: mockPatient,
-        doctorId: mockDoctor,
-      };
+    it('should return clinical history by id', async () => {
+      configureMockFindOne(clinicalHistoryModel, mockClinicalHistory);
 
-      clinicalHistoryModel.findOne = jest.fn().mockReturnValue({
-        populate: jest.fn().mockReturnValue({
-          populate: jest.fn().mockReturnValue({
-            exec: jest.fn().mockResolvedValue(populatedHistory),
-          }),
-        }),
-      });
+      const result = await service.findOne('history-id-123', mockClinicId);
 
-      const result = await service.findOne('history-id-789');
-
-      expect(clinicalHistoryModel.findOne).toHaveBeenCalledWith({
-        _id: 'history-id-789',
-        isDeleted: false,
-      });
-      expect(result).toEqual(populatedHistory);
+      expect(result).toEqual(mockClinicalHistory);
     });
 
-    it('should throw error when clinical history is not found', async () => {
-      clinicalHistoryModel.findOne = jest.fn().mockReturnValue({
-        populate: jest.fn().mockReturnValue({
-          populate: jest.fn().mockReturnValue({
-            exec: jest.fn().mockResolvedValue(null),
-          }),
-        }),
-      });
+    it('should throw NotFoundException when not found', async () => {
+      configureMockFindOne(clinicalHistoryModel, null);
 
-      await expect(service.findOne('non-existent-id')).rejects.toThrow(
-        'Clinical history with ID non-existent-id not found',
-      );
+      await expect(
+        service.findOne('non-existent', mockClinicId),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('findByPatient', () => {
+    it('should return clinical histories for patient', async () => {
+      configureMockFind(clinicalHistoryModel, [mockClinicalHistory]);
+
+      const result = await service.findByPatient(mockClinicId, mockPatientId);
+
+      expect(result).toHaveLength(1);
+    });
+
+    it('should limit results when specified', async () => {
+      configureMockFind(clinicalHistoryModel, [mockClinicalHistory]);
+
+      await service.findByPatient(mockClinicId, mockPatientId, 5);
+
+      expect(clinicalHistoryModel.find).toHaveBeenCalled();
+    });
+  });
+
+  describe('getPatientMedicalSummary', () => {
+    it('should return aggregated medical summary', async () => {
+      configureMockFind(clinicalHistoryModel, [mockClinicalHistory]);
+
+      const result = await service.getPatientMedicalSummary(mockClinicId, mockPatientId);
+
+      expect(result.allergies).toBeDefined();
+      expect(result.chronicConditions).toBeDefined();
+      expect(result.vaccinations).toBeDefined();
+      expect(result.lastVisit).toBeDefined();
+    });
+
+    it('should return empty arrays when no history exists', async () => {
+      configureMockFind(clinicalHistoryModel, []);
+
+      const result = await service.getPatientMedicalSummary(mockClinicId, mockPatientId);
+
+      expect(result.allergies).toHaveLength(0);
+      expect(result.chronicConditions).toHaveLength(0);
+      expect(result.lastVisit).toBeUndefined();
     });
   });
 
   describe('update', () => {
-    it('should update and return the modified clinical history', async () => {
-      const updateDto = { diagnosis: 'Migraña crónica' };
-      const updatedHistory = { ...mockClinicalHistory, ...updateDto };
-      configureMockFindByIdAndUpdate(clinicalHistoryModel, updatedHistory);
+    it('should update clinical history', async () => {
+      const updatedHistory = { ...mockClinicalHistory, diagnosis: 'Migraña crónica' };
+      configureMockFindOneAndUpdate(clinicalHistoryModel, updatedHistory);
 
-      const result = await service.update('history-id-789', updateDto);
+      const result = await service.update('history-id-123', mockClinicId, {
+        diagnosis: 'Migraña crónica',
+      });
 
-      expect(clinicalHistoryModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        'history-id-789',
-        updateDto,
-        { new: true },
-      );
-      expect(result).toEqual(updatedHistory);
+      expect(result?.diagnosis).toBe('Migraña crónica');
     });
 
-    it('should return null when clinical history to update is not found', async () => {
-      configureMockFindByIdAndUpdate(clinicalHistoryModel, null);
+    it('should throw NotFoundException when not found', async () => {
+      configureMockFindOneAndUpdate(clinicalHistoryModel, null);
 
-      const result = await service.update('non-existent-id', { diagnosis: 'Test' });
-
-      expect(result).toBeNull();
+      await expect(
+        service.update('non-existent', mockClinicId, { diagnosis: 'Test' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
-  describe('remove (soft delete)', () => {
-    it('should soft delete by setting isDeleted to true', async () => {
+  describe('addAllergy', () => {
+    it('should add allergy to clinical history', async () => {
+      const historyWithSave = {
+        ...mockClinicalHistory,
+        allergies: [...mockClinicalHistory.allergies],
+        save: jest.fn().mockResolvedValue(mockClinicalHistory),
+      };
+      configureMockFindOne(clinicalHistoryModel, historyWithSave);
+
+      const allergy = { allergen: 'Aspirina', severity: 'mild' };
+      await service.addAllergy('history-id-123', mockClinicId, allergy);
+
+      expect(historyWithSave.save).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException when not found', async () => {
+      configureMockFindOne(clinicalHistoryModel, null);
+
+      await expect(
+        service.addAllergy('non-existent', mockClinicId, { allergen: 'Test' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('addChronicCondition', () => {
+    it('should add chronic condition to clinical history', async () => {
+      const historyWithSave = {
+        ...mockClinicalHistory,
+        chronicConditions: [...mockClinicalHistory.chronicConditions],
+        save: jest.fn().mockResolvedValue(mockClinicalHistory),
+      };
+      configureMockFindOne(clinicalHistoryModel, historyWithSave);
+
+      const condition = { condition: 'Diabetes', status: 'active' };
+      await service.addChronicCondition('history-id-123', mockClinicId, condition);
+
+      expect(historyWithSave.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('addVaccination', () => {
+    it('should add vaccination to clinical history', async () => {
+      const historyWithSave = {
+        ...mockClinicalHistory,
+        vaccinations: [...mockClinicalHistory.vaccinations],
+        save: jest.fn().mockResolvedValue(mockClinicalHistory),
+      };
+      configureMockFindOne(clinicalHistoryModel, historyWithSave);
+
+      const vaccination = { vaccine: 'Influenza', doseNumber: 1 };
+      await service.addVaccination('history-id-123', mockClinicId, vaccination);
+
+      expect(historyWithSave.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('remove', () => {
+    it('should soft delete clinical history', async () => {
       const deletedHistory = { ...mockClinicalHistory, isDeleted: true };
-      configureMockFindByIdAndUpdate(clinicalHistoryModel, deletedHistory);
+      configureMockFindOneAndUpdate(clinicalHistoryModel, deletedHistory);
 
-      const result = await service.remove('history-id-789');
+      const result = await service.remove('history-id-123', mockClinicId);
 
-      expect(clinicalHistoryModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        'history-id-789',
-        { isDeleted: true },
-        { new: true },
-      );
       expect(result?.isDeleted).toBe(true);
     });
 
-    it('should return null when clinical history to delete is not found', async () => {
-      configureMockFindByIdAndUpdate(clinicalHistoryModel, null);
+    it('should throw NotFoundException when not found', async () => {
+      configureMockFindOneAndUpdate(clinicalHistoryModel, null);
 
-      const result = await service.remove('non-existent-id');
-
-      expect(result).toBeNull();
+      await expect(
+        service.remove('non-existent', mockClinicId),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('restore', () => {
-    it('should restore by setting isDeleted to false', async () => {
+    it('should restore clinical history', async () => {
       const restoredHistory = { ...mockClinicalHistory, isDeleted: false };
-      configureMockFindByIdAndUpdate(clinicalHistoryModel, restoredHistory);
+      configureMockFindOneAndUpdate(clinicalHistoryModel, restoredHistory);
 
-      const result = await service.restore('history-id-789');
+      const result = await service.restore('history-id-123', mockClinicId);
 
-      expect(clinicalHistoryModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        'history-id-789',
-        { isDeleted: false },
-        { new: true },
-      );
       expect(result?.isDeleted).toBe(false);
-    });
-
-    it('should return null when clinical history to restore is not found', async () => {
-      configureMockFindByIdAndUpdate(clinicalHistoryModel, null);
-
-      const result = await service.restore('non-existent-id');
-
-      expect(result).toBeNull();
     });
   });
 });
