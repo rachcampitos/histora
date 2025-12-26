@@ -14,6 +14,7 @@ export enum SubscriptionStatus {
 
 @Schema({ timestamps: true })
 export class Subscription {
+  _id: any;
   @Prop({ type: Types.ObjectId, ref: 'Clinic', required: true, unique: true })
   clinicId: Types.ObjectId;
 

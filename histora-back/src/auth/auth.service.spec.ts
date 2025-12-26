@@ -3,11 +3,15 @@ import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
+import { ClinicsService } from '../clinics/clinics.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { UserRole } from '../users/schema/user.schema';
 
 describe('AuthService', () => {
   let service: AuthService;
   let usersService: jest.Mocked<UsersService>;
+  let clinicsService: jest.Mocked<ClinicsService>;
+  let subscriptionsService: jest.Mocked<SubscriptionsService>;
   let jwtService: jest.Mocked<JwtService>;
 
   const mockUser = {
@@ -24,14 +28,29 @@ describe('AuthService', () => {
     },
   };
 
+  const mockClinic = {
+    _id: 'clinic-id-123',
+    name: 'Test Clinic',
+    ownerId: 'user-id-123',
+  };
+
   beforeEach(async () => {
     const mockUsersService = {
       findByEmail: jest.fn(),
       findByEmailWithPassword: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
       comparePasswords: jest.fn(),
       updateLastLogin: jest.fn(),
       findOne: jest.fn(),
+    };
+
+    const mockClinicsService = {
+      create: jest.fn().mockResolvedValue(mockClinic),
+    };
+
+    const mockSubscriptionsService = {
+      createTrialSubscription: jest.fn().mockResolvedValue({}),
     };
 
     const mockJwtService = {
@@ -42,12 +61,16 @@ describe('AuthService', () => {
       providers: [
         AuthService,
         { provide: UsersService, useValue: mockUsersService },
+        { provide: ClinicsService, useValue: mockClinicsService },
+        { provide: SubscriptionsService, useValue: mockSubscriptionsService },
         { provide: JwtService, useValue: mockJwtService },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     usersService = module.get(UsersService);
+    clinicsService = module.get(ClinicsService);
+    subscriptionsService = module.get(SubscriptionsService);
     jwtService = module.get(JwtService);
   });
 
@@ -71,6 +94,7 @@ describe('AuthService', () => {
     it('should register a new clinic owner', async () => {
       usersService.findByEmail.mockResolvedValue(null);
       usersService.create.mockResolvedValue(mockUser as any);
+      usersService.update.mockResolvedValue(mockUser as any);
 
       const result = await service.register(registerDto);
 
@@ -82,6 +106,8 @@ describe('AuthService', () => {
           role: UserRole.CLINIC_OWNER,
         }),
       );
+      expect(clinicsService.create).toHaveBeenCalled();
+      expect(subscriptionsService.createTrialSubscription).toHaveBeenCalled();
     });
 
     it('should throw ConflictException if email already exists', async () => {

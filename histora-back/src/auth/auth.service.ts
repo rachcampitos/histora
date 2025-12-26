@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { ClinicsService } from '../clinics/clinics.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
 import { UserRole } from '../users/schema/user.schema';
@@ -27,6 +29,8 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private clinicsService: ClinicsService,
+    private subscriptionsService: SubscriptionsService,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
@@ -46,11 +50,29 @@ export class AuthService {
       role: UserRole.CLINIC_OWNER,
     });
 
-    // Generate JWT token
+    // Create clinic for the new owner
+    const clinic = await this.clinicsService.create(
+      {
+        name: registerDto.clinicName,
+        phone: registerDto.clinicPhone,
+      },
+      user['_id'].toString(),
+    );
+
+    // Update user with clinicId
+    await this.usersService.update(user['_id'].toString(), {
+      clinicId: clinic['_id'],
+    });
+
+    // Create trial subscription for the clinic
+    await this.subscriptionsService.createTrialSubscription(clinic['_id'].toString());
+
+    // Generate JWT token with clinicId
     const payload: JwtPayload = {
       sub: user['_id'].toString(),
       email: user.email,
       role: user.role,
+      clinicId: clinic['_id'].toString(),
     };
 
     return {
@@ -61,7 +83,7 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-        clinicId: user.clinicId?.toString(),
+        clinicId: clinic['_id'].toString(),
       },
     };
   }

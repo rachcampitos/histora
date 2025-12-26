@@ -17,6 +17,6 @@
     "noImplicitAny": true,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "isolatedModules": true
+    "types": ["node", "jest"]
   }
 }

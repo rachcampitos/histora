@@ -42,7 +42,7 @@ export class CreatePatientDto {
 
   @IsDateString()
   @IsOptional()
-  birthDate?: string;
+  dateOfBirth?: string;
 
   @IsString()
   @IsOptional()
@@ -95,9 +95,22 @@ export class CreatePatientDto {
   @IsOptional()
   chronicConditions?: string[];
 
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  currentMedications?: string[];
+
   @IsString()
   @IsOptional()
   bloodType?: string;
+
+  @IsString()
+  @IsOptional()
+  insuranceProvider?: string;
+
+  @IsString()
+  @IsOptional()
+  insuranceNumber?: string;
 
   @IsString()
   @IsOptional()

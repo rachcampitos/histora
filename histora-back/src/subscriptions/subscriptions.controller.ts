@@ -52,7 +52,7 @@ export class SubscriptionsController {
   async upgrade(
     @CurrentUser() user: CurrentUserPayload,
     @Body() dto: UpgradeSubscriptionDto,
-  ): Promise<Subscription> {
+  ): Promise<Subscription | null> {
     if (!user.clinicId) {
       throw new Error('No clinic associated with your account');
     }
@@ -64,7 +64,7 @@ export class SubscriptionsController {
   async cancel(
     @CurrentUser() user: CurrentUserPayload,
     @Body() dto: CancelSubscriptionDto,
-  ): Promise<Subscription> {
+  ): Promise<Subscription | null> {
     if (!user.clinicId) {
       throw new Error('No clinic associated with your account');
     }

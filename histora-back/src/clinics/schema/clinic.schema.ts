@@ -5,6 +5,7 @@ export type ClinicDocument = Clinic & Document;
 
 @Schema({ timestamps: true })
 export class Clinic {
+  _id: any;
   @Prop({ required: true, trim: true })
   name: string;
 

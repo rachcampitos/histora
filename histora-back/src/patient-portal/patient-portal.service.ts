@@ -152,7 +152,7 @@ export class PatientPortalService {
     appointment.status = AppointmentStatus.CANCELLED;
     appointment.cancellationReason = reason || 'Cancelled by patient';
     appointment.cancelledAt = new Date();
-    appointment.cancelledBy = patientId;
+    appointment.cancelledBy = patientId as any;
 
     return appointment.save();
   }
