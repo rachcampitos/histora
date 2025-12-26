@@ -20,10 +20,7 @@ import { ConsultationsModule } from './consultations/consultations.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(
-      process.env.MONGO_URL ||
-        'mongodb+srv://histora:historaApp2025@histora.pcb3mhu.mongodb.net/histora_db?retryWrites=true&w=majority',
-    ),
+    MongooseModule.forRoot(process.env.MONGO_URL!),
     UsersModule,
     AuthModule,
     ClinicsModule,
