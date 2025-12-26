@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { ClinicsModule } from './clinics/clinics.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { AppointmentsModule } from './appointments/appointments.module';
+import { VitalsModule } from './vitals/vitals.module';
+import { ConsultationsModule } from './consultations/consultations.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { AppointmentsModule } from './appointments/appointments.module';
     DoctorsModule,
     ClinicalHistoryModule,
     AppointmentsModule,
+    VitalsModule,
+    ConsultationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

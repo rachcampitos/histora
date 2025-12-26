@@ -1,4 +1,3 @@
-// clinical-history.module.ts
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
@@ -7,18 +6,15 @@ import {
 } from './schema/clinical-history.schema';
 import { ClinicalHistoryService } from './clinical-history.service';
 import { ClinicalHistoryController } from './clinical-history.controller';
-import { Doctor, DoctorSchema } from '../doctors/schema/doctor.schema';
-import { Patient, PatientSchema } from '../patients/schemas/patients.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: ClinicalHistory.name, schema: ClinicalHistorySchema },
-      { name: Patient.name, schema: PatientSchema },
-      { name: Doctor.name, schema: DoctorSchema },
     ]),
   ],
   controllers: [ClinicalHistoryController],
   providers: [ClinicalHistoryService],
+  exports: [ClinicalHistoryService],
 })
 export class ClinicalHistoryModule {}
