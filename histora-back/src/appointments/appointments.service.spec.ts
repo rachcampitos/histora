@@ -195,13 +195,29 @@ describe('AppointmentsService', () => {
 
   describe('cancel', () => {
     it('should cancel an appointment', async () => {
-      const cancelledAppointment = {
+      // Create a future appointment
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 7); // 7 days in future
+
+      const futureAppointment = {
         ...mockAppointment,
+        scheduledDate: futureDate,
+      };
+
+      const cancelledAppointment = {
+        ...futureAppointment,
         status: AppointmentStatus.CANCELLED,
         cancelledAt: new Date(),
         cancellationReason: 'Patient requested',
       };
-      configureMockFindOneAndUpdate(appointmentModel, cancelledAppointment);
+
+      // First call for findOne (validation)
+      configureMockFindOne(appointmentModel, futureAppointment);
+
+      // Second call for findOneAndUpdate (actual cancel)
+      appointmentModel.findOneAndUpdate = jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(cancelledAppointment),
+      });
 
       const result = await service.cancel(
         'appointment-id-123',
@@ -211,6 +227,36 @@ describe('AppointmentsService', () => {
       );
 
       expect(result?.status).toBe(AppointmentStatus.CANCELLED);
+    });
+
+    it('should throw NotFoundException when appointment not found', async () => {
+      configureMockFindOne(appointmentModel, null);
+
+      await expect(
+        service.cancel(
+          'non-existent',
+          mockClinicId,
+          { cancellationReason: 'Test' },
+          'user-id',
+        ),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw BadRequestException when appointment is already completed', async () => {
+      const completedAppointment = {
+        ...mockAppointment,
+        status: AppointmentStatus.COMPLETED,
+      };
+      configureMockFindOne(appointmentModel, completedAppointment);
+
+      await expect(
+        service.cancel(
+          'appointment-id-123',
+          mockClinicId,
+          { cancellationReason: 'Too late' },
+          'user-id',
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

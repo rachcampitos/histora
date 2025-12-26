@@ -10,8 +10,20 @@ import {
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto, CancelAppointmentDto } from './dto/update-appointment.dto';
 
+export interface CancellationRules {
+  minHoursBeforeAppointment: number;
+  allowPatientCancellation: boolean;
+  allowClinicCancellation: boolean;
+}
+
 @Injectable()
 export class AppointmentsService {
+  private readonly DEFAULT_CANCELLATION_RULES: CancellationRules = {
+    minHoursBeforeAppointment: 24, // Minimum 24 hours before appointment
+    allowPatientCancellation: true,
+    allowClinicCancellation: true,
+  };
+
   constructor(
     @InjectModel(Appointment.name) private appointmentModel: Model<AppointmentDocument>,
   ) {}
@@ -207,7 +219,39 @@ export class AppointmentsService {
     clinicId: string,
     cancelDto: CancelAppointmentDto,
     cancelledBy: string,
+    isPatientCancellation: boolean = false,
   ): Promise<Appointment | null> {
+    // First, find the appointment to validate cancellation
+    const existingAppointment = await this.appointmentModel
+      .findOne({ _id: id, clinicId, isDeleted: false })
+      .exec();
+
+    if (!existingAppointment) {
+      throw new NotFoundException(`Appointment with ID ${id} not found`);
+    }
+
+    // Validate appointment can be cancelled (status check)
+    const cancellableStatuses = [
+      AppointmentStatus.SCHEDULED,
+      AppointmentStatus.CONFIRMED,
+    ];
+    if (!cancellableStatuses.includes(existingAppointment.status)) {
+      throw new BadRequestException(
+        `Cannot cancel appointment with status '${existingAppointment.status}'. Only scheduled or confirmed appointments can be cancelled.`,
+      );
+    }
+
+    // Validate cancellation time window
+    const cancellationCheck = this.validateCancellationTime(
+      existingAppointment.scheduledDate,
+      existingAppointment.startTime,
+      isPatientCancellation,
+    );
+
+    if (!cancellationCheck.canCancel) {
+      throw new BadRequestException(cancellationCheck.reason);
+    }
+
     const appointment = await this.appointmentModel
       .findOneAndUpdate(
         { _id: id, clinicId, isDeleted: false },
@@ -221,11 +265,75 @@ export class AppointmentsService {
       )
       .exec();
 
-    if (!appointment) {
-      throw new NotFoundException(`Appointment with ID ${id} not found`);
+    return appointment;
+  }
+
+  private validateCancellationTime(
+    scheduledDate: Date,
+    startTime: string,
+    isPatientCancellation: boolean,
+  ): { canCancel: boolean; reason?: string } {
+    const rules = this.DEFAULT_CANCELLATION_RULES;
+
+    // Check if cancellation is allowed for this user type
+    if (isPatientCancellation && !rules.allowPatientCancellation) {
+      return { canCancel: false, reason: 'Patient cancellations are not allowed. Please contact the clinic.' };
     }
 
-    return appointment;
+    // Calculate appointment datetime
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const appointmentDateTime = new Date(scheduledDate);
+    appointmentDateTime.setHours(hours, minutes, 0, 0);
+
+    // Calculate hours until appointment
+    const now = new Date();
+    const hoursUntilAppointment = (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    // If appointment is in the past, can't cancel
+    if (hoursUntilAppointment < 0) {
+      return { canCancel: false, reason: 'Cannot cancel past appointments.' };
+    }
+
+    // Check minimum hours requirement (only for patient cancellations)
+    if (isPatientCancellation && hoursUntilAppointment < rules.minHoursBeforeAppointment) {
+      return {
+        canCancel: false,
+        reason: `Appointments must be cancelled at least ${rules.minHoursBeforeAppointment} hours in advance. Please contact the clinic directly.`,
+      };
+    }
+
+    return { canCancel: true };
+  }
+
+  async canCancelAppointment(
+    id: string,
+    clinicId: string,
+    isPatientCancellation: boolean = false,
+  ): Promise<{ canCancel: boolean; reason?: string }> {
+    const appointment = await this.appointmentModel
+      .findOne({ _id: id, clinicId, isDeleted: false })
+      .exec();
+
+    if (!appointment) {
+      return { canCancel: false, reason: 'Appointment not found.' };
+    }
+
+    const cancellableStatuses = [
+      AppointmentStatus.SCHEDULED,
+      AppointmentStatus.CONFIRMED,
+    ];
+    if (!cancellableStatuses.includes(appointment.status)) {
+      return {
+        canCancel: false,
+        reason: `Cannot cancel appointment with status '${appointment.status}'.`,
+      };
+    }
+
+    return this.validateCancellationTime(
+      appointment.scheduledDate,
+      appointment.startTime,
+      isPatientCancellation,
+    );
   }
 
   async remove(id: string, clinicId: string): Promise<Appointment | null> {

@@ -4,6 +4,8 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { Subscription, SubscriptionStatus } from './schema/subscription.schema';
 import { Plan, PlanName, BillingCycle } from './schema/plan.schema';
+import { Doctor } from '../doctors/schema/doctor.schema';
+import { Patient } from '../patients/schemas/patients.schema';
 import {
   createMockModel,
   configureMockFind,
@@ -15,6 +17,8 @@ describe('SubscriptionsService', () => {
   let service: SubscriptionsService;
   let subscriptionModel: MockModel;
   let planModel: MockModel;
+  let doctorModel: MockModel;
+  let patientModel: MockModel;
 
   const mockPlan = {
     _id: 'plan-id-123',
@@ -40,6 +44,8 @@ describe('SubscriptionsService', () => {
   beforeEach(async () => {
     subscriptionModel = createMockModel();
     planModel = createMockModel();
+    doctorModel = createMockModel();
+    patientModel = createMockModel();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -51,6 +57,14 @@ describe('SubscriptionsService', () => {
         {
           provide: getModelToken(Plan.name),
           useValue: planModel,
+        },
+        {
+          provide: getModelToken(Doctor.name),
+          useValue: doctorModel,
+        },
+        {
+          provide: getModelToken(Patient.name),
+          useValue: patientModel,
         },
       ],
     }).compile();
@@ -164,6 +178,54 @@ describe('SubscriptionsService', () => {
 
       expect(result).toEqual(mockPlans);
       expect(planModel.find).toHaveBeenCalledWith({ isActive: true });
+    });
+  });
+
+  describe('checkSubscriptionLimits', () => {
+    it('should return correct limits when under plan limits', async () => {
+      subscriptionModel.findOne = jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockSubscription),
+      });
+      configureMockFindOne(planModel, mockPlan);
+      doctorModel.countDocuments = jest.fn().mockResolvedValue(1);
+      patientModel.countDocuments = jest.fn().mockResolvedValue(50);
+
+      const result = await service.checkSubscriptionLimits('clinic-id-123');
+
+      expect(result.canAddDoctor).toBe(true);
+      expect(result.canAddPatient).toBe(true);
+      expect(result.currentDoctors).toBe(1);
+      expect(result.currentPatients).toBe(50);
+      expect(result.maxDoctors).toBe(3);
+      expect(result.maxPatients).toBe(500);
+    });
+
+    it('should return canAddDoctor false when at limit', async () => {
+      subscriptionModel.findOne = jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockSubscription),
+      });
+      configureMockFindOne(planModel, mockPlan);
+      doctorModel.countDocuments = jest.fn().mockResolvedValue(3);
+      patientModel.countDocuments = jest.fn().mockResolvedValue(10);
+
+      const result = await service.checkSubscriptionLimits('clinic-id-123');
+
+      expect(result.canAddDoctor).toBe(false);
+      expect(result.canAddPatient).toBe(true);
+    });
+
+    it('should allow unlimited patients when maxPatients is -1', async () => {
+      const unlimitedPlan = { ...mockPlan, maxPatients: -1 };
+      subscriptionModel.findOne = jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockSubscription),
+      });
+      configureMockFindOne(planModel, unlimitedPlan);
+      doctorModel.countDocuments = jest.fn().mockResolvedValue(1);
+      patientModel.countDocuments = jest.fn().mockResolvedValue(10000);
+
+      const result = await service.checkSubscriptionLimits('clinic-id-123');
+
+      expect(result.canAddPatient).toBe(true);
     });
   });
 });

@@ -3,6 +3,40 @@ import { Document, Types } from 'mongoose';
 
 export type DoctorDocument = Doctor & Document;
 
+export enum DayOfWeek {
+  MONDAY = 'monday',
+  TUESDAY = 'tuesday',
+  WEDNESDAY = 'wednesday',
+  THURSDAY = 'thursday',
+  FRIDAY = 'friday',
+  SATURDAY = 'saturday',
+  SUNDAY = 'sunday',
+}
+
+@Schema({ _id: false })
+export class TimeSlot {
+  @Prop({ required: true })
+  start: string; // HH:MM format
+
+  @Prop({ required: true })
+  end: string; // HH:MM format
+}
+
+@Schema({ _id: false })
+export class DaySchedule {
+  @Prop({ required: true, enum: DayOfWeek })
+  day: DayOfWeek;
+
+  @Prop({ default: true })
+  isWorking: boolean;
+
+  @Prop({ type: [TimeSlot], default: [] })
+  slots: TimeSlot[]; // Multiple slots per day (morning/afternoon)
+
+  @Prop({ type: [TimeSlot], default: [] })
+  breaks: TimeSlot[]; // Lunch breaks, etc.
+}
+
 @Schema({ _id: false })
 export class Education {
   @Prop({ required: true })
@@ -64,6 +98,12 @@ export class Doctor {
 
   @Prop({ default: 0 })
   totalReviews: number;
+
+  @Prop({ type: [DaySchedule], default: [] })
+  workingHours: DaySchedule[];
+
+  @Prop({ default: 30, min: 15, max: 120 })
+  appointmentDuration: number; // Duration in minutes
 
   @Prop({ default: false })
   isDeleted: boolean;
