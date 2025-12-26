@@ -13,6 +13,9 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { VitalsModule } from './vitals/vitals.module';
 import { ConsultationsModule } from './consultations/consultations.module';
+import { PatientPortalModule } from './patient-portal/patient-portal.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { PublicDirectoryModule } from './public-directory/public-directory.module';
 
 @Module({
   imports: [
@@ -31,6 +34,9 @@ import { ConsultationsModule } from './consultations/consultations.module';
     AppointmentsModule,
     VitalsModule,
     ConsultationsModule,
+    PatientPortalModule,
+    ReviewsModule,
+    PublicDirectoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
