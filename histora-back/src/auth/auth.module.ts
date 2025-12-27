@@ -11,6 +11,7 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 @Module({
   imports: [
+    ConfigModule,
     UsersModule,
     forwardRef(() => ClinicsModule),
     forwardRef(() => SubscriptionsModule),
