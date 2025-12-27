@@ -10,6 +10,7 @@ import {
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ConsultationsService } from './consultations.service';
 import { CreateConsultationDto } from './dto/create-consultation.dto';
 import {
@@ -26,6 +27,8 @@ import { CurrentUser, CurrentUserData } from '../auth/decorators/current-user.de
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Consultations')
+@ApiBearerAuth('JWT-auth')
 @Controller('consultations')
 @UseGuards(JwtAuthGuard, RolesGuard, ClinicAccessGuard)
 export class ConsultationsController {
@@ -58,6 +61,19 @@ export class ConsultationsController {
       appointmentId,
       appointmentData,
     );
+  }
+
+  @Get('count')
+  @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  async count(
+    @CurrentUser() user: CurrentUserData,
+    @Query('status') status?: ConsultationStatus,
+  ): Promise<{ count: number }> {
+    if (!user.clinicId) {
+      throw new ForbiddenException('User must be associated with a clinic');
+    }
+    const count = await this.consultationsService.count(user.clinicId, { status });
+    return { count };
   }
 
   @Get()

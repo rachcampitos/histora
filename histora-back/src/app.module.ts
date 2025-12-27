@@ -16,6 +16,9 @@ import { ConsultationsModule } from './consultations/consultations.module';
 import { PatientPortalModule } from './patient-portal/patient-portal.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { PublicDirectoryModule } from './public-directory/public-directory.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { PaymentsModule } from './payments/payments.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { PublicDirectoryModule } from './public-directory/public-directory.modul
     PatientPortalModule,
     ReviewsModule,
     PublicDirectoryModule,
+    NotificationsModule,
+    PaymentsModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

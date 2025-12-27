@@ -10,6 +10,7 @@ import {
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { VitalsService } from './vitals.service';
 import { CreateVitalsDto } from './dto/create-vitals.dto';
 import { UpdateVitalsDto } from './dto/update-vitals.dto';
@@ -21,6 +22,8 @@ import { CurrentUser, CurrentUserData } from '../auth/decorators/current-user.de
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Vitals')
+@ApiBearerAuth('JWT-auth')
 @Controller('vitals')
 @UseGuards(JwtAuthGuard, RolesGuard, ClinicAccessGuard)
 export class VitalsController {

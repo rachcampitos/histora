@@ -1,0 +1,226 @@
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { CloudinaryProvider } from './providers/cloudinary.provider';
+import { UploadProfilePhotoDto, UploadDocumentDto, FileType } from './dto/upload-file.dto';
+
+// Optional: Create a File schema to track uploads
+interface FileMetadata {
+  publicId: string;
+  url: string;
+  thumbnailUrl?: string;
+  type: FileType;
+  originalFilename?: string;
+  mimeType?: string;
+  size?: number;
+  uploadedBy: Types.ObjectId;
+  clinicId: Types.ObjectId;
+  patientId?: Types.ObjectId;
+  consultationId?: Types.ObjectId;
+  createdAt: Date;
+}
+
+@Injectable()
+export class UploadsService {
+  private readonly logger = new Logger(UploadsService.name);
+  private readonly allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  private readonly allowedDocumentTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+  private readonly maxImageSize = 5 * 1024 * 1024; // 5MB
+  private readonly maxDocumentSize = 10 * 1024 * 1024; // 10MB
+
+  constructor(private cloudinaryProvider: CloudinaryProvider) {}
+
+  // Upload profile photo for user/doctor/patient
+  async uploadProfilePhoto(
+    dto: UploadProfilePhotoDto,
+    userId: string,
+    clinicId?: string,
+    targetType: 'user' | 'doctor' | 'patient' = 'user',
+    targetId?: string
+  ): Promise<{ url: string; thumbnailUrl: string; publicId: string }> {
+    // Validate image data
+    const base64Data = this.extractBase64Data(dto.imageData);
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > this.maxImageSize) {
+      throw new BadRequestException('Image size exceeds 5MB limit');
+    }
+
+    // Determine MIME type from base64 or use provided
+    const mimeType = dto.mimeType || this.detectMimeType(dto.imageData);
+    if (!this.allowedImageTypes.includes(mimeType)) {
+      throw new BadRequestException('Invalid image format. Allowed: JPEG, PNG, WebP, GIF');
+    }
+
+    // Generate unique filename
+    const ext = mimeType.split('/')[1];
+    const filename = `${targetType}_${targetId || userId}_${Date.now()}.${ext}`;
+    const folder = clinicId ? `histora/${clinicId}/profiles` : 'histora/profiles';
+
+    // Upload to Cloudinary with face-focused crop
+    const result = await this.cloudinaryProvider.uploadBase64(base64Data, filename, {
+      folder,
+      transformation: {
+        width: 400,
+        height: 400,
+        crop: 'fill',
+        gravity: 'face',
+        quality: 'auto',
+        format: 'auto',
+      },
+    });
+
+    if (!result.success) {
+      throw new BadRequestException(`Upload failed: ${result.error}`);
+    }
+
+    // Generate thumbnail URL
+    const thumbnailUrl = this.cloudinaryProvider.getThumbnailUrl(result.publicId!, 100);
+
+    this.logger.log(`Profile photo uploaded for ${targetType} ${targetId || userId}`);
+
+    return {
+      url: result.secureUrl!,
+      thumbnailUrl,
+      publicId: result.publicId!,
+    };
+  }
+
+  // Upload patient document (lab results, prescriptions, etc.)
+  async uploadDocument(
+    dto: UploadDocumentDto,
+    userId: string,
+    clinicId: string
+  ): Promise<{ url: string; publicId: string }> {
+    const base64Data = this.extractBase64Data(dto.fileData);
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > this.maxDocumentSize) {
+      throw new BadRequestException('File size exceeds 10MB limit');
+    }
+
+    // Determine folder based on document type
+    const folderMap: Record<FileType, string> = {
+      [FileType.PROFILE_PHOTO]: `histora/${clinicId}/profiles`,
+      [FileType.PATIENT_DOCUMENT]: `histora/${clinicId}/patients/${dto.patientId}/documents`,
+      [FileType.LAB_RESULT]: `histora/${clinicId}/patients/${dto.patientId}/lab-results`,
+      [FileType.PRESCRIPTION]: `histora/${clinicId}/patients/${dto.patientId}/prescriptions`,
+      [FileType.CLINIC_LOGO]: `histora/${clinicId}/branding`,
+      [FileType.CONSULTATION_ATTACHMENT]: `histora/${clinicId}/consultations/${dto.consultationId}`,
+    };
+
+    const folder = folderMap[dto.type] || `histora/${clinicId}/documents`;
+    const filename = `${Date.now()}_${dto.filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+
+    const result = await this.cloudinaryProvider.uploadBase64(base64Data, filename, {
+      folder,
+      resourceType: dto.type === FileType.LAB_RESULT ? 'raw' : 'image',
+    });
+
+    if (!result.success) {
+      throw new BadRequestException(`Upload failed: ${result.error}`);
+    }
+
+    this.logger.log(`Document uploaded: ${dto.type} for clinic ${clinicId}`);
+
+    return {
+      url: result.secureUrl!,
+      publicId: result.publicId!,
+    };
+  }
+
+  // Upload clinic logo
+  async uploadClinicLogo(
+    dto: UploadProfilePhotoDto,
+    clinicId: string,
+    userId: string
+  ): Promise<{ url: string; thumbnailUrl: string; publicId: string }> {
+    const base64Data = this.extractBase64Data(dto.imageData);
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > this.maxImageSize) {
+      throw new BadRequestException('Image size exceeds 5MB limit');
+    }
+
+    const mimeType = dto.mimeType || this.detectMimeType(dto.imageData);
+    if (!this.allowedImageTypes.includes(mimeType)) {
+      throw new BadRequestException('Invalid image format. Allowed: JPEG, PNG, WebP, GIF');
+    }
+
+    const ext = mimeType.split('/')[1];
+    const filename = `logo_${clinicId}_${Date.now()}.${ext}`;
+    const folder = `histora/${clinicId}/branding`;
+
+    const result = await this.cloudinaryProvider.uploadBase64(base64Data, filename, {
+      folder,
+      transformation: {
+        width: 300,
+        height: 300,
+        crop: 'fit',
+        quality: 'auto',
+        format: 'auto',
+      },
+    });
+
+    if (!result.success) {
+      throw new BadRequestException(`Upload failed: ${result.error}`);
+    }
+
+    const thumbnailUrl = this.cloudinaryProvider.getThumbnailUrl(result.publicId!, 60);
+
+    this.logger.log(`Clinic logo uploaded for clinic ${clinicId}`);
+
+    return {
+      url: result.secureUrl!,
+      thumbnailUrl,
+      publicId: result.publicId!,
+    };
+  }
+
+  // Delete file
+  async deleteFile(publicId: string): Promise<{ success: boolean }> {
+    const result = await this.cloudinaryProvider.delete(publicId);
+
+    if (!result.success) {
+      throw new BadRequestException(`Delete failed: ${result.error}`);
+    }
+
+    return { success: true };
+  }
+
+  // Get optimized URL for a file
+  getOptimizedUrl(publicId: string, width?: number, height?: number): string {
+    return this.cloudinaryProvider.getOptimizedUrl(publicId, {
+      width: width || 400,
+      height: height || 400,
+      crop: 'fill',
+      quality: 'auto',
+      format: 'auto',
+    });
+  }
+
+  // Helper: Extract base64 data from data URL
+  private extractBase64Data(data: string): string {
+    if (data.includes('base64,')) {
+      return data.split('base64,')[1];
+    }
+    return data;
+  }
+
+  // Helper: Detect MIME type from base64 data URL
+  private detectMimeType(data: string): string {
+    if (data.startsWith('data:')) {
+      const match = data.match(/data:([^;]+);/);
+      if (match) {
+        return match[1];
+      }
+    }
+    // Default to JPEG if can't detect
+    return 'image/jpeg';
+  }
+
+  // Check if service is configured
+  isConfigured(): boolean {
+    return this.cloudinaryProvider.isConfigured();
+  }
+}

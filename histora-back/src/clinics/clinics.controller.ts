@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ClinicsService } from './clinics.service';
 import { CreateClinicDto } from './dto/create-clinic.dto';
 import { UpdateClinicDto } from './dto/update-clinic.dto';
@@ -17,6 +18,8 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Clinics')
+@ApiBearerAuth('JWT-auth')
 @Controller('clinics')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ClinicsController {

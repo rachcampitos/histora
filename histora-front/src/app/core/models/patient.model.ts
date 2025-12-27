@@ -1,3 +1,9 @@
+export enum DocumentType {
+  DNI = 'DNI',
+  CE = 'CE',
+  PASSPORT = 'passport',
+}
+
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
@@ -27,6 +33,8 @@ export interface Patient {
   userId?: string;
   firstName: string;
   lastName: string;
+  documentType?: DocumentType;
+  documentNumber?: string;
   email?: string;
   phone?: string;
   dateOfBirth?: Date;
@@ -47,6 +55,8 @@ export interface Patient {
 export interface CreatePatientDto {
   firstName: string;
   lastName: string;
+  documentType?: DocumentType;
+  documentNumber?: string;
   email?: string;
   phone?: string;
   dateOfBirth?: string;

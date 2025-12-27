@@ -5,8 +5,10 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { PublicDirectoryService } from './public-directory.service';
 
+@ApiTags('Public Directory')
 @Controller('public')
 export class PublicDirectoryController {
   constructor(private readonly publicDirectoryService: PublicDirectoryService) {}

@@ -10,6 +10,14 @@ import {
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiParam,
+} from '@nestjs/swagger';
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
@@ -21,6 +29,8 @@ import { CurrentUser, CurrentUserData } from '../auth/decorators/current-user.de
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Patients')
+@ApiBearerAuth('JWT-auth')
 @Controller('patients')
 @UseGuards(JwtAuthGuard, RolesGuard, ClinicAccessGuard)
 export class PatientsController {
@@ -28,6 +38,10 @@ export class PatientsController {
 
   @Post()
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @ApiOperation({ summary: 'Crear nuevo paciente' })
+  @ApiResponse({ status: 201, description: 'Paciente creado exitosamente' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  @ApiResponse({ status: 401, description: 'No autorizado' })
   create(
     @Body() createPatientDto: CreatePatientDto,
     @CurrentUser() user: CurrentUserData,
@@ -40,6 +54,11 @@ export class PatientsController {
 
   @Get()
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @ApiOperation({ summary: 'Listar pacientes de la clínica' })
+  @ApiQuery({ name: 'search', required: false, description: 'Buscar por nombre o email' })
+  @ApiQuery({ name: 'limit', required: false, description: 'Límite de resultados (default: 20)' })
+  @ApiQuery({ name: 'offset', required: false, description: 'Offset para paginación' })
+  @ApiResponse({ status: 200, description: 'Lista de pacientes paginada' })
   async findAll(
     @CurrentUser() user: CurrentUserData,
     @Query('search') search?: string,
@@ -62,6 +81,9 @@ export class PatientsController {
 
   @Get('search')
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @ApiOperation({ summary: 'Buscar pacientes' })
+  @ApiQuery({ name: 'q', required: true, description: 'Término de búsqueda' })
+  @ApiResponse({ status: 200, description: 'Resultados de búsqueda' })
   async search(
     @Query('q') query: string,
     @CurrentUser() user: CurrentUserData,
@@ -74,6 +96,8 @@ export class PatientsController {
 
   @Get('count')
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @ApiOperation({ summary: 'Contar pacientes de la clínica' })
+  @ApiResponse({ status: 200, description: 'Número total de pacientes' })
   async count(@CurrentUser() user: CurrentUserData): Promise<{ count: number }> {
     if (!user.clinicId) {
       throw new ForbiddenException('User must be associated with a clinic');
@@ -84,6 +108,10 @@ export class PatientsController {
 
   @Get(':id')
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @ApiOperation({ summary: 'Obtener paciente por ID' })
+  @ApiParam({ name: 'id', description: 'ID del paciente' })
+  @ApiResponse({ status: 200, description: 'Datos del paciente' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
   async findOne(
     @Param('id') id: string,
     @CurrentUser() user: CurrentUserData,
@@ -96,6 +124,10 @@ export class PatientsController {
 
   @Patch(':id')
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @ApiOperation({ summary: 'Actualizar paciente' })
+  @ApiParam({ name: 'id', description: 'ID del paciente' })
+  @ApiResponse({ status: 200, description: 'Paciente actualizado' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
   update(
     @Param('id') id: string,
     @Body() updatePatientDto: UpdatePatientDto,
@@ -109,6 +141,10 @@ export class PatientsController {
 
   @Delete(':id')
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @ApiOperation({ summary: 'Eliminar paciente (soft delete)' })
+  @ApiParam({ name: 'id', description: 'ID del paciente' })
+  @ApiResponse({ status: 200, description: 'Paciente eliminado' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
   async remove(
     @Param('id') id: string,
     @CurrentUser() user: CurrentUserData,
@@ -122,6 +158,10 @@ export class PatientsController {
 
   @Patch(':id/restore')
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR)
+  @ApiOperation({ summary: 'Restaurar paciente eliminado' })
+  @ApiParam({ name: 'id', description: 'ID del paciente' })
+  @ApiResponse({ status: 200, description: 'Paciente restaurado' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
   async restore(
     @Param('id') id: string,
     @CurrentUser() user: CurrentUserData,

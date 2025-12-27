@@ -307,6 +307,19 @@ export class ConsultationsService {
     return consultation;
   }
 
+  async count(
+    clinicId: string,
+    filters?: { status?: ConsultationStatus },
+  ): Promise<number> {
+    const query: any = { clinicId, isDeleted: false };
+
+    if (filters?.status) {
+      query.status = filters.status;
+    }
+
+    return this.consultationModel.countDocuments(query).exec();
+  }
+
   async getPatientConsultationSummary(
     clinicId: string,
     patientId: string,

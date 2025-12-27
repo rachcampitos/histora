@@ -10,6 +10,7 @@ import {
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto, CancelAppointmentDto } from './dto/update-appointment.dto';
@@ -22,6 +23,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Appointments')
+@ApiBearerAuth('JWT-auth')
 @Controller('appointments')
 @UseGuards(JwtAuthGuard, RolesGuard, ClinicAccessGuard)
 export class AppointmentsController {

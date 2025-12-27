@@ -8,6 +8,7 @@ import {
   configureMockFind,
   configureMockFindOne,
   configureMockFindOneAndUpdate,
+  configureMockCountDocuments,
   MockModel,
 } from '../../test/mocks/mongoose-model.mock';
 
@@ -367,6 +368,26 @@ describe('ConsultationsService', () => {
       const result = await service.remove('consultation-id-123', mockClinicId);
 
       expect(result?.isDeleted).toBe(true);
+    });
+  });
+
+  describe('count', () => {
+    it('should return count of consultations for clinic', async () => {
+      configureMockCountDocuments(consultationModel, 5);
+
+      const result = await service.count(mockClinicId);
+
+      expect(result).toBe(5);
+      expect(consultationModel.countDocuments).toHaveBeenCalled();
+    });
+
+    it('should filter by status when provided', async () => {
+      configureMockCountDocuments(consultationModel, 2);
+
+      const result = await service.count(mockClinicId, { status: ConsultationStatus.IN_PROGRESS });
+
+      expect(result).toBe(2);
+      expect(consultationModel.countDocuments).toHaveBeenCalled();
     });
   });
 

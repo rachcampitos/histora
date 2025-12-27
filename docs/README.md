@@ -18,6 +18,10 @@ Sistema SaaS para gestión de consultorios médicos independientes.
 - [Modelos de Datos](./data-models.md) - Schemas y relaciones
 
 ### API Reference
+- **[Guía Completa de la API](./api-guide.md)** - Cómo usar la API (START HERE)
+- [Documentación Interactiva (Swagger)](http://localhost:3000/docs) - Probar endpoints en vivo
+
+#### Endpoints por módulo:
 - [Autenticación](./api/auth.md) - Login, registro, JWT
 - [Pacientes](./api/patients.md) - CRUD de pacientes
 - [Doctores](./api/doctors.md) - CRUD de doctores
@@ -40,8 +44,11 @@ Sistema SaaS para gestión de consultorios médicos independientes.
 | Backend | NestJS 11 |
 | Base de datos | MongoDB (Mongoose 8) |
 | Autenticación | JWT + Passport |
-| Frontend | Angular 19 (pendiente) |
-| Testing | Jest |
+| Frontend | Angular 20 + Ionic 8 |
+| Testing | Jest (275 tests) |
+| Pagos | Culqi (Yape, tarjetas) |
+| Notificaciones | Email, SMS, WhatsApp, Push |
+| Almacenamiento | Cloudinary |
 
 ## Módulos del Sistema
 
@@ -55,9 +62,14 @@ Sistema SaaS para gestión de consultorios médicos independientes.
 | Doctors | ✅ | Gestión de doctores |
 | Appointments | ✅ | Citas médicas |
 | Clinical History | ✅ | Historiales clínicos |
-| Consultations | 🔜 | Consultas/atenciones |
-| Vitals | 🔜 | Signos vitales |
-| Reviews | 🔜 | Reseñas de pacientes |
+| Consultations | ✅ | Consultas/atenciones |
+| Vitals | ✅ | Signos vitales |
+| Reviews | ✅ | Reseñas de pacientes |
+| Patient Portal | ✅ | Portal del paciente |
+| Public Directory | ✅ | Directorio público de médicos |
+| Notifications | ✅ | Email, SMS, WhatsApp, Push |
+| Payments | ✅ | Yape, Plin, tarjetas (Culqi) |
+| Uploads | ✅ | Fotos de perfil (Cloudinary) |
 
 ## Roles de Usuario
 

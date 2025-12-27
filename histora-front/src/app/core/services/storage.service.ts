@@ -3,6 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 
 const STORAGE_KEYS = {
   TOKEN: 'histora_token',
+  REFRESH_TOKEN: 'histora_refresh_token',
   USER: 'histora_user',
   THEME: 'histora_theme',
 } as const;
@@ -53,6 +54,19 @@ export class StorageService {
   async removeToken(): Promise<void> {
     await this.remove(STORAGE_KEYS.TOKEN);
     this.tokenSignal.set(null);
+  }
+
+  // Refresh token management
+  async setRefreshToken(token: string): Promise<void> {
+    await this.set(STORAGE_KEYS.REFRESH_TOKEN, token);
+  }
+
+  async getRefreshToken(): Promise<string | null> {
+    return this.get(STORAGE_KEYS.REFRESH_TOKEN);
+  }
+
+  async removeRefreshToken(): Promise<void> {
+    await this.remove(STORAGE_KEYS.REFRESH_TOKEN);
   }
 
   // User management

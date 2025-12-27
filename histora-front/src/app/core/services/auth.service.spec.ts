@@ -25,13 +25,16 @@ describe('AuthService', () => {
 
   const mockAuthResponse: AuthResponse = {
     access_token: 'mock-jwt-token',
+    refresh_token: 'mock-refresh-token',
     user: mockUser,
   };
 
   beforeEach(() => {
     apiServiceSpy = jasmine.createSpyObj('ApiService', ['get', 'post']);
     storageServiceSpy = jasmine.createSpyObj('StorageService', [
-      'init', 'getToken', 'setToken', 'removeToken', 'getUser', 'setUser', 'removeUser'
+      'init', 'getToken', 'setToken', 'removeToken',
+      'getRefreshToken', 'setRefreshToken', 'removeRefreshToken',
+      'getUser', 'setUser', 'removeUser'
     ]);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -39,6 +42,9 @@ describe('AuthService', () => {
     storageServiceSpy.getToken.and.returnValue(Promise.resolve(null));
     storageServiceSpy.setToken.and.returnValue(Promise.resolve());
     storageServiceSpy.removeToken.and.returnValue(Promise.resolve());
+    storageServiceSpy.getRefreshToken.and.returnValue(Promise.resolve(null));
+    storageServiceSpy.setRefreshToken.and.returnValue(Promise.resolve());
+    storageServiceSpy.removeRefreshToken.and.returnValue(Promise.resolve());
     storageServiceSpy.getUser.and.returnValue(Promise.resolve(null));
     storageServiceSpy.setUser.and.returnValue(Promise.resolve());
     storageServiceSpy.removeUser.and.returnValue(Promise.resolve());
@@ -140,8 +146,37 @@ describe('AuthService', () => {
       tick();
 
       expect(storageServiceSpy.removeToken).toHaveBeenCalled();
+      expect(storageServiceSpy.removeRefreshToken).toHaveBeenCalled();
       expect(storageServiceSpy.removeUser).toHaveBeenCalled();
       expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth/login']);
+    }));
+  });
+
+  describe('refreshToken', () => {
+    it('should refresh token successfully', fakeAsync(() => {
+      storageServiceSpy.getRefreshToken.and.returnValue(Promise.resolve('valid-refresh-token'));
+      apiServiceSpy.post.and.returnValue(of(mockAuthResponse));
+
+      let result: AuthResponse | undefined;
+      service.refreshToken().subscribe((res) => (result = res));
+      tick();
+
+      expect(apiServiceSpy.post).toHaveBeenCalledWith('/auth/refresh', { refresh_token: 'valid-refresh-token' });
+      expect(storageServiceSpy.setToken).toHaveBeenCalledWith(mockAuthResponse.access_token);
+      expect(storageServiceSpy.setRefreshToken).toHaveBeenCalledWith(mockAuthResponse.refresh_token);
+      expect(result).toEqual(mockAuthResponse);
+    }));
+
+    it('should fail if no refresh token available', fakeAsync(() => {
+      storageServiceSpy.getRefreshToken.and.returnValue(Promise.resolve(null));
+
+      let errorCaught = false;
+      service.refreshToken().subscribe({
+        error: () => (errorCaught = true),
+      });
+      tick();
+
+      expect(errorCaught).toBeTrue();
     }));
   });
 
