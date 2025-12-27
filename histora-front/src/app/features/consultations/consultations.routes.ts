@@ -16,4 +16,9 @@ export const CONSULTATIONS_ROUTES: Routes = [
     loadComponent: () =>
       import('./consultation-detail/consultation-detail.page').then((m) => m.ConsultationDetailPage),
   },
+  {
+    path: ':id/edit',
+    loadComponent: () =>
+      import('./consultation-form/consultation-form.page').then((m) => m.ConsultationFormPage),
+  },
 ];

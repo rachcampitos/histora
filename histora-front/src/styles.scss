@@ -90,6 +90,109 @@ ion-item {
   text-align: right;
 }
 
+/* Screen Reader Only - Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus Styles - Accessibility */
+*:focus-visible {
+  outline: 3px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+ion-button:focus-visible {
+  outline: 3px solid var(--ion-color-primary);
+  outline-offset: 4px;
+}
+
+ion-item:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
+}
+
+ion-chip:focus-visible {
+  outline: 3px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Hide outline on mouse click but show on keyboard */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip Link - Accessibility */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  background: var(--ion-color-primary);
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 0 0 8px 8px;
+  z-index: 10000;
+  font-weight: 600;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  ion-skeleton-text {
+    animation: none;
+  }
+}
+
+/* Touch Target Size for Mobile */
+@media (max-width: 768px) {
+  ion-chip[role="button"],
+  .clickable-chip {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  ion-fab-button {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* Input Hints */
+.input-hint {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+  padding: 4px 16px 0;
+  display: block;
+}
+
+/* Error Text Accessibility */
+.error-text {
+  font-size: 0.75rem;
+  display: block;
+  padding: 4px 16px 0;
+}
+
 /* Status Colors */
 .status-scheduled {
   color: var(--ion-color-medium);

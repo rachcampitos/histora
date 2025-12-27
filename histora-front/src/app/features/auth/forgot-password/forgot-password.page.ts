@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
@@ -20,6 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -180,6 +182,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class ForgotPasswordPage {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
 
   form: FormGroup;
   isLoading = signal(false);
@@ -200,15 +203,17 @@ export class ForgotPasswordPage {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.auth.forgotPassword(this.form.value.email).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.success.set(true);
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        this.error.set(err.message || 'Error al enviar el enlace');
-      },
-    });
+    this.auth.forgotPassword(this.form.value.email)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.success.set(true);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.error.set(err.message || 'Error al enviar el enlace');
+        },
+      });
   }
 }

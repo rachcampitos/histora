@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import {
   IonHeader,
@@ -31,6 +32,7 @@ import { Patient } from '../../../core/models';
 @Component({
   selector: 'app-patients-list',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonHeader,
@@ -63,55 +65,66 @@ import { Patient } from '../../../core/models';
         </ion-buttons>
         <ion-title>Pacientes</ion-title>
         <ion-buttons slot="end">
-          <ion-button routerLink="/patients/new">
-            <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+          <ion-button routerLink="/patients/new" aria-label="Agregar nuevo paciente">
+            <ion-icon slot="icon-only" name="add-outline" aria-hidden="true"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
       <ion-toolbar>
-        <ion-searchbar
-          placeholder="Buscar pacientes..."
-          [debounce]="300"
-          (ionInput)="onSearch($event)"
-        ></ion-searchbar>
+        <form role="search" aria-label="Buscar pacientes">
+          <ion-searchbar
+            placeholder="Buscar pacientes..."
+            [debounce]="300"
+            (ionInput)="onSearch($event)"
+            aria-label="Campo de búsqueda de pacientes"
+          ></ion-searchbar>
+        </form>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
+      <h1 class="sr-only">Lista de pacientes</h1>
+
       <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-        <ion-refresher-content></ion-refresher-content>
+        <ion-refresher-content
+          pullingText="Deslizar para actualizar"
+          refreshingText="Actualizando..."
+        ></ion-refresher-content>
       </ion-refresher>
 
       @if (isLoading() && patients().length === 0) {
-        <ion-list>
-          @for (item of [1, 2, 3, 4, 5]; track item) {
-            <ion-item>
-              <ion-avatar slot="start">
-                <ion-skeleton-text animated></ion-skeleton-text>
-              </ion-avatar>
-              <ion-label>
-                <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
-                <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
-              </ion-label>
-            </ion-item>
-          }
-        </ion-list>
+        <div role="status" aria-live="polite" aria-label="Cargando pacientes">
+          <span class="sr-only">Cargando lista de pacientes...</span>
+          <ion-list>
+            @for (item of [1, 2, 3, 4, 5]; track item) {
+              <ion-item>
+                <ion-avatar slot="start">
+                  <ion-skeleton-text animated></ion-skeleton-text>
+                </ion-avatar>
+                <ion-label>
+                  <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+                  <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        </div>
       } @else if (patients().length === 0) {
-        <div class="empty-state">
-          <ion-icon name="person-outline"></ion-icon>
-          <h3>No hay pacientes</h3>
+        <div class="empty-state" role="status">
+          <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+          <p class="empty-heading">No hay pacientes</p>
           <p>Agrega tu primer paciente para comenzar</p>
           <ion-button routerLink="/patients/new">
-            <ion-icon slot="start" name="add-outline"></ion-icon>
+            <ion-icon slot="start" name="add-outline" aria-hidden="true"></ion-icon>
             Agregar Paciente
           </ion-button>
         </div>
       } @else {
-        <ion-list>
+        <ion-list aria-label="Lista de pacientes">
           @for (patient of patients(); track patient._id) {
             <ion-item button detail routerLink="/patients/{{ patient._id }}">
-              <ion-avatar slot="start">
-                <div class="avatar-placeholder">
+              <ion-avatar slot="start" [attr.aria-label]="'Avatar de ' + patient.firstName + ' ' + patient.lastName">
+                <div class="avatar-placeholder" aria-hidden="true">
                   {{ getInitials(patient) }}
                 </div>
               </ion-avatar>
@@ -120,20 +133,25 @@ import { Patient } from '../../../core/models';
                 <p>{{ patient.email || patient.phone || 'Sin contacto' }}</p>
               </ion-label>
               @if (patient.bloodType) {
-                <ion-badge slot="end" color="primary">{{ patient.bloodType }}</ion-badge>
+                <ion-badge slot="end" color="primary" [attr.aria-label]="'Tipo de sangre: ' + patient.bloodType">
+                  {{ patient.bloodType }}
+                </ion-badge>
               }
             </ion-item>
           }
         </ion-list>
 
         <ion-infinite-scroll (ionInfinite)="loadMore($event)">
-          <ion-infinite-scroll-content></ion-infinite-scroll-content>
+          <ion-infinite-scroll-content
+            loadingSpinner="crescent"
+            loadingText="Cargando más pacientes..."
+          ></ion-infinite-scroll-content>
         </ion-infinite-scroll>
       }
 
       <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-        <ion-fab-button routerLink="/patients/new">
-          <ion-icon name="add-outline"></ion-icon>
+        <ion-fab-button routerLink="/patients/new" aria-label="Agregar nuevo paciente">
+          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -174,7 +192,9 @@ import { Patient } from '../../../core/models';
         margin-bottom: 16px;
       }
 
-      .empty-state h3 {
+      .empty-state .empty-heading {
+        font-size: 1.25rem;
+        font-weight: 600;
         margin: 0 0 8px;
         color: var(--ion-color-dark);
       }
@@ -188,6 +208,7 @@ import { Patient } from '../../../core/models';
 })
 export class PatientsListPage implements OnInit {
   private patientsService = inject(PatientsService);
+  private destroyRef = inject(DestroyRef);
 
   patients = signal<Patient[]>([]);
   isLoading = signal(false);
@@ -241,6 +262,7 @@ export class PatientsListPage implements OnInit {
           limit: this.limit,
           offset: this.offset(),
         })
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (response: PatientsResponse) => {
             if (reset) {

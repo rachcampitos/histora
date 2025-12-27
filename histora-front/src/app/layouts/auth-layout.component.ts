@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { IonApp, IonContent, IonRouterOutlet } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-auth-layout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, IonApp, IonContent, IonRouterOutlet],
   template: `
     <ion-app>

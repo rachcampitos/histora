@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal, input } from '@angular/core';
+import { Component, inject, OnInit, signal, input, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonHeader,
@@ -41,6 +42,7 @@ import { Patient } from '../../../core/models';
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonHeader,
@@ -248,6 +250,7 @@ export class PatientDetailPage implements OnInit {
   private router = inject(Router);
   private alertController = inject(AlertController);
   private toastController = inject(ToastController);
+  private destroyRef = inject(DestroyRef);
 
   id = input.required<string>();
   patient = signal<Patient | null>(null);
@@ -309,28 +312,32 @@ export class PatientDetailPage implements OnInit {
 
   private loadPatient(): void {
     this.isLoading.set(true);
-    this.patientsService.getPatient(this.id()).subscribe({
-      next: (patient) => {
-        this.patient.set(patient);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.isLoading.set(false);
-      },
-    });
+    this.patientsService.getPatient(this.id())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (patient) => {
+          this.patient.set(patient);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.isLoading.set(false);
+        },
+      });
   }
 
   private async deletePatient(): Promise<void> {
-    this.patientsService.deletePatient(this.id()).subscribe({
-      next: async () => {
-        const toast = await this.toastController.create({
-          message: 'Paciente eliminado correctamente',
-          duration: 2000,
-          color: 'success',
-        });
-        await toast.present();
-        this.router.navigate(['/patients']);
-      },
-    });
+    this.patientsService.deletePatient(this.id())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: async () => {
+          const toast = await this.toastController.create({
+            message: 'Paciente eliminado correctamente',
+            duration: 2000,
+            color: 'success',
+          });
+          await toast.present();
+          this.router.navigate(['/patients']);
+        },
+      });
   }
 }
