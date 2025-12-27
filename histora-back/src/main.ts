@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -23,8 +24,53 @@ async function bootstrap() {
     }),
   );
 
+  // Swagger Configuration
+  const config = new DocumentBuilder()
+    .setTitle('Histora API')
+    .setDescription('API para gestión de consultorios médicos - Histora SaaS')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
+    .addTag('Auth', 'Autenticación y registro de usuarios')
+    .addTag('Users', 'Gestión de usuarios')
+    .addTag('Clinics', 'Gestión de consultorios/clínicas')
+    .addTag('Patients', 'Gestión de pacientes')
+    .addTag('Doctors', 'Gestión de doctores')
+    .addTag('Appointments', 'Gestión de citas')
+    .addTag('Consultations', 'Gestión de consultas médicas')
+    .addTag('Clinical History', 'Historiales clínicos')
+    .addTag('Vitals', 'Signos vitales')
+    .addTag('Subscriptions', 'Planes y suscripciones')
+    .addTag('Reviews', 'Reseñas de pacientes')
+    .addTag('Public Directory', 'Directorio público de médicos')
+    .addTag('Patient Portal', 'Portal del paciente')
+    .addTag('Notifications', 'Notificaciones y preferencias')
+    .addTag('Payments', 'Pagos y transacciones (Yape, Plin, tarjetas)')
+    .addTag('Uploads', 'Subida de archivos e imágenes (Cloudinary)')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+    customSiteTitle: 'Histora API Documentation',
+  });
+
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Backend running on http://localhost:${port}`);
+  console.log(`Swagger docs available at http://localhost:${port}/docs`);
 }
 bootstrap();

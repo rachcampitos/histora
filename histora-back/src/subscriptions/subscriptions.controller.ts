@@ -5,6 +5,7 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { SubscriptionsService } from './subscriptions.service';
 import { UpgradeSubscriptionDto, CancelSubscriptionDto } from './dto/create-subscription.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -16,6 +17,8 @@ import { UserRole } from '../users/schema/user.schema';
 import { Plan } from './schema/plan.schema';
 import { Subscription } from './schema/subscription.schema';
 
+@ApiTags('Subscriptions')
+@ApiBearerAuth('JWT-auth')
 @Controller('subscriptions')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class SubscriptionsController {

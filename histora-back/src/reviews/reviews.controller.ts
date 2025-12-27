@@ -10,6 +10,7 @@ import {
   ForbiddenException,
   Patch,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto, RespondToReviewDto, FlagReviewDto } from './dto/create-review.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,6 +20,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Reviews')
+@ApiBearerAuth('JWT-auth')
 @Controller('reviews')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ReviewsController {

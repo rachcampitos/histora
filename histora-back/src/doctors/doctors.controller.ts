@@ -10,6 +10,7 @@ import {
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { DoctorsService } from './doctors.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
@@ -22,6 +23,8 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Public } from '../auth/decorators/public.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Doctors')
+@ApiBearerAuth('JWT-auth')
 @Controller('doctors')
 @UseGuards(JwtAuthGuard, RolesGuard, ClinicAccessGuard)
 export class DoctorsController {

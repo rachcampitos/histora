@@ -10,6 +10,7 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CurrentUser, CurrentUserData } from '../auth/decorators/current-user.decorator';
@@ -19,6 +20,8 @@ import { PatientPortalService } from './patient-portal.service';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { UpdatePatientProfileDto } from './dto/update-patient-profile.dto';
 
+@ApiTags('Patient Portal')
+@ApiBearerAuth('JWT-auth')
 @Controller('patient-portal')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.PATIENT)

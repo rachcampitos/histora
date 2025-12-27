@@ -10,6 +10,7 @@ import {
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ClinicalHistoryService } from './clinical-history.service';
 import { CreateClinicalHistoryDto, AllergyDto, ChronicConditionDto, VaccinationDto } from './dto/create-clinical-history.dto';
 import { UpdateClinicalHistoryDto } from './dto/update-clinical-history.dto';
@@ -21,6 +22,8 @@ import { CurrentUser, CurrentUserData } from '../auth/decorators/current-user.de
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 
+@ApiTags('Clinical History')
+@ApiBearerAuth('JWT-auth')
 @Controller('clinical-history')
 @UseGuards(JwtAuthGuard, RolesGuard, ClinicAccessGuard)
 export class ClinicalHistoryController {
