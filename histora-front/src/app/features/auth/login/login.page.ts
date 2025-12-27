@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -23,6 +24,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -48,46 +50,50 @@ import { AuthService } from '../../../core/services/auth.service';
       <ion-card-content>
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <ion-item>
-            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-icon name="mail-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-input
               type="email"
               formControlName="email"
               label="Correo electrónico"
               labelPlacement="floating"
               placeholder="correo@ejemplo.com"
+              [attr.aria-describedby]="form.get('email')?.touched && form.get('email')?.invalid ? 'email-error' : null"
+              [attr.aria-invalid]="form.get('email')?.touched && form.get('email')?.invalid"
             ></ion-input>
           </ion-item>
           @if (form.get('email')?.touched && form.get('email')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">
+            <ion-text color="danger" class="error-text" id="email-error" role="alert">
               El correo es requerido
             </ion-text>
           }
           @if (form.get('email')?.touched && form.get('email')?.errors?.['email']) {
-            <ion-text color="danger" class="error-text">
+            <ion-text color="danger" class="error-text" id="email-error" role="alert">
               Ingresa un correo válido
             </ion-text>
           }
 
           <ion-item>
-            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-icon name="lock-closed-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-input
               type="password"
               formControlName="password"
               label="Contraseña"
               labelPlacement="floating"
               placeholder="••••••••"
+              [attr.aria-describedby]="form.get('password')?.touched && form.get('password')?.invalid ? 'password-error' : null"
+              [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid"
             >
-              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+              <ion-input-password-toggle slot="end" aria-label="Mostrar u ocultar contraseña"></ion-input-password-toggle>
             </ion-input>
           </ion-item>
           @if (form.get('password')?.touched && form.get('password')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">
+            <ion-text color="danger" class="error-text" id="password-error" role="alert">
               La contraseña es requerida
             </ion-text>
           }
 
           @if (error()) {
-            <ion-text color="danger" class="error-message">
+            <ion-text color="danger" class="error-message" role="alert" aria-live="assertive">
               {{ error() }}
             </ion-text>
           }
@@ -96,9 +102,11 @@ import { AuthService } from '../../../core/services/auth.service';
             type="submit"
             expand="block"
             [disabled]="form.invalid || isLoading()"
+            [attr.aria-busy]="isLoading()"
           >
             @if (isLoading()) {
-              <ion-spinner name="crescent"></ion-spinner>
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span class="sr-only">Iniciando sesión...</span>
             } @else {
               Iniciar Sesión
             }
@@ -185,6 +193,7 @@ export class LoginPage {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   form: FormGroup;
   isLoading = signal(false);
@@ -205,14 +214,16 @@ export class LoginPage {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.auth.login(this.form.value).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        this.error.set(err.message || 'Error al iniciar sesión');
-      },
-    });
+    this.auth.login(this.form.value)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.error.set(err.message || 'Error al iniciar sesión');
+        },
+      });
   }
 }

@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -19,10 +20,12 @@ import {
 import { addIcons } from 'ionicons';
 import { mailOutline, lockClosedOutline, personOutline, businessOutline, callOutline } from 'ionicons/icons';
 import { AuthService } from '../../../core/services/auth.service';
+import { PhoneInputComponent } from '../../../shared/components';
 
 @Component({
   selector: 'app-register',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -39,6 +42,7 @@ import { AuthService } from '../../../core/services/auth.service';
     IonText,
     IonIcon,
     IonInputPasswordToggle,
+    PhoneInputComponent,
   ],
   template: `
     <ion-card>
@@ -92,15 +96,13 @@ import { AuthService } from '../../../core/services/auth.service';
             <ion-text color="danger" class="error-text">Ingresa un correo válido</ion-text>
           }
 
-          <ion-item>
-            <ion-icon name="call-outline" slot="start"></ion-icon>
-            <ion-input
-              type="tel"
+          <ion-item lines="none">
+            <app-phone-input
               formControlName="phone"
               label="Teléfono (opcional)"
-              labelPlacement="floating"
-              placeholder="+52 555 123 4567"
-            ></ion-input>
+              placeholder="999 999 999"
+              defaultCountry="PE"
+            ></app-phone-input>
           </ion-item>
 
           <ion-item>
@@ -233,6 +235,7 @@ export class RegisterPage {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   form: FormGroup;
   isLoading = signal(false);
@@ -257,14 +260,16 @@ export class RegisterPage {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.auth.register(this.form.value).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        this.error.set(err.message || 'Error al crear la cuenta');
-      },
-    });
+    this.auth.register(this.form.value)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.error.set(err.message || 'Error al crear la cuenta');
+        },
+      });
   }
 }

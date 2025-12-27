@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -11,6 +11,7 @@ import {
 @Component({
   selector: 'app-appointment-detail',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonBackButton, IonButtons],
   template: `
     <ion-header>

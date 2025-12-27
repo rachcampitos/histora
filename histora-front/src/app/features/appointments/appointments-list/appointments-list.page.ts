@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
@@ -42,6 +43,7 @@ import { AppointmentsService, Appointment } from '../appointments.service';
 @Component({
   selector: 'app-appointments-list',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,
@@ -349,6 +351,7 @@ import { AppointmentsService, Appointment } from '../appointments.service';
 export class AppointmentsListPage implements OnInit {
   private appointmentsService = inject(AppointmentsService);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
   appointments = signal<Appointment[]>([]);
   isLoading = signal(false);
@@ -372,15 +375,17 @@ export class AppointmentsListPage implements OnInit {
 
   ngOnInit(): void {
     // Check for date query param from dashboard navigation
-    this.route.queryParams.subscribe(params => {
-      if (params['date']) {
-        const date = new Date(params['date']);
-        if (!isNaN(date.getTime())) {
-          this.selectedDate.set(date.toISOString());
+    this.route.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        if (params['date']) {
+          const date = new Date(params['date']);
+          if (!isNaN(date.getTime())) {
+            this.selectedDate.set(date.toISOString());
+          }
         }
-      }
-      this.loadAppointments();
-    });
+        this.loadAppointments();
+      });
   }
 
   onDateSelected(dateString: string): void {
@@ -452,18 +457,20 @@ export class AppointmentsListPage implements OnInit {
     this.appointmentsService.getAppointments({
       date: date.toISOString().split('T')[0],
       viewMode: this.viewMode(),
-    }).subscribe({
-      next: (response: { data: Appointment[]; total: number }) => {
-        this.appointments.set(response.data || []);
-        this.appointmentsCount.set(response.total || 0);
-        this.updateStats(response.data || []);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.appointments.set([]);
-        this.isLoading.set(false);
-      },
-    });
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: { data: Appointment[]; total: number }) => {
+          this.appointments.set(response.data || []);
+          this.appointmentsCount.set(response.total || 0);
+          this.updateStats(response.data || []);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.appointments.set([]);
+          this.isLoading.set(false);
+        },
+      });
   }
 
   private updateStats(appointments: Appointment[]): void {

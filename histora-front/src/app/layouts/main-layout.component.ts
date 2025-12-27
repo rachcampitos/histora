@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
   IonApp,
@@ -34,6 +34,7 @@ import { AuthService } from '../core/services/auth.service';
 @Component({
   selector: 'app-main-layout',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     RouterLinkActive,
@@ -56,6 +57,9 @@ import { AuthService } from '../core/services/auth.service';
   ],
   template: `
     <ion-app>
+      <!-- Skip Link for Accessibility -->
+      <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
       <ion-split-pane contentId="main-content">
         <ion-menu contentId="main-content" type="overlay">
           <ion-header>
@@ -65,8 +69,8 @@ import { AuthService } from '../core/services/auth.service';
           </ion-header>
           <ion-content>
             <!-- User Info -->
-            <div class="user-info">
-              <ion-avatar>
+            <div class="user-info" role="region" aria-label="Información del usuario">
+              <ion-avatar aria-hidden="true">
                 <ion-icon name="person-circle-outline" size="large"></ion-icon>
               </ion-avatar>
               <div class="user-details">
@@ -75,68 +79,72 @@ import { AuthService } from '../core/services/auth.service';
               </div>
             </div>
 
-            <ion-list>
-              <ion-list-header>
-                <ion-label>Menú Principal</ion-label>
-              </ion-list-header>
+            <nav aria-label="Menú principal de navegación">
+              <ion-list>
+                <ion-list-header>
+                  <ion-label>Menú Principal</ion-label>
+                </ion-list-header>
 
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/dashboard" routerLinkActive="selected">
-                  <ion-icon name="home-outline" slot="start"></ion-icon>
-                  <ion-label>Dashboard</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/patients" routerLinkActive="selected">
-                  <ion-icon name="people-outline" slot="start"></ion-icon>
-                  <ion-label>Pacientes</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/appointments" routerLinkActive="selected">
-                  <ion-icon name="calendar-outline" slot="start"></ion-icon>
-                  <ion-label>Citas</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-
-              @if (auth.isDoctor()) {
                 <ion-menu-toggle auto-hide="false">
-                  <ion-item routerLink="/consultations" routerLinkActive="selected">
-                    <ion-icon name="medkit-outline" slot="start"></ion-icon>
-                    <ion-label>Consultas</ion-label>
+                  <ion-item routerLink="/dashboard" routerLinkActive="selected">
+                    <ion-icon name="home-outline" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>Dashboard</ion-label>
                   </ion-item>
                 </ion-menu-toggle>
 
                 <ion-menu-toggle auto-hide="false">
-                  <ion-item routerLink="/clinical-history" routerLinkActive="selected">
-                    <ion-icon name="document-text-outline" slot="start"></ion-icon>
-                    <ion-label>Historiales</ion-label>
+                  <ion-item routerLink="/patients" routerLinkActive="selected">
+                    <ion-icon name="people-outline" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>Pacientes</ion-label>
                   </ion-item>
                 </ion-menu-toggle>
-              }
-            </ion-list>
 
-            <ion-list>
-              <ion-list-header>
-                <ion-label>Configuración</ion-label>
-              </ion-list-header>
+                <ion-menu-toggle auto-hide="false">
+                  <ion-item routerLink="/appointments" routerLinkActive="selected">
+                    <ion-icon name="calendar-outline" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>Citas</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
 
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerLink="/settings" routerLinkActive="selected">
-                  <ion-icon name="settings-outline" slot="start"></ion-icon>
-                  <ion-label>Ajustes</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
+                @if (auth.isDoctor()) {
+                  <ion-menu-toggle auto-hide="false">
+                    <ion-item routerLink="/consultations" routerLinkActive="selected">
+                      <ion-icon name="medkit-outline" slot="start" aria-hidden="true"></ion-icon>
+                      <ion-label>Consultas</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
 
-              <ion-menu-toggle auto-hide="false">
-                <ion-item button (click)="logout()">
-                  <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
-                  <ion-label color="danger">Cerrar Sesión</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-            </ion-list>
+                  <ion-menu-toggle auto-hide="false">
+                    <ion-item routerLink="/clinical-history" routerLinkActive="selected">
+                      <ion-icon name="document-text-outline" slot="start" aria-hidden="true"></ion-icon>
+                      <ion-label>Historiales</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+                }
+              </ion-list>
+            </nav>
+
+            <nav aria-label="Configuración">
+              <ion-list>
+                <ion-list-header>
+                  <ion-label>Configuración</ion-label>
+                </ion-list-header>
+
+                <ion-menu-toggle auto-hide="false">
+                  <ion-item routerLink="/settings" routerLinkActive="selected">
+                    <ion-icon name="settings-outline" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>Ajustes</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+
+                <ion-menu-toggle auto-hide="false">
+                  <ion-item button (click)="logout()" aria-label="Cerrar sesión">
+                    <ion-icon name="log-out-outline" slot="start" color="danger" aria-hidden="true"></ion-icon>
+                    <ion-label color="danger">Cerrar Sesión</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+              </ion-list>
+            </nav>
           </ion-content>
         </ion-menu>
 

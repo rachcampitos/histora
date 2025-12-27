@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonHeader,
@@ -35,28 +36,13 @@ import {
   addOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../../core/services/auth.service';
-import { ApiService } from '../../core/services/api.service';
 import { CalendarPickerComponent } from '../../shared/components';
-import { AppointmentsService, Appointment } from '../appointments/appointments.service';
-
-interface DashboardStats {
-  totalPatients: number;
-  todayAppointments: number;
-  pendingConsultations: number;
-  monthlyGrowth: number;
-}
-
-interface TodayAppointment {
-  _id: string;
-  patientName: string;
-  startTime: string;
-  status: string;
-  reasonForVisit?: string;
-}
+import { DashboardService, DashboardStats, TodayAppointment } from './dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonHeader,
@@ -382,9 +368,9 @@ interface TodayAppointment {
 })
 export class DashboardPage implements OnInit {
   auth = inject(AuthService);
-  private api = inject(ApiService);
   private router = inject(Router);
-  private appointmentsService = inject(AppointmentsService);
+  private destroyRef = inject(DestroyRef);
+  private dashboardService = inject(DashboardService);
 
   isLoading = signal(true);
   stats = signal<DashboardStats | null>(null);
@@ -407,32 +393,43 @@ export class DashboardPage implements OnInit {
     this.loadDashboardData();
   }
 
-  async handleRefresh(event: CustomEvent): Promise<void> {
-    await this.loadDashboardData();
-    (event.target as HTMLIonRefresherElement).complete();
+  handleRefresh(event: CustomEvent): void {
+    this.loadDashboardData();
+    setTimeout(() => {
+      (event.target as HTMLIonRefresherElement).complete();
+    }, 1000);
   }
 
-  private async loadDashboardData(): Promise<void> {
+  private loadDashboardData(): void {
     this.isLoading.set(true);
 
-    // TODO: Replace with actual API calls
-    // Simulating API response for now
-    setTimeout(() => {
-      this.stats.set({
-        totalPatients: 45,
-        todayAppointments: 8,
-        pendingConsultations: 3,
-        monthlyGrowth: 12,
+    // Load stats and appointments in parallel
+    this.dashboardService.getStats()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (stats) => this.stats.set(stats),
+        error: () => this.stats.set({ totalPatients: 0, todayAppointments: 0, pendingConsultations: 0, monthlyGrowth: 0 }),
       });
 
-      this.todayAppointments.set([
-        { _id: '1', patientName: 'María García', startTime: '09:00', status: 'confirmed' },
-        { _id: '2', patientName: 'Juan Pérez', startTime: '10:00', status: 'scheduled' },
-        { _id: '3', patientName: 'Ana López', startTime: '11:30', status: 'in_progress' },
-      ]);
+    this.dashboardService.getTodayAppointments()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (appointments) => {
+          this.todayAppointments.set(appointments);
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.todayAppointments.set([]);
+          this.isLoading.set(false);
+        },
+      });
 
-      this.isLoading.set(false);
-    }, 1000);
+    this.dashboardService.getMonthAppointmentsCount()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (count) => this.appointmentsCount.set(count),
+        error: () => this.appointmentsCount.set(0),
+      });
   }
 
   getStatusColor(status: string): string {

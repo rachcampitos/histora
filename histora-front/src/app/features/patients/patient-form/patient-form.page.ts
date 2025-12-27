@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal, input, computed } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, OnInit, signal, input, computed, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   IonHeader,
@@ -18,14 +19,46 @@ import {
   IonSpinner,
   IonList,
   IonListHeader,
+  IonText,
+  IonNote,
   ToastController,
 } from '@ionic/angular/standalone';
 import { PatientsService } from '../patients.service';
-import { Gender, BloodType } from '../../../core/models';
+import { Gender, BloodType, DocumentType } from '../../../core/models';
+import { PhoneInputComponent } from '../../../shared/components';
+
+// Tipos de documento en Perú
+export const DOCUMENT_TYPES = [
+  { value: DocumentType.DNI, label: 'DNI (Documento Nacional de Identidad)', pattern: /^\d{8}$/, maxLength: 8 },
+  { value: DocumentType.CE, label: 'CE (Carné de Extranjería)', pattern: /^[A-Za-z0-9]{9,12}$/, maxLength: 12 },
+  { value: DocumentType.PASSPORT, label: 'Pasaporte', pattern: /^[A-Za-z0-9]{6,15}$/, maxLength: 15 },
+];
+
+// Aseguradoras de Perú
+export const PERUVIAN_INSURERS = [
+  { id: 'rimac', name: 'RIMAC Seguros' },
+  { id: 'pacifico', name: 'Pacífico Seguros' },
+  { id: 'mapfre', name: 'MAPFRE' },
+  { id: 'la_positiva', name: 'La Positiva' },
+  { id: 'sanitas', name: 'Sanitas' },
+  { id: 'oncosalud', name: 'Oncosalud' },
+  { id: 'essalud', name: 'EsSalud' },
+  { id: 'sis', name: 'SIS (Seguro Integral de Salud)' },
+  { id: 'interseguro', name: 'Interseguro' },
+  { id: 'protecta', name: 'Protecta' },
+  { id: 'cardif', name: 'BNP Paribas Cardif' },
+  { id: 'ohio', name: 'Ohio National' },
+  { id: 'insur', name: 'Insur' },
+  { id: 'secrex', name: 'Secrex' },
+  { id: 'auna', name: 'AUNA Seguros' },
+  { id: 'other', name: 'Otra aseguradora' },
+  { id: 'none', name: 'Sin seguro' },
+];
 
 @Component({
   selector: 'app-patient-form',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     IonHeader,
@@ -44,6 +77,9 @@ import { Gender, BloodType } from '../../../core/models';
     IonSpinner,
     IonList,
     IonListHeader,
+    IonText,
+    IonNote,
+    PhoneInputComponent,
   ],
   template: `
     <ion-header>
@@ -81,6 +117,45 @@ import { Gender, BloodType } from '../../../core/models';
           </ion-item>
 
           <ion-item>
+            <ion-select
+              formControlName="documentType"
+              label="Tipo de Documento"
+              labelPlacement="floating"
+              placeholder="Seleccionar"
+              interface="action-sheet"
+              [interfaceOptions]="{ header: 'Tipo de Documento' }"
+              (ionChange)="onDocumentTypeChange()"
+            >
+              @for (docType of documentTypes; track docType.value) {
+                <ion-select-option [value]="docType.value">{{ docType.label }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-input
+              formControlName="documentNumber"
+              label="Número de Documento"
+              labelPlacement="floating"
+              [placeholder]="documentPlaceholder()"
+              [maxlength]="documentMaxLength()"
+              (ionInput)="onDocumentNumberInput($event)"
+            ></ion-input>
+          </ion-item>
+          @if (form.get('documentNumber')?.touched && form.get('documentNumber')?.errors) {
+            <ion-text color="danger" class="error-text">
+              @if (form.get('documentNumber')?.errors?.['invalidFormat']) {
+                {{ form.get('documentNumber')?.errors?.['invalidFormat'] }}
+              }
+            </ion-text>
+          }
+          @if (form.get('documentType')?.value) {
+            <ion-note class="document-hint">
+              {{ getDocumentHint() }}
+            </ion-note>
+          }
+
+          <ion-item>
             <ion-input
               formControlName="email"
               type="email"
@@ -90,14 +165,13 @@ import { Gender, BloodType } from '../../../core/models';
             ></ion-input>
           </ion-item>
 
-          <ion-item>
-            <ion-input
+          <ion-item lines="none">
+            <app-phone-input
               formControlName="phone"
-              type="tel"
               label="Teléfono"
-              labelPlacement="floating"
-              placeholder="+52 555 123 4567"
-            ></ion-input>
+              placeholder="999 999 999"
+              defaultCountry="PE"
+            ></app-phone-input>
           </ion-item>
 
           <ion-item>
@@ -115,6 +189,8 @@ import { Gender, BloodType } from '../../../core/models';
               label="Género"
               labelPlacement="floating"
               placeholder="Seleccionar"
+              interface="action-sheet"
+              [interfaceOptions]="{ header: 'Seleccionar Género' }"
             >
               <ion-select-option value="male">Masculino</ion-select-option>
               <ion-select-option value="female">Femenino</ion-select-option>
@@ -134,6 +210,8 @@ import { Gender, BloodType } from '../../../core/models';
               label="Tipo de Sangre"
               labelPlacement="floating"
               placeholder="Seleccionar"
+              interface="action-sheet"
+              [interfaceOptions]="{ header: 'Seleccionar Tipo de Sangre' }"
             >
               <ion-select-option value="A+">A+</ion-select-option>
               <ion-select-option value="A-">A-</ion-select-option>
@@ -183,12 +261,18 @@ import { Gender, BloodType } from '../../../core/models';
           </ion-list-header>
 
           <ion-item>
-            <ion-input
+            <ion-select
               formControlName="insuranceProvider"
               label="Aseguradora"
               labelPlacement="floating"
-              placeholder="Nombre de la aseguradora"
-            ></ion-input>
+              placeholder="Seleccionar aseguradora"
+              interface="action-sheet"
+              [interfaceOptions]="{ header: 'Seleccionar Aseguradora' }"
+            >
+              @for (insurer of insurers; track insurer.id) {
+                <ion-select-option [value]="insurer.name">{{ insurer.name }}</ion-select-option>
+              }
+            </ion-select>
           </ion-item>
 
           <ion-item>
@@ -246,6 +330,21 @@ import { Gender, BloodType } from '../../../core/models';
       ion-button {
         --border-radius: 8px;
       }
+
+      .error-text {
+        display: block;
+        font-size: 12px;
+        padding: 4px 16px;
+        margin-bottom: 8px;
+      }
+
+      .document-hint {
+        display: block;
+        font-size: 12px;
+        padding: 4px 16px;
+        margin-bottom: 8px;
+        color: var(--ion-color-medium);
+      }
     `,
   ],
 })
@@ -254,16 +353,38 @@ export class PatientFormPage implements OnInit {
   private patientsService = inject(PatientsService);
   private router = inject(Router);
   private toastController = inject(ToastController);
+  private destroyRef = inject(DestroyRef);
 
   id = input<string>();
   isEditing = computed(() => !!this.id());
   isSubmitting = signal(false);
   form: FormGroup;
+  insurers = PERUVIAN_INSURERS;
+  documentTypes = DOCUMENT_TYPES;
+
+  // Computed signals for document validation
+  documentPlaceholder = computed(() => {
+    const docType = this.form?.get('documentType')?.value;
+    switch (docType) {
+      case DocumentType.DNI: return '12345678';
+      case DocumentType.CE: return 'ABC123456789';
+      case DocumentType.PASSPORT: return 'AB1234567';
+      default: return 'Número de documento';
+    }
+  });
+
+  documentMaxLength = computed(() => {
+    const docType = this.form?.get('documentType')?.value;
+    const config = DOCUMENT_TYPES.find(d => d.value === docType);
+    return config?.maxLength || 15;
+  });
 
   constructor() {
     this.form = this.fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
+      documentType: [''],
+      documentNumber: ['', [this.documentNumberValidator.bind(this)]],
       email: ['', [Validators.email]],
       phone: [''],
       dateOfBirth: [''],
@@ -276,6 +397,68 @@ export class PatientFormPage implements OnInit {
       insuranceNumber: [''],
       notes: [''],
     });
+  }
+
+  // Custom validator for document number
+  private documentNumberValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
+
+    const docType = this.form?.get('documentType')?.value;
+    if (!docType) return null;
+
+    const config = DOCUMENT_TYPES.find(d => d.value === docType);
+    if (!config) return null;
+
+    if (!config.pattern.test(value)) {
+      switch (docType) {
+        case DocumentType.DNI:
+          return { invalidFormat: 'El DNI debe tener exactamente 8 dígitos' };
+        case DocumentType.CE:
+          return { invalidFormat: 'El CE debe tener entre 9 y 12 caracteres alfanuméricos' };
+        case DocumentType.PASSPORT:
+          return { invalidFormat: 'El pasaporte debe tener entre 6 y 15 caracteres' };
+        default:
+          return { invalidFormat: 'Formato de documento inválido' };
+      }
+    }
+
+    return null;
+  }
+
+  onDocumentTypeChange(): void {
+    // Re-validate document number when type changes
+    this.form.get('documentNumber')?.updateValueAndValidity();
+  }
+
+  onDocumentNumberInput(event: CustomEvent): void {
+    const docType = this.form.get('documentType')?.value;
+    let value = event.detail.value || '';
+
+    // For DNI, only allow numbers
+    if (docType === DocumentType.DNI) {
+      value = value.replace(/\D/g, '');
+      this.form.patchValue({ documentNumber: value }, { emitEvent: false });
+    }
+    // For CE and passport, allow alphanumeric and convert to uppercase
+    else if (docType === DocumentType.CE || docType === DocumentType.PASSPORT) {
+      value = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      this.form.patchValue({ documentNumber: value }, { emitEvent: false });
+    }
+  }
+
+  getDocumentHint(): string {
+    const docType = this.form.get('documentType')?.value;
+    switch (docType) {
+      case DocumentType.DNI:
+        return 'DNI: 8 dígitos numéricos (ej: 12345678)';
+      case DocumentType.CE:
+        return 'CE: 9-12 caracteres alfanuméricos (ej: ABC123456789)';
+      case DocumentType.PASSPORT:
+        return 'Pasaporte: 6-15 caracteres alfanuméricos';
+      default:
+        return '';
+    }
   }
 
   ngOnInit(): void {
@@ -294,36 +477,40 @@ export class PatientFormPage implements OnInit {
       ? this.patientsService.updatePatient(this.id()!, data)
       : this.patientsService.createPatient(data);
 
-    request.subscribe({
-      next: async (patient) => {
-        const toast = await this.toastController.create({
-          message: this.isEditing() ? 'Paciente actualizado' : 'Paciente creado',
-          duration: 2000,
-          color: 'success',
-        });
-        await toast.present();
-        this.router.navigate(['/patients', patient._id]);
-      },
-      error: () => {
-        this.isSubmitting.set(false);
-      },
-    });
+    request
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: async (patient) => {
+          const toast = await this.toastController.create({
+            message: this.isEditing() ? 'Paciente actualizado' : 'Paciente creado',
+            duration: 2000,
+            color: 'success',
+          });
+          await toast.present();
+          this.router.navigate(['/patients', patient._id]);
+        },
+        error: () => {
+          this.isSubmitting.set(false);
+        },
+      });
   }
 
   private loadPatient(): void {
-    this.patientsService.getPatient(this.id()!).subscribe({
-      next: (patient) => {
-        this.form.patchValue({
-          ...patient,
-          dateOfBirth: patient.dateOfBirth
-            ? new Date(patient.dateOfBirth).toISOString().split('T')[0]
-            : '',
-          allergies: patient.allergies?.join(', ') || '',
-          chronicConditions: patient.chronicConditions?.join(', ') || '',
-          currentMedications: patient.currentMedications?.join(', ') || '',
-        });
-      },
-    });
+    this.patientsService.getPatient(this.id()!)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (patient) => {
+          this.form.patchValue({
+            ...patient,
+            dateOfBirth: patient.dateOfBirth
+              ? new Date(patient.dateOfBirth).toISOString().split('T')[0]
+              : '',
+            allergies: patient.allergies?.join(', ') || '',
+            chronicConditions: patient.chronicConditions?.join(', ') || '',
+            currentMedications: patient.currentMedications?.join(', ') || '',
+          });
+        },
+      });
   }
 
   private prepareFormData(): any {
