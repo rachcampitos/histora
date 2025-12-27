@@ -60,6 +60,12 @@ export class User {
   @Prop()
   passwordResetExpires?: Date;
 
+  @Prop()
+  refreshToken?: string;
+
+  @Prop()
+  refreshTokenExpires?: Date;
+
   @Prop({ default: false })
   isDeleted: boolean;
 }

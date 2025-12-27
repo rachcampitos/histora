@@ -109,6 +109,22 @@ export class UsersService {
       .exec();
   }
 
+  async findByRefreshToken(hashedToken: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({
+        refreshToken: hashedToken,
+        isDeleted: false,
+      })
+      .exec();
+  }
+
+  async clearRefreshToken(id: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, {
+      refreshToken: null,
+      refreshTokenExpires: null,
+    });
+  }
+
   async clearPasswordResetToken(id: string): Promise<void> {
     await this.userModel.findByIdAndUpdate(id, {
       passwordResetToken: null,

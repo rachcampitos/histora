@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -38,6 +39,7 @@ describe('AuthService', () => {
     const mockUsersService = {
       findByEmail: jest.fn(),
       findByEmailWithPassword: jest.fn(),
+      findByRefreshToken: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       comparePasswords: jest.fn(),
@@ -57,6 +59,10 @@ describe('AuthService', () => {
       sign: jest.fn().mockReturnValue('mock-jwt-token'),
     };
 
+    const mockConfigService = {
+      get: jest.fn().mockReturnValue('7d'),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -64,6 +70,7 @@ describe('AuthService', () => {
         { provide: ClinicsService, useValue: mockClinicsService },
         { provide: SubscriptionsService, useValue: mockSubscriptionsService },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -195,6 +202,61 @@ describe('AuthService', () => {
 
       expect(result).toEqual(mockUser);
       expect(usersService.findOne).toHaveBeenCalledWith('user-id-123');
+    });
+  });
+
+  describe('refresh', () => {
+    const refreshTokenDto = {
+      refresh_token: 'valid-refresh-token',
+    };
+
+    it('should return new tokens on successful refresh', async () => {
+      const userWithRefreshToken = {
+        ...mockUser,
+        refreshTokenExpires: new Date(Date.now() + 86400000), // 1 day in future
+      };
+      usersService.findByRefreshToken.mockResolvedValue(userWithRefreshToken as any);
+      usersService.update.mockResolvedValue(mockUser as any);
+
+      const result = await service.refresh(refreshTokenDto);
+
+      expect(result.access_token).toBe('mock-jwt-token');
+      expect(result.refresh_token).toBeDefined();
+      expect(usersService.findByRefreshToken).toHaveBeenCalled();
+      expect(usersService.update).toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException if refresh token is invalid', async () => {
+      usersService.findByRefreshToken.mockResolvedValue(null);
+
+      await expect(service.refresh(refreshTokenDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw UnauthorizedException if refresh token is expired', async () => {
+      const userWithExpiredToken = {
+        ...mockUser,
+        refreshTokenExpires: new Date(Date.now() - 86400000), // 1 day in past
+      };
+      usersService.findByRefreshToken.mockResolvedValue(userWithExpiredToken as any);
+
+      await expect(service.refresh(refreshTokenDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw UnauthorizedException if user is inactive', async () => {
+      const inactiveUser = {
+        ...mockUser,
+        isActive: false,
+        refreshTokenExpires: new Date(Date.now() + 86400000),
+      };
+      usersService.findByRefreshToken.mockResolvedValue(inactiveUser as any);
+
+      await expect(service.refresh(refreshTokenDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });
