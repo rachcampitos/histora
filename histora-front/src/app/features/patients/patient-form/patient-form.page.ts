@@ -92,6 +92,7 @@ export const PERUVIAN_INSURERS = [
     </ion-header>
 
     <ion-content class="ion-padding">
+      <h1 class="sr-only">{{ isEditing() ? 'Editar' : 'Nuevo' }} Paciente</h1>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <ion-list>
           <ion-list-header>
@@ -104,8 +105,14 @@ export const PERUVIAN_INSURERS = [
               label="Nombre *"
               labelPlacement="floating"
               placeholder="Nombre del paciente"
+              [attr.aria-describedby]="form.get('firstName')?.touched && form.get('firstName')?.invalid ? 'firstName-error' : null"
+              [attr.aria-invalid]="form.get('firstName')?.touched && form.get('firstName')?.invalid"
+              [attr.aria-required]="true"
             ></ion-input>
           </ion-item>
+          @if (form.get('firstName')?.touched && form.get('firstName')?.errors?.['required']) {
+            <ion-text color="danger" class="error-text" id="firstName-error" role="alert">El nombre es requerido</ion-text>
+          }
 
           <ion-item>
             <ion-input
@@ -113,8 +120,14 @@ export const PERUVIAN_INSURERS = [
               label="Apellido *"
               labelPlacement="floating"
               placeholder="Apellido del paciente"
+              [attr.aria-describedby]="form.get('lastName')?.touched && form.get('lastName')?.invalid ? 'lastName-error' : null"
+              [attr.aria-invalid]="form.get('lastName')?.touched && form.get('lastName')?.invalid"
+              [attr.aria-required]="true"
             ></ion-input>
           </ion-item>
+          @if (form.get('lastName')?.touched && form.get('lastName')?.errors?.['required']) {
+            <ion-text color="danger" class="error-text" id="lastName-error" role="alert">El apellido es requerido</ion-text>
+          }
 
           <ion-item>
             <ion-select
@@ -140,17 +153,19 @@ export const PERUVIAN_INSURERS = [
               [placeholder]="documentPlaceholder()"
               [maxlength]="documentMaxLength()"
               (ionInput)="onDocumentNumberInput($event)"
+              [attr.aria-describedby]="(form.get('documentNumber')?.touched && form.get('documentNumber')?.invalid ? 'documentNumber-error' : '') + (form.get('documentType')?.value ? ' documentNumber-hint' : '')"
+              [attr.aria-invalid]="form.get('documentNumber')?.touched && form.get('documentNumber')?.invalid"
             ></ion-input>
           </ion-item>
           @if (form.get('documentNumber')?.touched && form.get('documentNumber')?.errors) {
-            <ion-text color="danger" class="error-text">
+            <ion-text color="danger" class="error-text" id="documentNumber-error" role="alert">
               @if (form.get('documentNumber')?.errors?.['invalidFormat']) {
                 {{ form.get('documentNumber')?.errors?.['invalidFormat'] }}
               }
             </ion-text>
           }
           @if (form.get('documentType')?.value) {
-            <ion-note class="document-hint">
+            <ion-note class="document-hint" id="documentNumber-hint">
               {{ getDocumentHint() }}
             </ion-note>
           }
@@ -162,8 +177,13 @@ export const PERUVIAN_INSURERS = [
               label="Correo Electrónico"
               labelPlacement="floating"
               placeholder="correo@ejemplo.com"
+              [attr.aria-describedby]="form.get('email')?.touched && form.get('email')?.invalid ? 'email-error' : null"
+              [attr.aria-invalid]="form.get('email')?.touched && form.get('email')?.invalid"
             ></ion-input>
           </ion-item>
+          @if (form.get('email')?.touched && form.get('email')?.errors?.['email']) {
+            <ion-text color="danger" class="error-text" id="email-error" role="alert">Ingresa un correo válido</ion-text>
+          }
 
           <ion-item lines="none">
             <app-phone-input
@@ -306,9 +326,11 @@ export const PERUVIAN_INSURERS = [
             type="submit"
             expand="block"
             [disabled]="form.invalid || isSubmitting()"
+            [attr.aria-busy]="isSubmitting()"
           >
             @if (isSubmitting()) {
-              <ion-spinner name="crescent"></ion-spinner>
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span class="sr-only">{{ isEditing() ? 'Guardando cambios...' : 'Creando paciente...' }}</span>
             } @else {
               {{ isEditing() ? 'Guardar Cambios' : 'Crear Paciente' }}
             }

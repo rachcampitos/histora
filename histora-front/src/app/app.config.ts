@@ -5,7 +5,7 @@ import {
   APP_INITIALIZER,
   inject,
 } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideRouter, withComponentInputBinding, TitleStrategy } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 
@@ -13,6 +13,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { AuthService } from './core/services/auth.service';
+import { PageTitleStrategy } from './core/services/page-title.strategy';
 
 function initializeApp(): () => Promise<void> {
   const authService = inject(AuthService);
@@ -32,6 +33,10 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
       multi: true,
+    },
+    {
+      provide: TitleStrategy,
+      useClass: PageTitleStrategy,
     },
   ],
 };

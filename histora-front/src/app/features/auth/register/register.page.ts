@@ -52,48 +52,54 @@ import { PhoneInputComponent } from '../../../shared/components';
       <ion-card-content>
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
           <ion-item>
-            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-icon name="person-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-input
               type="text"
               formControlName="firstName"
               label="Nombre"
               labelPlacement="floating"
               placeholder="Tu nombre"
+              [attr.aria-describedby]="form.get('firstName')?.touched && form.get('firstName')?.invalid ? 'firstName-error' : null"
+              [attr.aria-invalid]="form.get('firstName')?.touched && form.get('firstName')?.invalid"
             ></ion-input>
           </ion-item>
           @if (form.get('firstName')?.touched && form.get('firstName')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">El nombre es requerido</ion-text>
+            <ion-text color="danger" class="error-text" id="firstName-error" role="alert">El nombre es requerido</ion-text>
           }
 
           <ion-item>
-            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-icon name="person-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-input
               type="text"
               formControlName="lastName"
               label="Apellido"
               labelPlacement="floating"
               placeholder="Tu apellido"
+              [attr.aria-describedby]="form.get('lastName')?.touched && form.get('lastName')?.invalid ? 'lastName-error' : null"
+              [attr.aria-invalid]="form.get('lastName')?.touched && form.get('lastName')?.invalid"
             ></ion-input>
           </ion-item>
           @if (form.get('lastName')?.touched && form.get('lastName')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">El apellido es requerido</ion-text>
+            <ion-text color="danger" class="error-text" id="lastName-error" role="alert">El apellido es requerido</ion-text>
           }
 
           <ion-item>
-            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-icon name="mail-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-input
               type="email"
               formControlName="email"
               label="Correo electrónico"
               labelPlacement="floating"
               placeholder="correo@ejemplo.com"
+              [attr.aria-describedby]="form.get('email')?.touched && form.get('email')?.invalid ? 'email-error' : null"
+              [attr.aria-invalid]="form.get('email')?.touched && form.get('email')?.invalid"
             ></ion-input>
           </ion-item>
           @if (form.get('email')?.touched && form.get('email')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">El correo es requerido</ion-text>
+            <ion-text color="danger" class="error-text" id="email-error" role="alert">El correo es requerido</ion-text>
           }
           @if (form.get('email')?.touched && form.get('email')?.errors?.['email']) {
-            <ion-text color="danger" class="error-text">Ingresa un correo válido</ion-text>
+            <ion-text color="danger" class="error-text" id="email-error" role="alert">Ingresa un correo válido</ion-text>
           }
 
           <ion-item lines="none">
@@ -106,40 +112,44 @@ import { PhoneInputComponent } from '../../../shared/components';
           </ion-item>
 
           <ion-item>
-            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-icon name="lock-closed-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-input
               type="password"
               formControlName="password"
               label="Contraseña"
               labelPlacement="floating"
               placeholder="••••••••"
+              [attr.aria-describedby]="form.get('password')?.touched && form.get('password')?.invalid ? 'password-error' : null"
+              [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid"
             >
-              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+              <ion-input-password-toggle slot="end" aria-label="Mostrar u ocultar contraseña"></ion-input-password-toggle>
             </ion-input>
           </ion-item>
           @if (form.get('password')?.touched && form.get('password')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">La contraseña es requerida</ion-text>
+            <ion-text color="danger" class="error-text" id="password-error" role="alert">La contraseña es requerida</ion-text>
           }
           @if (form.get('password')?.touched && form.get('password')?.errors?.['minlength']) {
-            <ion-text color="danger" class="error-text">Mínimo 8 caracteres</ion-text>
+            <ion-text color="danger" class="error-text" id="password-error" role="alert">Mínimo 8 caracteres</ion-text>
           }
 
           <ion-item>
-            <ion-icon name="business-outline" slot="start"></ion-icon>
+            <ion-icon name="business-outline" slot="start" aria-hidden="true"></ion-icon>
             <ion-input
               type="text"
               formControlName="clinicName"
               label="Nombre del Consultorio"
               labelPlacement="floating"
               placeholder="Mi Consultorio Médico"
+              [attr.aria-describedby]="form.get('clinicName')?.touched && form.get('clinicName')?.invalid ? 'clinicName-error' : null"
+              [attr.aria-invalid]="form.get('clinicName')?.touched && form.get('clinicName')?.invalid"
             ></ion-input>
           </ion-item>
           @if (form.get('clinicName')?.touched && form.get('clinicName')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">El nombre del consultorio es requerido</ion-text>
+            <ion-text color="danger" class="error-text" id="clinicName-error" role="alert">El nombre del consultorio es requerido</ion-text>
           }
 
           @if (error()) {
-            <ion-text color="danger" class="error-message">
+            <ion-text color="danger" class="error-message" role="alert" aria-live="assertive">
               {{ error() }}
             </ion-text>
           }
@@ -148,9 +158,11 @@ import { PhoneInputComponent } from '../../../shared/components';
             type="submit"
             expand="block"
             [disabled]="form.invalid || isLoading()"
+            [attr.aria-busy]="isLoading()"
           >
             @if (isLoading()) {
-              <ion-spinner name="crescent"></ion-spinner>
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span class="sr-only">Creando cuenta...</span>
             } @else {
               Crear Cuenta
             }
