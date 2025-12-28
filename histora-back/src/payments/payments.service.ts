@@ -134,7 +134,7 @@ export class PaymentsService {
       sourceId: dto.cardToken,
       description: payment.description,
       metadata: {
-        paymentId: payment._id.toString(),
+        paymentId: (payment._id as Types.ObjectId).toString(),
         reference: payment.reference,
       },
     });

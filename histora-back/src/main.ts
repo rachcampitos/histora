@@ -9,9 +9,13 @@ async function bootstrap() {
   // Enable graceful shutdown
   app.enableShutdownHooks();
 
-  // Enable CORS for frontend
+  // Enable CORS for frontend - configurable via environment
+  const corsOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
+    : ['http://localhost:4200', 'http://localhost:8100'];
+
   app.enableCors({
-    origin: ['http://localhost:4200', 'http://localhost:8100'],
+    origin: corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
@@ -24,8 +28,11 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger Configuration
-  const config = new DocumentBuilder()
+  // Swagger Configuration - only enable in non-production
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  if (!isProduction) {
+    const config = new DocumentBuilder()
     .setTitle('Histora API')
     .setDescription('API para gestión de consultorios médicos - Histora SaaS')
     .setVersion('1.0')
@@ -58,19 +65,22 @@ async function bootstrap() {
     .addTag('Uploads', 'Subida de archivos e imágenes (Cloudinary)')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
-    },
-    customSiteTitle: 'Histora API Documentation',
-  });
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document, {
+      swaggerOptions: {
+        persistAuthorization: true,
+        tagsSorter: 'alpha',
+        operationsSorter: 'alpha',
+      },
+      customSiteTitle: 'Histora API Documentation',
+    });
+  }
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`Backend running on http://localhost:${port}`);
-  console.log(`Swagger docs available at http://localhost:${port}/docs`);
+  if (!isProduction) {
+    console.log(`Swagger docs available at http://localhost:${port}/docs`);
+  }
 }
 bootstrap();

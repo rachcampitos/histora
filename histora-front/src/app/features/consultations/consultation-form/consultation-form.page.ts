@@ -132,7 +132,7 @@ import { Patient } from '../../../core/models';
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="person-outline"></ion-icon>
+              <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
               Paciente
             </ion-card-title>
           </ion-card-header>
@@ -145,6 +145,9 @@ import { Patient } from '../../../core/models';
                   formControlName="patientId"
                   interface="action-sheet"
                   placeholder="Buscar paciente..."
+                  aria-required="true"
+                  [attr.aria-invalid]="form.get('patientId')?.invalid && form.get('patientId')?.touched"
+                  aria-describedby="patient-error"
                 >
                   @for (patient of patients(); track patient._id) {
                     <ion-select-option [value]="patient._id">
@@ -152,6 +155,11 @@ import { Patient } from '../../../core/models';
                     </ion-select-option>
                   }
                 </ion-select>
+                @if (form.get('patientId')?.invalid && form.get('patientId')?.touched) {
+                  <ion-note id="patient-error" color="danger" role="alert">
+                    Selecciona un paciente
+                  </ion-note>
+                }
               </ion-item>
             </ion-list>
           </ion-card-content>
@@ -161,7 +169,7 @@ import { Patient } from '../../../core/models';
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="medkit-outline"></ion-icon>
+              <ion-icon name="medkit-outline" aria-hidden="true"></ion-icon>
               Motivo de Consulta
             </ion-card-title>
           </ion-card-header>
@@ -173,7 +181,15 @@ import { Patient } from '../../../core/models';
                   labelPlacement="stacked"
                   formControlName="chiefComplaint"
                   placeholder="Ej: Dolor abdominal, fiebre..."
+                  aria-required="true"
+                  [attr.aria-invalid]="form.get('chiefComplaint')?.invalid && form.get('chiefComplaint')?.touched"
+                  aria-describedby="chief-complaint-error"
                 ></ion-input>
+                @if (form.get('chiefComplaint')?.invalid && form.get('chiefComplaint')?.touched) {
+                  <ion-note id="chief-complaint-error" color="danger" role="alert">
+                    El motivo de consulta es requerido
+                  </ion-note>
+                }
               </ion-item>
               <ion-item>
                 <ion-textarea
@@ -193,7 +209,7 @@ import { Patient } from '../../../core/models';
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="document-text-outline"></ion-icon>
+              <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
               Examen Físico
             </ion-card-title>
           </ion-card-header>
@@ -264,10 +280,10 @@ import { Patient } from '../../../core/models';
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="medkit-outline"></ion-icon>
+              <ion-icon name="medkit-outline" aria-hidden="true"></ion-icon>
               Diagnósticos
-              <ion-button fill="clear" size="small" (click)="addDiagnosis()">
-                <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+              <ion-button fill="clear" size="small" (click)="addDiagnosis()" aria-label="Agregar diagnóstico">
+                <ion-icon slot="icon-only" name="add-circle-outline" aria-hidden="true"></ion-icon>
               </ion-button>
             </ion-card-title>
           </ion-card-header>
@@ -303,8 +319,8 @@ import { Patient } from '../../../core/models';
                       formControlName="description"
                       placeholder="Descripción del diagnóstico"
                     ></ion-input>
-                    <ion-button fill="clear" slot="end" color="danger" (click)="removeDiagnosis(i)">
-                      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                    <ion-button fill="clear" slot="end" color="danger" (click)="removeDiagnosis(i)" aria-label="Eliminar diagnóstico">
+                      <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
                     </ion-button>
                   </ion-item>
                 </div>
@@ -317,7 +333,7 @@ import { Patient } from '../../../core/models';
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="document-text-outline"></ion-icon>
+              <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
               Plan de Tratamiento
             </ion-card-title>
           </ion-card-header>
@@ -341,10 +357,10 @@ import { Patient } from '../../../core/models';
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="bandage-outline"></ion-icon>
+              <ion-icon name="bandage-outline" aria-hidden="true"></ion-icon>
               Recetas
-              <ion-button fill="clear" size="small" (click)="addPrescription()">
-                <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+              <ion-button fill="clear" size="small" (click)="addPrescription()" aria-label="Agregar receta">
+                <ion-icon slot="icon-only" name="add-circle-outline" aria-hidden="true"></ion-icon>
               </ion-button>
             </ion-card-title>
           </ion-card-header>
@@ -362,8 +378,8 @@ import { Patient } from '../../../core/models';
                       formControlName="medication"
                       placeholder="Nombre del medicamento"
                     ></ion-input>
-                    <ion-button fill="clear" slot="end" color="danger" (click)="removePrescription(i)">
-                      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                    <ion-button fill="clear" slot="end" color="danger" (click)="removePrescription(i)" aria-label="Eliminar receta">
+                      <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
                     </ion-button>
                   </ion-item>
                   <ion-item>
@@ -408,10 +424,10 @@ import { Patient } from '../../../core/models';
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              <ion-icon name="flask-outline"></ion-icon>
+              <ion-icon name="flask-outline" aria-hidden="true"></ion-icon>
               Exámenes Solicitados
-              <ion-button fill="clear" size="small" (click)="addExam()">
-                <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+              <ion-button fill="clear" size="small" (click)="addExam()" aria-label="Agregar examen">
+                <ion-icon slot="icon-only" name="add-circle-outline" aria-hidden="true"></ion-icon>
               </ion-button>
             </ion-card-title>
           </ion-card-header>
@@ -429,8 +445,8 @@ import { Patient } from '../../../core/models';
                       formControlName="name"
                       placeholder="Ej: Hemograma completo"
                     ></ion-input>
-                    <ion-button fill="clear" slot="end" color="danger" (click)="removeExam(i)">
-                      <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                    <ion-button fill="clear" slot="end" color="danger" (click)="removeExam(i)" aria-label="Eliminar examen">
+                      <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
                     </ion-button>
                   </ion-item>
                   <ion-item>
@@ -495,11 +511,14 @@ import { Patient } from '../../../core/models';
           class="submit-btn"
           (click)="saveConsultation()"
           [disabled]="isSaving() || !form.valid"
+          [attr.aria-label]="isEditing() ? 'Actualizar consulta médica' : 'Guardar nueva consulta médica'"
+          [attr.aria-busy]="isSaving()"
         >
           @if (isSaving()) {
-            <ion-spinner name="crescent"></ion-spinner>
+            <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+            <span class="visually-hidden">Guardando...</span>
           } @else {
-            <ion-icon slot="start" name="save-outline"></ion-icon>
+            <ion-icon slot="start" name="save-outline" aria-hidden="true"></ion-icon>
             {{ isEditing() ? 'Actualizar Consulta' : 'Guardar Consulta' }}
           }
         </ion-button>
@@ -561,6 +580,18 @@ import { Patient } from '../../../core/models';
 
     .draft-banner ion-label {
       font-size: 14px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
   `],
 })
