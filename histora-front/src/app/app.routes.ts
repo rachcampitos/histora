@@ -21,16 +21,19 @@ export const routes: Routes = [
       },
       {
         path: 'login',
+        title: 'Iniciar Sesión',
         loadComponent: () =>
           import('./features/auth/login/login.page').then((m) => m.LoginPage),
       },
       {
         path: 'register',
+        title: 'Crear Cuenta',
         loadComponent: () =>
           import('./features/auth/register/register.page').then((m) => m.RegisterPage),
       },
       {
         path: 'forgot-password',
+        title: 'Recuperar Contraseña',
         loadComponent: () =>
           import('./features/auth/forgot-password/forgot-password.page').then(
             (m) => m.ForgotPasswordPage
@@ -46,6 +49,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
+        title: 'Dashboard',
         loadComponent: () =>
           import('./features/dashboard/dashboard.page').then((m) => m.DashboardPage),
       },
@@ -77,6 +81,7 @@ export const routes: Routes = [
       },
       {
         path: 'settings',
+        title: 'Configuración',
         loadComponent: () =>
           import('./features/settings/settings.page').then((m) => m.SettingsPage),
       },

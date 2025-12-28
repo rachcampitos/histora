@@ -118,12 +118,13 @@ const COMMON_REASONS = [
     </ion-header>
 
     <ion-content class="ion-padding">
+      <h1 class="sr-only">Nueva Cita Médica</h1>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <!-- Selección de Paciente -->
         <ion-list>
           <ion-list-header>
             <ion-label>
-              <ion-icon name="person-outline"></ion-icon>
+              <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
               Paciente
             </ion-label>
           </ion-list-header>
@@ -134,11 +135,13 @@ const COMMON_REASONS = [
               [debounce]="300"
               (ionInput)="onPatientSearch($event)"
               class="patient-search"
+              aria-label="Buscar paciente por nombre"
+              [attr.aria-describedby]="form.get('patientId')?.touched && form.get('patientId')?.invalid ? 'patientId-error' : null"
             ></ion-searchbar>
 
             @if (isSearchingPatients()) {
-              <div class="search-loading">
-                <ion-spinner name="crescent"></ion-spinner>
+              <div class="search-loading" role="status" aria-live="polite">
+                <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
                 <span>Buscando...</span>
               </div>
             }
@@ -169,17 +172,17 @@ const COMMON_REASONS = [
           } @else {
             <ion-item>
               <ion-chip color="primary" class="selected-patient">
-                <ion-icon name="person-outline"></ion-icon>
+                <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
                 <ion-label>{{ selectedPatient()!.firstName }} {{ selectedPatient()!.lastName }}</ion-label>
               </ion-chip>
-              <ion-button slot="end" fill="clear" color="medium" (click)="clearPatient()">
-                <ion-icon name="close-circle"></ion-icon>
+              <ion-button slot="end" fill="clear" color="medium" (click)="clearPatient()" aria-label="Quitar paciente seleccionado">
+                <ion-icon name="close-circle" aria-hidden="true"></ion-icon>
               </ion-button>
             </ion-item>
           }
 
           @if (form.get('patientId')?.touched && form.get('patientId')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">
+            <ion-text color="danger" class="error-text" id="patientId-error" role="alert">
               Debe seleccionar un paciente
             </ion-text>
           }
@@ -189,15 +192,15 @@ const COMMON_REASONS = [
         <ion-list>
           <ion-list-header>
             <ion-label>
-              <ion-icon name="medkit-outline"></ion-icon>
+              <ion-icon name="medkit-outline" aria-hidden="true"></ion-icon>
               Doctor
             </ion-label>
           </ion-list-header>
 
           @if (isLoadingDoctors()) {
             <ion-item>
-              <ion-spinner name="crescent"></ion-spinner>
-              <ion-label>Cargando doctores...</ion-label>
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <ion-label role="status" aria-live="polite">Cargando doctores...</ion-label>
             </ion-item>
           } @else if (doctors().length === 0) {
             <ion-item>
@@ -211,7 +214,7 @@ const COMMON_REASONS = [
                 <h2>{{ doctors()[0].firstName }} {{ doctors()[0].lastName }}</h2>
                 <p>{{ doctors()[0].specialty }}</p>
               </ion-label>
-              <ion-icon name="checkmark-circle" color="success" slot="end"></ion-icon>
+              <ion-icon name="checkmark-circle" color="success" slot="end" aria-label="Doctor seleccionado automáticamente"></ion-icon>
             </ion-item>
           } @else {
             <ion-item>
@@ -236,7 +239,7 @@ const COMMON_REASONS = [
         <ion-list>
           <ion-list-header>
             <ion-label>
-              <ion-icon name="calendar-outline"></ion-icon>
+              <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
               Fecha y Hora
             </ion-label>
           </ion-list-header>
@@ -249,11 +252,14 @@ const COMMON_REASONS = [
               labelPlacement="floating"
               [min]="minDate"
               (ionChange)="onDateChange()"
+              [attr.aria-describedby]="form.get('scheduledDate')?.touched && form.get('scheduledDate')?.invalid ? 'scheduledDate-error' : null"
+              [attr.aria-invalid]="form.get('scheduledDate')?.touched && form.get('scheduledDate')?.invalid"
+              [attr.aria-required]="true"
             ></ion-input>
           </ion-item>
 
           @if (form.get('scheduledDate')?.touched && form.get('scheduledDate')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">
+            <ion-text color="danger" class="error-text" id="scheduledDate-error" role="alert">
               Debe seleccionar una fecha
             </ion-text>
           }
@@ -276,20 +282,23 @@ const COMMON_REASONS = [
 
           @if (isLoadingSlots()) {
             <ion-item>
-              <ion-spinner name="crescent"></ion-spinner>
-              <ion-label>Buscando horarios disponibles...</ion-label>
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <ion-label role="status" aria-live="polite">Buscando horarios disponibles...</ion-label>
             </ion-item>
           } @else if (availableSlots().length > 0) {
-            <div class="time-slots">
-              <ion-note class="slots-label">Horarios disponibles:</ion-note>
-              <div class="slots-grid">
+            <div class="time-slots" role="group" aria-label="Seleccionar horario de la cita">
+              <ion-note class="slots-label" id="slots-label">Horarios disponibles:</ion-note>
+              <div class="slots-grid" role="listbox" aria-labelledby="slots-label">
                 @for (slot of availableSlots(); track slot.startTime) {
                   <ion-chip
                     [color]="form.get('startTime')?.value === slot.startTime ? 'primary' : 'medium'"
                     [outline]="form.get('startTime')?.value !== slot.startTime"
                     (click)="selectTimeSlot(slot)"
+                    role="option"
+                    [attr.aria-selected]="form.get('startTime')?.value === slot.startTime"
+                    [attr.aria-label]="'Horario ' + slot.startTime + ' a ' + slot.endTime"
                   >
-                    <ion-icon name="time-outline"></ion-icon>
+                    <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
                     <ion-label>{{ slot.startTime }}</ion-label>
                   </ion-chip>
                 }
@@ -304,7 +313,7 @@ const COMMON_REASONS = [
           }
 
           @if (form.get('startTime')?.touched && form.get('startTime')?.errors?.['required']) {
-            <ion-text color="danger" class="error-text">
+            <ion-text color="danger" class="error-text" id="startTime-error" role="alert">
               Debe seleccionar un horario
             </ion-text>
           }
@@ -394,9 +403,11 @@ const COMMON_REASONS = [
             type="submit"
             expand="block"
             [disabled]="form.invalid || isSubmitting()"
+            [attr.aria-busy]="isSubmitting()"
           >
             @if (isSubmitting()) {
-              <ion-spinner name="crescent"></ion-spinner>
+              <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+              <span class="sr-only">Agendando cita...</span>
             } @else {
               Agendar Cita
             }
