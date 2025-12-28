@@ -119,7 +119,7 @@ export class NotificationsService {
 
         case NotificationChannel.IN_APP:
           // In-app notifications are stored in DB, no external sending
-          result = { success: true, messageId: notification._id.toString() };
+          result = { success: true, messageId: (notification._id as Types.ObjectId).toString() };
           break;
 
         default:

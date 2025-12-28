@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Query,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -26,6 +27,13 @@ import {
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
+
+  private requireClinicId(user: CurrentUserData): string {
+    if (!user.clinicId) {
+      throw new ForbiddenException('User must belong to a clinic to upload files');
+    }
+    return user.clinicId;
+  }
 
   @Post('profile-photo')
   @ApiOperation({ summary: 'Upload own profile photo' })
@@ -104,9 +112,10 @@ export class UploadsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: UploadProfilePhotoDto,
   ): Promise<FileResponseDto> {
+    const clinicId = this.requireClinicId(user);
     const result = await this.uploadsService.uploadClinicLogo(
       dto,
-      user.clinicId,
+      clinicId,
       user.userId
     );
 
@@ -125,10 +134,11 @@ export class UploadsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: UploadDocumentDto,
   ): Promise<FileResponseDto> {
+    const clinicId = this.requireClinicId(user);
     const result = await this.uploadsService.uploadDocument(
       dto,
       user.userId,
-      user.clinicId
+      clinicId
     );
 
     return {

@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -31,6 +32,13 @@ import { PaymentStatus, PaymentMethod, PaymentType } from './schema/payment.sche
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+  private requireClinicId(user: CurrentUserData): string {
+    if (!user.clinicId) {
+      throw new ForbiddenException('User must belong to a clinic to access payments');
+    }
+    return user.clinicId;
+  }
+
   @Post()
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
   @ApiOperation({ summary: 'Create a new payment intent' })
@@ -38,7 +46,8 @@ export class PaymentsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: CreatePaymentDto,
   ) {
-    return this.paymentsService.createPayment(dto, user.clinicId, user.userId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.createPayment(dto, clinicId, user.userId);
   }
 
   @Get()
@@ -61,7 +70,8 @@ export class PaymentsController {
     @Query('limit') limit?: number,
     @Query('offset') offset?: number,
   ) {
-    return this.paymentsService.getPayments(user.clinicId, {
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.getPayments(clinicId, {
       status,
       method,
       type,
@@ -82,8 +92,9 @@ export class PaymentsController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
+    const clinicId = this.requireClinicId(user);
     return this.paymentsService.getPaymentsSummary(
-      user.clinicId,
+      clinicId,
       startDate ? new Date(startDate) : undefined,
       endDate ? new Date(endDate) : undefined,
     );
@@ -114,7 +125,8 @@ export class PaymentsController {
     @Param('id') paymentId: string,
     @CurrentUser() user: CurrentUserData,
   ) {
-    return this.paymentsService.findPayment(paymentId, user.clinicId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.findPayment(paymentId, clinicId);
   }
 
   @Get('reference/:reference')
@@ -131,7 +143,8 @@ export class PaymentsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: ProcessYapePaymentDto,
   ) {
-    return this.paymentsService.processYapePayment(dto, user.clinicId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.processYapePayment(dto, clinicId);
   }
 
   @Post('card/process')
@@ -141,7 +154,8 @@ export class PaymentsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: ProcessCardPaymentDto,
   ) {
-    return this.paymentsService.processCardPayment(dto, user.clinicId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.processCardPayment(dto, clinicId);
   }
 
   @Post('plin/confirm')
@@ -151,7 +165,8 @@ export class PaymentsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: ConfirmPlinPaymentDto,
   ) {
-    return this.paymentsService.confirmPlinPayment(dto, user.clinicId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.confirmPlinPayment(dto, clinicId);
   }
 
   @Patch(':id/complete')
@@ -161,7 +176,8 @@ export class PaymentsController {
     @Param('id') paymentId: string,
     @CurrentUser() user: CurrentUserData,
   ) {
-    return this.paymentsService.completePayment(paymentId, user.clinicId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.completePayment(paymentId, clinicId);
   }
 
   @Patch(':id/cancel')
@@ -171,7 +187,8 @@ export class PaymentsController {
     @Param('id') paymentId: string,
     @CurrentUser() user: CurrentUserData,
   ) {
-    return this.paymentsService.cancelPayment(paymentId, user.clinicId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.cancelPayment(paymentId, clinicId);
   }
 
   @Post('refund')
@@ -181,6 +198,7 @@ export class PaymentsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: RefundPaymentDto,
   ) {
-    return this.paymentsService.refundPayment(dto, user.clinicId);
+    const clinicId = this.requireClinicId(user);
+    return this.paymentsService.refundPayment(dto, clinicId);
   }
 }
