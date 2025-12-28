@@ -84,4 +84,4 @@ export class NotificationPreferences {
 
 export const NotificationPreferencesSchema = SchemaFactory.createForClass(NotificationPreferences);
 
-NotificationPreferencesSchema.index({ userId: 1 }, { unique: true });
+// userId index is automatically created via unique: true in @Prop decorator
