@@ -1,0 +1,199 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Panel de Administración'" [items]="[]" [active_item]="'Dashboard'"></app-breadcrumb>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-progress-spinner color="primary" mode="indeterminate" [diameter]="50"></mat-progress-spinner>
+      </div>
+    } @else {
+      <!-- KPI Cards -->
+      <div class="row">
+        @for (kpi of kpiCards; track kpi.title) {
+          <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card kpi-card" [ngClass]="'kpi-' + kpi.color">
+              <div class="card-body">
+                <div class="kpi-content">
+                  <div class="kpi-info">
+                    <span class="kpi-title">{{ kpi.title }}</span>
+                    <h3 class="kpi-value">{{ kpi.value }}</h3>
+                    @if (kpi.change) {
+                      <span class="kpi-change">
+                        <mat-icon class="change-icon">trending_up</mat-icon>
+                        +{{ kpi.change }}% {{ kpi.changeLabel }}
+                      </span>
+                    }
+                  </div>
+                  <div class="kpi-icon">
+                    <mat-icon>{{ kpi.icon }}</mat-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Charts Row -->
+      <div class="row">
+        <!-- Revenue Chart -->
+        <div class="col-xl-8 col-lg-12">
+          <div class="card">
+            <div class="header">
+              <h2>Ingresos y Suscripciones</h2>
+            </div>
+            <div class="body">
+              <apx-chart
+                [series]="revenueChartOptions.series"
+                [chart]="revenueChartOptions.chart"
+                [xaxis]="revenueChartOptions.xaxis"
+                [stroke]="revenueChartOptions.stroke"
+                [dataLabels]="revenueChartOptions.dataLabels"
+                [yaxis]="revenueChartOptions.yaxis"
+                [legend]="revenueChartOptions.legend"
+                [fill]="revenueChartOptions.fill"
+                [tooltip]="revenueChartOptions.tooltip"
+                [colors]="revenueChartOptions.colors"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clinics by Plan Chart -->
+        <div class="col-xl-4 col-lg-12">
+          <div class="card">
+            <div class="header">
+              <h2>Clínicas por Plan</h2>
+            </div>
+            <div class="body">
+              <apx-chart
+                [series]="clinicsChartOptions.series"
+                [chart]="clinicsChartOptions.chart"
+                [labels]="clinicsChartOptions.labels"
+                [colors]="clinicsChartOptions.colors"
+                [legend]="clinicsChartOptions.legend"
+                [plotOptions]="clinicsChartOptions.plotOptions"
+                [dataLabels]="clinicsChartOptions.dataLabels"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Clinics Table -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="header d-flex justify-content-between align-items-center">
+              <h2>Clínicas Recientes</h2>
+              <button mat-flat-button color="primary" routerLink="/admin/clinics">
+                <mat-icon>visibility</mat-icon>
+                Ver Todas
+              </button>
+            </div>
+            <div class="body">
+              <div class="table-responsive">
+                <table mat-table [dataSource]="recentClinics" class="mat-cell advance-table">
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Clínica</th>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="clinic-name">
+                        <mat-icon class="clinic-icon">business</mat-icon>
+                        {{ row.name }}
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <!-- Owner Column -->
+                  <ng-container matColumnDef="owner">
+                    <th mat-header-cell *matHeaderCellDef>Propietario</th>
+                    <td mat-cell *matCellDef="let row">{{ row.owner }}</td>
+                  </ng-container>
+
+                  <!-- Plan Column -->
+                  <ng-container matColumnDef="plan">
+                    <th mat-header-cell *matHeaderCellDef>Plan</th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="badge badge-outline-primary">{{ row.plan }}</span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Estado</th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="badge" [ngClass]="getStatusClass(row.status)">
+                        {{ getStatusLabel(row.status) }}
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Created At Column -->
+                  <ng-container matColumnDef="createdAt">
+                    <th mat-header-cell *matHeaderCellDef>Registrado</th>
+                    <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'dd/MM/yyyy' }}</td>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                    <td mat-cell *matCellDef="let row">
+                      <button mat-icon-button color="primary" matTooltip="Ver detalles">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                      <button mat-icon-button color="accent" matTooltip="Editar">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="recentClinicsColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: recentClinicsColumns;"></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card quick-action-card" routerLink="/admin/clinics">
+            <div class="card-body">
+              <mat-icon class="action-icon">add_business</mat-icon>
+              <span class="action-text">Gestionar Clínicas</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card quick-action-card" routerLink="/admin/users">
+            <div class="card-body">
+              <mat-icon class="action-icon">group</mat-icon>
+              <span class="action-text">Gestionar Usuarios</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card quick-action-card" routerLink="/admin/subscriptions">
+            <div class="card-body">
+              <mat-icon class="action-icon">card_membership</mat-icon>
+              <span class="action-text">Suscripciones</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card quick-action-card" routerLink="/admin/reports">
+            <div class="card-body">
+              <mat-icon class="action-icon">assessment</mat-icon>
+              <span class="action-text">Reportes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

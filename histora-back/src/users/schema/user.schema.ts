@@ -68,6 +68,12 @@ export class User {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  @Prop()
+  avatar?: string;
+
+  @Prop()
+  avatarPublicId?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,0 +1,489 @@
+{
+  "MENUITEMS": {
+    "MAIN": {
+      "TEXT": "Main"
+    },
+    "ADMIN": {
+      "TEXT": "Administration",
+      "DASHBOARD": "Dashboard",
+      "CLINICS": "Clinics",
+      "USERS": "Users",
+      "SUBSCRIPTIONS": "Subscriptions",
+      "REPORTS": "Reports",
+      "SETTINGS": "Settings"
+    },
+    "DASHBOARD": {
+      "TEXT": "Dashboard",
+      "LIST": {
+        "DASHBOARD1": "Dashboard 1",
+        "DASHBOARD2": "Dashboard 2",
+        "DOCTOR-DASHBOARD": "Doctor Dashboard",
+        "PATIENT-DASHBOARD": "Patient Dashboard"
+      }
+    },
+    "APPOINTMENTS": {
+      "TEXT": "Appointments",
+      "LIST": {
+        "APPOINTMENT-CALENDAR": "Appointment Calendar",
+        "VIEW-APPOINTMENT": "View Appointment",
+        "BOOK-APPOINTMENT": "Book Appointment",
+        "EDIT-APPOINTMENT": "Edit Appointment"
+      }
+    },
+    "DOCTORS": {
+      "TEXT": "Doctors",
+      "LIST": {
+        "ALL-DOCTOR": "All Doctors",
+        "ADD-DOCTOR": "Add Doctor",
+        "EDIT-DOCTOR": "Edit Doctor",
+        "PROFILE": "Doctor Profile"
+      }
+    },
+    "PATIENTS": {
+      "TEXT": "Patients",
+      "LIST": {
+        "ALL-PATIENT": "All Patients",
+        "ADD-PATIENT": "Add Patient",
+        "EDIT-PATIENT": "Edit Patient",
+        "PATIENT-RECORDS": "Patient Records",
+        "PROFILE": "Patient Profile"
+      }
+    },
+    "DOCTOR": {
+      "DASHBOARD": "Dashboard",
+      "APPOINTMENTS": "Appointments",
+      "DOCTORS": "Doctors",
+      "PATIENTS": "Patients",
+      "SETTINGS": "Settings"
+    },
+    "PATIENT": {
+      "TEXT": "Patient",
+      "DASHBOARD": "Dashboard",
+      "APPOINTMENTS": {
+        "TEXT": "Appointments",
+        "LIST": {
+          "BOOK-APPOINTMENT": "Book Appointment",
+          "TODAY": "Today's Appointments",
+          "UPCOMING": "Upcoming Appointments",
+          "PAST": "Past Appointments"
+        }
+      },
+      "PRESCRIPTIONS": "Prescriptions",
+      "MEDICAL-RECORD": "Medical Record",
+      "BILLING": "Billing",
+      "SETTINGS": "Settings"
+    },
+    "CALENDAR": {
+      "TEXT": "Calendar"
+    }
+  },
+  "COMMON": {
+    "ACTIONS": {
+      "ADD": "Add",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "SEARCH": "Search",
+      "FILTER": "Filter",
+      "EXPORT": "Export",
+      "IMPORT": "Import",
+      "REFRESH": "Refresh",
+      "VIEW": "View",
+      "VIEW_ALL": "View All",
+      "CLOSE": "Close",
+      "CONFIRM": "Confirm",
+      "BACK": "Back",
+      "NEXT": "Next",
+      "PREVIOUS": "Previous",
+      "SUBMIT": "Submit",
+      "RESET": "Reset",
+      "DOWNLOAD": "Download",
+      "UPLOAD": "Upload",
+      "PRINT": "Print",
+      "SAVE_CHANGES": "Save Changes",
+      "READ_MORE": "Read More"
+    },
+    "STATUS": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "PENDING": "Pending",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "SCHEDULED": "Scheduled",
+      "CONFIRMED": "Confirmed",
+      "IN_PROGRESS": "In Progress",
+      "DELAYED": "Delayed",
+      "URGENT": "Urgent"
+    },
+    "TIME": {
+      "TODAY": "Today",
+      "YESTERDAY": "Yesterday",
+      "TOMORROW": "Tomorrow",
+      "THIS_WEEK": "This Week",
+      "THIS_MONTH": "This Month",
+      "THIS_YEAR": "This Year",
+      "MINS_AGO": "{{count}} mins ago",
+      "HOURS_AGO": "{{count}} hours ago",
+      "DAYS_AGO": "{{count}} days ago"
+    },
+    "MESSAGES": {
+      "SUCCESS": "Operation successful",
+      "ERROR": "An error occurred",
+      "CONFIRM_DELETE": "Are you sure you want to delete?",
+      "NO_DATA": "No data available",
+      "LOADING": "Loading..."
+    }
+  },
+  "DASHBOARD": {
+    "TITLE": "Dashboard",
+    "WELCOME": "Welcome",
+    "WELCOME_BACK": "Welcome back",
+    "SURGERIES": "Surgeries",
+    "ROOM_VISIT": "Room Visits",
+    "DOCTOR_DASHBOARD": "Doctor Dashboard",
+    "PATIENT_DASHBOARD": "Patient Dashboard",
+    "KPI": {
+      "APPOINTMENTS": "Appointments",
+      "TODAYS_SUMMARY": "Today's Summary",
+      "SCHEDULED": "Scheduled",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "PERFORMANCE": "Performance",
+      "DAILY_METRICS": "Daily Metrics",
+      "AVG_CONSULTATION": "Avg. Consultation",
+      "PATIENTS_PER_DAY": "Patients/Day",
+      "TODAYS_REVENUE": "Today's Revenue",
+      "WALK_INS": "Walk-ins",
+      "FOLLOW_UPS": "Follow-ups",
+      "ONLINE": "Online"
+    },
+    "WIDGETS": {
+      "PATIENTS_SURVEY": "Patients Survey",
+      "TASK_HOURS": "Task Hours",
+      "APPOINTMENTS": "Appointments",
+      "EMERGENCY_LIST": "Emergency List",
+      "TODAYS_APPOINTMENTS": "Today's Appointments",
+      "APPOINTMENT_REVIEW": "Appointment Review",
+      "TODO_LIST": "Todo List",
+      "DOCTOR_STATUS": "Doctor Status",
+      "NUMBER_OF_PATIENTS": "Number of Patients",
+      "UPCOMING_SURGERIES": "Upcoming Surgeries",
+      "PATIENT_FEEDBACK": "Patient Feedback",
+      "PATIENT_LIMIT": "Patients Limit",
+      "PATIENTS": "Patients",
+      "SURGERY": "Surgery",
+      "CONSULTATION": "Consultation",
+      "APPOINTMENT": "Appointment"
+    },
+    "CHART": {
+      "FACE_TO_FACE": "Face To Face",
+      "E_CONSULT": "E-Consult",
+      "AVAILABLE": "Available",
+      "MODIFY_AVAILABILITY": "Modify Availability"
+    },
+    "TABLE": {
+      "PATIENT": "Patient",
+      "SURGERY_TYPE": "Surgery Type",
+      "DATE_TIME": "Date & Time",
+      "DOCTOR": "Doctor",
+      "STATUS": "Status"
+    }
+  },
+  "PATIENTS": {
+    "TITLE": "Patients",
+    "ALL_PATIENTS": "All Patients",
+    "ADD_PATIENT": "Add Patient",
+    "EDIT_PATIENT": "Edit Patient",
+    "PATIENT_DETAILS": "Patient Details",
+    "PATIENT_LIST": "Patient List",
+    "SEARCH_PLACEHOLDER": "Search patients...",
+    "PATIENT_ID": "Patient ID",
+    "BLOOD_GROUP": "Blood Group",
+    "REPORTS": "Reports",
+    "TABLE": {
+      "NAME": "Name",
+      "GENDER": "Gender",
+      "AGE": "Age",
+      "YEARS": "years",
+      "PHONE": "Phone",
+      "EMAIL": "Email",
+      "ADDRESS": "Address",
+      "DATE_OF_BIRTH": "Date of Birth",
+      "BLOOD_TYPE": "Blood Type",
+      "LAST_VISIT": "Last Visit",
+      "NEXT_APPOINTMENT": "Next Appointment",
+      "ACTIONS": "Actions"
+    },
+    "FORM": {
+      "PERSONAL_INFO": "Personal Information",
+      "FIRST_NAME": "First Name",
+      "LAST_NAME": "Last Name",
+      "DATE_OF_BIRTH": "Date of Birth",
+      "GENDER": "Gender",
+      "MALE": "Male",
+      "FEMALE": "Female",
+      "OTHER": "Other",
+      "CONTACT_INFO": "Contact Information",
+      "PHONE": "Phone",
+      "EMAIL": "Email",
+      "ADDRESS": "Address",
+      "CITY": "City",
+      "STATE": "State",
+      "COUNTRY": "Country",
+      "POSTAL_CODE": "Postal Code",
+      "MEDICAL_INFO": "Medical Information",
+      "BLOOD_TYPE": "Blood Type",
+      "ALLERGIES": "Allergies",
+      "MEDICAL_NOTES": "Medical Notes",
+      "EMERGENCY_CONTACT": "Emergency Contact",
+      "EMERGENCY_NAME": "Contact Name",
+      "EMERGENCY_PHONE": "Emergency Phone",
+      "EMERGENCY_RELATIONSHIP": "Relationship",
+      "DOCUMENT_TYPE": "Document Type",
+      "DOCUMENT_NUMBER": "Document Number",
+      "OCCUPATION": "Occupation",
+      "CHRONIC_CONDITIONS": "Chronic Conditions",
+      "CURRENT_MEDICATIONS": "Current Medications",
+      "INSURANCE_PROVIDER": "Insurance Provider",
+      "INSURANCE_NUMBER": "Insurance Number",
+      "COMMA_SEPARATED": "Comma separated"
+    },
+    "NO_PATIENTS": "No patients registered",
+    "DELETE_CONFIRM_MESSAGE": "Are you sure you want to delete this patient? This action cannot be undone.",
+    "PROFILE": {
+      "MEDICAL_HISTORY": "Medical History",
+      "APPOINTMENTS": "Appointments",
+      "PRESCRIPTIONS": "Prescriptions",
+      "LAB_RESULTS": "Lab Results",
+      "DOCUMENTS": "Documents",
+      "NOTES": "Notes"
+    }
+  },
+  "APPOINTMENTS": {
+    "TITLE": "Appointments",
+    "ALL_APPOINTMENTS": "All Appointments",
+    "NEW_APPOINTMENT": "New Appointment",
+    "EDIT_APPOINTMENT": "Edit Appointment",
+    "APPOINTMENT_DETAILS": "Appointment Details",
+    "BOOK_APPOINTMENT": "Book Appointment",
+    "UPCOMING": "Upcoming",
+    "PAST": "Past",
+    "TODAY": "Today",
+    "CALENDAR_VIEW": "Calendar View",
+    "LIST_VIEW": "List View",
+    "NO_APPOINTMENTS": "No appointments scheduled",
+    "TABLE": {
+      "PATIENT": "Patient",
+      "DOCTOR": "Doctor",
+      "DATE": "Date",
+      "TIME": "Time",
+      "TYPE": "Type",
+      "STATUS": "Status",
+      "REASON": "Reason",
+      "NOTES": "Notes",
+      "ACTIONS": "Actions"
+    },
+    "FORM": {
+      "SELECT_PATIENT": "Select Patient",
+      "SELECT_DOCTOR": "Select Doctor",
+      "SELECT_DATE": "Select Date",
+      "SELECT_TIME": "Select Time",
+      "START_TIME": "Start Time",
+      "END_TIME": "End Time",
+      "APPOINTMENT_TYPE": "Appointment Type",
+      "CONSULTATION": "Consultation",
+      "FOLLOW_UP": "Follow-up",
+      "CHECK_UP": "Check-up",
+      "EMERGENCY": "Emergency",
+      "REASON": "Reason for Visit",
+      "NOTES": "Additional Notes",
+      "DURATION": "Duration",
+      "MINUTES": "minutes"
+    },
+    "DELETE_CONFIRM_MESSAGE": "Are you sure you want to delete this appointment? This action cannot be undone.",
+    "STATUS": {
+      "SCHEDULED": "Scheduled",
+      "CONFIRMED": "Confirmed",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "NO_SHOW": "No Show",
+      "RESCHEDULED": "Rescheduled"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "PROFILE": {
+      "TITLE": "Profile",
+      "PERSONAL_INFO": "Personal Information",
+      "CHANGE_PASSWORD": "Change Password",
+      "CURRENT_PASSWORD": "Current Password",
+      "NEW_PASSWORD": "New Password",
+      "CONFIRM_PASSWORD": "Confirm Password",
+      "UPDATE_PROFILE": "Update Profile",
+      "PROFILE_PHOTO": "Profile Photo",
+      "UPLOAD_PHOTO": "Upload Photo",
+      "USERNAME": "Username",
+      "FIRST_NAME": "First Name",
+      "LAST_NAME": "Last Name",
+      "CITY": "City",
+      "EMAIL": "Email",
+      "COUNTRY": "Country",
+      "ADDRESS": "Address"
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Notifications",
+      "EMAIL_NOTIFICATIONS": "Email Notifications",
+      "SMS_NOTIFICATIONS": "SMS Notifications",
+      "PUSH_NOTIFICATIONS": "Push Notifications",
+      "APPOINTMENT_REMINDERS": "Appointment Reminders",
+      "MARKETING_EMAILS": "Marketing Emails"
+    },
+    "PREFERENCES": {
+      "TITLE": "Preferences",
+      "LANGUAGE": "Language",
+      "TIMEZONE": "Timezone",
+      "DATE_FORMAT": "Date Format",
+      "TIME_FORMAT": "Time Format",
+      "THEME": "Theme",
+      "LIGHT": "Light",
+      "DARK": "Dark"
+    },
+    "SECURITY": {
+      "TITLE": "Security",
+      "TWO_FACTOR": "Two-Factor Authentication",
+      "LOGIN_HISTORY": "Login History",
+      "ACTIVE_SESSIONS": "Active Sessions"
+    },
+    "CLINIC": {
+      "TITLE": "Clinic Settings",
+      "CLINIC_INFO": "Clinic Information",
+      "WORKING_HOURS": "Working Hours",
+      "HOLIDAYS": "Holidays",
+      "SERVICES": "Services"
+    }
+  },
+  "CALENDAR": {
+    "TITLE": "Calendar",
+    "TODAY": "Today",
+    "MONTH": "Month",
+    "WEEK": "Week",
+    "DAY": "Day",
+    "LIST": "List",
+    "NEW_EVENT": "New Event",
+    "EDIT_EVENT": "Edit Event",
+    "DELETE_EVENT": "Delete Event",
+    "EVENT_TITLE": "Event Title",
+    "START_DATE": "Start Date",
+    "END_DATE": "End Date",
+    "ALL_DAY": "All Day",
+    "REPEAT": "Repeat",
+    "REMINDER": "Reminder"
+  },
+  "AUTH": {
+    "SIGNIN": {
+      "TITLE": "Sign In",
+      "SUBTITLE": "Enter your credentials to access",
+      "EMAIL": "Email",
+      "PASSWORD": "Password",
+      "REMEMBER_ME": "Remember me",
+      "FORGOT_PASSWORD": "Forgot password?",
+      "LOGIN": "Login",
+      "NO_ACCOUNT": "Don't have an account?",
+      "REGISTER": "Register",
+      "OR_LOGIN_WITH": "Or login with",
+      "INVALID_CREDENTIALS": "Invalid credentials"
+    },
+    "SIGNUP": {
+      "TITLE": "Create Account",
+      "SUBTITLE": "Register to get started",
+      "FIRST_NAME": "First Name",
+      "LAST_NAME": "Last Name",
+      "EMAIL": "Email",
+      "PASSWORD": "Password",
+      "CONFIRM_PASSWORD": "Confirm Password",
+      "ACCEPT_TERMS": "I accept the terms and conditions",
+      "CREATE_ACCOUNT": "Create Account",
+      "HAVE_ACCOUNT": "Already have an account?",
+      "LOGIN": "Login"
+    },
+    "FORGOT_PASSWORD": {
+      "TITLE": "Recover Password",
+      "SUBTITLE": "Enter your email to receive instructions",
+      "EMAIL": "Email",
+      "SEND": "Send Instructions",
+      "BACK_TO_LOGIN": "Back to Login"
+    },
+    "ERRORS": {
+      "EMAIL_REQUIRED": "Email is required",
+      "EMAIL_INVALID": "Enter a valid email",
+      "PASSWORD_REQUIRED": "Password is required",
+      "PASSWORD_MIN_LENGTH": "Password must be at least 8 characters"
+    }
+  },
+  "CLINICAL_HISTORY": {
+    "TITLE": "Clinical History",
+    "CONSULTATIONS": "Consultations",
+    "DIAGNOSES": "Diagnoses",
+    "TREATMENTS": "Treatments",
+    "PRESCRIPTIONS": "Prescriptions",
+    "LAB_RESULTS": "Lab Results",
+    "VITAL_SIGNS": "Vital Signs",
+    "ALLERGIES": "Allergies",
+    "FAMILY_HISTORY": "Family History",
+    "SURGICAL_HISTORY": "Surgical History"
+  },
+  "PRESCRIPTIONS": {
+    "TITLE": "Prescriptions",
+    "ALL_PRESCRIPTIONS": "All Prescriptions",
+    "NEW_PRESCRIPTION": "New Prescription",
+    "MEDICATION": "Medication",
+    "DOSAGE": "Dosage",
+    "FREQUENCY": "Frequency",
+    "DURATION": "Duration",
+    "INSTRUCTIONS": "Instructions"
+  },
+  "BILLING": {
+    "TITLE": "Billing",
+    "ALL_INVOICES": "All Invoices",
+    "NEW_INVOICE": "New Invoice",
+    "INVOICE_NUMBER": "Invoice Number",
+    "AMOUNT": "Amount",
+    "STATUS": "Status",
+    "PAID": "Paid",
+    "PENDING": "Pending",
+    "DUE_DATE": "Due Date"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "MARK_ALL_READ": "Mark all as read",
+    "VIEW_ALL": "View all",
+    "NO_NOTIFICATIONS": "No notifications",
+    "NEW_APPOINTMENT": "New appointment scheduled",
+    "APPOINTMENT_REMINDER": "Appointment reminder",
+    "APPOINTMENT_CANCELLED": "Appointment cancelled"
+  },
+  "HEADER": {
+    "SEARCH_PLACEHOLDER": "Search...",
+    "NOTIFICATIONS": "Notifications",
+    "MESSAGES": "Messages",
+    "PROFILE": "Profile",
+    "SETTINGS": "Settings",
+    "LOGOUT": "Logout"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "© {{year}} Histora. All rights reserved.",
+    "PRIVACY_POLICY": "Privacy Policy",
+    "TERMS_OF_SERVICE": "Terms of Service"
+  },
+  "VALIDATION": {
+    "REQUIRED": "This field is required",
+    "EMAIL": "Enter a valid email",
+    "MIN_LENGTH": "Minimum {{min}} characters",
+    "MAX_LENGTH": "Maximum {{max}} characters",
+    "PATTERN": "Invalid format",
+    "PHONE": "Enter a valid phone number",
+    "DATE": "Enter a valid date"
+  }
+}

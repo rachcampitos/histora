@@ -17,75 +17,64 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "outputPath": {
+              "base": "dist/histora-front"
+            },
+            "index": "src/index.html",
+            "polyfills": ["@angular/localize/init", "zone.js"],
             "tsConfig": "tsconfig.app.json",
+            "allowedCommonJsDependencies": [
+              "apexcharts",
+              "xlsx",
+              "sweetalert2",
+              "moment"
+            ],
             "inlineStyleLanguage": "scss",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+              "src/favicon.ico",
+              "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              {
-                "input": "node_modules/@ionic/angular/css/core.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/normalize.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/structure.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/typography.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/display.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/padding.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/float-elements.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/text-alignment.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/text-transformation.css"
-              },
-              {
-                "input": "node_modules/@ionic/angular/css/flex-utils.css"
-              },
-              {
-                "input": "src/theme/variables.css"
-              }
-            ]
+              "@angular/material/prebuilt-themes/azure-blue.css",
+              "./node_modules/@swimlane/ngx-datatable/index.css",
+              "./node_modules/@swimlane/ngx-datatable/themes/material.css",
+              "./node_modules/@swimlane/ngx-datatable/assets/icons.css",
+              "src/assets/scss/style.scss",
+              "src/styles.scss"
+            ],
+            "scripts": [
+              "./node_modules/moment/min/moment.min.js",
+              "./node_modules/apexcharts/dist/apexcharts.min.js"
+            ],
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2MB",
-                  "maximumError": "5MB"
+                  "maximumWarning": "4mb",
+                  "maximumError": "6mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kB",
-                  "maximumError": "20kB"
+                  "maximumWarning": "10kb",
+                  "maximumError": "20kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
@@ -103,66 +92,65 @@
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular/build:extract-i18n"
+          "builder": "@angular/build:extract-i18n",
+          "options": {
+            "buildTarget": "histora-front:build"
+          }
         },
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+              "src/favicon.ico",
+              "src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
-            ]
+            ],
+            "scripts": []
           }
         },
-        "ionic-cordova-serve": {
-          "builder": "@ionic/angular-toolkit:cordova-serve",
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "cordovaBuildTarget": "histora-front:ionic-cordova-build",
-            "devServerTarget": "histora-front:serve"
-          },
-          "configurations": {
-            "production": {
-              "cordovaBuildTarget": "histora-front:ionic-cordova-build:production",
-              "devServerTarget": "histora-front:serve:production"
-            }
-          }
-        },
-        "ionic-cordova-build": {
-          "builder": "@ionic/angular-toolkit:cordova-build",
-          "options": {
-            "browserTarget": "histora-front:build"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "histora-front:build:production"
-            }
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@ionic/angular-toolkit"
-    ]
+    "schematicCollections": ["@angular-eslint/schematics"],
+    "analytics": false
   },
   "schematics": {
-    "@ionic/angular-toolkit:component": {
-      "styleext": "scss"
+    "@schematics/angular:component": {
+      "type": "component"
     },
-    "@ionic/angular-toolkit:page": {
-      "styleext": "scss"
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   }
 }

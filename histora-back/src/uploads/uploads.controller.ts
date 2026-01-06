@@ -15,6 +15,7 @@ import { CurrentUser, CurrentUserData } from '../auth/decorators/current-user.de
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 import { UploadsService } from './uploads.service';
+import { UsersService } from '../users/users.service';
 import {
   UploadProfilePhotoDto,
   UploadDocumentDto,
@@ -26,7 +27,10 @@ import {
 @Controller('uploads')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UploadsController {
-  constructor(private readonly uploadsService: UploadsService) {}
+  constructor(
+    private readonly uploadsService: UploadsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   private requireClinicId(user: CurrentUserData): string {
     if (!user.clinicId) {
@@ -41,6 +45,12 @@ export class UploadsController {
     @CurrentUser() user: CurrentUserData,
     @Body() dto: UploadProfilePhotoDto,
   ): Promise<FileResponseDto> {
+    // Delete old avatar if exists
+    const oldPublicId = await this.usersService.getAvatarPublicId(user.userId);
+    if (oldPublicId) {
+      await this.uploadsService.deleteFile(oldPublicId).catch(() => {});
+    }
+
     const result = await this.uploadsService.uploadProfilePhoto(
       dto,
       user.userId,
@@ -48,6 +58,9 @@ export class UploadsController {
       'user',
       user.userId
     );
+
+    // Save avatar URL to user
+    await this.usersService.updateAvatar(user.userId, result.url, result.publicId);
 
     return {
       success: true,

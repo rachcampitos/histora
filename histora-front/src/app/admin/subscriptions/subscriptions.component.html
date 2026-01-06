@@ -1,0 +1,249 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Gestión de Suscripciones'" [items]="['Admin']" [active_item]="'Suscripciones'"></app-breadcrumb>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-progress-spinner color="primary" mode="indeterminate" [diameter]="50"></mat-progress-spinner>
+      </div>
+    } @else {
+      <!-- Summary Cards -->
+      <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="stat-icon bg-primary">
+                <mat-icon>attach_money</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Ingresos Mensuales</span>
+                <h3 class="stat-value">${{ totalRevenue | number }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="stat-icon bg-success">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Suscripciones Activas</span>
+                <h3 class="stat-value">{{ activeSubscriptions }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="stat-icon bg-info">
+                <mat-icon>hourglass_empty</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">En Período de Prueba</span>
+                <h3 class="stat-value">{{ trialSubscriptions }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="stat-icon bg-warning">
+                <mat-icon>trending_down</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Tasa de Cancelación</span>
+                <h3 class="stat-value">{{ churnRate }}%</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plans Overview -->
+      <div class="row">
+        @for (plan of plans; track plan.name) {
+          <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card plan-card" [style.border-top-color]="plan.color">
+              <div class="card-body">
+                <h4 class="plan-name">{{ plan.name }}</h4>
+                <div class="plan-price">
+                  <span class="amount">${{ plan.price }}</span>
+                  <span class="cycle">/{{ plan.billingCycle }}</span>
+                </div>
+                <ul class="plan-features">
+                  @for (feature of plan.features; track feature) {
+                    <li>
+                      <mat-icon class="feature-check">check</mat-icon>
+                      {{ feature }}
+                    </li>
+                  }
+                </ul>
+                <div class="plan-stats">
+                  <span class="active-count">{{ plan.activeSubscriptions }} activas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Subscriptions Table -->
+      <div class="card">
+        <div class="header d-flex justify-content-between align-items-center">
+          <h2>Todas las Suscripciones</h2>
+        </div>
+
+        <div class="body">
+          <!-- Filters -->
+          <div class="filters-row">
+            <mat-form-field appearance="outline" class="filter-field search-field">
+              <mat-label>Buscar clínica</mat-label>
+              <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Nombre de clínica...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Plan</mat-label>
+              <mat-select [(ngModel)]="planFilter" (selectionChange)="applyFilter()">
+                <mat-option value="">Todos</mat-option>
+                @for (plan of planOptions; track plan) {
+                  <mat-option [value]="plan">{{ plan }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Estado</mat-label>
+              <mat-select [(ngModel)]="statusFilter" (selectionChange)="applyFilter()">
+                <mat-option value="">Todos</mat-option>
+                @for (status of statusOptions; track status) {
+                  <mat-option [value]="status">{{ getStatusLabel(status) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            @if (searchTerm || planFilter || statusFilter) {
+              <button mat-stroked-button (click)="clearFilters()" class="clear-btn">
+                <mat-icon>clear</mat-icon>
+                Limpiar
+              </button>
+            }
+          </div>
+
+          <div class="table-responsive">
+            <table mat-table [dataSource]="dataSource" matSort class="advance-table">
+              <!-- Clinic Column -->
+              <ng-container matColumnDef="clinic">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Clínica</th>
+                <td mat-cell *matCellDef="let row">
+                  <div class="clinic-name">
+                    <mat-icon class="clinic-icon">business</mat-icon>
+                    {{ row.clinicName }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Plan Column -->
+              <ng-container matColumnDef="plan">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Plan</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="badge" [ngClass]="getPlanClass(row.plan)">{{ row.plan }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="badge" [ngClass]="getStatusClass(row.status)">{{ getStatusLabel(row.status) }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Amount Column -->
+              <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto</th>
+                <td mat-cell *matCellDef="let row">
+                  @if (row.amount > 0) {
+                    ${{ row.amount }}/mes
+                  } @else {
+                    <span class="text-muted">-</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Next Billing Column -->
+              <ng-container matColumnDef="nextBilling">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Próximo Cobro</th>
+                <td mat-cell *matCellDef="let row">
+                  @if (row.status === 'active' || row.status === 'trial') {
+                    {{ row.nextBillingDate | date: 'dd/MM/yyyy' }}
+                  } @else {
+                    <span class="text-muted">-</span>
+                  }
+                </td>
+              </ng-container>
+
+              <!-- Payment Method Column -->
+              <ng-container matColumnDef="paymentMethod">
+                <th mat-header-cell *matHeaderCellDef>Método de Pago</th>
+                <td mat-cell *matCellDef="let row">{{ row.paymentMethod }}</td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let row">
+                  <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Opciones">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="viewSubscription(row)">
+                      <mat-icon>visibility</mat-icon>
+                      <span>Ver detalles</span>
+                    </button>
+                    <button mat-menu-item (click)="editSubscription(row)">
+                      <mat-icon>edit</mat-icon>
+                      <span>Cambiar plan</span>
+                    </button>
+                    @if (row.status === 'past_due') {
+                      <button mat-menu-item (click)="retryPayment(row)">
+                        <mat-icon>refresh</mat-icon>
+                        <span>Reintentar cobro</span>
+                      </button>
+                    }
+                    @if (row.status === 'active' || row.status === 'trial') {
+                      <button mat-menu-item (click)="cancelSubscription(row)">
+                        <mat-icon color="warn">cancel</mat-icon>
+                        <span>Cancelar</span>
+                      </button>
+                    }
+                  </mat-menu>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell no-data-cell" colspan="7">
+                  <div class="no-results">
+                    <mat-icon>search_off</mat-icon>
+                    <p>No se encontraron suscripciones</p>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+      </div>
+    }
+  </div>
+</section>

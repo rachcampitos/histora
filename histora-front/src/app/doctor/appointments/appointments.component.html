@@ -1,0 +1,204 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <!-- breadcrumb -->
+      <app-breadcrumb [title]="'APPOINTMENTS.ALL_APPOINTMENTS' | translate" [items]="[]" [active_item]="'APPOINTMENTS.ALL_APPOINTMENTS' | translate"></app-breadcrumb>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+          <div class="materialTableHeader">
+            <div class="left">
+              <ul class="header-buttons-left ms-0">
+                <li class="tbl-title">
+                  <h2>{{ 'APPOINTMENTS.ALL_APPOINTMENTS' | translate }}</h2>
+                </li>
+                <li class="tbl-search-box">
+                  <label for="search-input"><i class="material-icons search-icon">search</i></label>
+                  <input id="search-input" [placeholder]="'COMMON.ACTIONS.SEARCH' | translate" type="text" #filter
+                    (keyup)="applyFilter($event)"
+                    class="browser-default search-field" aria-label="Search box">
+                </li>
+              </ul>
+            </div>
+            <div class="right">
+              <ul class="tbl-export-btn">
+                <li>
+                  <div class="col-white">
+                    <button mat-flat-button color="primary" (click)="addNew()">
+                      <mat-icon class="material-icons-outlined">add</mat-icon>
+                      {{ 'APPOINTMENTS.NEW_APPOINTMENT' | translate }}
+                    </button>
+                  </div>
+                </li>
+                <li>
+                  <div class="export-button m-l-10">
+                    <button mat-icon-button (click)="refresh()" class="col-blue" [matTooltip]="'COMMON.ACTIONS.REFRESH' | translate">
+                      <mat-icon class="material-icons-outlined">refresh</mat-icon>
+                    </button>
+                  </div>
+                </li>
+                <li>
+                  <div class="export-button m-l-10">
+                    <button mat-icon-button (click)="exportExcel()" class="col-blue" [matTooltip]="'COMMON.ACTIONS.EXPORT' | translate">
+                      <mat-icon class="material-icons-outlined">file_download</mat-icon>
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="overflow-auto">
+            <div class="responsive_table">
+              <div class="table-scroll">
+                <table mat-table [dataSource]="dataSource" matSort class="mat-cell advance-table">
+
+                  <!-- Patient Column -->
+                  <ng-container matColumnDef="patient">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <span class="truncate-text">{{ 'APPOINTMENTS.TABLE.PATIENT' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [matTooltip]="getPatientName(row)">
+                      <span class="mobile-label">{{ 'APPOINTMENTS.TABLE.PATIENT' | translate }}:</span>
+                      <mat-icon class="tbl-icon material-icons-outlined col-blue">person</mat-icon>
+                      <span class="truncate-text">{{ getPatientName(row) }}</span>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Scheduled Date Column -->
+                  <ng-container matColumnDef="scheduledDate">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <span class="truncate-text">{{ 'APPOINTMENTS.TABLE.DATE' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <span class="mobile-label">{{ 'APPOINTMENTS.TABLE.DATE' | translate }}:</span>
+                      <mat-icon class="tbl-icon material-icons-outlined col-purple">calendar_today</mat-icon>
+                      <span class="truncate-text">{{ row.scheduledDate | date: 'dd/MM/yyyy' }}</span>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Time Column -->
+                  <ng-container matColumnDef="time">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <span class="truncate-text">{{ 'APPOINTMENTS.TABLE.TIME' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <span class="mobile-label">{{ 'APPOINTMENTS.TABLE.TIME' | translate }}:</span>
+                      <mat-icon class="tbl-icon material-icons-outlined col-indigo">schedule</mat-icon>
+                      <span class="truncate-text">{{ row.startTime }} - {{ row.endTime }}</span>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <span class="truncate-text">{{ 'APPOINTMENTS.TABLE.STATUS' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                      <span class="mobile-label">{{ 'APPOINTMENTS.TABLE.STATUS' | translate }}:</span>
+                      <span class="badge" [ngClass]="getStatusClass(row.status)">
+                        {{ 'APPOINTMENTS.STATUS.' + row.status | translate }}
+                      </span>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Reason Column -->
+                  <ng-container matColumnDef="reasonForVisit">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                      <span class="truncate-text">{{ 'APPOINTMENTS.TABLE.REASON' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" [matTooltip]="row.reasonForVisit || ''">
+                      <span class="mobile-label">{{ 'APPOINTMENTS.TABLE.REASON' | translate }}:</span>
+                      <span class="truncate-text">{{ row.reasonForVisit || '-' }}</span>
+                    </mat-cell>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <mat-header-cell class="psl-3 tbl-col-width-per-10" *matHeaderCellDef>
+                      {{ 'APPOINTMENTS.TABLE.ACTIONS' | translate }}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" class="psl-3 tbl-col-width-per-10">
+                      <button mat-icon-button [matMenuTriggerFor]="actionMenu" (click)="$event.stopPropagation()">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #actionMenu="matMenu">
+                        <button mat-menu-item (click)="editAppointment(row)">
+                          <mat-icon class="material-icons-outlined">edit</mat-icon>
+                          <span>{{ 'COMMON.ACTIONS.EDIT' | translate }}</span>
+                        </button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item [matMenuTriggerFor]="statusMenu">
+                          <mat-icon class="material-icons-outlined">swap_horiz</mat-icon>
+                          <span>{{ 'APPOINTMENTS.TABLE.STATUS' | translate }}</span>
+                        </button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item (click)="deleteAppointment(row)">
+                          <mat-icon class="material-icons-outlined col-red">delete</mat-icon>
+                          <span class="col-red">{{ 'COMMON.ACTIONS.DELETE' | translate }}</span>
+                        </button>
+                      </mat-menu>
+                      <mat-menu #statusMenu="matMenu">
+                        <button mat-menu-item (click)="updateStatus(row, 'SCHEDULED')">
+                          <span class="badge badge-solid-blue me-2">●</span>
+                          {{ 'APPOINTMENTS.STATUS.SCHEDULED' | translate }}
+                        </button>
+                        <button mat-menu-item (click)="updateStatus(row, 'CONFIRMED')">
+                          <span class="badge badge-solid-green me-2">●</span>
+                          {{ 'APPOINTMENTS.STATUS.CONFIRMED' | translate }}
+                        </button>
+                        <button mat-menu-item (click)="updateStatus(row, 'IN_PROGRESS')">
+                          <span class="badge badge-solid-orange me-2">●</span>
+                          {{ 'COMMON.STATUS.IN_PROGRESS' | translate }}
+                        </button>
+                        <button mat-menu-item (click)="updateStatus(row, 'COMPLETED')">
+                          <span class="badge badge-solid-purple me-2">●</span>
+                          {{ 'APPOINTMENTS.STATUS.COMPLETED' | translate }}
+                        </button>
+                        <button mat-menu-item (click)="updateStatus(row, 'CANCELLED')">
+                          <span class="badge badge-solid-red me-2">●</span>
+                          {{ 'APPOINTMENTS.STATUS.CANCELLED' | translate }}
+                        </button>
+                        <button mat-menu-item (click)="updateStatus(row, 'NO_SHOW')">
+                          <span class="badge badge-solid-gray me-2">●</span>
+                          {{ 'APPOINTMENTS.STATUS.NO_SHOW' | translate }}
+                        </button>
+                      </mat-menu>
+                    </mat-cell>
+                  </ng-container>
+
+                  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayedColumns;"
+                           [style.cursor]="'pointer'" matRipple>
+                  </mat-row>
+                </table>
+              </div>
+
+              <!-- Loading spinner -->
+              @if (isLoading) {
+              <div class="tbl-spinner">
+                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
+                </mat-progress-spinner>
+              </div>
+              }
+
+              <!-- No results message -->
+              @if (!isLoading && dataSource.data.length === 0) {
+              <div class="no-results">
+                {{ 'APPOINTMENTS.NO_APPOINTMENTS' | translate }}
+              </div>
+              }
+
+              <mat-paginator #paginator
+                [length]="dataSource.filteredData.length"
+                [pageIndex]="0"
+                [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 50]">
+              </mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

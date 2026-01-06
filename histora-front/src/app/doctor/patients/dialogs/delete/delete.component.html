@@ -1,0 +1,41 @@
+<div class="patient-delete-dialog">
+  <h3 mat-dialog-title>{{ 'COMMON.MESSAGES.CONFIRM_DELETE' | translate }}</h3>
+
+  <mat-dialog-content>
+    <p class="delete-message">
+      {{ 'PATIENTS.DELETE_CONFIRM_MESSAGE' | translate }}
+    </p>
+    <ul class="patient-info">
+      <li>
+        <span class="label">{{ 'PATIENTS.TABLE.NAME' | translate }}:</span>
+        <span class="value">{{ patientName }}</span>
+      </li>
+      @if (data.patient.email) {
+        <li>
+          <span class="label">{{ 'PATIENTS.TABLE.EMAIL' | translate }}:</span>
+          <span class="value">{{ data.patient.email }}</span>
+        </li>
+      }
+      @if (data.patient.phone) {
+        <li>
+          <span class="label">{{ 'PATIENTS.TABLE.PHONE' | translate }}:</span>
+          <span class="value">{{ data.patient.phone }}</span>
+        </li>
+      }
+    </ul>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [disabled]="isDeleting">
+      {{ 'COMMON.ACTIONS.CANCEL' | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="warn"
+      (click)="confirmDelete()"
+      [disabled]="isDeleting"
+    >
+      {{ 'COMMON.ACTIONS.DELETE' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

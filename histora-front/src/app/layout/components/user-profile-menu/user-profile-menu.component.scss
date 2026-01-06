@@ -1,0 +1,22 @@
+.user-profile-img {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user_img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user_icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #666;
+}
+
+// Fix z-index for profile menu dropdown
+:host ::ng-deep .profile-menu {
+  z-index: 1100 !important;
+}

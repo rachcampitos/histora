@@ -1,0 +1,38 @@
+<button mat-button [matMenuTriggerFor]="profilemenu">
+    <div class="user-profile-img">
+        <span>{{userName}}</span>
+        @if (userImg) {
+            <img [src]="userImg" class="user_img" width="32" height="32" alt="User">
+        } @else {
+            <mat-icon class="user_icon">account_circle</mat-icon>
+        }
+    </div>
+</button>
+
+<mat-menu #profilemenu="matMenu" class="profile-menu">
+    <div class="noti-list">
+        <div class="menu">
+            <div class="user_dw_menu">
+                <button mat-menu-item class="user-item-list" (click)="onAccountClick()">
+                    <app-feather-icons [icon]="'user'" [class]="'user-menu-icons'"></app-feather-icons>
+                    {{ 'HEADER.PROFILE' | translate }}
+                </button>
+
+                <button mat-menu-item class="user-item-list" (click)="onInboxClick()">
+                    <app-feather-icons [icon]="'mail'" [class]="'user-menu-icons'"></app-feather-icons>
+                    {{ 'HEADER.MESSAGES' | translate }}
+                </button>
+
+                <button mat-menu-item class="user-item-list" (click)="onSettingsClick()">
+                    <app-feather-icons [icon]="'settings'" [class]="'user-menu-icons'"></app-feather-icons>
+                    {{ 'HEADER.SETTINGS' | translate }}
+                </button>
+
+                <button mat-menu-item class="user-item-list" (click)="onLogoutClick()">
+                    <app-feather-icons [icon]="'log-out'" [class]="'user-menu-icons'"></app-feather-icons>
+                    {{ 'HEADER.LOGOUT' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+</mat-menu>

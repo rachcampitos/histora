@@ -1,0 +1,32 @@
+.appointment-delete-dialog {
+  min-width: 350px;
+
+  .delete-message {
+    margin-bottom: 16px;
+    color: #666;
+  }
+
+  .appointment-info {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        font-weight: 500;
+        margin-right: 8px;
+      }
+
+      .value {
+        color: #333;
+      }
+    }
+  }
+}

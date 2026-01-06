@@ -1,0 +1,105 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, merge, Observable, of, share, switchMap } from 'rxjs';
+import { User, AuthResponse } from '@core/models/interface';
+import { TokenService } from './token.service';
+import { LoginService } from './login.service';
+import { LocalStorageService } from '@shared/services';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  user$ = new BehaviorSubject<User>({});
+
+  private change$ = merge(this.tokenService.change()).pipe(
+    switchMap(() => {
+      return this.assignUser(this.user$);
+    }),
+    share()
+  );
+
+  constructor(
+    private tokenService: TokenService,
+    private loginService: LoginService,
+    private store: LocalStorageService
+  ) {}
+
+  public get currentUserValue(): User {
+    return this.store.get('currentUser');
+  }
+
+  change() {
+    return this.change$;
+  }
+
+  login(username: string, password: string, rememberMe = false) {
+    return this.loginService.login(username, password, rememberMe).pipe(
+      switchMap((response) => {
+        // Check if login was successful
+        if (!this.isAuthResponse(response)) {
+          return of(response);
+        }
+
+        // Set the token
+        this.tokenService.set({ access_token: response.access_token });
+
+        // Get role data
+        const roleData = response.user.roles || [];
+        const sortedRoles = [...roleData].sort((a, b) => {
+          return (a.priority || 0) - (b.priority || 0);
+        });
+
+        this.tokenService.roleArray = sortedRoles as [];
+        this.tokenService.permissionArray = response.user.permissions || [];
+
+        // Update user state
+        this.user$.next(response.user);
+        this.store.set('currentUser', response.user);
+
+        // Store role names
+        const roleNames = sortedRoles.map((role) => role.name);
+        this.store.set('roleNames', JSON.stringify(roleNames));
+
+        // Store refresh token
+        if (response.refresh_token) {
+          this.store.set('refreshToken', response.refresh_token);
+        }
+
+        return of(response);
+      })
+    );
+  }
+
+  check() {
+    return this.tokenService.valid();
+  }
+
+  logout() {
+    this.store.clear();
+    this.user$.next({});
+    return of({ success: true });
+  }
+
+  assignUser(_user: BehaviorSubject<User>): Observable<User> {
+    this.user$.next(this.currentUserValue);
+    return this.user$.asObservable();
+  }
+
+  private isAuthResponse(response: unknown): response is AuthResponse {
+    return (
+      typeof response === 'object' &&
+      response !== null &&
+      'access_token' in response &&
+      'user' in response
+    );
+  }
+
+  updateUserAvatar(avatarUrl: string): void {
+    const currentUser = this.currentUserValue;
+    if (currentUser) {
+      const updatedUser = { ...currentUser, avatar: avatarUrl };
+      this.store.set('currentUser', updatedUser);
+      this.user$.next(updatedUser);
+    }
+  }
+}

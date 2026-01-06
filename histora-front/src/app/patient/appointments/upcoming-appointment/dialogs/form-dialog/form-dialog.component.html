@@ -1,0 +1,91 @@
+<div class="addContainer">
+  <div class="modalHeader">
+    <div class="avatarDetails">
+      <div class="modalTitle">
+        {{dialogTitle}}
+      </div>
+    </div>
+    <button mat-icon-button mat-dialog-close class="modal-close-button" aria-label="Close dialog" type="button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div mat-dialog-content>
+    <form class="register-form m-4" [formGroup]="appointmentForm" (ngSubmit)="submit()">
+      <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Doctor Name</mat-label>
+            <input matInput formControlName="doctor">
+            @if (appointmentForm.get('doctor')?.hasError('required')) {
+            <mat-error>Doctor Name is required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Choose a date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date" required>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            @if (appointmentForm.get('date')?.hasError('required')) {
+            <mat-error>Please select a date</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Time</mat-label>
+            <input matInput formControlName="time" required>
+            <mat-icon class="material-icons-outlined color-icon p-3" matSuffix>access_time</mat-icon>
+            @if (appointmentForm.get('time')?.hasError('required')) {
+            <mat-error>Please select a time</mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Injury</mat-label>
+            <input matInput formControlName="injury">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option [value]="'Upcoming'">Upcoming</mat-option>
+              <mat-option [value]="'Completed'">Completed</mat-option>
+              <mat-option [value]="'Cancelled'">Cancelled</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location">
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+          <mat-form-field class="example-full-width" appearance="outline">
+            <mat-label>Notes</mat-label>
+            <textarea matInput formControlName="notes"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+          <div class="example-button-row">
+            <button mat-flat-button class="formSubmitBtn" [disabled]="!appointmentForm.valid"
+              type="submit">{{ 'COMMON.ACTIONS.SAVE' | translate }}</button>
+            <button mat-flat-button mat-dialog-close class="formCancelBtn" tabindex="-1">{{ 'COMMON.ACTIONS.CANCEL' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,373 @@
+{
+  "data": [
+    {
+      "_id": "ch001",
+      "patientId": "p001",
+      "patient": {
+        "_id": "p001",
+        "firstName": "María",
+        "lastName": "García López"
+      },
+      "date": "2024-12-28",
+      "reasonForVisit": "Control rutinario de hipertensión",
+      "diagnosis": "Hipertensión arterial controlada",
+      "treatment": "Continuar con Losartán 50mg cada 12 horas",
+      "allergies": ["Penicilina", "Ibuprofeno"],
+      "chronicConditions": ["Hipertensión arterial", "Prediabetes"],
+      "currentMedications": [
+        {
+          "name": "Losartán",
+          "dosage": "50mg",
+          "frequency": "Cada 12 horas"
+        },
+        {
+          "name": "Metformina",
+          "dosage": "500mg",
+          "frequency": "Con el desayuno"
+        }
+      ],
+      "vitalSigns": {
+        "bloodPressure": "130/85",
+        "heartRate": 72,
+        "temperature": 36.5,
+        "weight": 68,
+        "height": 165
+      },
+      "notes": "Paciente presenta buen estado general. Se recomienda mantener dieta baja en sodio.",
+      "doctorId": "d002",
+      "doctor": {
+        "firstName": "Ana",
+        "lastName": "Mendoza",
+        "specialty": "Cardiología"
+      },
+      "createdAt": "2024-12-28T11:30:00Z"
+    },
+    {
+      "_id": "ch002",
+      "patientId": "p002",
+      "patient": {
+        "_id": "p002",
+        "firstName": "Juan",
+        "lastName": "Rodríguez Pérez"
+      },
+      "date": "2024-12-30",
+      "reasonForVisit": "Control post-operatorio de bypass coronario",
+      "diagnosis": "Evolución favorable post cirugía cardíaca",
+      "treatment": "Continuar rehabilitación cardíaca. Control en 2 semanas.",
+      "allergies": [],
+      "chronicConditions": ["Enfermedad coronaria", "Dislipidemia"],
+      "currentMedications": [
+        {
+          "name": "Aspirina",
+          "dosage": "100mg",
+          "frequency": "Una vez al día"
+        },
+        {
+          "name": "Atorvastatina",
+          "dosage": "40mg",
+          "frequency": "En la noche"
+        },
+        {
+          "name": "Clopidogrel",
+          "dosage": "75mg",
+          "frequency": "Una vez al día"
+        }
+      ],
+      "vitalSigns": {
+        "bloodPressure": "125/80",
+        "heartRate": 68,
+        "temperature": 36.8,
+        "weight": 82,
+        "height": 175
+      },
+      "surgicalHistory": [
+        {
+          "procedure": "Bypass coronario triple",
+          "date": "2024-11-15",
+          "notes": "Cirugía exitosa sin complicaciones"
+        }
+      ],
+      "notes": "Herida quirúrgica en buen proceso de cicatrización. Paciente motivado con rehabilitación.",
+      "doctorId": "d002",
+      "doctor": {
+        "firstName": "Ana",
+        "lastName": "Mendoza",
+        "specialty": "Cardiología"
+      },
+      "createdAt": "2024-12-30T10:30:00Z"
+    },
+    {
+      "_id": "ch003",
+      "patientId": "p003",
+      "patient": {
+        "_id": "p003",
+        "firstName": "Carmen",
+        "lastName": "Torres Medina"
+      },
+      "date": "2024-12-15",
+      "reasonForVisit": "Síntomas gripales",
+      "diagnosis": "Infección respiratoria aguda de vías superiores",
+      "treatment": "Paracetamol 500mg c/8h, reposo e hidratación",
+      "allergies": ["Sulfas"],
+      "chronicConditions": [],
+      "currentMedications": [],
+      "vitalSigns": {
+        "bloodPressure": "115/75",
+        "heartRate": 78,
+        "temperature": 38.2,
+        "weight": 58,
+        "height": 162
+      },
+      "notes": "Se indica reposo por 3 días. Volver si fiebre persiste más de 5 días.",
+      "doctorId": "d001",
+      "doctor": {
+        "firstName": "Carlos",
+        "lastName": "Ramírez",
+        "specialty": "Medicina General"
+      },
+      "createdAt": "2024-12-15T15:00:00Z"
+    },
+    {
+      "_id": "ch004",
+      "patientId": "p004",
+      "patient": {
+        "_id": "p004",
+        "firstName": "Roberto",
+        "lastName": "Sánchez Vargas"
+      },
+      "date": "2024-12-20",
+      "reasonForVisit": "Control de diabetes tipo 2",
+      "diagnosis": "Diabetes mellitus tipo 2 parcialmente controlada",
+      "treatment": "Ajuste de dosis de insulina. Evaluación con nutricionista.",
+      "allergies": ["Mariscos"],
+      "chronicConditions": ["Diabetes mellitus tipo 2", "Hipertensión arterial", "Obesidad grado I"],
+      "currentMedications": [
+        {
+          "name": "Insulina Glargina",
+          "dosage": "24 UI",
+          "frequency": "En la noche"
+        },
+        {
+          "name": "Metformina",
+          "dosage": "850mg",
+          "frequency": "Cada 12 horas"
+        },
+        {
+          "name": "Enalapril",
+          "dosage": "10mg",
+          "frequency": "Una vez al día"
+        }
+      ],
+      "vitalSigns": {
+        "bloodPressure": "140/90",
+        "heartRate": 76,
+        "temperature": 36.6,
+        "weight": 95,
+        "height": 170
+      },
+      "labResults": [
+        {
+          "test": "HbA1c",
+          "value": "7.8%",
+          "date": "2024-12-18"
+        },
+        {
+          "test": "Glucosa en ayunas",
+          "value": "145 mg/dL",
+          "date": "2024-12-18"
+        }
+      ],
+      "notes": "HbA1c elevada. Se incrementa dosis de insulina. Referir a programa de educación en diabetes.",
+      "doctorId": "d001",
+      "doctor": {
+        "firstName": "Carlos",
+        "lastName": "Ramírez",
+        "specialty": "Medicina General"
+      },
+      "createdAt": "2024-12-20T10:00:00Z"
+    },
+    {
+      "_id": "ch005",
+      "patientId": "p005",
+      "patient": {
+        "_id": "p005",
+        "firstName": "Sofía",
+        "lastName": "Mendoza Ríos"
+      },
+      "date": "2024-12-22",
+      "reasonForVisit": "Evaluación dermatológica de lesión en espalda",
+      "diagnosis": "Nevus melanocítico benigno",
+      "treatment": "Observación. Control en 6 meses.",
+      "allergies": [],
+      "chronicConditions": [],
+      "currentMedications": [],
+      "vitalSigns": {
+        "bloodPressure": "110/70",
+        "heartRate": 65,
+        "temperature": 36.4,
+        "weight": 55,
+        "height": 160
+      },
+      "notes": "Lunar de características benignas. Se toman fotografías para seguimiento. Usar protector solar SPF 50+.",
+      "doctorId": "d003",
+      "doctor": {
+        "firstName": "Roberto",
+        "lastName": "Salinas",
+        "specialty": "Dermatología"
+      },
+      "createdAt": "2024-12-22T14:30:00Z"
+    },
+    {
+      "_id": "ch006",
+      "patientId": "p006",
+      "patient": {
+        "_id": "p006",
+        "firstName": "Luis",
+        "lastName": "Fernández Castro"
+      },
+      "date": "2024-11-30",
+      "reasonForVisit": "Fractura de muñeca derecha",
+      "diagnosis": "Fractura de radio distal (Colles)",
+      "treatment": "Inmovilización con yeso. Analgésicos. Control radiográfico en 4 semanas.",
+      "allergies": ["Dipirona"],
+      "chronicConditions": [],
+      "currentMedications": [
+        {
+          "name": "Tramadol",
+          "dosage": "50mg",
+          "frequency": "Cada 8 horas por dolor"
+        },
+        {
+          "name": "Calcio + Vitamina D",
+          "dosage": "1 tableta",
+          "frequency": "Una vez al día"
+        }
+      ],
+      "vitalSigns": {
+        "bloodPressure": "120/80",
+        "heartRate": 72,
+        "temperature": 36.5,
+        "weight": 75,
+        "height": 178
+      },
+      "surgicalHistory": [],
+      "notes": "Fractura por caída en actividad deportiva. No requiere cirugía. Mantener brazo elevado.",
+      "doctorId": "d005",
+      "doctor": {
+        "firstName": "Miguel",
+        "lastName": "Torres",
+        "specialty": "Traumatología"
+      },
+      "createdAt": "2024-11-30T09:00:00Z"
+    },
+    {
+      "_id": "ch007",
+      "patientId": "p009",
+      "patient": {
+        "_id": "p009",
+        "firstName": "Valeria",
+        "lastName": "Paredes Luna"
+      },
+      "date": "2024-12-18",
+      "reasonForVisit": "Control prenatal - 24 semanas",
+      "diagnosis": "Embarazo de 24 semanas de evolución normal",
+      "treatment": "Continuar suplementos. Ecografía morfológica programada.",
+      "allergies": [],
+      "chronicConditions": [],
+      "currentMedications": [
+        {
+          "name": "Ácido fólico",
+          "dosage": "5mg",
+          "frequency": "Una vez al día"
+        },
+        {
+          "name": "Sulfato ferroso",
+          "dosage": "300mg",
+          "frequency": "Una vez al día"
+        },
+        {
+          "name": "Calcio",
+          "dosage": "500mg",
+          "frequency": "Dos veces al día"
+        }
+      ],
+      "vitalSigns": {
+        "bloodPressure": "105/65",
+        "heartRate": 80,
+        "temperature": 36.6,
+        "weight": 65,
+        "height": 168
+      },
+      "notes": "Fondo uterino acorde a edad gestacional. FCF 145 lpm. Movimientos fetales presentes.",
+      "doctorId": "d004",
+      "doctor": {
+        "firstName": "Patricia",
+        "lastName": "Flores",
+        "specialty": "Ginecología"
+      },
+      "createdAt": "2024-12-18T11:00:00Z"
+    },
+    {
+      "_id": "ch008",
+      "patientId": "p010",
+      "patient": {
+        "_id": "p010",
+        "firstName": "Andrés",
+        "lastName": "Vega Salazar"
+      },
+      "date": "2024-12-25",
+      "reasonForVisit": "Revisión de resultados de laboratorio",
+      "diagnosis": "Hipercolesterolemia",
+      "treatment": "Iniciar Atorvastatina 20mg. Dieta baja en grasas saturadas.",
+      "allergies": ["Amoxicilina"],
+      "chronicConditions": ["Hipercolesterolemia"],
+      "currentMedications": [
+        {
+          "name": "Atorvastatina",
+          "dosage": "20mg",
+          "frequency": "En la noche"
+        }
+      ],
+      "vitalSigns": {
+        "bloodPressure": "135/88",
+        "heartRate": 70,
+        "temperature": 36.5,
+        "weight": 88,
+        "height": 172
+      },
+      "labResults": [
+        {
+          "test": "Colesterol total",
+          "value": "265 mg/dL",
+          "date": "2024-12-20"
+        },
+        {
+          "test": "LDL",
+          "value": "175 mg/dL",
+          "date": "2024-12-20"
+        },
+        {
+          "test": "HDL",
+          "value": "42 mg/dL",
+          "date": "2024-12-20"
+        },
+        {
+          "test": "Triglicéridos",
+          "value": "210 mg/dL",
+          "date": "2024-12-20"
+        }
+      ],
+      "notes": "Perfil lipídico alterado. Se inicia tratamiento farmacológico. Control en 3 meses con nuevos exámenes.",
+      "doctorId": "d001",
+      "doctor": {
+        "firstName": "Carlos",
+        "lastName": "Ramírez",
+        "specialty": "Medicina General"
+      },
+      "createdAt": "2024-12-25T10:30:00Z"
+    }
+  ],
+  "total": 8,
+  "page": 1,
+  "limit": 20
+}
