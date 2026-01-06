@@ -147,4 +147,24 @@ export class UsersService {
   ): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
+
+  async updateAvatar(
+    id: string,
+    avatarUrl: string,
+    publicId: string,
+  ): Promise<User | null> {
+    return this.userModel
+      .findByIdAndUpdate(
+        id,
+        { avatar: avatarUrl, avatarPublicId: publicId },
+        { new: true },
+      )
+      .select('-password')
+      .exec();
+  }
+
+  async getAvatarPublicId(id: string): Promise<string | null> {
+    const user = await this.userModel.findById(id).select('avatarPublicId').exec();
+    return user?.avatarPublicId || null;
+  }
 }

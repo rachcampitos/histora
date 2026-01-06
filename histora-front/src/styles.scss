@@ -1,215 +1,25 @@
-/* Ionic Theme Variables */
-@import './theme/variables.css';
+/* Histora Global Styles */
 
-/* Global Styles */
-* {
-  box-sizing: border-box;
+/* Ensure auth pages are always accessible */
+.cdk-overlay-backdrop {
+  z-index: 900 !important;
 }
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+.cdk-overlay-container {
+  z-index: 950 !important;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--ion-color-light);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--ion-color-medium);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ion-color-medium-shade);
-}
-
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  color: var(--ion-color-dark);
-}
-
-a {
-  color: var(--ion-color-primary);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Form Elements */
-ion-input,
-ion-textarea,
-ion-select {
-  --padding-start: 12px !important;
-}
-
-/* Cards */
-ion-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* Buttons */
-ion-button {
-  --border-radius: 8px;
-  font-weight: 500;
-}
-
-/* Lists */
-ion-list {
-  background: transparent;
-}
-
-ion-item {
-  --border-radius: 8px;
-  --padding-start: 16px;
-  --inner-padding-end: 16px;
-}
-
-/* Utilities */
-.ion-text-center {
-  text-align: center;
-}
-
-.ion-text-left {
-  text-align: left;
-}
-
-.ion-text-right {
-  text-align: right;
-}
-
-/* Screen Reader Only - Accessibility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Focus Styles - Accessibility */
-*:focus-visible {
-  outline: 3px solid var(--ion-color-primary);
-  outline-offset: 2px;
-}
-
-ion-button:focus-visible {
-  outline: 3px solid var(--ion-color-primary);
-  outline-offset: 4px;
-}
-
-ion-item:focus-visible {
-  outline: 2px solid var(--ion-color-primary);
-  outline-offset: -2px;
-}
-
-ion-chip:focus-visible {
-  outline: 3px solid var(--ion-color-primary);
-  outline-offset: 2px;
-}
-
-/* Hide outline on mouse click but show on keyboard */
-*:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* Skip Link - Accessibility */
-.skip-link {
-  position: absolute;
-  top: -100px;
-  left: 16px;
-  background: var(--ion-color-primary);
-  color: white;
-  padding: 12px 24px;
-  text-decoration: none;
-  border-radius: 0 0 8px 8px;
-  z-index: 10000;
-  font-weight: 600;
-  transition: top 0.2s;
-}
-
-.skip-link:focus {
-  top: 0;
-}
-
-/* Reduced Motion Preference */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  ion-skeleton-text {
-    animation: none;
+/* Hide sidebar elements when not in main layout */
+body:not(.theme-white):not(.theme-black):not(.theme-purple):not(.theme-orange):not(.theme-cyan):not(.theme-green):not(.theme-blue) {
+  .sidebar,
+  .overlay,
+  .right-sidebar {
+    display: none !important;
   }
 }
 
-/* Touch Target Size for Mobile */
-@media (max-width: 768px) {
-  ion-chip[role="button"],
-  .clickable-chip {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  ion-fab-button {
-    width: 56px;
-    height: 56px;
-  }
-}
-
-/* Input Hints */
-.input-hint {
-  font-size: 0.75rem;
-  color: var(--ion-color-medium);
-  padding: 4px 16px 0;
-  display: block;
-}
-
-/* Error Text Accessibility */
-.error-text {
-  font-size: 0.75rem;
-  display: block;
-  padding: 4px 16px 0;
-}
-
-/* Status Colors */
-.status-scheduled {
-  color: var(--ion-color-medium);
-}
-
-.status-confirmed {
-  color: var(--ion-color-primary);
-}
-
-.status-in-progress {
-  color: var(--ion-color-warning);
-}
-
-.status-completed {
-  color: var(--ion-color-success);
-}
-
-.status-cancelled {
-  color: var(--ion-color-danger);
+/* Ensure overlay doesn't block auth pages */
+.auth-container ~ .overlay,
+.auth-container ~ .sidebar {
+  display: none !important;
 }

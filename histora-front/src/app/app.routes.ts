@@ -1,94 +1,58 @@
-import { Routes } from '@angular/router';
-import { authGuard, noAuthGuard } from './core/guards';
-import { clinicStaffGuard } from './core/guards/role.guard';
+import { Route } from '@angular/router';
+import { MainLayoutComponent } from './layout/app-layout/main-layout/main-layout.component';
+import { AuthGuard } from '@core/guard/auth.guard';
+import { AuthLayoutComponent } from './layout/app-layout/auth-layout/auth-layout.component';
+import { Page404Component } from './authentication/page404/page404.component';
+import { Role } from '@core';
+import { roleRedirectGuard } from '@core/guard/role-redirect.guard';
 
-export const routes: Routes = [
+export const APP_ROUTE: Route[] = [
   {
     path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
-  },
-  {
-    path: 'auth',
-    canActivate: [noAuthGuard],
-    loadComponent: () =>
-      import('./layouts/auth-layout.component').then((m) => m.AuthLayoutComponent),
+    component: MainLayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
-        redirectTo: 'login',
         pathMatch: 'full',
+        canActivate: [roleRedirectGuard],
+        // Empty component - guard handles redirect
+        children: [],
       },
       {
-        path: 'login',
-        title: 'Iniciar Sesión',
-        loadComponent: () =>
-          import('./features/auth/login/login.page').then((m) => m.LoginPage),
+        path: 'admin',
+        canActivate: [AuthGuard],
+        data: {
+          role: [Role.PlatformAdmin, Role.PlatformAdminUI],
+        },
+        loadChildren: () =>
+          import('./admin/admin.routes').then((m) => m.ADMIN_ROUTE),
       },
       {
-        path: 'register',
-        title: 'Crear Cuenta',
-        loadComponent: () =>
-          import('./features/auth/register/register.page').then((m) => m.RegisterPage),
+        path: 'doctor',
+        canActivate: [AuthGuard],
+        data: {
+          role: [Role.Admin, Role.Doctor],
+        },
+        loadChildren: () =>
+          import('./doctor/doctor.routes').then((m) => m.DOCTOR_ROUTE),
       },
       {
-        path: 'forgot-password',
-        title: 'Recuperar Contraseña',
-        loadComponent: () =>
-          import('./features/auth/forgot-password/forgot-password.page').then(
-            (m) => m.ForgotPasswordPage
-          ),
+        path: 'patient',
+        canActivate: [AuthGuard],
+        data: {
+          role: [Role.Admin, Role.Patient],
+        },
+        loadChildren: () =>
+          import('./patient/patient.routes').then((m) => m.PATIENT_ROUTE),
       },
     ],
   },
   {
-    path: '',
-    canActivate: [authGuard, clinicStaffGuard],
-    loadComponent: () =>
-      import('./layouts/main-layout.component').then((m) => m.MainLayoutComponent),
-    children: [
-      {
-        path: 'dashboard',
-        title: 'Dashboard',
-        loadComponent: () =>
-          import('./features/dashboard/dashboard.page').then((m) => m.DashboardPage),
-      },
-      {
-        path: 'patients',
-        loadChildren: () =>
-          import('./features/patients/patients.routes').then((m) => m.PATIENTS_ROUTES),
-      },
-      {
-        path: 'appointments',
-        loadChildren: () =>
-          import('./features/appointments/appointments.routes').then(
-            (m) => m.APPOINTMENTS_ROUTES
-          ),
-      },
-      {
-        path: 'consultations',
-        loadChildren: () =>
-          import('./features/consultations/consultations.routes').then(
-            (m) => m.CONSULTATIONS_ROUTES
-          ),
-      },
-      {
-        path: 'clinical-history',
-        loadChildren: () =>
-          import('./features/clinical-history/clinical-history.routes').then(
-            (m) => m.CLINICAL_HISTORY_ROUTES
-          ),
-      },
-      {
-        path: 'settings',
-        title: 'Configuración',
-        loadComponent: () =>
-          import('./features/settings/settings.page').then((m) => m.SettingsPage),
-      },
-    ],
+    path: 'authentication',
+    component: AuthLayoutComponent,
+    loadChildren: () =>
+      import('./authentication/auth.routes').then((m) => m.AUTH_ROUTE),
   },
-  {
-    path: '**',
-    redirectTo: 'dashboard',
-  },
+  { path: '**', component: Page404Component },
 ];

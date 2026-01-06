@@ -1,0 +1,278 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Reportes y Analíticas'" [items]="['Admin']" [active_item]="'Reportes'"></app-breadcrumb>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-row">
+      <mat-form-field appearance="outline" class="period-select">
+        <mat-label>Período</mat-label>
+        <mat-select [(ngModel)]="selectedPeriod" (selectionChange)="onPeriodChange()">
+          @for (period of periodOptions; track period.value) {
+            <mat-option [value]="period.value">{{ period.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="export-buttons">
+        <button mat-stroked-button (click)="exportReport('pdf')">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Exportar PDF
+        </button>
+        <button mat-stroked-button (click)="exportReport('excel')">
+          <mat-icon>table_chart</mat-icon>
+          Exportar Excel
+        </button>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-progress-spinner color="primary" mode="indeterminate" [diameter]="50"></mat-progress-spinner>
+      </div>
+    } @else {
+      <!-- KPI Cards -->
+      <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card kpi-card">
+            <div class="card-body">
+              <div class="kpi-header">
+                <mat-icon class="kpi-icon revenue">attach_money</mat-icon>
+                <span class="kpi-change positive">+{{ kpis.revenueGrowth }}%</span>
+              </div>
+              <h3 class="kpi-value">${{ kpis.totalRevenue | number }}</h3>
+              <span class="kpi-label">Ingresos Totales</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card kpi-card">
+            <div class="card-body">
+              <div class="kpi-header">
+                <mat-icon class="kpi-icon clinics">business</mat-icon>
+                <span class="kpi-change positive">+{{ kpis.clinicsGrowth }}</span>
+              </div>
+              <h3 class="kpi-value">{{ kpis.totalClinics }}</h3>
+              <span class="kpi-label">Clínicas Activas</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card kpi-card">
+            <div class="card-body">
+              <div class="kpi-header">
+                <mat-icon class="kpi-icon users">people</mat-icon>
+                <span class="kpi-change positive">+{{ kpis.usersGrowth }}%</span>
+              </div>
+              <h3 class="kpi-value">{{ kpis.totalUsers | number }}</h3>
+              <span class="kpi-label">Usuarios Totales</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card kpi-card">
+            <div class="card-body">
+              <div class="kpi-header">
+                <mat-icon class="kpi-icon avg">trending_up</mat-icon>
+              </div>
+              <h3 class="kpi-value">${{ kpis.avgRevenuePerClinic | number }}</h3>
+              <span class="kpi-label">Ingreso Prom. por Clínica</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Chart -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="header">
+              <h2>Ingresos vs Gastos</h2>
+            </div>
+            <div class="body">
+              <apx-chart
+                [series]="revenueChartOptions.series"
+                [chart]="revenueChartOptions.chart"
+                [xaxis]="revenueChartOptions.xaxis"
+                [stroke]="revenueChartOptions.stroke"
+                [dataLabels]="revenueChartOptions.dataLabels"
+                [yaxis]="revenueChartOptions.yaxis"
+                [legend]="revenueChartOptions.legend"
+                [fill]="revenueChartOptions.fill"
+                [tooltip]="revenueChartOptions.tooltip"
+                [colors]="revenueChartOptions.colors"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary Charts Row -->
+      <div class="row">
+        <div class="col-xl-4 col-lg-12">
+          <div class="card">
+            <div class="header">
+              <h2>Distribución por Plan</h2>
+            </div>
+            <div class="body">
+              <apx-chart
+                [series]="planDistributionChartOptions.series"
+                [chart]="planDistributionChartOptions.chart"
+                [labels]="planDistributionChartOptions.labels"
+                [colors]="planDistributionChartOptions.colors"
+                [legend]="planDistributionChartOptions.legend"
+                [plotOptions]="planDistributionChartOptions.plotOptions"
+                [dataLabels]="planDistributionChartOptions.dataLabels"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-6">
+          <div class="card">
+            <div class="header">
+              <h2>Nuevas Clínicas</h2>
+            </div>
+            <div class="body">
+              <apx-chart
+                [series]="clinicsGrowthChartOptions.series"
+                [chart]="clinicsGrowthChartOptions.chart"
+                [xaxis]="clinicsGrowthChartOptions.xaxis"
+                [stroke]="clinicsGrowthChartOptions.stroke"
+                [dataLabels]="clinicsGrowthChartOptions.dataLabels"
+                [colors]="clinicsGrowthChartOptions.colors"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-lg-6">
+          <div class="card">
+            <div class="header">
+              <h2>Tasa de Cancelación</h2>
+            </div>
+            <div class="body">
+              <apx-chart
+                [series]="churnChartOptions.series"
+                [chart]="churnChartOptions.chart"
+                [xaxis]="churnChartOptions.xaxis"
+                [stroke]="churnChartOptions.stroke"
+                [dataLabels]="churnChartOptions.dataLabels"
+                [colors]="churnChartOptions.colors"
+                [yaxis]="churnChartOptions.yaxis"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Clinics -->
+      <div class="row">
+        <div class="col-xl-6">
+          <div class="card">
+            <div class="header">
+              <h2>Top 5 Clínicas por Ingresos</h2>
+            </div>
+            <div class="body">
+              <div class="top-list">
+                <div class="top-item">
+                  <span class="rank">1</span>
+                  <div class="info">
+                    <span class="name">Clínica San Rafael</span>
+                    <span class="detail">Premium • 8 doctores</span>
+                  </div>
+                  <span class="value">$999/mes</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">2</span>
+                  <div class="info">
+                    <span class="name">Clínica Vida Sana</span>
+                    <span class="detail">Premium • 6 doctores</span>
+                  </div>
+                  <span class="value">$999/mes</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">3</span>
+                  <div class="info">
+                    <span class="name">Centro Médico Aurora</span>
+                    <span class="detail">Professional • 5 doctores</span>
+                  </div>
+                  <span class="value">$599/mes</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">4</span>
+                  <div class="info">
+                    <span class="name">Centro Pediátrico Feliz</span>
+                    <span class="detail">Professional • 4 doctores</span>
+                  </div>
+                  <span class="value">$599/mes</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">5</span>
+                  <div class="info">
+                    <span class="name">Centro Dental Plus</span>
+                    <span class="detail">Professional • 3 doctores</span>
+                  </div>
+                  <span class="value">$599/mes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-6">
+          <div class="card">
+            <div class="header">
+              <h2>Top 5 Clínicas por Pacientes</h2>
+            </div>
+            <div class="body">
+              <div class="top-list">
+                <div class="top-item">
+                  <span class="rank">1</span>
+                  <div class="info">
+                    <span class="name">Hospital del Valle</span>
+                    <span class="detail">Enterprise • 25 doctores</span>
+                  </div>
+                  <span class="value">1,200</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">2</span>
+                  <div class="info">
+                    <span class="name">Clínica San Rafael</span>
+                    <span class="detail">Premium • 8 doctores</span>
+                  </div>
+                  <span class="value">450</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">3</span>
+                  <div class="info">
+                    <span class="name">Clínica Vida Sana</span>
+                    <span class="detail">Premium • 6 doctores</span>
+                  </div>
+                  <span class="value">320</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">4</span>
+                  <div class="info">
+                    <span class="name">Centro Médico Aurora</span>
+                    <span class="detail">Professional • 5 doctores</span>
+                  </div>
+                  <span class="value">280</span>
+                </div>
+                <div class="top-item">
+                  <span class="rank">5</span>
+                  <div class="info">
+                    <span class="name">Centro Pediátrico Feliz</span>
+                    <span class="detail">Professional • 4 doctores</span>
+                  </div>
+                  <span class="value">180</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

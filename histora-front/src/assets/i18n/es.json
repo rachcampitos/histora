@@ -1,0 +1,489 @@
+{
+  "MENUITEMS": {
+    "MAIN": {
+      "TEXT": "Principal"
+    },
+    "ADMIN": {
+      "TEXT": "Administración",
+      "DASHBOARD": "Panel de Control",
+      "CLINICS": "Clínicas",
+      "USERS": "Usuarios",
+      "SUBSCRIPTIONS": "Suscripciones",
+      "REPORTS": "Reportes",
+      "SETTINGS": "Configuración"
+    },
+    "DASHBOARD": {
+      "TEXT": "Tablero",
+      "LIST": {
+        "DASHBOARD1": "Tablero 1",
+        "DASHBOARD2": "Tablero 2",
+        "DOCTOR-DASHBOARD": "Tablero del Médico",
+        "PATIENT-DASHBOARD": "Tablero del Paciente"
+      }
+    },
+    "APPOINTMENTS": {
+      "TEXT": "Citas",
+      "LIST": {
+        "APPOINTMENT-CALENDAR": "Calendario de Citas",
+        "VIEW-APPOINTMENT": "Ver Cita",
+        "BOOK-APPOINTMENT": "Reservar Cita",
+        "EDIT-APPOINTMENT": "Editar Cita"
+      }
+    },
+    "DOCTORS": {
+      "TEXT": "Médicos",
+      "LIST": {
+        "ALL-DOCTOR": "Todos los Médicos",
+        "ADD-DOCTOR": "Agregar Médico",
+        "EDIT-DOCTOR": "Editar Médico",
+        "PROFILE": "Perfil del Médico"
+      }
+    },
+    "PATIENTS": {
+      "TEXT": "Pacientes",
+      "LIST": {
+        "ALL-PATIENT": "Todos los Pacientes",
+        "ADD-PATIENT": "Agregar Paciente",
+        "EDIT-PATIENT": "Editar Paciente",
+        "PATIENT-RECORDS": "Registros de Pacientes",
+        "PROFILE": "Perfil del Paciente"
+      }
+    },
+    "DOCTOR": {
+      "DASHBOARD": "Tablero",
+      "APPOINTMENTS": "Citas",
+      "DOCTORS": "Médicos",
+      "PATIENTS": "Pacientes",
+      "SETTINGS": "Configuración"
+    },
+    "PATIENT": {
+      "TEXT": "Paciente",
+      "DASHBOARD": "Tablero",
+      "APPOINTMENTS": {
+        "TEXT": "Citas",
+        "LIST": {
+          "BOOK-APPOINTMENT": "Reservar Cita",
+          "TODAY": "Citas de Hoy",
+          "UPCOMING": "Próximas Citas",
+          "PAST": "Citas Pasadas"
+        }
+      },
+      "PRESCRIPTIONS": "Recetas",
+      "MEDICAL-RECORD": "Historial Médico",
+      "BILLING": "Facturación",
+      "SETTINGS": "Configuración"
+    },
+    "CALENDAR": {
+      "TEXT": "Calendario"
+    }
+  },
+  "COMMON": {
+    "ACTIONS": {
+      "ADD": "Agregar",
+      "EDIT": "Editar",
+      "DELETE": "Eliminar",
+      "SAVE": "Guardar",
+      "CANCEL": "Cancelar",
+      "SEARCH": "Buscar",
+      "FILTER": "Filtrar",
+      "EXPORT": "Exportar",
+      "IMPORT": "Importar",
+      "REFRESH": "Actualizar",
+      "VIEW": "Ver",
+      "VIEW_ALL": "Ver Todo",
+      "CLOSE": "Cerrar",
+      "CONFIRM": "Confirmar",
+      "BACK": "Volver",
+      "NEXT": "Siguiente",
+      "PREVIOUS": "Anterior",
+      "SUBMIT": "Enviar",
+      "RESET": "Restablecer",
+      "DOWNLOAD": "Descargar",
+      "UPLOAD": "Subir",
+      "PRINT": "Imprimir",
+      "SAVE_CHANGES": "Guardar Cambios",
+      "READ_MORE": "Leer Más"
+    },
+    "STATUS": {
+      "ACTIVE": "Activo",
+      "INACTIVE": "Inactivo",
+      "PENDING": "Pendiente",
+      "COMPLETED": "Completado",
+      "CANCELLED": "Cancelado",
+      "SCHEDULED": "Programado",
+      "CONFIRMED": "Confirmado",
+      "IN_PROGRESS": "En Progreso",
+      "DELAYED": "Retrasado",
+      "URGENT": "Urgente"
+    },
+    "TIME": {
+      "TODAY": "Hoy",
+      "YESTERDAY": "Ayer",
+      "TOMORROW": "Mañana",
+      "THIS_WEEK": "Esta Semana",
+      "THIS_MONTH": "Este Mes",
+      "THIS_YEAR": "Este Año",
+      "MINS_AGO": "hace {{count}} min",
+      "HOURS_AGO": "hace {{count}} h",
+      "DAYS_AGO": "hace {{count}} días"
+    },
+    "MESSAGES": {
+      "SUCCESS": "Operación exitosa",
+      "ERROR": "Ha ocurrido un error",
+      "CONFIRM_DELETE": "¿Está seguro de que desea eliminar?",
+      "NO_DATA": "No hay datos disponibles",
+      "LOADING": "Cargando..."
+    }
+  },
+  "DASHBOARD": {
+    "TITLE": "Tablero",
+    "WELCOME": "Bienvenido",
+    "WELCOME_BACK": "Bienvenido de nuevo",
+    "SURGERIES": "Cirugías",
+    "ROOM_VISIT": "Visitas",
+    "DOCTOR_DASHBOARD": "Tablero del Médico",
+    "PATIENT_DASHBOARD": "Tablero del Paciente",
+    "KPI": {
+      "APPOINTMENTS": "Citas",
+      "TODAYS_SUMMARY": "Resumen de Hoy",
+      "SCHEDULED": "Programadas",
+      "COMPLETED": "Completadas",
+      "CANCELLED": "Canceladas",
+      "PERFORMANCE": "Rendimiento",
+      "DAILY_METRICS": "Métricas Diarias",
+      "AVG_CONSULTATION": "Consulta Promedio",
+      "PATIENTS_PER_DAY": "Pacientes/Día",
+      "TODAYS_REVENUE": "Ingresos de Hoy",
+      "WALK_INS": "Sin Cita",
+      "FOLLOW_UPS": "Seguimientos",
+      "ONLINE": "En Línea"
+    },
+    "WIDGETS": {
+      "PATIENTS_SURVEY": "Encuesta de Pacientes",
+      "TASK_HOURS": "Horas de Trabajo",
+      "APPOINTMENTS": "Citas",
+      "EMERGENCY_LIST": "Lista de Emergencias",
+      "TODAYS_APPOINTMENTS": "Citas de Hoy",
+      "APPOINTMENT_REVIEW": "Revisión de Citas",
+      "TODO_LIST": "Lista de Tareas",
+      "DOCTOR_STATUS": "Estado del Médico",
+      "NUMBER_OF_PATIENTS": "Número de Pacientes",
+      "UPCOMING_SURGERIES": "Próximas Cirugías",
+      "PATIENT_FEEDBACK": "Comentarios de Pacientes",
+      "PATIENT_LIMIT": "Límite de Pacientes",
+      "PATIENTS": "Pacientes",
+      "SURGERY": "Cirugía",
+      "CONSULTATION": "Consulta",
+      "APPOINTMENT": "Cita"
+    },
+    "CHART": {
+      "FACE_TO_FACE": "Presencial",
+      "E_CONSULT": "E-Consulta",
+      "AVAILABLE": "Disponible",
+      "MODIFY_AVAILABILITY": "Modificar Disponibilidad"
+    },
+    "TABLE": {
+      "PATIENT": "Paciente",
+      "SURGERY_TYPE": "Tipo de Cirugía",
+      "DATE_TIME": "Fecha y Hora",
+      "DOCTOR": "Médico",
+      "STATUS": "Estado"
+    }
+  },
+  "PATIENTS": {
+    "TITLE": "Pacientes",
+    "ALL_PATIENTS": "Todos los Pacientes",
+    "ADD_PATIENT": "Agregar Paciente",
+    "EDIT_PATIENT": "Editar Paciente",
+    "PATIENT_DETAILS": "Detalles del Paciente",
+    "PATIENT_LIST": "Lista de Pacientes",
+    "SEARCH_PLACEHOLDER": "Buscar pacientes...",
+    "PATIENT_ID": "ID del Paciente",
+    "BLOOD_GROUP": "Grupo Sanguíneo",
+    "REPORTS": "Reportes",
+    "TABLE": {
+      "NAME": "Nombre",
+      "GENDER": "Género",
+      "AGE": "Edad",
+      "YEARS": "años",
+      "PHONE": "Teléfono",
+      "EMAIL": "Correo",
+      "ADDRESS": "Dirección",
+      "DATE_OF_BIRTH": "Fecha de Nacimiento",
+      "BLOOD_TYPE": "Tipo de Sangre",
+      "LAST_VISIT": "Última Visita",
+      "NEXT_APPOINTMENT": "Próxima Cita",
+      "ACTIONS": "Acciones"
+    },
+    "FORM": {
+      "PERSONAL_INFO": "Información Personal",
+      "FIRST_NAME": "Nombre",
+      "LAST_NAME": "Apellido",
+      "DATE_OF_BIRTH": "Fecha de Nacimiento",
+      "GENDER": "Género",
+      "MALE": "Masculino",
+      "FEMALE": "Femenino",
+      "OTHER": "Otro",
+      "CONTACT_INFO": "Información de Contacto",
+      "PHONE": "Teléfono",
+      "EMAIL": "Correo Electrónico",
+      "ADDRESS": "Dirección",
+      "CITY": "Ciudad",
+      "STATE": "Estado/Provincia",
+      "COUNTRY": "País",
+      "POSTAL_CODE": "Código Postal",
+      "MEDICAL_INFO": "Información Médica",
+      "BLOOD_TYPE": "Tipo de Sangre",
+      "ALLERGIES": "Alergias",
+      "MEDICAL_NOTES": "Notas Médicas",
+      "EMERGENCY_CONTACT": "Contacto de Emergencia",
+      "EMERGENCY_NAME": "Nombre del Contacto",
+      "EMERGENCY_PHONE": "Teléfono de Emergencia",
+      "EMERGENCY_RELATIONSHIP": "Parentesco",
+      "DOCUMENT_TYPE": "Tipo de Documento",
+      "DOCUMENT_NUMBER": "Número de Documento",
+      "OCCUPATION": "Ocupación",
+      "CHRONIC_CONDITIONS": "Condiciones Crónicas",
+      "CURRENT_MEDICATIONS": "Medicamentos Actuales",
+      "INSURANCE_PROVIDER": "Proveedor de Seguro",
+      "INSURANCE_NUMBER": "Número de Póliza",
+      "COMMA_SEPARATED": "Separado por comas"
+    },
+    "NO_PATIENTS": "No hay pacientes registrados",
+    "DELETE_CONFIRM_MESSAGE": "¿Está seguro de eliminar este paciente? Esta acción no se puede deshacer.",
+    "PROFILE": {
+      "MEDICAL_HISTORY": "Historial Médico",
+      "APPOINTMENTS": "Citas",
+      "PRESCRIPTIONS": "Recetas",
+      "LAB_RESULTS": "Resultados de Laboratorio",
+      "DOCUMENTS": "Documentos",
+      "NOTES": "Notas"
+    }
+  },
+  "APPOINTMENTS": {
+    "TITLE": "Citas",
+    "ALL_APPOINTMENTS": "Todas las Citas",
+    "NEW_APPOINTMENT": "Nueva Cita",
+    "EDIT_APPOINTMENT": "Editar Cita",
+    "APPOINTMENT_DETAILS": "Detalles de la Cita",
+    "BOOK_APPOINTMENT": "Reservar Cita",
+    "UPCOMING": "Próximas",
+    "PAST": "Pasadas",
+    "TODAY": "Hoy",
+    "CALENDAR_VIEW": "Vista de Calendario",
+    "LIST_VIEW": "Vista de Lista",
+    "NO_APPOINTMENTS": "No hay citas programadas",
+    "TABLE": {
+      "PATIENT": "Paciente",
+      "DOCTOR": "Médico",
+      "DATE": "Fecha",
+      "TIME": "Hora",
+      "TYPE": "Tipo",
+      "STATUS": "Estado",
+      "REASON": "Motivo",
+      "NOTES": "Notas",
+      "ACTIONS": "Acciones"
+    },
+    "FORM": {
+      "SELECT_PATIENT": "Seleccionar Paciente",
+      "SELECT_DOCTOR": "Seleccionar Médico",
+      "SELECT_DATE": "Seleccionar Fecha",
+      "SELECT_TIME": "Seleccionar Hora",
+      "START_TIME": "Hora de Inicio",
+      "END_TIME": "Hora de Fin",
+      "APPOINTMENT_TYPE": "Tipo de Cita",
+      "CONSULTATION": "Consulta",
+      "FOLLOW_UP": "Seguimiento",
+      "CHECK_UP": "Chequeo",
+      "EMERGENCY": "Emergencia",
+      "REASON": "Motivo de la Cita",
+      "NOTES": "Notas Adicionales",
+      "DURATION": "Duración",
+      "MINUTES": "minutos"
+    },
+    "DELETE_CONFIRM_MESSAGE": "¿Está seguro de eliminar esta cita? Esta acción no se puede deshacer.",
+    "STATUS": {
+      "SCHEDULED": "Programada",
+      "CONFIRMED": "Confirmada",
+      "IN_PROGRESS": "En Progreso",
+      "COMPLETED": "Completada",
+      "CANCELLED": "Cancelada",
+      "NO_SHOW": "No Asistió",
+      "RESCHEDULED": "Reprogramada"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Configuración",
+    "PROFILE": {
+      "TITLE": "Perfil",
+      "PERSONAL_INFO": "Información Personal",
+      "CHANGE_PASSWORD": "Cambiar Contraseña",
+      "CURRENT_PASSWORD": "Contraseña Actual",
+      "NEW_PASSWORD": "Nueva Contraseña",
+      "CONFIRM_PASSWORD": "Confirmar Contraseña",
+      "UPDATE_PROFILE": "Actualizar Perfil",
+      "PROFILE_PHOTO": "Foto de Perfil",
+      "UPLOAD_PHOTO": "Subir Foto",
+      "USERNAME": "Usuario",
+      "FIRST_NAME": "Nombre",
+      "LAST_NAME": "Apellido",
+      "CITY": "Ciudad",
+      "EMAIL": "Correo Electrónico",
+      "COUNTRY": "País",
+      "ADDRESS": "Dirección"
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Notificaciones",
+      "EMAIL_NOTIFICATIONS": "Notificaciones por Email",
+      "SMS_NOTIFICATIONS": "Notificaciones SMS",
+      "PUSH_NOTIFICATIONS": "Notificaciones Push",
+      "APPOINTMENT_REMINDERS": "Recordatorios de Citas",
+      "MARKETING_EMAILS": "Correos de Marketing"
+    },
+    "PREFERENCES": {
+      "TITLE": "Preferencias",
+      "LANGUAGE": "Idioma",
+      "TIMEZONE": "Zona Horaria",
+      "DATE_FORMAT": "Formato de Fecha",
+      "TIME_FORMAT": "Formato de Hora",
+      "THEME": "Tema",
+      "LIGHT": "Claro",
+      "DARK": "Oscuro"
+    },
+    "SECURITY": {
+      "TITLE": "Seguridad",
+      "TWO_FACTOR": "Autenticación de Dos Factores",
+      "LOGIN_HISTORY": "Historial de Inicio de Sesión",
+      "ACTIVE_SESSIONS": "Sesiones Activas"
+    },
+    "CLINIC": {
+      "TITLE": "Configuración de Clínica",
+      "CLINIC_INFO": "Información de la Clínica",
+      "WORKING_HOURS": "Horario de Atención",
+      "HOLIDAYS": "Días Festivos",
+      "SERVICES": "Servicios"
+    }
+  },
+  "CALENDAR": {
+    "TITLE": "Calendario",
+    "TODAY": "Hoy",
+    "MONTH": "Mes",
+    "WEEK": "Semana",
+    "DAY": "Día",
+    "LIST": "Lista",
+    "NEW_EVENT": "Nuevo Evento",
+    "EDIT_EVENT": "Editar Evento",
+    "DELETE_EVENT": "Eliminar Evento",
+    "EVENT_TITLE": "Título del Evento",
+    "START_DATE": "Fecha de Inicio",
+    "END_DATE": "Fecha de Fin",
+    "ALL_DAY": "Todo el Día",
+    "REPEAT": "Repetir",
+    "REMINDER": "Recordatorio"
+  },
+  "AUTH": {
+    "SIGNIN": {
+      "TITLE": "Iniciar Sesión",
+      "SUBTITLE": "Ingresa tus credenciales para acceder",
+      "EMAIL": "Correo Electrónico",
+      "PASSWORD": "Contraseña",
+      "REMEMBER_ME": "Recordarme",
+      "FORGOT_PASSWORD": "¿Olvidaste tu contraseña?",
+      "LOGIN": "Ingresar",
+      "NO_ACCOUNT": "¿No tienes cuenta?",
+      "REGISTER": "Regístrate",
+      "OR_LOGIN_WITH": "O inicia sesión con",
+      "INVALID_CREDENTIALS": "Credenciales inválidas"
+    },
+    "SIGNUP": {
+      "TITLE": "Crear Cuenta",
+      "SUBTITLE": "Regístrate para comenzar",
+      "FIRST_NAME": "Nombre",
+      "LAST_NAME": "Apellido",
+      "EMAIL": "Correo Electrónico",
+      "PASSWORD": "Contraseña",
+      "CONFIRM_PASSWORD": "Confirmar Contraseña",
+      "ACCEPT_TERMS": "Acepto los términos y condiciones",
+      "CREATE_ACCOUNT": "Crear Cuenta",
+      "HAVE_ACCOUNT": "¿Ya tienes cuenta?",
+      "LOGIN": "Inicia Sesión"
+    },
+    "FORGOT_PASSWORD": {
+      "TITLE": "Recuperar Contraseña",
+      "SUBTITLE": "Ingresa tu correo para recibir instrucciones",
+      "EMAIL": "Correo Electrónico",
+      "SEND": "Enviar Instrucciones",
+      "BACK_TO_LOGIN": "Volver al Inicio de Sesión"
+    },
+    "ERRORS": {
+      "EMAIL_REQUIRED": "El correo es requerido",
+      "EMAIL_INVALID": "Ingresa un correo válido",
+      "PASSWORD_REQUIRED": "La contraseña es requerida",
+      "PASSWORD_MIN_LENGTH": "La contraseña debe tener al menos 8 caracteres"
+    }
+  },
+  "CLINICAL_HISTORY": {
+    "TITLE": "Historial Clínico",
+    "CONSULTATIONS": "Consultas",
+    "DIAGNOSES": "Diagnósticos",
+    "TREATMENTS": "Tratamientos",
+    "PRESCRIPTIONS": "Recetas",
+    "LAB_RESULTS": "Resultados de Laboratorio",
+    "VITAL_SIGNS": "Signos Vitales",
+    "ALLERGIES": "Alergias",
+    "FAMILY_HISTORY": "Antecedentes Familiares",
+    "SURGICAL_HISTORY": "Antecedentes Quirúrgicos"
+  },
+  "PRESCRIPTIONS": {
+    "TITLE": "Recetas",
+    "ALL_PRESCRIPTIONS": "Todas las Recetas",
+    "NEW_PRESCRIPTION": "Nueva Receta",
+    "MEDICATION": "Medicamento",
+    "DOSAGE": "Dosis",
+    "FREQUENCY": "Frecuencia",
+    "DURATION": "Duración",
+    "INSTRUCTIONS": "Instrucciones"
+  },
+  "BILLING": {
+    "TITLE": "Facturación",
+    "ALL_INVOICES": "Todas las Facturas",
+    "NEW_INVOICE": "Nueva Factura",
+    "INVOICE_NUMBER": "Número de Factura",
+    "AMOUNT": "Monto",
+    "STATUS": "Estado",
+    "PAID": "Pagado",
+    "PENDING": "Pendiente",
+    "DUE_DATE": "Fecha de Vencimiento"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notificaciones",
+    "MARK_ALL_READ": "Marcar todo como leído",
+    "VIEW_ALL": "Ver todas",
+    "NO_NOTIFICATIONS": "No hay notificaciones",
+    "NEW_APPOINTMENT": "Nueva cita programada",
+    "APPOINTMENT_REMINDER": "Recordatorio de cita",
+    "APPOINTMENT_CANCELLED": "Cita cancelada"
+  },
+  "HEADER": {
+    "SEARCH_PLACEHOLDER": "Buscar...",
+    "NOTIFICATIONS": "Notificaciones",
+    "MESSAGES": "Mensajes",
+    "PROFILE": "Perfil",
+    "SETTINGS": "Configuración",
+    "LOGOUT": "Cerrar Sesión"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "© {{year}} Histora. Todos los derechos reservados.",
+    "PRIVACY_POLICY": "Política de Privacidad",
+    "TERMS_OF_SERVICE": "Términos de Servicio"
+  },
+  "VALIDATION": {
+    "REQUIRED": "Este campo es requerido",
+    "EMAIL": "Ingrese un correo válido",
+    "MIN_LENGTH": "Mínimo {{min}} caracteres",
+    "MAX_LENGTH": "Máximo {{max}} caracteres",
+    "PATTERN": "Formato inválido",
+    "PHONE": "Ingrese un teléfono válido",
+    "DATE": "Ingrese una fecha válida"
+  }
+}

@@ -1,0 +1,43 @@
+<div class="appointment-delete-dialog">
+  <h3 mat-dialog-title>{{ 'COMMON.MESSAGES.CONFIRM_DELETE' | translate }}</h3>
+
+  <mat-dialog-content>
+    <p class="delete-message">
+      {{ 'APPOINTMENTS.DELETE_CONFIRM_MESSAGE' | translate }}
+    </p>
+    <ul class="appointment-info">
+      <li>
+        <span class="label">{{ 'APPOINTMENTS.TABLE.PATIENT' | translate }}:</span>
+        <span class="value">{{ patientName }}</span>
+      </li>
+      <li>
+        <span class="label">{{ 'APPOINTMENTS.TABLE.DATE' | translate }}:</span>
+        <span class="value">{{ appointmentDate | date: 'dd/MM/yyyy' }}</span>
+      </li>
+      <li>
+        <span class="label">{{ 'APPOINTMENTS.TABLE.TIME' | translate }}:</span>
+        <span class="value">{{ appointmentTime }}</span>
+      </li>
+      @if (data.appointment.reasonForVisit) {
+        <li>
+          <span class="label">{{ 'APPOINTMENTS.TABLE.REASON' | translate }}:</span>
+          <span class="value">{{ data.appointment.reasonForVisit }}</span>
+        </li>
+      }
+    </ul>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [disabled]="isDeleting">
+      {{ 'COMMON.ACTIONS.CANCEL' | translate }}
+    </button>
+    <button
+      mat-flat-button
+      color="warn"
+      (click)="confirmDelete()"
+      [disabled]="isDeleting"
+    >
+      {{ 'COMMON.ACTIONS.DELETE' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

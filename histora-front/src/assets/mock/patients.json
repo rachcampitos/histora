@@ -1,0 +1,277 @@
+{
+  "data": [
+    {
+      "_id": "p001",
+      "firstName": "María",
+      "lastName": "García López",
+      "email": "maria.garcia@email.com",
+      "phone": "+51 987 654 321",
+      "dateOfBirth": "1985-03-15",
+      "gender": "female",
+      "documentType": "DNI",
+      "documentNumber": "45678912",
+      "address": "Av. Arequipa 1520, Lince",
+      "city": "Lima",
+      "bloodType": "O+",
+      "emergencyContact": {
+        "name": "Carlos García",
+        "phone": "+51 987 111 222",
+        "relationship": "Esposo"
+      },
+      "insurance": {
+        "provider": "Rímac Seguros",
+        "policyNumber": "POL-2024-001234"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-28",
+      "totalVisits": 8,
+      "createdAt": "2024-01-10T10:30:00Z"
+    },
+    {
+      "_id": "p002",
+      "firstName": "Juan",
+      "lastName": "Rodríguez Pérez",
+      "email": "juan.rodriguez@email.com",
+      "phone": "+51 912 345 678",
+      "dateOfBirth": "1978-07-22",
+      "gender": "male",
+      "documentType": "DNI",
+      "documentNumber": "32145698",
+      "address": "Jr. Cusco 890, San Isidro",
+      "city": "Lima",
+      "bloodType": "A+",
+      "emergencyContact": {
+        "name": "Ana Rodríguez",
+        "phone": "+51 912 222 333",
+        "relationship": "Esposa"
+      },
+      "insurance": {
+        "provider": "Pacífico Seguros",
+        "policyNumber": "POL-2024-005678"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-30",
+      "totalVisits": 12,
+      "createdAt": "2023-06-15T14:20:00Z"
+    },
+    {
+      "_id": "p003",
+      "firstName": "Carmen",
+      "lastName": "Torres Medina",
+      "email": "carmen.torres@email.com",
+      "phone": "+51 945 678 123",
+      "dateOfBirth": "1992-11-08",
+      "gender": "female",
+      "documentType": "DNI",
+      "documentNumber": "71234567",
+      "address": "Calle Los Pinos 234, Miraflores",
+      "city": "Lima",
+      "bloodType": "B+",
+      "emergencyContact": {
+        "name": "Pedro Torres",
+        "phone": "+51 945 333 444",
+        "relationship": "Padre"
+      },
+      "insurance": {
+        "provider": "La Positiva",
+        "policyNumber": "POL-2024-009012"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-15",
+      "totalVisits": 5,
+      "createdAt": "2024-03-20T09:00:00Z"
+    },
+    {
+      "_id": "p004",
+      "firstName": "Roberto",
+      "lastName": "Sánchez Vargas",
+      "email": "roberto.sanchez@email.com",
+      "phone": "+51 956 789 234",
+      "dateOfBirth": "1965-02-28",
+      "gender": "male",
+      "documentType": "DNI",
+      "documentNumber": "08765432",
+      "address": "Av. Brasil 2100, Jesús María",
+      "city": "Lima",
+      "bloodType": "AB+",
+      "emergencyContact": {
+        "name": "Lucia Sánchez",
+        "phone": "+51 956 444 555",
+        "relationship": "Hija"
+      },
+      "insurance": {
+        "provider": "Mapfre",
+        "policyNumber": "POL-2024-003456"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-20",
+      "totalVisits": 15,
+      "createdAt": "2022-11-05T11:45:00Z"
+    },
+    {
+      "_id": "p005",
+      "firstName": "Sofía",
+      "lastName": "Mendoza Ríos",
+      "email": "sofia.mendoza@email.com",
+      "phone": "+51 967 890 345",
+      "dateOfBirth": "2000-09-12",
+      "gender": "female",
+      "documentType": "DNI",
+      "documentNumber": "76543210",
+      "address": "Av. La Marina 3200, San Miguel",
+      "city": "Lima",
+      "bloodType": "O-",
+      "emergencyContact": {
+        "name": "Rosa Ríos",
+        "phone": "+51 967 555 666",
+        "relationship": "Madre"
+      },
+      "insurance": {
+        "provider": "Rímac Seguros",
+        "policyNumber": "POL-2024-007890"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-22",
+      "totalVisits": 3,
+      "createdAt": "2024-08-01T16:30:00Z"
+    },
+    {
+      "_id": "p006",
+      "firstName": "Luis",
+      "lastName": "Fernández Castro",
+      "email": "luis.fernandez@email.com",
+      "phone": "+51 978 901 456",
+      "dateOfBirth": "1988-04-05",
+      "gender": "male",
+      "documentType": "DNI",
+      "documentNumber": "46789123",
+      "address": "Jr. Ayacucho 567, Breña",
+      "city": "Lima",
+      "bloodType": "A-",
+      "emergencyContact": {
+        "name": "Elena Castro",
+        "phone": "+51 978 666 777",
+        "relationship": "Madre"
+      },
+      "insurance": {
+        "provider": "SIS",
+        "policyNumber": "SIS-2024-112233"
+      },
+      "status": "active",
+      "lastVisit": "2024-11-30",
+      "totalVisits": 6,
+      "createdAt": "2024-02-14T08:15:00Z"
+    },
+    {
+      "_id": "p007",
+      "firstName": "Patricia",
+      "lastName": "Huamán Quispe",
+      "email": "patricia.huaman@email.com",
+      "phone": "+51 989 012 567",
+      "dateOfBirth": "1975-12-18",
+      "gender": "female",
+      "documentType": "DNI",
+      "documentNumber": "25678901",
+      "address": "Av. Universitaria 4500, Comas",
+      "city": "Lima",
+      "bloodType": "B-",
+      "emergencyContact": {
+        "name": "Miguel Huamán",
+        "phone": "+51 989 777 888",
+        "relationship": "Hijo"
+      },
+      "insurance": {
+        "provider": "EsSalud",
+        "policyNumber": "ES-2024-445566"
+      },
+      "status": "inactive",
+      "lastVisit": "2024-09-10",
+      "totalVisits": 20,
+      "createdAt": "2021-05-22T13:00:00Z"
+    },
+    {
+      "_id": "p008",
+      "firstName": "Diego",
+      "lastName": "Chavez Morales",
+      "email": "diego.chavez@email.com",
+      "phone": "+51 990 123 678",
+      "dateOfBirth": "1995-06-30",
+      "gender": "male",
+      "documentType": "DNI",
+      "documentNumber": "73456789",
+      "address": "Calle Las Flores 123, Surco",
+      "city": "Lima",
+      "bloodType": "O+",
+      "emergencyContact": {
+        "name": "Laura Morales",
+        "phone": "+51 990 888 999",
+        "relationship": "Madre"
+      },
+      "insurance": {
+        "provider": "Pacífico Seguros",
+        "policyNumber": "POL-2024-011223"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-29",
+      "totalVisits": 4,
+      "createdAt": "2024-05-10T10:00:00Z"
+    },
+    {
+      "_id": "p009",
+      "firstName": "Valeria",
+      "lastName": "Paredes Luna",
+      "email": "valeria.paredes@email.com",
+      "phone": "+51 901 234 789",
+      "dateOfBirth": "1982-08-25",
+      "gender": "female",
+      "documentType": "CE",
+      "documentNumber": "CE-001234567",
+      "address": "Av. Petit Thouars 1800, Santa Beatriz",
+      "city": "Lima",
+      "bloodType": "A+",
+      "emergencyContact": {
+        "name": "Jorge Paredes",
+        "phone": "+51 901 999 000",
+        "relationship": "Hermano"
+      },
+      "insurance": {
+        "provider": "Rímac Seguros",
+        "policyNumber": "POL-2024-334455"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-18",
+      "totalVisits": 9,
+      "createdAt": "2023-09-01T15:30:00Z"
+    },
+    {
+      "_id": "p010",
+      "firstName": "Andrés",
+      "lastName": "Vega Salazar",
+      "email": "andres.vega@email.com",
+      "phone": "+51 912 345 890",
+      "dateOfBirth": "1970-01-10",
+      "gender": "male",
+      "documentType": "DNI",
+      "documentNumber": "15678902",
+      "address": "Jr. Lampa 450, Centro de Lima",
+      "city": "Lima",
+      "bloodType": "AB-",
+      "emergencyContact": {
+        "name": "Teresa Salazar",
+        "phone": "+51 912 000 111",
+        "relationship": "Esposa"
+      },
+      "insurance": {
+        "provider": "La Positiva",
+        "policyNumber": "POL-2024-556677"
+      },
+      "status": "active",
+      "lastVisit": "2024-12-25",
+      "totalVisits": 18,
+      "createdAt": "2020-03-15T12:00:00Z"
+    }
+  ],
+  "total": 10,
+  "page": 1,
+  "limit": 10
+}

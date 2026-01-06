@@ -1,62 +1,120 @@
-# 🩺 Histora App
+# Histora App
 
-**Histora** es una aplicación médica modular diseñada para gestionar pacientes, doctores y registros clínicos. El proyecto está construido con **NestJS** en el backend y **Angular** en el frontend, y está orientado a resolver necesidades reales del sector salud, especialmente en el contexto peruano.
+**Histora** es una aplicación médica modular diseñada para gestionar pacientes, doctores y registros clínicos. El proyecto está construido con **NestJS** en el backend y **Angular + Ionic** en el frontend, y está orientado a resolver necesidades reales del sector salud, especialmente en el contexto peruano.
 
 ---
 
-## 📦 Estructura del Monorepo
+## Estructura del Proyecto
 
-histora-app/
+```
+histora/
 ├── docs/             # Documentación técnica y normativa
 ├── histora-back/     # Backend con NestJS y MongoDB
-├── histora-front/    # Frontend con Angular
-└── .gitignore
+├── histora-front/    # Frontend con Angular + Ionic
+└── README.md
+```
 
-## 🚀 Instalación y Uso
+## Instalación y Uso
 
-- Clona el repositorio:
-  ```bash
-  git clone https://github.com/tu-usuario/histora-app.git
-  cd histora-app
+1. Clona el repositorio:
+```bash
+git clone https://github.com/tu-usuario/histora-app.git
+cd histora-app
+```
 
-## 🚀 Instala dependencias en cada módulo:
-
+2. Instala dependencias:
+```bash
 cd histora-back && npm install
 cd ../histora-front && npm install
+```
 
-Configura las variables de entorno en histora-back/.env
-Levanta los servicios:
+3. Configura las variables de entorno en `histora-back/.env`
 
+4. Levanta los servicios:
+```bash
 # Backend
-npm run start:dev
+cd histora-back && npm run start:dev
 
 # Frontend
-ng serve
+cd histora-front && npm start
+```
 
-🧠 Descripción General
+## Arquitectura
 
-Histora busca ofrecer una solución técnica robusta para el manejo de información médica. Está dividido en tres partes:
+### Backend (histora-back)
+- **Framework:** NestJS con TypeScript
+- **Base de datos:** MongoDB con Mongoose
+- **Autenticación:** JWT con refresh token rotation
+- **Documentación:** Swagger/OpenAPI
+- **Tests:** Jest (279 tests unitarios)
 
-•  Backend (histora-back) – API modular con NestJS y MongoDB
-•  Frontend (histora-front) – Interfaz de usuario con Angular
-•  Documentación (docs) – Normativas, esquemas y referencias técnicas
+Módulos:
+- Auth (autenticación y autorización)
+- Users (gestión de usuarios)
+- Patients (pacientes)
+- Doctors (médicos)
+- Appointments (citas médicas)
+- Consultations (consultas médicas)
+- Clinical History (historiales clínicos)
+- Payments (pagos)
+- Notifications (notificaciones)
+- Uploads (carga de archivos)
 
-📌 Estado Actual
+### Frontend (histora-front)
+- **Framework:** Angular 19 con signals
+- **UI Library:** Ionic 8 standalone components
+- **Charts:** ApexCharts para estadísticas
+- **Calendario:** FullCalendar para citas
+- **Theme:** Sistema de temas claro/oscuro
 
-•  ✅ Backend: CRUD de pacientes, doctores y historias clínicas con borrado lógico
-•  🛠️ Frontend: En desarrollo
-•  📚 Documentación: Normativas peruanas y estructura técnica
+Características de UI:
+- Layout profesional con sidebar colapsable
+- Dashboard con métricas y gráficos
+- Gestión completa de pacientes y citas
+- Historiales clínicos detallados
+- Configuración de tema y colores
+- Diseño responsive para desktop y tablet
+- Cumplimiento WCAG 2.1 AA (accesibilidad)
 
-🗺️ Roadmap General
+## Estado del Proyecto
 
-•  Estructura modular del backend
-•  Borrado lógico y restauración de historias clínicas
-•  Módulo de citas médicas
-•  Autenticación y roles
-•  Exportación de historias clínicas en PDF
-•  Interfaz completa en Angular
-•  Panel de configuración para campos personalizados
+### Completado
+- Backend completo con todos los módulos
+- API REST documentada con Swagger
+- Sistema de autenticación JWT
+- Frontend con layout profesional
+- Dashboard con estadísticas y gráficos
+- CRUD de pacientes, citas y consultas
+- Historiales clínicos
+- Sistema de notificaciones
+- Tests unitarios (279 backend, 118 frontend)
 
-👨‍💻 Autor
+### En Desarrollo
+- Integración con Capacitor para mobile
+- Exportación de reportes PDF
+- Sistema de suscripciones
 
-Desarrollado por Raul, apasionado por crear soluciones reales para el sector salud y consolidarse como desarrollador fullstack. Este proyecto es parte de su camino hacia la excelencia técnica y profesional.
+## Tests
+
+```bash
+# Backend
+cd histora-back && npm test
+
+# Frontend
+cd histora-front && npm test
+```
+
+## Tecnologías
+
+| Capa | Tecnología |
+|------|------------|
+| Frontend | Angular 19, Ionic 8, TypeScript |
+| Backend | NestJS, MongoDB, Mongoose |
+| Auth | JWT, Passport, bcrypt |
+| Docs | Swagger/OpenAPI |
+| Tests | Jest, Karma, Jasmine |
+| CI/CD | GitHub Actions |
+
+## Licencia
+
+Proyecto privado desarrollado por Raul Campos.

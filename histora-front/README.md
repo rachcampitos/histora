@@ -1,59 +1,129 @@
-# HistoraFront
+# Histora Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.1.
+Frontend de la aplicación Histora, construido con Angular 19 e Ionic 8.
 
-## Development server
+## Tecnologías
 
-To start a local development server, run:
+- **Angular 19** con signals y standalone components
+- **Ionic 8** para componentes UI
+- **TypeScript** con tipado estricto
+- **ApexCharts** para gráficos estadísticos
+- **FullCalendar** para calendario de citas
+- **Karma + Jasmine** para tests unitarios
+
+## Requisitos
+
+- Node.js 18+
+- npm 9+
+
+## Instalación
 
 ```bash
+npm install
+```
+
+## Desarrollo
+
+```bash
+npm start
+# o
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La aplicación estará disponible en `http://localhost:4200`
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Build de Producción
 
 ```bash
-ng generate component component-name
+npm run build
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Tests
 
 ```bash
-ng generate --help
+npm test                    # Tests con watch
+npm test -- --no-watch      # Tests sin watch
 ```
 
-## Building
+## Estructura del Proyecto
 
-To build the project run:
-
-```bash
-ng build
+```
+src/
+├── app/
+│   ├── core/              # Servicios, guards, interceptors
+│   │   ├── guards/        # Auth guards
+│   │   ├── interceptors/  # HTTP interceptors
+│   │   ├── models/        # Interfaces TypeScript
+│   │   └── services/      # Servicios core (API, Auth, Storage)
+│   ├── features/          # Módulos de features
+│   │   ├── auth/          # Login, registro
+│   │   ├── dashboard/     # Dashboard principal
+│   │   ├── patients/      # Gestión de pacientes
+│   │   ├── appointments/  # Gestión de citas
+│   │   ├── consultations/ # Consultas médicas
+│   │   ├── clinical-history/  # Historiales clínicos
+│   │   └── settings/      # Configuración
+│   ├── layouts/           # Layouts de la app
+│   │   ├── main-layout/   # Layout principal con sidebar
+│   │   └── auth-layout/   # Layout para auth
+│   └── shared/            # Componentes compartidos
+├── theme/                 # Estilos y temas
+│   ├── variables.css      # Variables CSS Ionic
+│   └── cliniva/           # Estilos del tema
+└── styles.scss            # Estilos globales
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Características
 
-## Running unit tests
+### Layout Principal
+- Sidebar colapsable con navegación
+- Header con búsqueda y usuario
+- Panel de configuración de tema
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Dashboard
+- Métricas de pacientes, citas y consultas
+- Gráficos de estadísticas (ApexCharts)
+- Lista de citas de hoy
+- Accesos rápidos
 
-```bash
-ng test
+### Gestión de Pacientes
+- Lista con búsqueda y paginación
+- Detalle completo del paciente
+- Formulario de creación/edición
+
+### Gestión de Citas
+- Vista por día/semana/todas
+- Calendario interactivo
+- Estados de cita (programada, confirmada, completada)
+
+### Historiales Clínicos
+- Vista detallada con acordeones
+- Alergias, condiciones crónicas
+- Historial de cirugías y vacunas
+
+### Accesibilidad (WCAG 2.1 AA)
+- Skip links
+- Focus visible
+- Roles ARIA
+- Etiquetas accesibles
+- Soporte para reduced motion
+
+## Variables de Entorno
+
+Crear archivo `src/environments/environment.ts`:
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000/api'
+};
 ```
 
-## Running end-to-end tests
+## Scripts Disponibles
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+| Comando | Descripción |
+|---------|-------------|
+| `npm start` | Servidor de desarrollo |
+| `npm run build` | Build de producción |
+| `npm test` | Tests unitarios |
+| `npm run lint` | Linter ESLint |

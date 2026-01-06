@@ -1,0 +1,233 @@
+{
+  "routes": [
+    {
+      "path": "",
+      "title": "MENUITEMS.ADMIN.TEXT",
+      "iconType": "",
+      "icon": "",
+      "class": "",
+      "groupTitle": true,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "/admin/dashboard",
+      "title": "MENUITEMS.ADMIN.DASHBOARD",
+      "iconType": "material-icons-outlined",
+      "icon": "dashboard",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "/admin/clinics",
+      "title": "MENUITEMS.ADMIN.CLINICS",
+      "iconType": "material-icons-outlined",
+      "icon": "business",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "/admin/users",
+      "title": "MENUITEMS.ADMIN.USERS",
+      "iconType": "material-icons-outlined",
+      "icon": "group",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "/admin/subscriptions",
+      "title": "MENUITEMS.ADMIN.SUBSCRIPTIONS",
+      "iconType": "material-icons-outlined",
+      "icon": "card_membership",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "/admin/reports",
+      "title": "MENUITEMS.ADMIN.REPORTS",
+      "iconType": "material-icons-outlined",
+      "icon": "assessment",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "/admin/settings",
+      "title": "MENUITEMS.ADMIN.SETTINGS",
+      "iconType": "material-icons-outlined",
+      "icon": "settings",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "",
+      "title": "MENUITEMS.MAIN.TEXT",
+      "iconType": "",
+      "icon": "",
+      "class": "",
+      "groupTitle": true,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["ADMIN", "DOCTOR"],
+      "submenu": []
+    },
+    {
+      "path": "/doctor/dashboard",
+      "title": "MENUITEMS.DOCTOR.DASHBOARD",
+      "iconType": "material-icons-outlined",
+      "icon": "space_dashboard",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["ADMIN", "DOCTOR"],
+      "submenu": []
+    },
+    {
+      "path": "/doctor/patients",
+      "title": "MENUITEMS.DOCTOR.PATIENTS",
+      "iconType": "material-icons-outlined",
+      "icon": "face",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["ADMIN", "DOCTOR"],
+      "submenu": []
+    },
+    {
+      "path": "/doctor/appointments",
+      "title": "MENUITEMS.DOCTOR.APPOINTMENTS",
+      "iconType": "material-icons-outlined",
+      "icon": "event",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["ADMIN", "DOCTOR"],
+      "submenu": []
+    },
+    {
+      "path": "/doctor/settings",
+      "title": "MENUITEMS.DOCTOR.SETTINGS",
+      "iconType": "material-icons-outlined",
+      "icon": "settings",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["ADMIN", "DOCTOR"],
+      "submenu": []
+    },
+    {
+      "path": "/patient/dashboard",
+      "title": "MENUITEMS.PATIENT.DASHBOARD",
+      "iconType": "material-icons-outlined",
+      "icon": "space_dashboard",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PATIENT"],
+      "submenu": []
+    },
+    {
+      "path": "",
+      "title": "MENUITEMS.PATIENT.APPOINTMENTS.TEXT",
+      "iconType": "material-icons-outlined",
+      "icon": "event",
+      "class": "menu-toggle",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PATIENT"],
+      "submenu": [
+        {
+          "path": "/patient/appointments/book",
+          "title": "MENUITEMS.PATIENT.APPOINTMENTS.LIST.BOOK-APPOINTMENT",
+          "iconType": "",
+          "icon": "",
+          "class": "ml-menu",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [""],
+          "submenu": []
+        },
+        {
+          "path": "/patient/appointments/upcoming",
+          "title": "MENUITEMS.PATIENT.APPOINTMENTS.LIST.UPCOMING",
+          "iconType": "",
+          "icon": "",
+          "class": "ml-menu",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [""],
+          "submenu": []
+        },
+        {
+          "path": "/patient/appointments/past",
+          "title": "MENUITEMS.PATIENT.APPOINTMENTS.LIST.PAST",
+          "iconType": "",
+          "icon": "",
+          "class": "ml-menu",
+          "groupTitle": false,
+          "badge": "",
+          "badgeClass": "",
+          "role": [""],
+          "submenu": []
+        }
+      ]
+    },
+    {
+      "path": "/patient/records",
+      "title": "MENUITEMS.PATIENT.MEDICAL-RECORD",
+      "iconType": "material-icons-outlined",
+      "icon": "folder_shared",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PATIENT"],
+      "submenu": []
+    },
+    {
+      "path": "/patient/settings",
+      "title": "MENUITEMS.PATIENT.SETTINGS",
+      "iconType": "material-icons-outlined",
+      "icon": "settings",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PATIENT"],
+      "submenu": []
+    }
+  ]
+}

@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 
 export interface UploadOptions {
   folder?: string;
@@ -33,7 +34,7 @@ export interface DeleteResult {
 }
 
 @Injectable()
-export class CloudinaryProvider {
+export class CloudinaryProvider implements OnModuleInit {
   private readonly logger = new Logger(CloudinaryProvider.name);
   private readonly cloudName: string;
   private readonly apiKey: string;
@@ -51,6 +52,20 @@ export class CloudinaryProvider {
     }
   }
 
+  onModuleInit() {
+    if (this.configured) {
+      cloudinary.config({
+        cloud_name: this.cloudName,
+        api_key: this.apiKey,
+        api_secret: this.apiSecret,
+      });
+      this.logger.log('Cloudinary configured successfully');
+      this.logger.log(`Cloud: ${this.cloudName}, Key: ${this.apiKey.slice(0, 6)}...`);
+    } else {
+      this.logger.warn(`Cloud: "${this.cloudName}", Key: "${this.apiKey}", Secret length: ${this.apiSecret?.length || 0}`);
+    }
+  }
+
   // Upload file from buffer
   async uploadBuffer(buffer: Buffer, filename: string, options: UploadOptions = {}): Promise<UploadResult> {
     if (!this.configured) {
@@ -58,38 +73,33 @@ export class CloudinaryProvider {
     }
 
     try {
-      // Real Cloudinary upload
-      // npm install cloudinary
-      // const cloudinary = require('cloudinary').v2;
-      // cloudinary.config({
-      //   cloud_name: this.cloudName,
-      //   api_key: this.apiKey,
-      //   api_secret: this.apiSecret,
-      // });
-      //
-      // const result = await new Promise((resolve, reject) => {
-      //   const uploadStream = cloudinary.uploader.upload_stream(
-      //     {
-      //       folder: options.folder || 'histora',
-      //       resource_type: options.resourceType || 'image',
-      //       transformation: options.transformation,
-      //       tags: options.tags,
-      //     },
-      //     (error, result) => {
-      //       if (error) reject(error);
-      //       else resolve(result);
-      //     }
-      //   );
-      //   uploadStream.end(buffer);
-      // });
+      const result: UploadApiResponse = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: options.folder || 'histora',
+            public_id: filename.replace(/\.[^/.]+$/, ''),
+            resource_type: options.resourceType || 'image',
+            transformation: options.transformation ? [options.transformation] : undefined,
+            tags: options.tags,
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result as UploadApiResponse);
+          }
+        );
+        uploadStream.end(buffer);
+      });
 
-      this.logger.log(`[Cloudinary] File uploaded: ${filename}`);
+      this.logger.log(`[Cloudinary] File uploaded: ${result.public_id}`);
       return {
         success: true,
-        url: `https://res.cloudinary.com/${this.cloudName}/image/upload/${options.folder || 'histora'}/${filename}`,
-        secureUrl: `https://res.cloudinary.com/${this.cloudName}/image/upload/${options.folder || 'histora'}/${filename}`,
-        publicId: `${options.folder || 'histora'}/${filename}`,
-        format: 'jpg',
+        url: result.url,
+        secureUrl: result.secure_url,
+        publicId: result.public_id,
+        format: result.format,
+        width: result.width,
+        height: result.height,
+        bytes: result.bytes,
       };
     } catch (error) {
       this.logger.error(`[Cloudinary] Upload failed: ${error.message}`);
@@ -107,24 +117,27 @@ export class CloudinaryProvider {
     }
 
     try {
-      // const cloudinary = require('cloudinary').v2;
-      // const result = await cloudinary.uploader.upload(
-      //   `data:image/png;base64,${base64Data}`,
-      //   {
-      //     folder: options.folder || 'histora',
-      //     public_id: filename,
-      //     transformation: options.transformation,
-      //     tags: options.tags,
-      //   }
-      // );
+      const result: UploadApiResponse = await cloudinary.uploader.upload(
+        `data:image/png;base64,${base64Data}`,
+        {
+          folder: options.folder || 'histora',
+          public_id: filename.replace(/\.[^/.]+$/, ''), // Remove extension
+          transformation: options.transformation ? [options.transformation] : undefined,
+          tags: options.tags,
+          resource_type: options.resourceType || 'image',
+        }
+      );
 
-      this.logger.log(`[Cloudinary] Base64 file uploaded: ${filename}`);
+      this.logger.log(`[Cloudinary] Base64 file uploaded: ${result.public_id}`);
       return {
         success: true,
-        url: `https://res.cloudinary.com/${this.cloudName}/image/upload/${options.folder || 'histora'}/${filename}`,
-        secureUrl: `https://res.cloudinary.com/${this.cloudName}/image/upload/${options.folder || 'histora'}/${filename}`,
-        publicId: `${options.folder || 'histora'}/${filename}`,
-        format: 'jpg',
+        url: result.url,
+        secureUrl: result.secure_url,
+        publicId: result.public_id,
+        format: result.format,
+        width: result.width,
+        height: result.height,
+        bytes: result.bytes,
       };
     } catch (error) {
       this.logger.error(`[Cloudinary] Base64 upload failed: ${error.message}`);
@@ -143,8 +156,7 @@ export class CloudinaryProvider {
     }
 
     try {
-      // const cloudinary = require('cloudinary').v2;
-      // await cloudinary.uploader.destroy(publicId);
+      await cloudinary.uploader.destroy(publicId);
 
       this.logger.log(`[Cloudinary] File deleted: ${publicId}`);
       return { success: true };

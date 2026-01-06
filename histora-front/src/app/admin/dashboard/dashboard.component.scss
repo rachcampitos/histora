@@ -1,0 +1,271 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+// Row spacing
+.row {
+  margin-bottom: 25px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// KPI Cards
+.kpi-card {
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .kpi-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .kpi-info {
+    flex: 1;
+  }
+
+  .kpi-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 8px 0;
+    color: #2c3e50;
+  }
+
+  .kpi-change {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #28a745;
+    font-weight: 500;
+
+    .change-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+  }
+
+  .kpi-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 30px;
+      width: 30px;
+      height: 30px;
+      color: white;
+    }
+  }
+
+  &.kpi-primary .kpi-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  &.kpi-success .kpi-icon {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  }
+
+  &.kpi-info .kpi-icon {
+    background: linear-gradient(135deg, #2196f3 0%, #21cbf3 100%);
+  }
+
+  &.kpi-warning .kpi-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+}
+
+// Cards
+.card {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+
+  .header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+  }
+
+  .body {
+    padding: 20px;
+  }
+}
+
+// Table styles
+.table-responsive {
+  overflow-x: auto;
+}
+
+.advance-table {
+  width: 100%;
+
+  th {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    vertical-align: middle;
+    padding: 12px 16px;
+  }
+}
+
+.clinic-name {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+
+  .clinic-icon {
+    margin-right: 10px;
+    color: #667eea;
+  }
+}
+
+// Badges
+.badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.badge-outline-primary {
+    background: transparent;
+    border: 1px solid #667eea;
+    color: #667eea;
+  }
+
+  &.badge-solid-green {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.badge-solid-orange {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  &.badge-solid-blue {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &.badge-solid-red {
+    background: #ffebee;
+    color: #c62828;
+  }
+
+  &.badge-solid-gray {
+    background: #f5f5f5;
+    color: #616161;
+  }
+}
+
+// Quick Action Cards
+.quick-action-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    border-color: #667eea;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+
+    .action-icon {
+      color: #667eea;
+      transform: scale(1.1);
+    }
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .action-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #6c757d;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+  }
+
+  .action-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .kpi-card {
+    .kpi-value {
+      font-size: 24px;
+    }
+
+    .kpi-icon {
+      width: 50px;
+      height: 50px;
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .quick-action-card {
+    .action-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+}
