@@ -63,6 +63,9 @@ export class EmailProvider implements OnModuleInit {
     }
 
     try {
+      // Generate text version from HTML if not provided
+      const textContent = options.text || this.stripHtml(options.html || '') || 'Ver este email en un cliente que soporte HTML';
+
       const msg = {
         to: options.to,
         from: {
@@ -70,8 +73,8 @@ export class EmailProvider implements OnModuleInit {
           name: this.fromName,
         },
         subject: options.subject,
-        text: options.text || '',
-        html: options.html || options.text || '',
+        text: textContent,
+        html: options.html || options.text || textContent,
       };
 
       const [response] = await sgMail.send(msg);
@@ -117,6 +120,15 @@ export class EmailProvider implements OnModuleInit {
       this.logger.error(`[SMTP] Failed to send email: ${error.message}`);
       return { success: false, error: error.message };
     }
+  }
+
+  private stripHtml(html: string): string {
+    return html
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   private async logToConsole(options: EmailOptions): Promise<EmailResult> {
