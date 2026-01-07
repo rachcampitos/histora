@@ -2,6 +2,14 @@
 
 Sistema SaaS para gestión de consultorios médicos independientes.
 
+## URLs de Producción
+
+| Servicio | URL |
+|----------|-----|
+| Frontend | https://app.historahealth.com |
+| Backend API | https://api.historahealth.com |
+| Swagger (dev) | http://localhost:3000/docs |
+
 ## Descripción
 
 **Histora** es una plataforma donde médicos pueden:
@@ -10,6 +18,8 @@ Sistema SaaS para gestión de consultorios médicos independientes.
 - Gestionar pacientes, citas y consultas
 - Ofrecer un portal para pacientes con acceso a su historial
 - Aparecer en un directorio público con reseñas
+- Recibir notificaciones por email y WhatsApp
+- Agendar citas via chatbot de WhatsApp
 
 ## Índice
 
@@ -44,11 +54,14 @@ Sistema SaaS para gestión de consultorios médicos independientes.
 | Backend | NestJS 11 |
 | Base de datos | MongoDB (Mongoose 8) |
 | Autenticación | JWT + Passport |
-| Frontend | Angular 20 + Ionic 8 |
-| Testing | Jest (275 tests) |
+| Frontend | Angular 20 + Material |
+| Testing | Jest (280+ tests) |
 | Pagos | Culqi (Yape, tarjetas) |
-| Notificaciones | Email, SMS, WhatsApp, Push |
+| Notificaciones | SendGrid, WhatsApp |
 | Almacenamiento | Cloudinary |
+| Seguridad | Helmet, Throttler |
+| Hosting | Railway |
+| Dominio | Namecheap |
 
 ## Módulos del Sistema
 
@@ -70,6 +83,7 @@ Sistema SaaS para gestión de consultorios médicos independientes.
 | Notifications | ✅ | Email, SMS, WhatsApp, Push |
 | Payments | ✅ | Yape, Plin, tarjetas (Culqi) |
 | Uploads | ✅ | Fotos de perfil (Cloudinary) |
+| Chatbot | ✅ | Bot WhatsApp para citas |
 
 ## Roles de Usuario
 
@@ -88,3 +102,22 @@ Sistema SaaS para gestión de consultorios médicos independientes.
 | Basic | 1 | 100 | $29/mes |
 | Professional | 3 | 500 | $59/mes |
 | Clinic | 10 | Ilimitado | $99/mes |
+
+## Seguridad
+
+| Medida | Descripción |
+|--------|-------------|
+| Helmet.js | Headers HTTP de seguridad |
+| Rate Limiting | 10/s, 100/min, 1000/h |
+| JWT | Tokens de corta duración |
+| Refresh Tokens | Rotación automática |
+| CORS | Solo dominios autorizados |
+| Validation | class-validator en DTOs |
+
+## Despliegue
+
+El proyecto está desplegado en Railway:
+
+- **Backend**: Dockerfile multi-stage, puerto dinámico
+- **Frontend**: nginx con SPA routing
+- **DNS**: CNAME records en Namecheap

@@ -1,6 +1,14 @@
-# Histora App
+# Histora - Sistema de Gestión de Consultorios Médicos
 
-**Histora** es una aplicación médica modular diseñada para gestionar pacientes, doctores y registros clínicos. El proyecto está construido con **NestJS** en el backend y **Angular + Ionic** en el frontend, y está orientado a resolver necesidades reales del sector salud, especialmente en el contexto peruano.
+**Histora** es un sistema SaaS completo para la gestión de consultorios médicos, desarrollado para el contexto latinoamericano. Incluye manejo de pacientes, citas, historiales clínicos, notificaciones automatizadas y más.
+
+## URLs de Producción
+
+| Servicio | URL |
+|----------|-----|
+| Frontend | https://app.historahealth.com |
+| Backend API | https://api.historahealth.com |
+| Swagger Docs | http://localhost:3000/docs (solo desarrollo) |
 
 ---
 
@@ -8,113 +16,323 @@
 
 ```
 histora/
-├── docs/             # Documentación técnica y normativa
-├── histora-back/     # Backend con NestJS y MongoDB
-├── histora-front/    # Frontend con Angular + Ionic
+├── histora-back/           # Backend NestJS
+│   ├── src/
+│   │   ├── auth/           # Autenticación JWT
+│   │   ├── users/          # Gestión de usuarios
+│   │   ├── patients/       # Pacientes
+│   │   ├── doctors/        # Médicos y perfiles
+│   │   ├── appointments/   # Citas médicas
+│   │   ├── consultations/  # Consultas
+│   │   ├── clinical-history/ # Historiales
+│   │   ├── vitals/         # Signos vitales
+│   │   ├── notifications/  # Notificaciones
+│   │   ├── payments/       # Pagos
+│   │   ├── uploads/        # Cloudinary
+│   │   ├── chatbot/        # WhatsApp Bot
+│   │   └── ...
+│   └── Dockerfile
+├── histora-front/          # Frontend Angular
+│   ├── src/app/
+│   │   ├── core/           # Servicios, guards
+│   │   ├── authentication/ # Login, registro
+│   │   ├── admin/          # Panel admin
+│   │   ├── doctor/         # Panel médico
+│   │   └── patient/        # Panel paciente
+│   ├── Dockerfile
+│   └── nginx.conf
+├── railway.toml            # Config Railway
 └── README.md
 ```
 
-## Instalación y Uso
+---
 
-1. Clona el repositorio:
+## Stack Tecnológico
+
+### Backend
+| Tecnología | Versión | Uso |
+|------------|---------|-----|
+| NestJS | 11 | Framework |
+| MongoDB | Atlas | Base de datos |
+| Mongoose | 8 | ODM |
+| JWT | - | Autenticación |
+| Cloudinary | - | Archivos/imágenes |
+| SendGrid | - | Emails |
+| WhatsApp API | - | Notificaciones |
+| Helmet | 8 | Seguridad HTTP |
+| Throttler | 6 | Rate limiting |
+
+### Frontend
+| Tecnología | Versión | Uso |
+|------------|---------|-----|
+| Angular | 20 | Framework |
+| Angular Material | 20 | UI Components |
+| FullCalendar | 6 | Calendario |
+| ApexCharts | 5 | Gráficos |
+| NGX-Translate | 17 | i18n (ES/EN) |
+| NGX-Datatable | 22 | Tablas |
+
+---
+
+## Características Principales
+
+### Autenticación y Seguridad
+- Login con email/contraseña
+- JWT con refresh token rotation
+- Rate limiting (10/s, 100/min, 1000/h)
+- Headers de seguridad (Helmet)
+- CORS configurado
+- Roles: Admin, Doctor, Paciente
+
+### Panel del Médico
+- Dashboard con estadísticas
+- Gestión de pacientes
+- Calendario de citas interactivo
+- Historiales clínicos completos
+- Perfil profesional con CV
+- Notificaciones en tiempo real
+
+### Panel del Paciente
+- Búsqueda de médicos
+- Agendamiento de citas online
+- Historial de consultas
+- Portal del paciente
+- Recordatorios automáticos
+
+### Sistema de Notificaciones
+- Email (SendGrid)
+- WhatsApp Business API
+- Notificaciones in-app
+- Recordatorios automáticos:
+  - 24 horas antes de la cita
+  - 1 hora antes de la cita
+
+### Chatbot WhatsApp
+- Consulta de médicos disponibles
+- Agendamiento de citas
+- Consulta de citas existentes
+- Cancelación de citas
+
+### Accesibilidad
+- Cumplimiento WCAG 2.1 AA
+- Navegación por teclado
+- Labels ARIA
+- Contraste adecuado
+
+---
+
+## Instalación Local
+
+### Requisitos
+- Node.js 20+
+- MongoDB (local o Atlas)
+- npm
+
+### Backend
+
 ```bash
-git clone https://github.com/tu-usuario/histora-app.git
-cd histora-app
+cd histora-back
+npm install
+cp .env.example .env  # Configurar variables
+npm run start:dev     # Puerto 3000
 ```
 
-2. Instala dependencias:
+### Frontend
+
 ```bash
-cd histora-back && npm install
-cd ../histora-front && npm install
+cd histora-front
+npm install
+npm start             # Puerto 4200
 ```
 
-3. Configura las variables de entorno en `histora-back/.env`
+---
 
-4. Levanta los servicios:
-```bash
-# Backend
-cd histora-back && npm run start:dev
+## Variables de Entorno
 
-# Frontend
-cd histora-front && npm start
+### Backend (.env)
+
+```env
+# Base de datos
+MONGO_URL=mongodb+srv://user:pass@cluster.mongodb.net/histora
+
+# JWT
+JWT_SECRET=tu-secreto-seguro
+JWT_EXPIRATION=15m
+JWT_REFRESH_SECRET=tu-refresh-secreto
+JWT_REFRESH_EXPIRATION=7d
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=tu-cloud
+CLOUDINARY_API_KEY=tu-api-key
+CLOUDINARY_API_SECRET=tu-api-secret
+
+# SendGrid
+SENDGRID_API_KEY=SG.xxxxx
+SENDGRID_FROM_EMAIL=noreply@historahealth.com
+
+# WhatsApp
+WHATSAPP_ACCESS_TOKEN=tu-token
+WHATSAPP_PHONE_NUMBER_ID=tu-phone-id
+WHATSAPP_VERIFY_TOKEN=histora_verify_token
+
+# Server
+PORT=3000
+NODE_ENV=production
+CORS_ORIGINS=https://app.historahealth.com
 ```
 
-## Arquitectura
+---
 
-### Backend (histora-back)
-- **Framework:** NestJS con TypeScript
-- **Base de datos:** MongoDB con Mongoose
-- **Autenticación:** JWT con refresh token rotation
-- **Documentación:** Swagger/OpenAPI
-- **Tests:** Jest (279 tests unitarios)
+## Despliegue
 
-Módulos:
-- Auth (autenticación y autorización)
-- Users (gestión de usuarios)
-- Patients (pacientes)
-- Doctors (médicos)
-- Appointments (citas médicas)
-- Consultations (consultas médicas)
-- Clinical History (historiales clínicos)
-- Payments (pagos)
-- Notifications (notificaciones)
-- Uploads (carga de archivos)
+### Railway (Producción actual)
 
-### Frontend (histora-front)
-- **Framework:** Angular 19 con signals
-- **UI Library:** Ionic 8 standalone components
-- **Charts:** ApexCharts para estadísticas
-- **Calendario:** FullCalendar para citas
-- **Theme:** Sistema de temas claro/oscuro
+**Backend Service:**
+- Root Directory: `/` (usa railway.toml)
+- Dockerfile: `histora-back/Dockerfile`
+- Dominio: api.historahealth.com
 
-Características de UI:
-- Layout profesional con sidebar colapsable
-- Dashboard con métricas y gráficos
-- Gestión completa de pacientes y citas
-- Historiales clínicos detallados
-- Configuración de tema y colores
-- Diseño responsive para desktop y tablet
-- Cumplimiento WCAG 2.1 AA (accesibilidad)
+**Frontend Service:**
+- Root Directory: `histora-front`
+- Dockerfile: `Dockerfile`
+- Dominio: app.historahealth.com
 
-## Estado del Proyecto
+### DNS (Namecheap)
 
-### Completado
-- Backend completo con todos los módulos
-- API REST documentada con Swagger
-- Sistema de autenticación JWT
-- Frontend con layout profesional
-- Dashboard con estadísticas y gráficos
-- CRUD de pacientes, citas y consultas
-- Historiales clínicos
-- Sistema de notificaciones
-- Tests unitarios (279 backend, 118 frontend)
+```
+CNAME  api  →  [backend-service].up.railway.app
+CNAME  app  →  [frontend-service].up.railway.app
+```
 
-### En Desarrollo
-- Integración con Capacitor para mobile
-- Exportación de reportes PDF
-- Sistema de suscripciones
+---
+
+## API Endpoints
+
+### Autenticación
+```
+POST /auth/login          # Iniciar sesión
+POST /auth/register       # Registro
+POST /auth/refresh        # Renovar token
+POST /auth/logout         # Cerrar sesión
+```
+
+### Usuarios y Pacientes
+```
+GET    /users             # Listar usuarios
+GET    /patients          # Listar pacientes
+POST   /patients          # Crear paciente
+GET    /patients/:id      # Obtener paciente
+PATCH  /patients/:id      # Actualizar
+```
+
+### Médicos
+```
+GET    /doctors           # Listar médicos
+GET    /doctors/:id       # Obtener médico
+GET    /doctors/me        # Mi perfil
+PATCH  /doctors/me        # Actualizar perfil
+```
+
+### Citas
+```
+GET    /appointments      # Listar citas
+POST   /appointments      # Crear cita
+PATCH  /appointments/:id  # Actualizar
+DELETE /appointments/:id  # Cancelar
+```
+
+### Archivos
+```
+POST   /uploads/avatar       # Subir foto
+DELETE /uploads/avatar       # Eliminar foto
+POST   /uploads/doctor/cv    # Subir CV
+DELETE /uploads/doctor/cv    # Eliminar CV
+```
+
+### Notificaciones
+```
+GET    /notifications           # Mis notificaciones
+PATCH  /notifications/:id/read  # Marcar leída
+PATCH  /notifications/read-all  # Marcar todas
+```
+
+---
+
+## Scripts
+
+### Backend
+```bash
+npm run start:dev    # Desarrollo
+npm run start:prod   # Producción
+npm run build        # Compilar
+npm run test         # Tests
+npm run test:cov     # Coverage
+npm run lint         # Linting
+```
+
+### Frontend
+```bash
+npm start            # Desarrollo
+npm run build        # Producción
+npm run test         # Tests
+npm run test:ci      # Tests CI
+npm run lint         # Linting
+```
+
+---
+
+## Seguridad Implementada
+
+| Medida | Descripción |
+|--------|-------------|
+| Helmet.js | CSP, XSS Protection, HSTS |
+| Rate Limiting | 10/s, 100/min, 1000/h por IP |
+| JWT | Tokens de corta duración |
+| Refresh Tokens | Rotación automática |
+| CORS | Solo dominios autorizados |
+| Validation | DTOs con class-validator |
+| Sanitization | Whitelist en pipes |
+
+---
 
 ## Tests
 
-```bash
-# Backend
-cd histora-back && npm test
+- **Backend**: 279+ tests unitarios (Jest)
+- **Frontend**: 118+ tests unitarios (Karma/Jasmine)
 
-# Frontend
+```bash
+# Ejecutar todos los tests
+cd histora-back && npm test
 cd histora-front && npm test
 ```
 
-## Tecnologías
+---
 
-| Capa | Tecnología |
-|------|------------|
-| Frontend | Angular 19, Ionic 8, TypeScript |
-| Backend | NestJS, MongoDB, Mongoose |
-| Auth | JWT, Passport, bcrypt |
-| Docs | Swagger/OpenAPI |
-| Tests | Jest, Karma, Jasmine |
-| CI/CD | GitHub Actions |
+## Roadmap
+
+### Completado
+- [x] Backend completo (18 módulos)
+- [x] Frontend Angular con Material
+- [x] Sistema de autenticación JWT
+- [x] Gestión de pacientes y citas
+- [x] Historiales clínicos
+- [x] Notificaciones automáticas
+- [x] Chatbot WhatsApp
+- [x] Despliegue en Railway
+- [x] Dominio personalizado
+- [x] Rate limiting y seguridad
+
+### Pendiente
+- [ ] Google Sign-In
+- [ ] Rediseño página de login
+- [ ] Integración WhatsApp Business
+- [ ] Exportación PDF
+- [ ] App móvil (Capacitor)
+
+---
 
 ## Licencia
 
-Proyecto privado desarrollado por Raul Campos.
+Proyecto privado y propietario. Todos los derechos reservados.
+
+**Desarrollado por Raul Campos** | historahealth.com
