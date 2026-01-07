@@ -20,22 +20,12 @@ import {
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { NotificationListComponent } from '../components/notification-list/notification-list.component';
+import { NotificationListComponent, Notifications } from '../components/notification-list/notification-list.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { LanguageListComponent } from '../components/language-list/language-list.component';
 import { UserProfileMenuComponent } from '../components/user-profile-menu/user-profile-menu.component';
 import { TranslateModule } from '@ngx-translate/core';
-
-interface Notifications {
-  message: string;
-  time: string;
-  userImg?: string;
-  actionLabel?: string;
-  actionType?: string;
-  icon?: string;
-  color: string;
-  status: string;
-}
+import { NotificationsService } from '@core/service/notifications.service';
 
 @Component({
   selector: 'app-header',
@@ -79,7 +69,8 @@ export class HeaderComponent
     private configService: ConfigService,
     private authService: AuthService,
     private router: Router,
-    public languageService: LanguageService
+    public languageService: LanguageService,
+    private notificationsService: NotificationsService
   ) {
     super();
   }
@@ -88,65 +79,7 @@ export class HeaderComponent
     { text: 'English', flag: 'assets/images/flags/us.svg', lang: 'en' },
     { text: 'Spanish', flag: 'assets/images/flags/spain.svg', lang: 'es' },
   ];
-  notifications: Notifications[] = [
-    {
-      message: 'Please check your mail',
-      time: '14 mins ago',
-      icon: 'mail',
-      color: 'notification-green',
-      status: 'msg-unread',
-      actionLabel: 'View',
-      actionType: 'view',
-    },
-    {
-      message: 'New Patient Added..',
-      time: '22 mins ago',
-      userImg: 'assets/images/user/user1.jpg',
-      color: 'notification-blue',
-      status: 'msg-unread',
-    },
-    {
-      message: 'Your leave is approved!! ',
-      time: '3 hours ago',
-      icon: 'event_available',
-      color: 'notification-orange',
-      status: 'msg-read',
-    },
-    {
-      message: 'Lets break for lunch...',
-      time: '5 hours ago',
-      userImg: 'assets/images/user/user2.jpg',
-      color: 'notification-blue',
-      status: 'msg-unread',
-      actionLabel: 'Reply',
-      actionType: 'reply',
-    },
-    {
-      message: 'Patient report generated',
-      time: '14 mins ago',
-      icon: 'description',
-      color: 'notification-green',
-      status: 'msg-read',
-      actionLabel: 'Download',
-      actionType: 'download',
-    },
-    {
-      message: 'Please check your mail',
-      time: '22 mins ago',
-      icon: 'mail',
-      color: 'notification-red',
-      status: 'msg-read',
-    },
-    {
-      message: 'Salary credited...',
-      time: '3 hours ago',
-      userImg: 'assets/images/user/user3.jpg',
-      color: 'notification-purple',
-      status: 'msg-read',
-      actionLabel: 'Important',
-      actionType: 'mark-important',
-    },
-  ];
+  notifications: Notifications[] = [];
   ngOnInit() {
     this.config = this.configService.configData;
     this.docElement = document.documentElement;
@@ -161,6 +94,10 @@ export class HeaderComponent
     const currentUser = this.authService.currentUserValue;
     if (currentUser) {
       this.updateUserInfo(currentUser);
+      // Load notifications for authenticated users
+      this.loadNotifications();
+      // Start polling for new notifications
+      this.subs.sink = this.notificationsService.startPolling(30000).subscribe();
     }
 
     this.langStoreValue = localStorage.getItem('lang') as string;
@@ -173,6 +110,17 @@ export class HeaderComponent
     } else {
       this.flagvalue = val.map((element) => element.flag);
     }
+  }
+
+  private loadNotifications(): void {
+    this.subs.sink = this.notificationsService.getNotifications({ limit: 10 }).subscribe({
+      next: (response) => {
+        this.notifications = response.data.map(n => this.notificationsService.toUiNotification(n));
+      },
+      error: (err) => {
+        console.error('Error loading notifications:', err);
+      }
+    });
   }
 
   private updateUserInfo(currentUser: any): void {
@@ -204,17 +152,29 @@ export class HeaderComponent
   }
 
   onMarkAllNotificationsRead() {
-    this.notifications = this.notifications.map((n) => ({
-      ...n,
-      status: 'msg-read',
-    }));
+    this.subs.sink = this.notificationsService.markAllAsRead().subscribe({
+      next: () => {
+        this.notifications = this.notifications.map((n) => ({
+          ...n,
+          status: 'msg-read',
+        }));
+      },
+      error: (err) => {
+        console.error('Error marking all as read:', err);
+      }
+    });
   }
 
   onReadAllNotifications() {
-    alert('Navigating to notifications page to read all'); // Replace with router if needed
+    // Navigate to a notifications page or reload all
+    this.loadNotifications();
   }
 
   onRemoveNotification(notification: Notifications) {
+    // Mark as read when removing
+    if (notification.id) {
+      this.subs.sink = this.notificationsService.markAsRead(notification.id).subscribe();
+    }
     this.notifications = this.notifications.filter((n) => n !== notification);
   }
 
@@ -223,28 +183,31 @@ export class HeaderComponent
     actionType: string;
   }) {
     const { notification, actionType } = event;
+    const currentUser = this.authService.currentUserValue;
+    const userRole = currentUser?.roles?.[0]?.name;
+
+    // Mark as read when action is clicked
+    if (notification.id) {
+      this.subs.sink = this.notificationsService.markAsRead(notification.id).subscribe();
+    }
 
     // Handle different action types
     switch (actionType) {
-      case 'view':
-        console.log('Viewing notification:', notification);
-        // Implement view logic
+      case 'view-appointment':
+        const appointmentId = (notification as any).data?.appointmentId;
+        if (appointmentId) {
+          if (userRole === Role.Doctor || userRole === Role.Admin) {
+            this.router.navigate(['/doctor/appointments', appointmentId]);
+          } else if (userRole === Role.Patient) {
+            this.router.navigate(['/patient/appointments', appointmentId]);
+          }
+        }
         break;
-      case 'profile':
-        console.log('Opening profile from notification:', notification);
-        // Implement profile navigation
-        break;
-      case 'reply':
-        console.log('Replying to notification:', notification);
-        // Implement reply logic
-        break;
-      case 'download':
-        console.log('Downloading from notification:', notification);
-        // Implement download logic
-        break;
-      case 'mark-important':
-        console.log('Marking notification as important:', notification);
-        // Implement importance marking
+      case 'view-review':
+        // Navigate to reviews page
+        if (userRole === Role.Doctor || userRole === Role.Admin) {
+          this.router.navigate(['/doctor/reviews']);
+        }
         break;
       default:
         console.log('Default action for notification:', notification);

@@ -4,6 +4,7 @@ import { Document, Types } from 'mongoose';
 export type NotificationDocument = Notification & Document;
 
 export enum NotificationType {
+  // Patient notifications
   APPOINTMENT_REMINDER = 'appointment_reminder',
   APPOINTMENT_CONFIRMATION = 'appointment_confirmation',
   APPOINTMENT_CANCELLED = 'appointment_cancelled',
@@ -16,6 +17,12 @@ export enum NotificationType {
   WELCOME = 'welcome',
   PASSWORD_RESET = 'password_reset',
   GENERAL = 'general',
+  // Doctor notifications
+  NEW_APPOINTMENT_BOOKED = 'new_appointment_booked',
+  APPOINTMENT_CANCELLED_BY_PATIENT = 'appointment_cancelled_by_patient',
+  NEW_PATIENT_REVIEW = 'new_patient_review',
+  UPCOMING_APPOINTMENT_REMINDER = 'upcoming_appointment_reminder',
+  PATIENT_MESSAGE = 'patient_message',
 }
 
 export enum NotificationChannel {
