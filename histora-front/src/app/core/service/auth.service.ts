@@ -108,4 +108,43 @@ export class AuthService {
       this.user$.next(updatedUser);
     }
   }
+
+  handleGoogleCallback(accessToken: string, refreshToken: string, user: User): void {
+    // Set the token
+    this.tokenService.set({ access_token: accessToken });
+
+    // Store refresh token
+    this.store.set('refreshToken', refreshToken);
+
+    // Update user state
+    this.user$.next(user);
+    this.store.set('currentUser', user);
+
+    // Store role
+    if (user.role) {
+      this.store.set('roleNames', JSON.stringify([user.role]));
+    }
+  }
+
+  getDefaultRouteForRole(role?: string): string {
+    switch (role) {
+      case 'platform_admin':
+        return '/admin/dashboard';
+      case 'clinic_owner':
+      case 'clinic_doctor':
+        return '/doctor/dashboard';
+      case 'patient':
+        return '/patient/dashboard';
+      default:
+        return '/dashboard';
+    }
+  }
+
+  loginWithGoogle(): void {
+    // Redirect to backend Google OAuth endpoint
+    const backendUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:3000'
+      : 'https://api.historahealth.com';
+    window.location.href = `${backendUrl}/auth/google`;
+  }
 }

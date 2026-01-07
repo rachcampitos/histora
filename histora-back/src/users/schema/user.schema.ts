@@ -17,8 +17,14 @@ export class User {
   @Prop({ required: true, unique: true, lowercase: true, trim: true })
   email: string;
 
-  @Prop({ required: true })
-  password: string;
+  @Prop({ required: false }) // Optional for social login users
+  password?: string;
+
+  @Prop({ sparse: true, index: true })
+  googleId?: string;
+
+  @Prop({ default: 'local' })
+  authProvider: 'local' | 'google';
 
   @Prop({ required: true, trim: true })
   firstName: string;

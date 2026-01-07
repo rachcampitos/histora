@@ -167,4 +167,42 @@ export class UsersService {
     const user = await this.userModel.findById(id).select('avatarPublicId').exec();
     return user?.avatarPublicId || null;
   }
+
+  async findByGoogleId(googleId: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ googleId, isDeleted: false })
+      .exec();
+  }
+
+  async createFromGoogle(googleUser: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    googleId: string;
+    picture?: string;
+  }): Promise<UserDocument> {
+    const newUser = new this.userModel({
+      email: googleUser.email.toLowerCase(),
+      firstName: googleUser.firstName,
+      lastName: googleUser.lastName,
+      googleId: googleUser.googleId,
+      avatar: googleUser.picture,
+      authProvider: 'google',
+      isEmailVerified: true, // Google emails are verified
+      isActive: true,
+    });
+
+    return newUser.save();
+  }
+
+  async linkGoogleAccount(userId: string, googleId: string): Promise<User | null> {
+    return this.userModel
+      .findByIdAndUpdate(
+        userId,
+        { googleId },
+        { new: true },
+      )
+      .select('-password')
+      .exec();
+  }
 }

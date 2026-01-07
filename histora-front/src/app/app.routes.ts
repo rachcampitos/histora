@@ -49,6 +49,13 @@ export const APP_ROUTE: Route[] = [
     ],
   },
   {
+    path: 'auth/google/callback',
+    loadComponent: () =>
+      import('./auth/google-callback/google-callback.component').then(
+        (m) => m.GoogleCallbackComponent
+      ),
+  },
+  {
     path: 'authentication',
     component: AuthLayoutComponent,
     loadChildren: () =>

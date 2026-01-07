@@ -1,10 +1,13 @@
-import { Controller, Post, Body, Get, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, HttpCode, HttpStatus, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 import { AuthService, AuthResponse } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
@@ -12,11 +15,20 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { GoogleUser } from './strategies/google.strategy';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  private readonly frontendUrl: string;
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {
+    this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:4200';
+  }
 
   @Public()
   @Post('register')
@@ -66,5 +78,38 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'No autorizado' })
   getProfile(@CurrentUser() user: CurrentUserPayload) {
     return this.authService.getProfile(user.userId);
+  }
+
+  @Public()
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: 'Iniciar login con Google' })
+  @ApiResponse({ status: 302, description: 'Redirige a Google para autenticación' })
+  googleAuth() {
+    // Guard redirects to Google
+  }
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  @ApiExcludeEndpoint()
+  async googleAuthCallback(
+    @Req() req: Request & { user: GoogleUser },
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      const authResponse = await this.authService.googleLogin(req.user);
+
+      // Redirect to frontend with tokens in URL params
+      const params = new URLSearchParams({
+        access_token: authResponse.access_token,
+        refresh_token: authResponse.refresh_token,
+        user: JSON.stringify(authResponse.user),
+      });
+
+      res.redirect(`${this.frontendUrl}/auth/google/callback?${params.toString()}`);
+    } catch {
+      res.redirect(`${this.frontendUrl}/authentication/signin?error=google_auth_failed`);
+    }
   }
 }

@@ -174,6 +174,11 @@ export class AuthService {
       throw new UnauthorizedException('Account is inactive');
     }
 
+    // Check if user has password (social login users may not have one)
+    if (!user.password) {
+      throw new UnauthorizedException('Please use Google Sign-In for this account');
+    }
+
     const isPasswordValid = await this.usersService.comparePasswords(
       loginDto.password,
       user.password,
@@ -261,7 +266,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmailWithPassword(email);
 
-    if (user && (await this.usersService.comparePasswords(password, user.password))) {
+    if (user && user.password && (await this.usersService.comparePasswords(password, user.password))) {
       const { password: _, ...result } = user.toObject();
       return result;
     }
@@ -271,5 +276,66 @@ export class AuthService {
 
   async getProfile(userId: string) {
     return this.usersService.findOne(userId);
+  }
+
+  async googleLogin(googleUser: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    googleId: string;
+    picture?: string;
+  }): Promise<AuthResponse> {
+    // Check if user exists by googleId
+    let user = await this.usersService.findByGoogleId(googleUser.googleId);
+
+    if (!user) {
+      // Check if user exists by email
+      const existingUserByEmail = await this.usersService.findByEmail(googleUser.email);
+
+      if (existingUserByEmail) {
+        // Link Google account to existing user
+        await this.usersService.linkGoogleAccount(
+          existingUserByEmail['_id'].toString(),
+          googleUser.googleId,
+        );
+        user = existingUserByEmail;
+      } else {
+        // Create new user from Google data
+        user = await this.usersService.createFromGoogle(googleUser);
+      }
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account is inactive');
+    }
+
+    // Update last login
+    await this.usersService.updateLastLogin(user['_id'].toString());
+
+    // Generate JWT token
+    const payload: JwtPayload = {
+      sub: user['_id'].toString(),
+      email: user.email,
+      role: user.role,
+      clinicId: user.clinicId?.toString(),
+    };
+
+    // Generate and save refresh token
+    const refreshToken = this.generateRefreshToken();
+    await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: refreshToken,
+      user: {
+        id: user['_id'].toString(),
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        clinicId: user.clinicId?.toString(),
+        avatar: user.avatar,
+      },
+    };
   }
 }

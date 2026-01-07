@@ -138,7 +138,7 @@ export class SigninComponent
   }
 
   signInWithGoogle(): void {
-    console.log('Login with Google');
+    this.authService.loginWithGoogle();
   }
 
   signInWithFacebook(): void {
