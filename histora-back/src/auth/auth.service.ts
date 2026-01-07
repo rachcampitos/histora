@@ -32,7 +32,11 @@ export interface AuthResponse {
 
 @Injectable()
 export class AuthService {
-  private readonly refreshTokenExpiryDays = 7;
+  // Token expiry durations
+  private readonly SHORT_REFRESH_TOKEN_DAYS = 1; // Sin "Recordarme": 1 día
+  private readonly LONG_REFRESH_TOKEN_DAYS = 30; // Con "Recordarme": 30 días
+  private readonly SHORT_ACCESS_TOKEN_EXPIRY = '1h'; // Sin "Recordarme": 1 hora
+  private readonly LONG_ACCESS_TOKEN_EXPIRY = '7d'; // Con "Recordarme": 7 días
 
   constructor(
     private usersService: UsersService,
@@ -50,10 +54,11 @@ export class AuthService {
     return createHash('sha256').update(token).digest('hex');
   }
 
-  private async saveRefreshToken(userId: string, refreshToken: string): Promise<void> {
+  private async saveRefreshToken(userId: string, refreshToken: string, rememberMe = false): Promise<void> {
     const hashedToken = this.hashToken(refreshToken);
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + this.refreshTokenExpiryDays);
+    const expiryDays = rememberMe ? this.LONG_REFRESH_TOKEN_DAYS : this.SHORT_REFRESH_TOKEN_DAYS;
+    expiresAt.setDate(expiresAt.getDate() + expiryDays);
 
     await this.usersService.update(userId, {
       refreshToken: hashedToken,
@@ -192,7 +197,9 @@ export class AuthService {
     // Update last login
     await this.usersService.updateLastLogin(user['_id'].toString());
 
-    // Generate JWT token
+    const rememberMe = loginDto.rememberMe || false;
+
+    // Generate JWT token with appropriate expiry
     const payload: JwtPayload = {
       sub: user['_id'].toString(),
       email: user.email,
@@ -200,12 +207,16 @@ export class AuthService {
       clinicId: user.clinicId?.toString(),
     };
 
-    // Generate and save refresh token
+    const accessTokenExpiry = rememberMe
+      ? this.LONG_ACCESS_TOKEN_EXPIRY
+      : this.SHORT_ACCESS_TOKEN_EXPIRY;
+
+    // Generate and save refresh token with appropriate expiry
     const refreshToken = this.generateRefreshToken();
-    await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+    await this.saveRefreshToken(user['_id'].toString(), refreshToken, rememberMe);
 
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: accessTokenExpiry }),
       refresh_token: refreshToken,
       user: {
         id: user['_id'].toString(),

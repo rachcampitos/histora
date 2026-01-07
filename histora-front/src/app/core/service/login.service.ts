@@ -23,8 +23,8 @@ export class LoginService {
     private store: LocalStorageService
   ) {}
 
-  login(email: string, password: string, _rememberMe = false): Observable<AuthResponse | { status: number; error?: string }> {
-    const loginData: LoginRequest = { email, password };
+  login(email: string, password: string, rememberMe = false): Observable<AuthResponse | { status: number; error?: string }> {
+    const loginData = { email, password, rememberMe };
 
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, loginData).pipe(
       map((response) => {

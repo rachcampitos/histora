@@ -95,7 +95,7 @@ export class SigninComponent
     }
 
     this.authService
-      .login(this.f['email'].value, this.f['password'].value, false)
+      .login(this.f['email'].value, this.f['password'].value, this.rememberMe)
       .subscribe({
         next: (response) => {
           this.loading = false;
