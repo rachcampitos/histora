@@ -5,12 +5,27 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { FeatherModule } from 'angular-feather';
 import { allIcons } from 'angular-feather/icons';
+import { BehaviorSubject } from 'rxjs';
 
 import { DocWelcomeCardComponent } from './doc-welcome-card.component';
+import { AuthService } from '@core/service/auth.service';
 
 describe('DocWelcomeCardComponent', () => {
   let component: DocWelcomeCardComponent;
   let fixture: ComponentFixture<DocWelcomeCardComponent>;
+
+  const mockUser = {
+    _id: 'user1',
+    email: 'doctor@test.com',
+    role: 'doctor',
+    firstName: 'Carlos',
+    lastName: 'García',
+  };
+
+  const mockAuthService = {
+    currentUserValue: mockUser,
+    user$: new BehaviorSubject(mockUser),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -22,6 +37,7 @@ describe('DocWelcomeCardComponent', () => {
       ],
       providers: [
         importProvidersFrom(FeatherModule.pick(allIcons)),
+        { provide: AuthService, useValue: mockAuthService },
       ],
     }).compileComponents();
 
@@ -32,5 +48,9 @@ describe('DocWelcomeCardComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should display doctor name from auth service', () => {
+    expect(component.doctorName).toBe('Dr. Carlos García');
   });
 });
