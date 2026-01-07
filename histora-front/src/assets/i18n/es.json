@@ -81,6 +81,10 @@
     }
   },
   "COMMON": {
+    "ALL": "Todos",
+    "SEARCH": "Buscar",
+    "YEARS": "años",
+    "ACTIONS_LABEL": "Acciones",
     "ACTIONS": {
       "ADD": "Agregar",
       "EDIT": "Editar",
@@ -171,8 +175,9 @@
       "TODO_LIST": "Lista de Tareas",
       "DOCTOR_STATUS": "Estado del Médico",
       "NUMBER_OF_PATIENTS": "Número de Pacientes",
-      "UPCOMING_SURGERIES": "Próximas Cirugías",
+      "UPCOMING_PROCEDURES": "Próximos Procedimientos",
       "PATIENT_FEEDBACK": "Comentarios de Pacientes",
+      "OVERALL_RATING": "Calificación General",
       "PATIENT_LIMIT": "Límite de Pacientes",
       "PATIENTS": "Pacientes",
       "SURGERY": "Cirugía",
@@ -187,7 +192,7 @@
     },
     "TABLE": {
       "PATIENT": "Paciente",
-      "SURGERY_TYPE": "Tipo de Cirugía",
+      "PROCEDURE_TYPE": "Tipo de Procedimiento",
       "DATE_TIME": "Fecha y Hora",
       "DOCTOR": "Médico",
       "STATUS": "Estado"

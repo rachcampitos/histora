@@ -40,7 +40,8 @@ export interface DoctorProfile {
   lastName: string;
   specialty: string;
   subspecialties?: string[];
-  licenseNumber?: string;
+  licenseNumber?: string;  // CMP - Colegio Médico del Perú
+  rne?: string;  // RNE - Registro Nacional de Especialidad
   phone?: string;
   email?: string;
   bio?: string;

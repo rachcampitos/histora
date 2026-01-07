@@ -121,7 +121,10 @@ export class Doctor {
   subspecialties: string[];
 
   @Prop({ trim: true })
-  licenseNumber?: string;
+  licenseNumber?: string; // CMP - Colegio Médico del Perú
+
+  @Prop({ trim: true })
+  rne?: string; // RNE - Registro Nacional de Especialidad
 
   @Prop({ trim: true })
   phone?: string;

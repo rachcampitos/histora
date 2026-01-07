@@ -101,12 +101,12 @@ interface Todo {
   priority: 'Low' | 'Normal' | 'High';
 }
 
-// Surgery interface
-interface Surgery {
+// Procedure interface (for consultorio - minor procedures, not surgeries)
+interface Procedure {
   patientName: string;
   patientId: string;
   patientImg: string;
-  surgeryType: string;
+  procedureType: string;
   date: string;
   time: string;
   doctor: string;
@@ -157,6 +157,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Doctor profile data
   doctorName = '';
+  doctorSpecialty = '';
   doctorAvatar = 'assets/images/user/doctor.jpg';
   private userSubscription?: Subscription;
 
@@ -192,114 +193,70 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Surgery table columns
-  surgeryDisplayedColumns: string[] = [
+  // Procedure table columns
+  procedureDisplayedColumns: string[] = [
     'patient',
-    'surgeryType',
+    'procedureType',
     'date',
     'doctor',
     'status',
   ];
 
-  // Upcoming surgeries data
-  upcomingSurgeries: Surgery[] = [
+  // Upcoming procedures data (appropriate for consultorio - minor procedures)
+  upcomingProcedures: Procedure[] = [
     {
-      patientName: 'John Smith',
+      patientName: 'Juan Pérez',
       patientId: 'PT-0025',
       patientImg: 'assets/images/user/user1.jpg',
-      surgeryType: 'Cardiac Bypass',
-      date: '15 June 2024',
-      time: '09:00-11:30',
-      doctor: 'Dr. Sarah Johnson',
-      status: 'Scheduled',
+      procedureType: 'Electrocardiograma',
+      date: '15 Enero 2025',
+      time: '09:00-09:30',
+      doctor: 'Dr. Carlos García',
+      status: 'Programado',
       statusClass: 'status-scheduled',
     },
     {
-      patientName: 'Emily Davis',
+      patientName: 'María López',
       patientId: 'PT-0078',
       patientImg: 'assets/images/user/user2.jpg',
-      surgeryType: 'Appendectomy',
-      date: '15 June 2024',
-      time: '13:00-14:30',
-      doctor: 'Dr. Michael Chen',
-      status: 'Urgent',
+      procedureType: 'Curación de herida',
+      date: '15 Enero 2025',
+      time: '10:00-10:30',
+      doctor: 'Dr. Carlos García',
+      status: 'Urgente',
       statusClass: 'status-urgent',
     },
     {
-      patientName: 'Robert Wilson',
+      patientName: 'Roberto Sánchez',
       patientId: 'PT-0036',
       patientImg: 'assets/images/user/user3.jpg',
-      surgeryType: 'Knee Replacement',
-      date: '16 June 2024',
-      time: '10:00-12:30',
-      doctor: 'Dr. James Miller',
-      status: 'Scheduled',
+      procedureType: 'Infiltración articular',
+      date: '16 Enero 2025',
+      time: '11:00-11:30',
+      doctor: 'Dr. Carlos García',
+      status: 'Programado',
       statusClass: 'status-scheduled',
     },
     {
-      patientName: 'Maria Garcia',
+      patientName: 'Ana Torres',
       patientId: 'PT-0042',
       patientImg: 'assets/images/user/user4.jpg',
-      surgeryType: 'Cataract Removal',
-      date: '16 June 2024',
-      time: '14:00-15:00',
-      doctor: 'Dr. Lisa Wong',
-      status: 'Delayed',
-      statusClass: 'status-delayed',
+      procedureType: 'Retiro de puntos',
+      date: '16 Enero 2025',
+      time: '14:00-14:15',
+      doctor: 'Dr. Carlos García',
+      status: 'Programado',
+      statusClass: 'status-scheduled',
     },
     {
-      patientName: 'Daniel Thompson',
+      patientName: 'Luis Ramírez',
       patientId: 'PT-0084',
       patientImg: 'assets/images/user/user5.jpg',
-      surgeryType: 'Hip Replacement',
-      date: '17 June 2024',
-      time: '08:30-11:00',
-      doctor: 'Dr. Angela Roberts',
-      status: 'Scheduled',
-      statusClass: 'status-scheduled',
-    },
-    {
-      patientName: 'Sophia Martinez',
-      patientId: 'PT-0092',
-      patientImg: 'assets/images/user/user6.jpg',
-      surgeryType: 'Tonsillectomy',
-      date: '17 June 2024',
-      time: '12:00-13:00',
-      doctor: 'Dr. Kevin Patel',
-      status: 'Urgent',
-      statusClass: 'status-urgent',
-    },
-    {
-      patientName: 'William Anderson',
-      patientId: 'PT-0067',
-      patientImg: 'assets/images/user/user7.jpg',
-      surgeryType: 'Spinal Fusion',
-      date: '18 June 2024',
-      time: '09:00-12:00',
-      doctor: 'Dr. Rachel Green',
-      status: 'Scheduled',
-      statusClass: 'status-scheduled',
-    },
-    {
-      patientName: 'Olivia Brown',
-      patientId: 'PT-0055',
-      patientImg: 'assets/images/user/user8.jpg',
-      surgeryType: 'Gallbladder Removal',
-      date: '18 June 2024',
-      time: '13:30-15:00',
-      doctor: 'Dr. Henry Liu',
-      status: 'Delayed',
-      statusClass: 'status-delayed',
-    },
-    {
-      patientName: 'Liam Walker',
-      patientId: 'PT-0101',
-      patientImg: 'assets/images/user/user9.jpg',
-      surgeryType: 'Hernia Repair',
-      date: '19 June 2024',
-      time: '10:00-11:30',
-      doctor: 'Dr. Emily Turner',
-      status: 'Scheduled',
+      procedureType: 'Nebulización',
+      date: '17 Enero 2025',
+      time: '08:30-09:00',
+      doctor: 'Dr. Carlos García',
+      status: 'Programado',
       statusClass: 'status-scheduled',
     },
   ];

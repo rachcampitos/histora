@@ -81,6 +81,10 @@
     }
   },
   "COMMON": {
+    "ALL": "All",
+    "SEARCH": "Search",
+    "YEARS": "years",
+    "ACTIONS_LABEL": "Actions",
     "ACTIONS": {
       "ADD": "Add",
       "EDIT": "Edit",
@@ -171,8 +175,9 @@
       "TODO_LIST": "Todo List",
       "DOCTOR_STATUS": "Doctor Status",
       "NUMBER_OF_PATIENTS": "Number of Patients",
-      "UPCOMING_SURGERIES": "Upcoming Surgeries",
+      "UPCOMING_PROCEDURES": "Upcoming Procedures",
       "PATIENT_FEEDBACK": "Patient Feedback",
+      "OVERALL_RATING": "Overall Rating",
       "PATIENT_LIMIT": "Patients Limit",
       "PATIENTS": "Patients",
       "SURGERY": "Surgery",
@@ -187,7 +192,7 @@
     },
     "TABLE": {
       "PATIENT": "Patient",
-      "SURGERY_TYPE": "Surgery Type",
+      "PROCEDURE_TYPE": "Procedure Type",
       "DATE_TIME": "Date & Time",
       "DOCTOR": "Doctor",
       "STATUS": "Status"

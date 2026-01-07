@@ -145,7 +145,7 @@
             <img [src]="doctorAvatar" [alt]="doctorName" class="rounded-circle mb-3"
               style="width: 150px; height: 150px; object-fit: cover;">
             <h4 class="text-primary">{{ doctorName }}</h4>
-            <p class="text-muted text-center">Orthopedics - Restar Hospital</p>
+            <p class="text-muted text-center">{{ doctorSpecialty || 'Especialista' }}</p>
             <hr class="w-100">
 
             <div class="dashboard-container">
@@ -309,61 +309,61 @@
       <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
         <mat-card>
           <mat-card-header class="header-style">
-            <mat-card-title>{{ 'DASHBOARD.WIDGETS.UPCOMING_SURGERIES' | translate }}</mat-card-title>
+            <mat-card-title>{{ 'DASHBOARD.WIDGETS.UPCOMING_PROCEDURES' | translate }}</mat-card-title>
             <a mat-button color="primary" href="#" (click)="$event.preventDefault();">{{ 'COMMON.ACTIONS.VIEW_ALL' | translate }}</a>
           </mat-card-header>
           <mat-card-content>
             <ng-scrollbar style="height: 360px" visibility="hover">
-              <table mat-table [dataSource]="upcomingSurgeries" class="surgery-table w-100">
+              <table mat-table [dataSource]="upcomingProcedures" class="procedure-table w-100">
                 <!-- Patient Column -->
                 <ng-container matColumnDef="patient">
                   <th mat-header-cell *matHeaderCellDef>{{ 'DASHBOARD.TABLE.PATIENT' | translate }}</th>
-                  <td mat-cell *matCellDef="let surgery">
+                  <td mat-cell *matCellDef="let procedure">
                     <div class="d-flex align-items-center">
-                      <img [src]="surgery.patientImg" class="patient-img me-2" alt="patient">
+                      <img [src]="procedure.patientImg" class="patient-img me-2" alt="patient">
                       <div>
-                        <div class="patient-name">{{surgery.patientName}}</div>
-                        <div class="patient-id">ID: {{surgery.patientId}}</div>
+                        <div class="patient-name">{{procedure.patientName}}</div>
+                        <div class="patient-id">ID: {{procedure.patientId}}</div>
                       </div>
                     </div>
                   </td>
                 </ng-container>
 
-                <!-- Surgery Type Column -->
-                <ng-container matColumnDef="surgeryType">
-                  <th mat-header-cell *matHeaderCellDef>{{ 'DASHBOARD.TABLE.SURGERY_TYPE' | translate }}</th>
-                  <td mat-cell *matCellDef="let surgery">{{surgery.surgeryType}}</td>
+                <!-- Procedure Type Column -->
+                <ng-container matColumnDef="procedureType">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'DASHBOARD.TABLE.PROCEDURE_TYPE' | translate }}</th>
+                  <td mat-cell *matCellDef="let procedure">{{procedure.procedureType}}</td>
                 </ng-container>
 
                 <!-- Date Column -->
                 <ng-container matColumnDef="date">
                   <th mat-header-cell *matHeaderCellDef>{{ 'DASHBOARD.TABLE.DATE_TIME' | translate }}</th>
-                  <td mat-cell *matCellDef="let surgery">{{surgery.date}} | {{surgery.time}}</td>
+                  <td mat-cell *matCellDef="let procedure">{{procedure.date}} | {{procedure.time}}</td>
                 </ng-container>
 
                 <!-- Doctor Column -->
                 <ng-container matColumnDef="doctor">
                   <th mat-header-cell *matHeaderCellDef>{{ 'DASHBOARD.TABLE.DOCTOR' | translate }}</th>
-                  <td mat-cell *matCellDef="let surgery">{{surgery.doctor}}</td>
+                  <td mat-cell *matCellDef="let procedure">{{procedure.doctor}}</td>
                 </ng-container>
 
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
                   <th mat-header-cell *matHeaderCellDef>{{ 'DASHBOARD.TABLE.STATUS' | translate }}</th>
-                  <td mat-cell *matCellDef="let surgery">
-                    <span class="status-badge" [ngClass]="surgery.statusClass">{{surgery.status}}</span>
+                  <td mat-cell *matCellDef="let procedure">
+                    <span class="status-badge" [ngClass]="procedure.statusClass">{{procedure.status}}</span>
                   </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="surgeryDisplayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: surgeryDisplayedColumns;"></tr>
+                <tr mat-header-row *matHeaderRowDef="procedureDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: procedureDisplayedColumns;"></tr>
               </table>
             </ng-scrollbar>
           </mat-card-content>
         </mat-card>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-        <app-feedback-widget [feedbackData]="patientFeedback" title="Patient Feedback" scoreLabel="Overall Rating">
+        <app-feedback-widget [feedbackData]="patientFeedback" [title]="'DASHBOARD.WIDGETS.PATIENT_FEEDBACK' | translate" [scoreLabel]="'DASHBOARD.WIDGETS.OVERALL_RATING' | translate">
         </app-feedback-widget>
       </div>
     </div>

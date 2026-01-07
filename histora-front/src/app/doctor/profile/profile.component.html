@@ -21,8 +21,18 @@
               <div class="profile-info">
                 <h2>Dr. {{ displayFirstName }} {{ displayLastName }}</h2>
                 <p class="specialty">{{ doctorProfile?.specialty }}</p>
-                @if (doctorProfile?.licenseNumber) {
-                  <p class="license">CMP: {{ doctorProfile?.licenseNumber }}</p>
+                @if (doctorProfile?.licenseNumber || doctorProfile?.rne) {
+                  <p class="license">
+                    @if (doctorProfile?.licenseNumber) {
+                      <span>CMP: {{ doctorProfile?.licenseNumber }}</span>
+                    }
+                    @if (doctorProfile?.licenseNumber && doctorProfile?.rne) {
+                      <span> | </span>
+                    }
+                    @if (doctorProfile?.rne) {
+                      <span>RNE: {{ doctorProfile?.rne }}</span>
+                    }
+                  </p>
                 }
                 <div class="rating">
                   @for (star of [1,2,3,4,5]; track star) {
@@ -84,8 +94,14 @@
                         </div>
                         <div class="col-md-6">
                           <mat-form-field class="full-width" appearance="outline">
-                            <mat-label>Número de Licencia (CMP)</mat-label>
-                            <input matInput formControlName="licenseNumber">
+                            <mat-label>Número de Colegiatura (CMP)</mat-label>
+                            <input matInput formControlName="licenseNumber" placeholder="Ej: 123456">
+                          </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                          <mat-form-field class="full-width" appearance="outline">
+                            <mat-label>Registro Nacional de Especialidad (RNE)</mat-label>
+                            <input matInput formControlName="rne" placeholder="Ej: 12345">
                           </mat-form-field>
                         </div>
                         <div class="col-md-6">
