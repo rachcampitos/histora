@@ -1,180 +1,308 @@
 <section class="content">
   <div class="content-block">
     <div class="block-header">
-      <!-- breadcrumb -->
-      <app-breadcrumb [title]="'CLINICAL_HISTORY.TITLE' | translate" [items]="[]" [active_item]="'CLINICAL_HISTORY.TITLE' | translate"></app-breadcrumb>
+      <app-breadcrumb [title]="'CLINICAL_HISTORY.TITLE' | translate" [items]="[]"
+        [active_item]="'CLINICAL_HISTORY.TITLE' | translate"></app-breadcrumb>
     </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-      <div class="card">
-        <div class="header">
-          <h2>{{ 'CLINICAL_HISTORY.TITLE' | translate }}</h2>
-        </div>
-        <div class="body">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-10">
-                <ul class="left-timeline">
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">25/12/2017</span>
-                      <span class="large">Now</span></time>
-                    <div class="left-icon"><img src="assets/images/user/user1.jpg" alt="">
-                    </div>
-                    <div class="left-label empty"> <span>No Activity</span> </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T03:45"><span>03:45 AM</span>
-                      <span>Today</span></time>
-                    <div class="left-icon"><img src="assets/images/user/user4.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">X-Ray</p>
-                      <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
-                        commodo ligula eget dolor. Aenean massa. Cum sociis natoque
-                        penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-                        Donec quam felis, ultricies nec, pellentesque eu, pretium quis,
-                        sem. Nulla consequat massa quis enim.</p>
-                    </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">25/08/2020</span>
-                      <span class="large">01:30 PM</span></time>
-                    <div class="left-icon"> <img src="assets/images/user/user2.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">Consultation</p>
-                      <h2>Consultation with <a href="#" onClick="return false;">Dr. John Deo</a>
-                      </h2>
-                    </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">04/09/2020</span>
-                      <span class="large">02:00 PM</span></time>
-                    <div class="left-icon"><img src="assets/images/user/user5.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">Prescription</p>
-                      <p>Write prescriptio by <a href="#" onClick="return false;">Dr. Sarah Smith</a> and necessary
-                        advice to patient.</p>
-                      <div class="row">
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;"><i
-                              class="far fa-file-pdf font-50 col-red"></i></a>
+
+    <!-- Loading -->
+    @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    }
+
+    <!-- Error -->
+    @if (error && !isLoading) {
+    <div class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error }}</p>
+    </div>
+    }
+
+    <!-- Content -->
+    @if (!isLoading && !error) {
+    <div class="row">
+      <div class="col-lg-12">
+        <mat-card class="cardWithShadow">
+          <mat-card-content>
+            <mat-tab-group animationDuration="200ms">
+              <!-- Tab: Consultas -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon>medical_services</mat-icon>
+                  {{ 'CLINICAL_HISTORY.CONSULTATIONS' | translate }}
+                </ng-template>
+                <div class="tab-content">
+                  @if (consultations.length === 0) {
+                  <div class="empty-state">
+                    <mat-icon>event_busy</mat-icon>
+                    <h3>{{ 'CLINICAL_HISTORY.NO_CONSULTATIONS' | translate }}</h3>
+                    <p>{{ 'CLINICAL_HISTORY.NO_CONSULTATIONS_DESC' | translate }}</p>
+                  </div>
+                  } @else {
+                  <div class="consultations-timeline">
+                    @for (consultation of consultations; track consultation._id) {
+                    <mat-expansion-panel class="consultation-panel">
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          <div class="consultation-header">
+                            <div class="date-badge">
+                              <mat-icon>event</mat-icon>
+                              <span>{{ formatDate(consultation.date) }}</span>
+                              <span class="time">{{ formatTime(consultation.date) }}</span>
+                            </div>
+                            <span class="status-chip" [ngClass]="'status-' + consultation.status">
+                              {{ getStatusLabel(consultation.status) | translate }}
+                            </span>
+                          </div>
+                        </mat-panel-title>
+                        <mat-panel-description>
+                          <span class="doctor-name">{{ getDoctorName(consultation) }}</span>
+                        </mat-panel-description>
+                      </mat-expansion-panel-header>
+
+                      <div class="consultation-content">
+                        <!-- Motivo de consulta -->
+                        <div class="info-section">
+                          <h4>{{ 'CLINICAL_HISTORY.CHIEF_COMPLAINT' | translate }}</h4>
+                          <p>{{ consultation.chiefComplaint }}</p>
                         </div>
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;"><i
-                              class="far fa-file-image font-50 col-purple"></i></a>
+
+                        <!-- Diagnósticos -->
+                        @if (consultation.diagnoses && consultation.diagnoses.length > 0) {
+                        <mat-divider></mat-divider>
+                        <div class="info-section">
+                          <h4>{{ 'CLINICAL_HISTORY.DIAGNOSES' | translate }}</h4>
+                          <div class="diagnoses-list">
+                            @for (diagnosis of consultation.diagnoses; track diagnosis.code) {
+                            <div class="diagnosis-item">
+                              <mat-chip>{{ diagnosis.code }}</mat-chip>
+                              <span class="diagnosis-desc">{{ diagnosis.description }}</span>
+                              <span class="diagnosis-type">({{ diagnosis.type }})</span>
+                            </div>
+                            }
+                          </div>
                         </div>
+                        }
+
+                        <!-- Recetas -->
+                        @if (consultation.prescriptions && consultation.prescriptions.length > 0) {
+                        <mat-divider></mat-divider>
+                        <div class="info-section">
+                          <h4>{{ 'CLINICAL_HISTORY.PRESCRIPTIONS' | translate }}</h4>
+                          <div class="prescriptions-list">
+                            @for (prescription of consultation.prescriptions; track prescription.medication) {
+                            <div class="prescription-item">
+                              <mat-icon>medication</mat-icon>
+                              <div class="prescription-details">
+                                <span class="med-name">{{ prescription.medication }}</span>
+                                <span class="med-dosage">{{ prescription.dosage }} - {{ prescription.frequency }} - {{ prescription.duration }}</span>
+                                @if (prescription.instructions) {
+                                <span class="med-instructions">{{ prescription.instructions }}</span>
+                                }
+                              </div>
+                            </div>
+                            }
+                          </div>
+                        </div>
+                        }
+
+                        <!-- Plan de tratamiento -->
+                        @if (consultation.treatmentPlan) {
+                        <mat-divider></mat-divider>
+                        <div class="info-section">
+                          <h4>{{ 'CLINICAL_HISTORY.TREATMENT_PLAN' | translate }}</h4>
+                          <p>{{ consultation.treatmentPlan }}</p>
+                        </div>
+                        }
+
+                        <!-- Próxima cita -->
+                        @if (consultation.followUpDate) {
+                        <mat-divider></mat-divider>
+                        <div class="info-section followup">
+                          <mat-icon>event_repeat</mat-icon>
+                          <span>{{ 'CLINICAL_HISTORY.FOLLOWUP_DATE' | translate }}: {{ formatDate(consultation.followUpDate) }}</span>
+                        </div>
+                        }
                       </div>
-                      <p>
-                        <span>
-                          <i class="fa fa-paperclip"></i> 2 attachments — </span>
-                        <a href="#" onClick="return false;">Download all attachments</a> |
-                        <a href="#" onClick="return false;">View all images</a>
-                      </p>
-                    </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">03/09/2020</span>
-                      <span class="large">10:30 PM</span> <span>One weeks ago</span></time>
-                    <div class="left-icon"><img src="assets/images/user/user5.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">Operation</p>
-                      <blockquote>Pianoforte principles our unaffected not for astonished
-                        travelling are particular.</blockquote>
-                      <p>Doctor Team</p>
-                      <div class="row">
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;"><img
-                              src="assets/images/user/user1.jpg" alt="" class="img-fluid img-thumbnail m-t-30"></a>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;">
-                            <img src="assets/images/user/user5.jpg" alt="" class="img-fluid img-thumbnail m-t-30"></a>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;">
-                            <img src="assets/images/user/user6.jpg" alt="" class="img-fluid img-thumbnail m-t-30">
-                          </a> </div>
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;">
-                            <img src="assets/images/user/user7.jpg" alt="" class="img-fluid img-thumbnail m-t-30">
-                          </a> </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">29/08/2020</span>
-                      <span class="large">01:30 PM</span> <span>Two weeks ago</span></time>
-                    <div class="left-icon"> <img src="assets/images/user/user6.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">Consultation</p>
-                      <h2>Consultation with <a href="#" onClick="return false;">Dr. Sarah Smith</a>
-                      </h2>
-                      <blockquote>
-                        <p class="blockquote blockquote-primary">
-                          "Debating me breeding be answered an he. Spoil event was words her off cause any. Tears woman
-                          which no is world miles woody. Wished be do mutual except in effect answer."
-                          <br>
-                          <small>
-                            - Dr. Sarah Smith
-                          </small>
-                        </p>
-                      </blockquote>
-                    </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">25/08/2020</span>
-                      <span class="large">02:00 PM</span></time>
-                    <div class="left-icon"><img src="assets/images/user/user5.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">Prescription</p>
-                      <p>Write prescriptio by <a href="#" onClick="return false;">Dr. Sarah Smith</a> and necessary
-                        advice to patient.</p>
-                      <div class="row">
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;"><i
-                              class="far fa-file-pdf font-50 col-red"></i></a>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;"><i
-                              class="far fa-file-image font-50 col-purple"></i></a>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-6"><a href="#" onClick="return false;"><i
-                              class="far fa-file-archive font-50"></i></a>
-                        </div>
-                      </div>
-                      <p>
-                        <span>
-                          <i class="fa fa-paperclip"></i> 3 attachments — </span>
-                        <a href="#" onClick="return false;">Download all attachments</a> |
-                        <a href="#" onClick="return false;">View all images</a>
-                      </p>
-                    </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">25/08/2020</span>
-                      <span class="large">01:30 PM</span></time>
-                    <div class="left-icon"> <img src="assets/images/user/user6.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">Consultation</p>
-                      <h2>Consultation with <a href="#" onClick="return false;">Dr. Sarah Smith</a>
-                      </h2>
-                    </div>
-                  </li>
-                  <li>
-                    <time class="left-time" datetime="2017-11-04T18:30"><span class="hidden">25/08/2020</span>
-                      <span class="large">12:13 PM</span></time>
-                    <div class="left-icon"><img src="assets/images/user/user7.jpg" alt="">
-                    </div>
-                    <div class="left-label">
-                      <p class="font-16 font-b-500">Medication</p>
-                      <h2>Generate new patient id <a href="#" onClick="return false;">#ID56734</a>
-                      </h2>
-                      <p>Fill the form and follow basic procedures.</p>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+                    </mat-expansion-panel>
+                    }
+                  </div>
+                  }
+                </div>
+              </mat-tab>
+
+              <!-- Tab: Resumen Médico -->
+              <mat-tab>
+                <ng-template mat-tab-label>
+                  <mat-icon>summarize</mat-icon>
+                  {{ 'CLINICAL_HISTORY.SUMMARY' | translate }}
+                </ng-template>
+                <div class="tab-content">
+                  @if (medicalSummary) {
+                  <div class="summary-grid">
+                    <!-- Alergias -->
+                    <mat-card class="summary-card">
+                      <mat-card-header>
+                        <mat-icon mat-card-avatar class="card-icon allergies">warning</mat-icon>
+                        <mat-card-title>{{ 'CLINICAL_HISTORY.ALLERGIES' | translate }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        @if (medicalSummary.allergies.length === 0) {
+                        <p class="no-data">{{ 'CLINICAL_HISTORY.NO_ALLERGIES' | translate }}</p>
+                        } @else {
+                        <mat-list>
+                          @for (allergy of medicalSummary.allergies; track allergy.allergen) {
+                          <mat-list-item>
+                            <mat-icon matListItemIcon>lens</mat-icon>
+                            <span matListItemTitle>{{ allergy.allergen }}</span>
+                            @if (allergy.reaction) {
+                            <span matListItemLine>{{ allergy.reaction }}</span>
+                            }
+                          </mat-list-item>
+                          }
+                        </mat-list>
+                        }
+                      </mat-card-content>
+                    </mat-card>
+
+                    <!-- Condiciones Crónicas -->
+                    <mat-card class="summary-card">
+                      <mat-card-header>
+                        <mat-icon mat-card-avatar class="card-icon chronic">monitor_heart</mat-icon>
+                        <mat-card-title>{{ 'CLINICAL_HISTORY.CHRONIC_CONDITIONS' | translate }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        @if (medicalSummary.chronicConditions.length === 0) {
+                        <p class="no-data">{{ 'CLINICAL_HISTORY.NO_CONDITIONS' | translate }}</p>
+                        } @else {
+                        <mat-list>
+                          @for (condition of medicalSummary.chronicConditions; track condition.condition) {
+                          <mat-list-item>
+                            <mat-icon matListItemIcon>lens</mat-icon>
+                            <span matListItemTitle>{{ condition.condition }}</span>
+                            @if (condition.icdCode) {
+                            <span matListItemLine>{{ condition.icdCode }}</span>
+                            }
+                          </mat-list-item>
+                          }
+                        </mat-list>
+                        }
+                      </mat-card-content>
+                    </mat-card>
+
+                    <!-- Medicamentos Actuales -->
+                    <mat-card class="summary-card">
+                      <mat-card-header>
+                        <mat-icon mat-card-avatar class="card-icon medications">medication</mat-icon>
+                        <mat-card-title>{{ 'CLINICAL_HISTORY.CURRENT_MEDICATIONS' | translate }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        @if (medicalSummary.currentMedications.length === 0) {
+                        <p class="no-data">{{ 'CLINICAL_HISTORY.NO_MEDICATIONS' | translate }}</p>
+                        } @else {
+                        <mat-list>
+                          @for (med of medicalSummary.currentMedications; track med.medication) {
+                          <mat-list-item>
+                            <mat-icon matListItemIcon>lens</mat-icon>
+                            <span matListItemTitle>{{ med.medication }}</span>
+                            @if (med.dosage) {
+                            <span matListItemLine>{{ med.dosage }} - {{ med.frequency }}</span>
+                            }
+                          </mat-list-item>
+                          }
+                        </mat-list>
+                        }
+                      </mat-card-content>
+                    </mat-card>
+
+                    <!-- Historial Quirúrgico -->
+                    <mat-card class="summary-card">
+                      <mat-card-header>
+                        <mat-icon mat-card-avatar class="card-icon surgeries">healing</mat-icon>
+                        <mat-card-title>{{ 'CLINICAL_HISTORY.SURGICAL_HISTORY' | translate }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        @if (medicalSummary.surgicalHistory.length === 0) {
+                        <p class="no-data">{{ 'CLINICAL_HISTORY.NO_SURGERIES' | translate }}</p>
+                        } @else {
+                        <mat-list>
+                          @for (surgery of medicalSummary.surgicalHistory; track surgery.procedure) {
+                          <mat-list-item>
+                            <mat-icon matListItemIcon>lens</mat-icon>
+                            <span matListItemTitle>{{ surgery.procedure }}</span>
+                            @if (surgery.date) {
+                            <span matListItemLine>{{ formatDate(surgery.date) }}</span>
+                            }
+                          </mat-list-item>
+                          }
+                        </mat-list>
+                        }
+                      </mat-card-content>
+                    </mat-card>
+
+                    <!-- Vacunas -->
+                    <mat-card class="summary-card">
+                      <mat-card-header>
+                        <mat-icon mat-card-avatar class="card-icon vaccines">vaccines</mat-icon>
+                        <mat-card-title>{{ 'CLINICAL_HISTORY.VACCINATIONS' | translate }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        @if (medicalSummary.vaccinations.length === 0) {
+                        <p class="no-data">{{ 'CLINICAL_HISTORY.NO_VACCINATIONS' | translate }}</p>
+                        } @else {
+                        <mat-list>
+                          @for (vaccine of medicalSummary.vaccinations; track vaccine.vaccine) {
+                          <mat-list-item>
+                            <mat-icon matListItemIcon>lens</mat-icon>
+                            <span matListItemTitle>{{ vaccine.vaccine }}</span>
+                            @if (vaccine.date) {
+                            <span matListItemLine>{{ formatDate(vaccine.date) }}</span>
+                            }
+                          </mat-list-item>
+                          }
+                        </mat-list>
+                        }
+                      </mat-card-content>
+                    </mat-card>
+
+                    <!-- Historia Familiar -->
+                    <mat-card class="summary-card">
+                      <mat-card-header>
+                        <mat-icon mat-card-avatar class="card-icon family">family_restroom</mat-icon>
+                        <mat-card-title>{{ 'CLINICAL_HISTORY.FAMILY_HISTORY' | translate }}</mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content>
+                        @if (medicalSummary.familyHistory.length === 0) {
+                        <p class="no-data">{{ 'CLINICAL_HISTORY.NO_FAMILY_HISTORY' | translate }}</p>
+                        } @else {
+                        <mat-list>
+                          @for (fh of medicalSummary.familyHistory; track fh.condition) {
+                          <mat-list-item>
+                            <mat-icon matListItemIcon>lens</mat-icon>
+                            <span matListItemTitle>{{ fh.condition }}</span>
+                            <span matListItemLine>{{ fh.relationship }}</span>
+                          </mat-list-item>
+                          }
+                        </mat-list>
+                        }
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                  } @else {
+                  <div class="empty-state">
+                    <mat-icon>folder_open</mat-icon>
+                    <h3>{{ 'CLINICAL_HISTORY.NO_SUMMARY' | translate }}</h3>
+                  </div>
+                  }
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
+    }
   </div>
 </section>

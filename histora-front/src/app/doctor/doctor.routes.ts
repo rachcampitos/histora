@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppointmentsComponent } from './appointments/appointments.component';
+import { ConsultationsComponent } from './consultations/consultations.component';
 import { DoctorsComponent } from './doctors/doctors.component';
 import { PatientsComponent } from './patients/patients.component';
 import { Page404Component } from '../authentication/page404/page404.component';
@@ -19,6 +20,10 @@ export const DOCTOR_ROUTE: Route[] = [
   {
     path: 'appointments',
     component: AppointmentsComponent,
+  },
+  {
+    path: 'consultations',
+    component: ConsultationsComponent,
   },
   {
     path: 'doctors',

@@ -130,7 +130,16 @@ export class SidebarComponent
         ? currentUser.avatar
         : './assets/images/user/' + currentUser.avatar;
     } else {
-      this.userImg = undefined;
+      // Set default avatar based on role
+      if (userRole === Role.Admin || userRole === Role.PlatformAdmin || userRole === Role.ClinicOwner) {
+        this.userImg = './assets/images/user/admin.jpg';
+      } else if (userRole === Role.Doctor || userRole === Role.ClinicDoctor) {
+        this.userImg = './assets/images/user/doctor.jpg';
+      } else if (userRole === Role.Patient || userRole === Role.PatientRole) {
+        this.userImg = './assets/images/user/patient.jpg';
+      } else {
+        this.userImg = './assets/images/user/new.jpg';
+      }
     }
 
     // Set role translation key (will be translated in template)

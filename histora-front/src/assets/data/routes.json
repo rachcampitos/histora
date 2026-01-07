@@ -145,6 +145,18 @@
       "submenu": []
     },
     {
+      "path": "/doctor/consultations",
+      "title": "MENUITEMS.DOCTOR.CONSULTATIONS",
+      "iconType": "material-icons-outlined",
+      "icon": "medical_information",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["ADMIN", "DOCTOR"],
+      "submenu": []
+    },
+    {
       "path": "/doctor/settings",
       "title": "MENUITEMS.DOCTOR.SETTINGS",
       "iconType": "material-icons-outlined",

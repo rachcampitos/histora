@@ -139,7 +139,16 @@ export class HeaderComponent
         ? currentUser.avatar
         : './assets/images/user/' + currentUser.avatar;
     } else {
-      this.userImg = undefined;
+      // Set default avatar based on role
+      if (userRole === Role.PlatformAdmin || userRole === Role.PlatformAdminUI || userRole === Role.Admin || userRole === Role.ClinicOwner) {
+        this.userImg = './assets/images/user/admin.jpg';
+      } else if (userRole === Role.Doctor || userRole === Role.ClinicDoctor) {
+        this.userImg = './assets/images/user/doctor.jpg';
+      } else if (userRole === Role.Patient) {
+        this.userImg = './assets/images/user/patient.jpg';
+      } else {
+        this.userImg = './assets/images/user/new.jpg';
+      }
     }
 
     if (userRole === Role.PlatformAdmin || userRole === Role.PlatformAdminUI) {
