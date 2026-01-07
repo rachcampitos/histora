@@ -150,6 +150,20 @@
   flex-direction: column;
   gap: 16px;
   align-items: flex-start;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      margin: 0;
+    }
+
+    mat-spinner {
+      margin: 0;
+    }
+  }
 }
 
 .cv-file {

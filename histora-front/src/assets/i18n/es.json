@@ -13,12 +13,12 @@
       "SETTINGS": "Configuración"
     },
     "DASHBOARD": {
-      "TEXT": "Tablero",
+      "TEXT": "Panel",
       "LIST": {
-        "DASHBOARD1": "Tablero 1",
-        "DASHBOARD2": "Tablero 2",
-        "DOCTOR-DASHBOARD": "Tablero del Médico",
-        "PATIENT-DASHBOARD": "Tablero del Paciente"
+        "DASHBOARD1": "Panel 1",
+        "DASHBOARD2": "Panel 2",
+        "DOCTOR-DASHBOARD": "Panel del Médico",
+        "PATIENT-DASHBOARD": "Panel del Paciente"
       }
     },
     "APPOINTMENTS": {
@@ -50,7 +50,7 @@
       }
     },
     "DOCTOR": {
-      "DASHBOARD": "Tablero",
+      "DASHBOARD": "Panel",
       "PROFILE": "Mi Perfil",
       "APPOINTMENTS": "Citas",
       "DOCTORS": "Médicos",
@@ -59,7 +59,7 @@
     },
     "PATIENT": {
       "TEXT": "Paciente",
-      "DASHBOARD": "Tablero",
+      "DASHBOARD": "Panel",
       "DOCTORS": "Buscar Médicos",
       "APPOINTMENTS": {
         "TEXT": "Citas",
@@ -138,13 +138,13 @@
     }
   },
   "DASHBOARD": {
-    "TITLE": "Tablero",
+    "TITLE": "Panel",
     "WELCOME": "Bienvenido",
     "WELCOME_BACK": "Bienvenido de nuevo",
     "SURGERIES": "Cirugías",
     "ROOM_VISIT": "Visitas",
-    "DOCTOR_DASHBOARD": "Tablero del Médico",
-    "PATIENT_DASHBOARD": "Tablero del Paciente",
+    "DOCTOR_DASHBOARD": "Panel del Médico",
+    "PATIENT_DASHBOARD": "Panel del Paciente",
     "KPI": {
       "APPOINTMENTS": "Citas",
       "TODAYS_SUMMARY": "Resumen de Hoy",
@@ -487,5 +487,33 @@
     "PATTERN": "Formato inválido",
     "PHONE": "Ingrese un teléfono válido",
     "DATE": "Ingrese una fecha válida"
+  },
+  "ROLES": {
+    "ADMIN": "Administrador",
+    "DOCTOR": "Médico",
+    "PATIENT": "Paciente",
+    "STAFF": "Personal",
+    "USER": "Usuario"
+  },
+  "SIDEBAR": {
+    "LOGOUT": "Cerrar Sesión"
+  },
+  "PATIENT_DASHBOARD": {
+    "WELCOME_BACK": "Bienvenido de nuevo",
+    "WELCOME_MESSAGE": "Nos complace darle la bienvenida a nuestra práctica y agradecerle por elegir a nuestros médicos para participar en su atención médica. Esperamos brindarle una atención médica personalizada e integral, centrada en el bienestar y la prevención.",
+    "BLOOD_PRESSURE": "Presión Arterial",
+    "HEART_RATE": "Frecuencia Cardíaca",
+    "GLUCOSE_LEVEL": "Nivel de Glucosa",
+    "BLOOD_COUNT": "Recuento Sanguíneo",
+    "HIGHER_THAN_LAST_MONTH": "{{percent}}% más alto que el mes pasado",
+    "LOWER_THAN_LAST_MONTH": "{{percent}}% más bajo que el mes pasado",
+    "RESTING_HEART_RATE": "Frecuencia Cardíaca en Reposo",
+    "PERFORMANCE_HEART_RATE": "Frecuencia Cardíaca en Actividad",
+    "AVERAGE": "Promedio",
+    "MEDICATIONS": "Medicamentos",
+    "REPORTS_DOCUMENTS": "Reportes/Documentos",
+    "REPORT_ADVERSE_EFFECT": "Reportar Efecto Adverso",
+    "TREATMENT": "Tratamiento",
+    "CONTACT_NUMBER": "Número de Contacto"
   }
 }

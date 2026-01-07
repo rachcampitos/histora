@@ -299,4 +299,189 @@ describe('NotificationsService', () => {
       });
     });
   });
+
+  describe('notifyDoctorNewAppointment', () => {
+    it('should notify doctor when patient books appointment', async () => {
+      const appointment = {
+        id: new Types.ObjectId().toString(),
+        doctorUserId: mockUserId,
+        patientName: 'María López',
+        date: '2025-01-20',
+        time: '14:00',
+        clinicId: mockClinicId,
+        reason: 'Consulta general',
+      };
+
+      await service.notifyDoctorNewAppointment(appointment);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: NotificationType.NEW_APPOINTMENT_BOOKED,
+          title: 'Nueva Cita Agendada',
+        })
+      );
+    });
+
+    it('should include reason in notification message', async () => {
+      const appointment = {
+        id: new Types.ObjectId().toString(),
+        doctorUserId: mockUserId,
+        patientName: 'María López',
+        date: '2025-01-20',
+        time: '14:00',
+        clinicId: mockClinicId,
+        reason: 'Dolor de cabeza',
+      };
+
+      await service.notifyDoctorNewAppointment(appointment);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('Dolor de cabeza'),
+        })
+      );
+    });
+  });
+
+  describe('notifyDoctorAppointmentCancelled', () => {
+    it('should notify doctor when patient cancels appointment', async () => {
+      const appointment = {
+        id: new Types.ObjectId().toString(),
+        doctorUserId: mockUserId,
+        patientName: 'María López',
+        date: '2025-01-20',
+        time: '14:00',
+        clinicId: mockClinicId,
+        reason: 'Emergencia personal',
+      };
+
+      await service.notifyDoctorAppointmentCancelled(appointment);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: NotificationType.APPOINTMENT_CANCELLED_BY_PATIENT,
+          title: 'Cita Cancelada',
+        })
+      );
+    });
+
+    it('should include cancellation reason when provided', async () => {
+      const appointment = {
+        id: new Types.ObjectId().toString(),
+        doctorUserId: mockUserId,
+        patientName: 'María López',
+        date: '2025-01-20',
+        time: '14:00',
+        clinicId: mockClinicId,
+        reason: 'Viaje de trabajo',
+      };
+
+      await service.notifyDoctorAppointmentCancelled(appointment);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('Viaje de trabajo'),
+        })
+      );
+    });
+  });
+
+  describe('notifyDoctorUpcomingAppointment', () => {
+    it('should notify doctor of upcoming appointment in minutes', async () => {
+      const appointment = {
+        id: new Types.ObjectId().toString(),
+        doctorUserId: mockUserId,
+        patientName: 'Carlos García',
+        date: '2025-01-20',
+        time: '15:00',
+        clinicId: mockClinicId,
+        minutesBefore: 30,
+      };
+
+      await service.notifyDoctorUpcomingAppointment(appointment);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: NotificationType.UPCOMING_APPOINTMENT_REMINDER,
+          message: expect.stringContaining('30 minutos'),
+        })
+      );
+    });
+
+    it('should show hours for large time intervals', async () => {
+      const appointment = {
+        id: new Types.ObjectId().toString(),
+        doctorUserId: mockUserId,
+        patientName: 'Carlos García',
+        date: '2025-01-20',
+        time: '15:00',
+        clinicId: mockClinicId,
+        minutesBefore: 120,
+      };
+
+      await service.notifyDoctorUpcomingAppointment(appointment);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('2 hora(s)'),
+        })
+      );
+    });
+  });
+
+  describe('notifyDoctorNewReview', () => {
+    it('should notify doctor when patient leaves review', async () => {
+      const review = {
+        doctorUserId: mockUserId,
+        patientName: 'Ana Martínez',
+        rating: 5,
+        comment: 'Excelente atención',
+        clinicId: mockClinicId,
+      };
+
+      await service.notifyDoctorNewReview(review);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: NotificationType.NEW_PATIENT_REVIEW,
+          title: 'Nueva Reseña de Paciente',
+        })
+      );
+    });
+
+    it('should include rating stars in message', async () => {
+      const review = {
+        doctorUserId: mockUserId,
+        patientName: 'Ana Martínez',
+        rating: 4,
+        clinicId: mockClinicId,
+      };
+
+      await service.notifyDoctorNewReview(review);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('★★★★☆'),
+        })
+      );
+    });
+
+    it('should include comment when provided', async () => {
+      const review = {
+        doctorUserId: mockUserId,
+        patientName: 'Ana Martínez',
+        rating: 5,
+        comment: 'Muy profesional',
+        clinicId: mockClinicId,
+      };
+
+      await service.notifyDoctorNewReview(review);
+
+      expect(mockNotificationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('Muy profesional'),
+        })
+      );
+    });
+  });
 });

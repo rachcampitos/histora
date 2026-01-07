@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
 import {
   ChartComponent,
   ApexAxisChartSeries,
@@ -26,6 +27,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { MedicineListComponent } from '@shared/components/medicine-list/medicine-list.component';
 import { ReportListComponent } from '@shared/components/report-list/report-list.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { AuthService } from '@core';
 export type areaChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -97,7 +99,7 @@ export type radialChartOptions = {
         TranslateModule,
     ]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('chart')
   chart!: ChartComponent;
   public areaChartOptions!: Partial<areaChartOptions>;
@@ -105,12 +107,36 @@ export class DashboardComponent implements OnInit {
   public restRateChartOptions!: Partial<restRateChartOptions>;
   public performanceRateChartOptions!: Partial<performanceRateChartOptions>;
 
-  constructor() {}
+  // Patient profile data
+  patientName = '';
+  patientAvatar = '';
+  private userSubscription?: Subscription;
+
+  constructor(private authService: AuthService) {}
+
   ngOnInit() {
+    this.subscribeToUserUpdates();
     this.chart1();
     this.chart2();
     this.chart3();
     this.chart4();
+  }
+
+  ngOnDestroy() {
+    this.userSubscription?.unsubscribe();
+  }
+
+  private subscribeToUserUpdates() {
+    this.userSubscription = this.authService.user$.subscribe((user) => {
+      if (user && Object.keys(user).length > 0) {
+        this.patientName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        if (user.avatar) {
+          this.patientAvatar = user.avatar.startsWith('http')
+            ? user.avatar
+            : 'assets/images/user/' + user.avatar;
+        }
+      }
+    });
   }
 
   medicineDataSource: Medicine[] = [

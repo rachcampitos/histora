@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { DoctorsService, DoctorProfile } from '../../doctor/profile/doctors.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { CurrencyService } from '@core/service/currency.service';
 
 @Component({
   selector: 'app-doctor-view',
@@ -43,7 +44,8 @@ export class DoctorViewComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private doctorsService: DoctorsService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private currencyService: CurrencyService
   ) {}
 
   ngOnInit(): void {
@@ -93,10 +95,8 @@ export class DoctorViewComponent implements OnInit, OnDestroy {
   }
 
   formatCurrency(amount: number, currency: string = 'PEN'): string {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
+    // Use CurrencyService to show converted price based on user's language
+    return this.currencyService.formatWithConversion(amount, currency);
   }
 
   bookAppointment(): void {

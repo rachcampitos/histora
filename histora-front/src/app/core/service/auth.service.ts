@@ -22,7 +22,13 @@ export class AuthService {
     private tokenService: TokenService,
     private loginService: LoginService,
     private store: LocalStorageService
-  ) {}
+  ) {
+    // Initialize user$ from localStorage on service creation
+    const storedUser = this.store.get('currentUser');
+    if (storedUser && Object.keys(storedUser).length > 0) {
+      this.user$.next(storedUser);
+    }
+  }
 
   public get currentUserValue(): User {
     return this.store.get('currentUser');

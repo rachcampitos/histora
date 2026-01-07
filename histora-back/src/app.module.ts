@@ -19,6 +19,7 @@ import { PublicDirectoryModule } from './public-directory/public-directory.modul
 import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentsModule } from './payments/payments.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { UploadsModule } from './uploads/uploads.module';
     NotificationsModule,
     PaymentsModule,
     UploadsModule,
+    ChatbotModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -15,11 +15,11 @@
           <mat-card class="profile-header-card">
             <div class="profile-header">
               <div class="profile-avatar">
-                <img [src]="doctorProfile?.profileImage || 'assets/images/user/doctor.jpg'"
+                <img [src]="userAvatar || doctorProfile?.profileImage || 'assets/images/user/doctor.jpg'"
                      [alt]="doctorProfile?.firstName">
               </div>
               <div class="profile-info">
-                <h2>Dr. {{ doctorProfile?.firstName }} {{ doctorProfile?.lastName }}</h2>
+                <h2>Dr. {{ displayFirstName }} {{ displayLastName }}</h2>
                 <p class="specialty">{{ doctorProfile?.specialty }}</p>
                 @if (doctorProfile?.licenseNumber) {
                   <p class="license">CMP: {{ doctorProfile?.licenseNumber }}</p>
@@ -163,35 +163,37 @@
                         </button>
                       </div>
 
-                      @for (edu of education.controls; track trackByIndex($index); let i = $index) {
-                        <div class="array-item" [formGroupName]="i" formArrayName="education">
-                          <div class="row">
-                            <div class="col-md-4">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Institución</mat-label>
-                                <input matInput [formControlName]="'institution'">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-4">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Grado/Título</mat-label>
-                                <input matInput [formControlName]="'degree'">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Año</mat-label>
-                                <input matInput [formControlName]="'year'" type="number">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2 d-flex align-items-center">
-                              <button mat-icon-button color="warn" (click)="removeEducation(i)">
-                                <mat-icon>delete</mat-icon>
-                              </button>
+                      <div formArrayName="education">
+                        @for (edu of education.controls; track trackByIndex($index); let i = $index) {
+                          <div class="array-item" [formGroupName]="i">
+                            <div class="row">
+                              <div class="col-md-4">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Institución</mat-label>
+                                  <input matInput formControlName="institution">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-4">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Grado/Título</mat-label>
+                                  <input matInput formControlName="degree">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Año</mat-label>
+                                  <input matInput formControlName="year" type="number">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2 d-flex align-items-center">
+                                <button mat-icon-button color="warn" (click)="removeEducation(i)">
+                                  <mat-icon>delete</mat-icon>
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      }
+                        }
+                      </div>
 
                       @if (education.length === 0) {
                         <p class="no-items">No hay educación registrada</p>
@@ -213,47 +215,49 @@
                         </button>
                       </div>
 
-                      @for (exp of experience.controls; track trackByIndex($index); let i = $index) {
-                        <div class="array-item" [formGroupName]="i" formArrayName="experience">
-                          <div class="row">
-                            <div class="col-md-4">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Cargo</mat-label>
-                                <input matInput [formControlName]="'position'">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-4">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Institución</mat-label>
-                                <input matInput [formControlName]="'institution'">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Desde</mat-label>
-                                <input matInput [formControlName]="'startYear'" type="number">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Hasta</mat-label>
-                                <input matInput [formControlName]="'endYear'" type="number">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-10">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Descripción</mat-label>
-                                <textarea matInput [formControlName]="'description'" rows="2"></textarea>
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2 d-flex align-items-center">
-                              <button mat-icon-button color="warn" (click)="removeExperience(i)">
-                                <mat-icon>delete</mat-icon>
-                              </button>
+                      <div formArrayName="experience">
+                        @for (exp of experience.controls; track trackByIndex($index); let i = $index) {
+                          <div class="array-item" [formGroupName]="i">
+                            <div class="row">
+                              <div class="col-md-4">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Cargo</mat-label>
+                                  <input matInput formControlName="position">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-4">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Institución</mat-label>
+                                  <input matInput formControlName="institution">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Desde</mat-label>
+                                  <input matInput formControlName="startYear" type="number">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Hasta</mat-label>
+                                  <input matInput formControlName="endYear" type="number">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-10">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Descripción</mat-label>
+                                  <textarea matInput formControlName="description" rows="2"></textarea>
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2 d-flex align-items-center">
+                                <button mat-icon-button color="warn" (click)="removeExperience(i)">
+                                  <mat-icon>delete</mat-icon>
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      }
+                        }
+                      </div>
 
                       @if (experience.length === 0) {
                         <p class="no-items">No hay experiencia registrada</p>
@@ -275,41 +279,43 @@
                         </button>
                       </div>
 
-                      @for (cert of certifications.controls; track trackByIndex($index); let i = $index) {
-                        <div class="array-item" [formGroupName]="i" formArrayName="certifications">
-                          <div class="row">
-                            <div class="col-md-3">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Nombre</mat-label>
-                                <input matInput [formControlName]="'name'">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-3">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Emisor</mat-label>
-                                <input matInput [formControlName]="'issuer'">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Año</mat-label>
-                                <input matInput [formControlName]="'year'" type="number">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2">
-                              <mat-form-field class="full-width" appearance="outline">
-                                <mat-label>Nº Licencia</mat-label>
-                                <input matInput [formControlName]="'licenseNumber'">
-                              </mat-form-field>
-                            </div>
-                            <div class="col-md-2 d-flex align-items-center">
-                              <button mat-icon-button color="warn" (click)="removeCertification(i)">
-                                <mat-icon>delete</mat-icon>
-                              </button>
+                      <div formArrayName="certifications">
+                        @for (cert of certifications.controls; track trackByIndex($index); let i = $index) {
+                          <div class="array-item" [formGroupName]="i">
+                            <div class="row">
+                              <div class="col-md-3">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Nombre</mat-label>
+                                  <input matInput formControlName="name">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-3">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Emisor</mat-label>
+                                  <input matInput formControlName="issuer">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Año</mat-label>
+                                  <input matInput formControlName="year" type="number">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2">
+                                <mat-form-field class="full-width" appearance="outline">
+                                  <mat-label>Nº Licencia</mat-label>
+                                  <input matInput formControlName="licenseNumber">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-md-2 d-flex align-items-center">
+                                <button mat-icon-button color="warn" (click)="removeCertification(i)">
+                                  <mat-icon>delete</mat-icon>
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      }
+                        }
+                      </div>
 
                       @if (certifications.length === 0) {
                         <p class="no-items">No hay certificaciones registradas</p>

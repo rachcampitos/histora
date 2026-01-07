@@ -5,18 +5,22 @@ import { TranslateService } from '@ngx-translate/core';
   providedIn: 'root',
 })
 export class LanguageService {
-  public languages: string[] = ['en', 'es', 'de'];
+  public languages: string[] = ['es', 'en', 'de'];
+  public defaultLanguage = 'es'; // Spanish as default
 
   constructor(public translate: TranslateService) {
-    let browserLang: string;
+    let selectedLang: string;
     translate.addLangs(this.languages);
+    translate.setDefaultLang(this.defaultLanguage);
 
     if (localStorage.getItem('lang')) {
-      browserLang = localStorage.getItem('lang') as string;
+      selectedLang = localStorage.getItem('lang') as string;
     } else {
-      browserLang = translate.getBrowserLang() as string;
+      // Default to Spanish if no preference is set
+      selectedLang = this.defaultLanguage;
+      localStorage.setItem('lang', this.defaultLanguage);
     }
-    translate.use(browserLang.match(/en|es|de/) ? browserLang : 'en');
+    translate.use(selectedLang.match(/en|es|de/) ? selectedLang : this.defaultLanguage);
   }
 
   public setLanguage(lang: string) {

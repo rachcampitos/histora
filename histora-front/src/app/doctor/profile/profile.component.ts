@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { DoctorsService, DoctorProfile } from './doctors.service';
 import { UploadsService } from '@core/service/uploads.service';
+import { AuthService } from '@core/service/auth.service';
 
 @Component({
   selector: 'app-doctor-profile',
@@ -51,6 +52,8 @@ export class DoctorProfileComponent implements OnInit, OnDestroy {
   isSaving = false;
   isUploadingCv = false;
   cvFileName = '';
+  userAvatar: string | null = null;
+  userName: { firstName: string; lastName: string } | null = null;
 
   private subscriptions = new Subscription();
 
@@ -58,12 +61,40 @@ export class DoctorProfileComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private doctorsService: DoctorsService,
     private uploadsService: UploadsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {
     this.initForm();
   }
 
   ngOnInit(): void {
+    // Subscribe to user changes to get avatar and name
+    this.subscriptions.add(
+      this.authService.user$.subscribe(user => {
+        if (user?.avatar) {
+          this.userAvatar = user.avatar;
+        }
+        if (user?.firstName || user?.lastName) {
+          this.userName = {
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+          };
+        }
+      })
+    );
+
+    // Load current user data
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser?.avatar) {
+      this.userAvatar = currentUser.avatar;
+    }
+    if (currentUser?.firstName || currentUser?.lastName) {
+      this.userName = {
+        firstName: currentUser.firstName || '',
+        lastName: currentUser.lastName || '',
+      };
+    }
+
     this.loadProfile();
   }
 
@@ -318,6 +349,15 @@ export class DoctorProfileComponent implements OnInit, OnDestroy {
         },
       })
     );
+  }
+
+  // Getters for display
+  get displayFirstName(): string {
+    return this.doctorProfile?.firstName || this.userName?.firstName || '';
+  }
+
+  get displayLastName(): string {
+    return this.doctorProfile?.lastName || this.userName?.lastName || '';
   }
 
   // Track by functions

@@ -487,5 +487,33 @@
     "PATTERN": "Invalid format",
     "PHONE": "Enter a valid phone number",
     "DATE": "Enter a valid date"
+  },
+  "ROLES": {
+    "ADMIN": "Administrator",
+    "DOCTOR": "Doctor",
+    "PATIENT": "Patient",
+    "STAFF": "Staff",
+    "USER": "User"
+  },
+  "SIDEBAR": {
+    "LOGOUT": "Logout"
+  },
+  "PATIENT_DASHBOARD": {
+    "WELCOME_BACK": "Welcome back",
+    "WELCOME_MESSAGE": "We would like to take this opportunity to welcome you to our practice and to thank you for choosing our physicians to participate in your healthcare. We look forward to providing you with personalized, comprehensive health care focusing on wellness and prevention.",
+    "BLOOD_PRESSURE": "Blood Pressure",
+    "HEART_RATE": "Heart Rate",
+    "GLUCOSE_LEVEL": "Glucose Level",
+    "BLOOD_COUNT": "Blood Count",
+    "HIGHER_THAN_LAST_MONTH": "{{percent}}% Higher Than Last Month",
+    "LOWER_THAN_LAST_MONTH": "{{percent}}% Lower Than Last Month",
+    "RESTING_HEART_RATE": "Resting Heart Rate",
+    "PERFORMANCE_HEART_RATE": "Performance Heart Rate",
+    "AVERAGE": "Average",
+    "MEDICATIONS": "Medications",
+    "REPORTS_DOCUMENTS": "Reports/Documents",
+    "REPORT_ADVERSE_EFFECT": "Report Adverse Effect",
+    "TREATMENT": "Treatment",
+    "CONTACT_NUMBER": "Contact Number"
   }
 }
