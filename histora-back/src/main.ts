@@ -9,19 +9,23 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Security: Helmet for HTTP headers protection
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],
-          imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-          scriptSrc: ["'self'"],
+  // Disable in development for OAuth testing
+  const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction) {
+    app.use(
+      helmet({
+        contentSecurityPolicy: {
+          directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+            scriptSrc: ["'self'"],
+          },
         },
-      },
-      crossOriginEmbedderPolicy: false, // Allow embedding for OAuth
-    }),
-  );
+        crossOriginEmbedderPolicy: false,
+      }),
+    );
+  }
 
   // Increase body size limit for file uploads (base64 images)
   app.use(json({ limit: '10mb' }));
@@ -58,8 +62,6 @@ async function bootstrap() {
   );
 
   // Swagger Configuration - only enable in non-production
-  const isProduction = process.env.NODE_ENV === 'production';
-
   if (!isProduction) {
     const config = new DocumentBuilder()
     .setTitle('Histora API')

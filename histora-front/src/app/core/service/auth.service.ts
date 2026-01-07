@@ -183,6 +183,9 @@ export class AuthService {
     const backendUrl = window.location.hostname === 'localhost'
       ? 'http://localhost:3000'
       : 'https://api.historahealth.com';
-    window.location.href = `${backendUrl}/auth/google`;
+    const redirectUrl = `${backendUrl}/auth/google`;
+    console.log('loginWithGoogle - redirecting to:', redirectUrl);
+    // Use document.location for more reliable redirect
+    document.location.assign(redirectUrl);
   }
 }

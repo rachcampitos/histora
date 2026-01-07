@@ -138,6 +138,7 @@ export class SigninComponent
   }
 
   signInWithGoogle(): void {
+    console.log('signInWithGoogle clicked - redirecting to backend');
     this.authService.loginWithGoogle();
   }
 

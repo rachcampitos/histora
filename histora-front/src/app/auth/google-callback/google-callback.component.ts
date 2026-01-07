@@ -38,10 +38,13 @@ export class GoogleCallbackComponent implements OnInit {
 
   ngOnInit(): void {
     const queryParams = this.route.snapshot.queryParams;
+    console.log('GoogleCallback - queryParams:', queryParams);
 
     if (queryParams['access_token'] && queryParams['refresh_token'] && queryParams['user']) {
       try {
+        console.log('GoogleCallback - parsing user...');
         const user = JSON.parse(queryParams['user']);
+        console.log('GoogleCallback - user:', user);
 
         // Store tokens and user data
         this.authService.handleGoogleCallback(
@@ -49,22 +52,27 @@ export class GoogleCallbackComponent implements OnInit {
           queryParams['refresh_token'],
           user
         );
+        console.log('GoogleCallback - tokens stored');
 
         // Navigate based on role
         const targetRoute = this.authService.getDefaultRouteForRole(user.role);
+        console.log('GoogleCallback - navigating to:', targetRoute);
         this.router.navigate([targetRoute]);
-      } catch {
+      } catch (error) {
+        console.error('GoogleCallback - error:', error);
         this.message = 'Error al procesar la respuesta de Google';
         setTimeout(() => {
           this.router.navigate(['/authentication/signin']);
         }, 2000);
       }
     } else if (queryParams['error']) {
+      console.log('GoogleCallback - error in params:', queryParams['error']);
       this.message = 'Error en la autenticación con Google';
       setTimeout(() => {
         this.router.navigate(['/authentication/signin']);
       }, 2000);
     } else {
+      console.log('GoogleCallback - no tokens, redirecting to signin');
       this.router.navigate(['/authentication/signin']);
     }
   }

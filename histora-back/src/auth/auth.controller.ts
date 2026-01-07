@@ -108,6 +108,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Iniciar login con Google' })
   @ApiResponse({ status: 302, description: 'Redirige a Google para autenticación' })
   googleAuth() {
+    console.log('Google Auth endpoint hit - should redirect to Google');
     // Guard redirects to Google
   }
 
@@ -129,9 +130,9 @@ export class AuthController {
         user: JSON.stringify(authResponse.user),
       });
 
-      res.redirect(`${this.frontendUrl}/auth/google/callback?${params.toString()}`);
+      res.redirect(`${this.frontendUrl}/#/auth/google/callback?${params.toString()}`);
     } catch {
-      res.redirect(`${this.frontendUrl}/authentication/signin?error=google_auth_failed`);
+      res.redirect(`${this.frontendUrl}/#/authentication/signin?error=google_auth_failed`);
     }
   }
 }
