@@ -54,6 +54,17 @@ export class UploadDocumentDto {
   description?: string;
 }
 
+export class UploadCvDto {
+  @ApiProperty({ description: 'Base64 encoded CV data (PDF or DOCX)' })
+  @IsString()
+  @MaxLength(15 * 1024 * 1024) // ~15MB base64 (to account for encoding overhead)
+  fileData: string;
+
+  @ApiProperty({ description: 'MIME type (application/pdf or application/vnd.openxmlformats-officedocument.wordprocessingml.document)' })
+  @IsString()
+  mimeType: string;
+}
+
 export class DeleteFileDto {
   @ApiProperty({ description: 'Public ID of the file to delete' })
   @IsString()

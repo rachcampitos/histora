@@ -1,0 +1,262 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Perfil del Médico'" [items]="['Paciente', 'Médicos']" [active_item]="'Perfil'"></app-breadcrumb>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+    } @else if (doctor) {
+      <div class="row clearfix">
+        <!-- Profile Header -->
+        <div class="col-lg-12">
+          <mat-card class="profile-header-card">
+            <div class="profile-header">
+              <button mat-icon-button class="back-btn" (click)="goBack()">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+
+              <div class="profile-avatar">
+                <img [src]="doctor.profileImage || 'assets/images/user/doctor.jpg'"
+                     [alt]="getFullName()">
+              </div>
+
+              <div class="profile-info">
+                <h1>{{ getFullName() }}</h1>
+                <p class="specialty">{{ doctor.specialty }}</p>
+                @if (doctor.subspecialties?.length) {
+                  <div class="subspecialties">
+                    @for (sub of doctor.subspecialties; track sub) {
+                      <span class="chip">{{ sub }}</span>
+                    }
+                  </div>
+                }
+                @if (doctor.licenseNumber) {
+                  <p class="license"><mat-icon>verified</mat-icon> CMP: {{ doctor.licenseNumber }}</p>
+                }
+
+                <div class="rating-container">
+                  <div class="rating">
+                    @for (star of getRatingStars(); track star) {
+                      <mat-icon [class.filled]="star <= doctor.averageRating">star</mat-icon>
+                    }
+                    <span class="rating-value">{{ doctor.averageRating?.toFixed(1) || '0.0' }}</span>
+                  </div>
+                  <span class="reviews">({{ doctor.totalReviews || 0 }} reseñas)</span>
+                </div>
+
+                @if (doctor.consultationFee) {
+                  <p class="fee">
+                    <mat-icon>payments</mat-icon>
+                    Consulta: {{ formatCurrency(doctor.consultationFee, doctor.currency) }}
+                  </p>
+                }
+              </div>
+
+              <div class="profile-actions">
+                <button mat-raised-button color="primary" (click)="bookAppointment()">
+                  <mat-icon>event</mat-icon>
+                  Agendar Cita
+                </button>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="col-lg-12">
+          <mat-card>
+            <mat-card-content>
+              <mat-tab-group>
+                <!-- Acerca de -->
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <mat-icon class="material-icons-outlined">person</mat-icon>
+                    Acerca de
+                  </ng-template>
+                  <div class="tab-content">
+                    <div class="section">
+                      <h4>Información Personal</h4>
+                      <div class="info-grid">
+                        @if (doctor.city || doctor.country) {
+                          <div class="info-item">
+                            <mat-icon>location_on</mat-icon>
+                            <span>{{ doctor.city }}{{ doctor.city && doctor.country ? ', ' : '' }}{{ doctor.country }}</span>
+                          </div>
+                        }
+                        @if (doctor.address) {
+                          <div class="info-item">
+                            <mat-icon>home</mat-icon>
+                            <span>{{ doctor.address }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+
+                    @if (doctor.bio) {
+                      <mat-divider></mat-divider>
+                      <div class="section">
+                        <h4>Biografía</h4>
+                        <p class="bio-text">{{ doctor.bio }}</p>
+                      </div>
+                    }
+
+                    @if (doctor.skills?.length) {
+                      <mat-divider></mat-divider>
+                      <div class="section">
+                        <h4>Habilidades</h4>
+                        <div class="skills-list">
+                          @for (skill of doctor.skills; track trackByIndex($index)) {
+                            <div class="skill-item">
+                              <div class="skill-header">
+                                <span class="skill-name">{{ skill.name }}</span>
+                                <span class="skill-percentage">{{ skill.percentage }}%</span>
+                              </div>
+                              <div class="skill-bar">
+                                <div class="skill-progress" [style.width.%]="skill.percentage"></div>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </mat-tab>
+
+                <!-- Educación -->
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <mat-icon class="material-icons-outlined">school</mat-icon>
+                    Educación
+                  </ng-template>
+                  <div class="tab-content">
+                    @if (doctor.education?.length) {
+                      <div class="timeline">
+                        @for (edu of doctor.education; track trackByIndex($index)) {
+                          <div class="timeline-item">
+                            <div class="timeline-icon">
+                              <mat-icon>school</mat-icon>
+                            </div>
+                            <div class="timeline-content">
+                              <h5>{{ edu.degree }}</h5>
+                              <p class="institution">{{ edu.institution }}</p>
+                              @if (edu.year) {
+                                <p class="year">{{ edu.year }}</p>
+                              }
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <p class="no-data">No hay información de educación disponible</p>
+                    }
+                  </div>
+                </mat-tab>
+
+                <!-- Experiencia -->
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <mat-icon class="material-icons-outlined">work</mat-icon>
+                    Experiencia
+                  </ng-template>
+                  <div class="tab-content">
+                    @if (doctor.experience?.length) {
+                      <div class="timeline">
+                        @for (exp of doctor.experience; track trackByIndex($index)) {
+                          <div class="timeline-item">
+                            <div class="timeline-icon">
+                              <mat-icon>work</mat-icon>
+                            </div>
+                            <div class="timeline-content">
+                              <h5>{{ exp.position }}</h5>
+                              <p class="institution">{{ exp.institution }}</p>
+                              <p class="year">
+                                {{ exp.startYear || '' }}
+                                @if (exp.startYear && (exp.endYear || exp.currentlyWorking)) {
+                                  -
+                                }
+                                @if (exp.currentlyWorking) {
+                                  Presente
+                                } @else if (exp.endYear) {
+                                  {{ exp.endYear }}
+                                }
+                              </p>
+                              @if (exp.description) {
+                                <p class="description">{{ exp.description }}</p>
+                              }
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <p class="no-data">No hay información de experiencia disponible</p>
+                    }
+                  </div>
+                </mat-tab>
+
+                <!-- Certificaciones -->
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <mat-icon class="material-icons-outlined">card_membership</mat-icon>
+                    Certificaciones
+                  </ng-template>
+                  <div class="tab-content">
+                    @if (doctor.certifications?.length) {
+                      <div class="certifications-grid">
+                        @for (cert of doctor.certifications; track trackByIndex($index)) {
+                          <div class="certification-card">
+                            <mat-icon>verified</mat-icon>
+                            <div class="cert-info">
+                              <h5>{{ cert.name }}</h5>
+                              <p class="issuer">{{ cert.issuer }}</p>
+                              @if (cert.year) {
+                                <p class="year">Emitido: {{ cert.year }}</p>
+                              }
+                              @if (cert.licenseNumber) {
+                                <p class="license">Nº: {{ cert.licenseNumber }}</p>
+                              }
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <p class="no-data">No hay certificaciones disponibles</p>
+                    }
+                  </div>
+                </mat-tab>
+
+                <!-- Curriculum Vitae -->
+                @if (doctor.cvUrl) {
+                  <mat-tab>
+                    <ng-template mat-tab-label>
+                      <mat-icon class="material-icons-outlined">description</mat-icon>
+                      Curriculum Vitae
+                    </ng-template>
+                    <div class="tab-content cv-tab">
+                      @if (doctor.cvFormat === 'pdf' && cvViewerUrl) {
+                        <div class="cv-viewer">
+                          <iframe [src]="cvViewerUrl"
+                                  frameborder="0"
+                                  width="100%"
+                                  height="600px">
+                          </iframe>
+                        </div>
+                      } @else {
+                        <div class="cv-unavailable">
+                          <mat-icon>description</mat-icon>
+                          <p>El CV del médico está disponible pero no puede visualizarse en línea.</p>
+                        </div>
+                      }
+                    </div>
+                  </mat-tab>
+                }
+              </mat-tab-group>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    }
+  </div>
+</section>

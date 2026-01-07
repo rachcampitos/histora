@@ -5,10 +5,21 @@ import { PrescriptionsComponent } from "./prescriptions/prescriptions.component"
 import { MedicalRecordsComponent } from "./medical-records/medical-records.component";
 import { BillingComponent } from "./billing/billing.component";
 import { SettingsComponent } from "./settings/settings.component";
+import { PatientDoctorsListComponent } from "./doctors/doctors-list.component";
+import { DoctorViewComponent } from "./doctors/doctor-view.component";
+
 export const PATIENT_ROUTE: Route[] = [
   {
     path: "dashboard",
     component: DashboardComponent,
+  },
+  {
+    path: "doctors",
+    component: PatientDoctorsListComponent,
+  },
+  {
+    path: "doctors/:id",
+    component: DoctorViewComponent,
   },
   {
     path: "appointments",

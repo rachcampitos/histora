@@ -51,6 +51,7 @@
     },
     "DOCTOR": {
       "DASHBOARD": "Tablero",
+      "PROFILE": "Mi Perfil",
       "APPOINTMENTS": "Citas",
       "DOCTORS": "Médicos",
       "PATIENTS": "Pacientes",
@@ -59,6 +60,7 @@
     "PATIENT": {
       "TEXT": "Paciente",
       "DASHBOARD": "Tablero",
+      "DOCTORS": "Buscar Médicos",
       "APPOINTMENTS": {
         "TEXT": "Citas",
         "LIST": {

@@ -17,6 +17,11 @@ export interface FileResponseDto {
   error?: string;
 }
 
+export interface UploadCvDto {
+  fileData: string; // base64 encoded file data
+  mimeType: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -34,6 +39,19 @@ export class UploadsService {
   deleteFile(publicId: string): Observable<{ success: boolean }> {
     return this.http
       .delete<{ success: boolean }>(`${this.API_URL}`, { params: { publicId } })
+      .pipe(catchError(this.handleError));
+  }
+
+  uploadDoctorCv(fileData: string, mimeType: string): Observable<FileResponseDto> {
+    const dto: UploadCvDto = { fileData, mimeType };
+    return this.http
+      .post<FileResponseDto>(`${this.API_URL}/doctor/cv`, dto)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteDoctorCv(): Observable<{ success: boolean }> {
+    return this.http
+      .delete<{ success: boolean }>(`${this.API_URL}/doctor/cv`)
       .pipe(catchError(this.handleError));
   }
 

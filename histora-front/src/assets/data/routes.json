@@ -109,6 +109,18 @@
       "submenu": []
     },
     {
+      "path": "/doctor/profile",
+      "title": "MENUITEMS.DOCTOR.PROFILE",
+      "iconType": "material-icons-outlined",
+      "icon": "person",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["ADMIN", "DOCTOR"],
+      "submenu": []
+    },
+    {
       "path": "/doctor/patients",
       "title": "MENUITEMS.DOCTOR.PATIENTS",
       "iconType": "material-icons-outlined",
@@ -149,6 +161,18 @@
       "title": "MENUITEMS.PATIENT.DASHBOARD",
       "iconType": "material-icons-outlined",
       "icon": "space_dashboard",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PATIENT"],
+      "submenu": []
+    },
+    {
+      "path": "/patient/doctors",
+      "title": "MENUITEMS.PATIENT.DOCTORS",
+      "iconType": "material-icons-outlined",
+      "icon": "medical_services",
       "class": "",
       "groupTitle": false,
       "badge": "",

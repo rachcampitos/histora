@@ -52,6 +52,54 @@ export class Education {
   country?: string;
 }
 
+@Schema({ _id: false })
+export class Experience {
+  @Prop({ required: true })
+  position: string;
+
+  @Prop({ required: true })
+  institution: string;
+
+  @Prop()
+  startYear?: number;
+
+  @Prop()
+  endYear?: number;
+
+  @Prop()
+  currentlyWorking?: boolean;
+
+  @Prop()
+  description?: string;
+}
+
+@Schema({ _id: false })
+export class Certification {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  issuer: string;
+
+  @Prop()
+  year?: number;
+
+  @Prop()
+  expiryYear?: number;
+
+  @Prop()
+  licenseNumber?: string; // For CMP or other license numbers
+}
+
+@Schema({ _id: false })
+export class Skill {
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ default: 0, min: 0, max: 100 })
+  percentage: number;
+}
+
 @Schema({ timestamps: true })
 export class Doctor {
   @Prop({ type: Types.ObjectId, ref: 'Clinic', required: true })
@@ -87,8 +135,29 @@ export class Doctor {
   @Prop({ type: [Education], default: [] })
   education: Education[];
 
+  @Prop({ type: [Experience], default: [] })
+  experience: Experience[];
+
+  @Prop({ type: [Certification], default: [] })
+  certifications: Certification[];
+
+  @Prop({ type: [Skill], default: [] })
+  skills: Skill[];
+
   @Prop()
   profileImage?: string;
+
+  @Prop()
+  profileImagePublicId?: string;
+
+  @Prop()
+  cvUrl?: string; // URL del CV en Cloudinary
+
+  @Prop()
+  cvPublicId?: string; // ID para eliminar/actualizar en Cloudinary
+
+  @Prop()
+  cvFormat?: string; // 'pdf' | 'docx'
 
   @Prop({ default: false })
   isPublicProfile: boolean;
@@ -104,6 +173,21 @@ export class Doctor {
 
   @Prop({ default: 30, min: 15, max: 120 })
   appointmentDuration: number; // Duration in minutes
+
+  @Prop({ default: 0 })
+  consultationFee: number; // Tarifa de consulta
+
+  @Prop()
+  currency?: string; // Moneda (PEN, USD, etc.)
+
+  @Prop()
+  address?: string;
+
+  @Prop()
+  city?: string;
+
+  @Prop()
+  country?: string;
 
   @Prop({ default: false })
   isDeleted: boolean;

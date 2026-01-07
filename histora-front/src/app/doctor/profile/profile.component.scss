@@ -1,0 +1,189 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.profile-header-card {
+  margin-bottom: 20px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+
+  img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e0e0e0;
+  }
+}
+
+.profile-info {
+  flex-grow: 1;
+
+  h2 {
+    margin: 0 0 8px 0;
+    color: #1976d2;
+    font-size: 1.75rem;
+  }
+
+  .specialty {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  .license {
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
+    color: #888;
+  }
+
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    mat-icon {
+      color: #e0e0e0;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+
+      &.filled {
+        color: #ffc107;
+      }
+    }
+
+    span {
+      margin-left: 8px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.profile-status {
+  .badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+
+    &.badge-success {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    &.badge-secondary {
+      background-color: #9e9e9e;
+      color: white;
+    }
+  }
+}
+
+.tab-content {
+  padding: 24px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h4 {
+    margin: 0;
+    color: #333;
+  }
+}
+
+.array-item {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.no-items {
+  text-align: center;
+  color: #999;
+  padding: 40px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.cv-section {
+  max-width: 600px;
+
+  h4 {
+    margin: 0 0 8px 0;
+  }
+
+  .text-muted {
+    color: #666;
+    margin-bottom: 24px;
+  }
+}
+
+.cv-upload-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.cv-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #e3f2fd;
+  border-radius: 8px;
+  width: 100%;
+
+  mat-icon {
+    color: #1976d2;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  span {
+    flex-grow: 1;
+    font-weight: 500;
+  }
+}
+
+mat-card-actions {
+  padding: 16px !important;
+  border-top: 1px solid #e0e0e0;
+}
+
+// Fix for form arrays
+::ng-deep {
+  [formarrayname] {
+    .mat-mdc-form-field {
+      width: 100%;
+    }
+  }
+}

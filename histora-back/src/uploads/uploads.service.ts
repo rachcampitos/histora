@@ -25,8 +25,10 @@ export class UploadsService {
   private readonly logger = new Logger(UploadsService.name);
   private readonly allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   private readonly allowedDocumentTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+  private readonly allowedCvTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
   private readonly maxImageSize = 5 * 1024 * 1024; // 5MB
   private readonly maxDocumentSize = 10 * 1024 * 1024; // 10MB
+  private readonly maxCvSize = 10 * 1024 * 1024; // 10MB
 
   constructor(private cloudinaryProvider: CloudinaryProvider) {}
 
@@ -174,6 +176,47 @@ export class UploadsService {
       url: result.secureUrl!,
       thumbnailUrl,
       publicId: result.publicId!,
+    };
+  }
+
+  // Upload doctor CV (PDF or DOCX)
+  async uploadDoctorCv(
+    fileData: string,
+    mimeType: string,
+    doctorId: string,
+    clinicId?: string
+  ): Promise<{ url: string; publicId: string; format: string }> {
+    const base64Data = this.extractBase64Data(fileData);
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > this.maxCvSize) {
+      throw new BadRequestException('CV file size exceeds 10MB limit');
+    }
+
+    if (!this.allowedCvTypes.includes(mimeType)) {
+      throw new BadRequestException('Invalid CV format. Allowed: PDF, DOCX');
+    }
+
+    // Determine format
+    const format = mimeType === 'application/pdf' ? 'pdf' : 'docx';
+    const filename = `cv_${doctorId}_${Date.now()}.${format}`;
+    const folder = clinicId ? `histora/${clinicId}/doctors/${doctorId}/cv` : `histora/doctors/${doctorId}/cv`;
+
+    const result = await this.cloudinaryProvider.uploadBase64(base64Data, filename, {
+      folder,
+      resourceType: 'raw', // For non-image files
+    });
+
+    if (!result.success) {
+      throw new BadRequestException(`Upload failed: ${result.error}`);
+    }
+
+    this.logger.log(`CV uploaded for doctor ${doctorId}`);
+
+    return {
+      url: result.secureUrl!,
+      publicId: result.publicId!,
+      format,
     };
   }
 

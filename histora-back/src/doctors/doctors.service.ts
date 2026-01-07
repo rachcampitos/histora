@@ -144,6 +144,58 @@ export class DoctorsService {
       .exec();
   }
 
+  async updateCv(
+    id: string,
+    cvUrl: string,
+    cvPublicId: string,
+    cvFormat: string,
+  ): Promise<Doctor | null> {
+    return this.doctorModel
+      .findByIdAndUpdate(
+        id,
+        { cvUrl, cvPublicId, cvFormat },
+        { new: true },
+      )
+      .exec();
+  }
+
+  async getCvPublicId(id: string): Promise<string | null> {
+    const doctor = await this.doctorModel.findById(id).select('cvPublicId').exec();
+    return doctor?.cvPublicId || null;
+  }
+
+  async updateProfileByUserId(
+    userId: string,
+    updateData: Partial<Doctor>,
+  ): Promise<Doctor | null> {
+    return this.doctorModel
+      .findOneAndUpdate(
+        { userId, isDeleted: false },
+        updateData,
+        { new: true },
+      )
+      .exec();
+  }
+
+  async updateProfileImage(
+    id: string,
+    profileImage: string,
+    profileImagePublicId: string,
+  ): Promise<Doctor | null> {
+    return this.doctorModel
+      .findByIdAndUpdate(
+        id,
+        { profileImage, profileImagePublicId },
+        { new: true },
+      )
+      .exec();
+  }
+
+  async getProfileImagePublicId(id: string): Promise<string | null> {
+    const doctor = await this.doctorModel.findById(id).select('profileImagePublicId').exec();
+    return doctor?.profileImagePublicId || null;
+  }
+
   async remove(id: string, clinicId: string): Promise<Doctor | null> {
     const doctor = await this.doctorModel
       .findOneAndUpdate(

@@ -16,9 +16,11 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 import { UploadsService } from './uploads.service';
 import { UsersService } from '../users/users.service';
+import { DoctorsService } from '../doctors/doctors.service';
 import {
   UploadProfilePhotoDto,
   UploadDocumentDto,
+  UploadCvDto,
   FileResponseDto,
 } from './dto/upload-file.dto';
 
@@ -30,6 +32,7 @@ export class UploadsController {
   constructor(
     private readonly uploadsService: UploadsService,
     private readonly usersService: UsersService,
+    private readonly doctorsService: DoctorsService,
   ) {}
 
   private requireClinicId(user: CurrentUserData): string {
@@ -68,6 +71,66 @@ export class UploadsController {
       thumbnailUrl: result.thumbnailUrl,
       publicId: result.publicId,
     };
+  }
+
+  @Post('doctor/cv')
+  @Roles(UserRole.CLINIC_DOCTOR)
+  @ApiOperation({ summary: 'Upload own CV (PDF or DOCX)' })
+  async uploadMyCv(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: UploadCvDto,
+  ): Promise<FileResponseDto> {
+    // Get doctor profile
+    const doctor = await this.doctorsService.findByUserId(user.userId);
+    if (!doctor) {
+      throw new ForbiddenException('Doctor profile not found');
+    }
+
+    const doctorId = (doctor as any)._id.toString();
+
+    // Delete old CV if exists
+    const oldPublicId = await this.doctorsService.getCvPublicId(doctorId);
+    if (oldPublicId) {
+      await this.uploadsService.deleteFile(oldPublicId).catch(() => {});
+    }
+
+    const result = await this.uploadsService.uploadDoctorCv(
+      dto.fileData,
+      dto.mimeType,
+      doctorId,
+      user.clinicId
+    );
+
+    // Save CV URL to doctor
+    await this.doctorsService.updateCv(doctorId, result.url, result.publicId, result.format);
+
+    return {
+      success: true,
+      url: result.url,
+      publicId: result.publicId,
+    };
+  }
+
+  @Delete('doctor/cv')
+  @Roles(UserRole.CLINIC_DOCTOR)
+  @ApiOperation({ summary: 'Delete own CV' })
+  async deleteMyCv(
+    @CurrentUser() user: CurrentUserData,
+  ): Promise<{ success: boolean }> {
+    const doctor = await this.doctorsService.findByUserId(user.userId);
+    if (!doctor) {
+      throw new ForbiddenException('Doctor profile not found');
+    }
+
+    const doctorId = (doctor as any)._id.toString();
+    const publicId = await this.doctorsService.getCvPublicId(doctorId);
+
+    if (publicId) {
+      await this.uploadsService.deleteFile(publicId);
+      await this.doctorsService.updateCv(doctorId, '', '', '');
+    }
+
+    return { success: true };
   }
 
   @Post('doctor/:doctorId/profile-photo')
