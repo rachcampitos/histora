@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -12,6 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
@@ -24,18 +27,20 @@ import { MatCardModule } from '@angular/material/card';
     MatIconModule,
     MatButtonModule,
     MatCardModule,
+    MatProgressSpinnerModule,
     RouterLink,
+    TranslateModule,
   ],
 })
 export class ForgotPasswordComponent implements OnInit {
   authForm!: UntypedFormGroup;
   submitted = false;
-  returnUrl!: string;
-  constructor(
-    private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
+  isLoading = false;
+  success = '';
+  error = '';
+
+  constructor(private formBuilder: UntypedFormBuilder) {}
+
   ngOnInit() {
     this.authForm = this.formBuilder.group({
       email: [
@@ -43,19 +48,29 @@ export class ForgotPasswordComponent implements OnInit {
         [Validators.required, Validators.email, Validators.minLength(5)],
       ],
     });
-    // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
+
   get f() {
     return this.authForm.controls;
   }
+
   onSubmit() {
     this.submitted = true;
-    // stop here if form is invalid
+    this.error = '';
+    this.success = '';
+
     if (this.authForm.invalid) {
       return;
-    } else {
-      this.router.navigate(['/dashboard/main']);
     }
+
+    this.isLoading = true;
+
+    // Simulate API call - in production, this should call a real API
+    setTimeout(() => {
+      this.isLoading = false;
+      this.success = 'Se ha enviado un enlace de recuperación a tu correo electrónico.';
+      this.authForm.reset();
+      this.submitted = false;
+    }, 1500);
   }
 }

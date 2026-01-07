@@ -403,11 +403,21 @@
       "FIRST_NAME": "First Name",
       "LAST_NAME": "Last Name",
       "EMAIL": "Email",
+      "PHONE": "Phone",
       "PASSWORD": "Password",
       "CONFIRM_PASSWORD": "Confirm Password",
-      "ACCEPT_TERMS": "I accept the terms and conditions",
+      "ACCEPT_TERMS": "I accept the",
+      "TERMS_LINK": "terms and conditions",
       "CREATE_ACCOUNT": "Create Account",
       "HAVE_ACCOUNT": "Already have an account?",
+      "LOGIN": "Login"
+    },
+    "FORGOT": {
+      "TITLE": "Recover Password",
+      "SUBTITLE": "Enter your email and we'll send you a link to reset your password",
+      "EMAIL": "Email",
+      "SUBMIT": "Send Link",
+      "BACK_TO": "Back to",
       "LOGIN": "Login"
     },
     "FORGOT_PASSWORD": {
@@ -421,7 +431,9 @@
       "EMAIL_REQUIRED": "Email is required",
       "EMAIL_INVALID": "Enter a valid email",
       "PASSWORD_REQUIRED": "Password is required",
-      "PASSWORD_MIN_LENGTH": "Password must be at least 8 characters"
+      "PASSWORD_MIN_LENGTH": "Password must be at least 8 characters",
+      "FIRST_NAME_REQUIRED": "First name is required",
+      "LAST_NAME_REQUIRED": "Last name is required"
     }
   },
   "CLINICAL_HISTORY": {

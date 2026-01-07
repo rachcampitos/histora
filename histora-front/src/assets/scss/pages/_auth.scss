@@ -407,6 +407,49 @@
     border-radius: 8px;
     font-size: 14px;
     border: 1px solid #fecaca;
+    margin-bottom: 16px;
+  }
+
+  .success-message {
+    color: #059669;
+    background: #ecfdf5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #6ee7b7;
+    margin-bottom: 16px;
+  }
+
+  .name-row {
+    display: flex;
+    gap: 12px;
+
+    .half {
+      flex: 1;
+    }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+
+  .terms-row {
+    margin-bottom: 8px;
+
+    ::ng-deep .mat-mdc-checkbox-label {
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .terms-link {
+      color: #0891b2;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   .locked-user-img {

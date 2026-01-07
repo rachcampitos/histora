@@ -403,12 +403,22 @@
       "FIRST_NAME": "Nombre",
       "LAST_NAME": "Apellido",
       "EMAIL": "Correo Electrónico",
+      "PHONE": "Teléfono",
       "PASSWORD": "Contraseña",
       "CONFIRM_PASSWORD": "Confirmar Contraseña",
-      "ACCEPT_TERMS": "Acepto los términos y condiciones",
+      "ACCEPT_TERMS": "Acepto los",
+      "TERMS_LINK": "términos y condiciones",
       "CREATE_ACCOUNT": "Crear Cuenta",
       "HAVE_ACCOUNT": "¿Ya tienes cuenta?",
       "LOGIN": "Inicia Sesión"
+    },
+    "FORGOT": {
+      "TITLE": "Recuperar Contraseña",
+      "SUBTITLE": "Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña",
+      "EMAIL": "Correo Electrónico",
+      "SUBMIT": "Enviar Enlace",
+      "BACK_TO": "Volver a",
+      "LOGIN": "Iniciar Sesión"
     },
     "FORGOT_PASSWORD": {
       "TITLE": "Recuperar Contraseña",
@@ -421,7 +431,9 @@
       "EMAIL_REQUIRED": "El correo es requerido",
       "EMAIL_INVALID": "Ingresa un correo válido",
       "PASSWORD_REQUIRED": "La contraseña es requerida",
-      "PASSWORD_MIN_LENGTH": "La contraseña debe tener al menos 8 caracteres"
+      "PASSWORD_MIN_LENGTH": "La contraseña debe tener al menos 8 caracteres",
+      "FIRST_NAME_REQUIRED": "El nombre es requerido",
+      "LAST_NAME_REQUIRED": "El apellido es requerido"
     }
   },
   "CLINICAL_HISTORY": {

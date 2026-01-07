@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterModule } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import {
   Validators,
   FormsModule,
@@ -13,6 +13,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TranslateModule } from '@ngx-translate/core';
+import { AuthService } from '@core';
+import { LoginService } from '@core/service/login.service';
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -25,38 +30,69 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatIconModule,
     RouterLink,
     MatButtonModule,
-    ReactiveFormsModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
     RouterModule,
+    TranslateModule,
   ],
 })
 export class SignupComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private loginService = inject(LoginService);
+
   signupForm!: FormGroup;
   hidePassword = true;
   isLoading = false;
-  constructor(private formBuilder: FormBuilder) {}
+  error = '';
+  success = '';
+
   ngOnInit(): void {
     this.initializeForm();
   }
+
   private initializeForm(): void {
     this.signupForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(2)]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
+      phone: [''],
       password: ['', [Validators.required, Validators.minLength(8)]],
+      acceptTerms: [false, Validators.requiredTrue],
     });
   }
 
   onSubmit(): void {
     if (this.signupForm.valid) {
       this.isLoading = true;
+      this.error = '';
+      this.success = '';
 
-      // Simulate API call
-      setTimeout(() => {
-        console.log('Form submitted:', this.signupForm.value);
-        this.isLoading = false;
-        // Handle successful submission
-      }, 2000);
+      const { firstName, lastName, email, phone, password } = this.signupForm.value;
+
+      this.loginService.registerPatient({
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+      }).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response && 'access_token' in response && response.access_token) {
+            this.success = 'Cuenta creada exitosamente. Redirigiendo...';
+            setTimeout(() => {
+              this.router.navigate(['/patient/dashboard']);
+            }, 1500);
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.error = err.error?.message || 'Error al crear la cuenta. Intenta de nuevo.';
+        },
+      });
     } else {
       this.markFormGroupTouched();
     }
@@ -70,17 +106,6 @@ export class SignupComponent implements OnInit {
   }
 
   signInWithGoogle(): void {
-    console.log('Sign in with Google');
-    // Implement Google OAuth logic
-  }
-
-  signInWithApple(): void {
-    console.log('Sign in with Apple');
-    // Implement Apple OAuth logic
-  }
-
-  signInWithFacebook(): void {
-    console.log('Sign in with Facebook');
-    // Implement Facebook OAuth logic
+    this.authService.loginWithGoogle();
   }
 }
