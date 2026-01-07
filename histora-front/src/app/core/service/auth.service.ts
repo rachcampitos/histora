@@ -116,14 +116,52 @@ export class AuthService {
     // Store refresh token
     this.store.set('refreshToken', refreshToken);
 
-    // Update user state
-    this.user$.next(user);
-    this.store.set('currentUser', user);
+    // Build roles and permissions like normal login
+    const role = user.role as string;
+    const roleData = this.buildRolesForUser(role);
+    const permissions = this.getPermissionsForRole(role);
 
-    // Store role
-    if (user.role) {
-      this.store.set('roleNames', JSON.stringify([user.role]));
-    }
+    // Create enriched user object
+    const enrichedUser = {
+      ...user,
+      name: `${user.firstName} ${user.lastName}`,
+      roles: roleData,
+      permissions,
+    };
+
+    // Set token service arrays
+    this.tokenService.roleArray = roleData as [];
+    this.tokenService.permissionArray = permissions;
+
+    // Update user state
+    this.user$.next(enrichedUser);
+    this.store.set('currentUser', enrichedUser);
+
+    // Store role names
+    const roleNames = roleData.map((r) => r.name);
+    this.store.set('roleNames', JSON.stringify(roleNames));
+  }
+
+  private buildRolesForUser(role: string): { name: string; priority: number }[] {
+    const roleMap: Record<string, { name: string; priority: number }> = {
+      platform_admin: { name: 'PLATFORM_ADMIN', priority: 0 },
+      clinic_owner: { name: 'ADMIN', priority: 1 },
+      clinic_doctor: { name: 'DOCTOR', priority: 2 },
+      clinic_staff: { name: 'DOCTOR', priority: 2 },
+      patient: { name: 'PATIENT', priority: 3 },
+    };
+    return [roleMap[role] || { name: 'PATIENT', priority: 3 }];
+  }
+
+  private getPermissionsForRole(role: string): string[] {
+    const permissionMap: Record<string, string[]> = {
+      platform_admin: ['canAdd', 'canDelete', 'canEdit', 'canRead'],
+      clinic_owner: ['canAdd', 'canDelete', 'canEdit', 'canRead'],
+      clinic_doctor: ['canAdd', 'canEdit', 'canRead'],
+      clinic_staff: ['canAdd', 'canEdit', 'canRead'],
+      patient: ['canRead'],
+    };
+    return permissionMap[role] || ['canRead'];
   }
 
   getDefaultRouteForRole(role?: string): string {
