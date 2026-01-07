@@ -1,6 +1,6 @@
 import { Direction, BidiModule } from '@angular/cdk/bidi';
 import { Component, Inject, Renderer2, DOCUMENT, OnInit } from '@angular/core';
-import { DirectionService, InConfiguration } from '@core';
+import { DirectionService, InConfiguration, ThemeService } from '@core';
 import { ConfigService } from '@config';
 
 import { RouterOutlet } from '@angular/router';
@@ -19,7 +19,8 @@ export class AuthLayoutComponent extends UnsubscribeOnDestroyAdapter implements 
     @Inject(DOCUMENT) private document: Document,
     private directoryService: DirectionService,
     private configService: ConfigService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private themeService: ThemeService // Inject to initialize theme on auth pages
   ) {
     super();
     this.config = this.configService.configData;
@@ -46,17 +47,7 @@ export class AuthLayoutComponent extends UnsubscribeOnDestroyAdapter implements 
         }
       }
     });
-
-    // set theme on startup
-    if (localStorage.getItem('theme')) {
-      this.renderer.removeClass(this.document.body, this.config.layout.variant);
-      this.renderer.addClass(
-        this.document.body,
-        localStorage.getItem('theme') as string
-      );
-    } else {
-      this.renderer.addClass(this.document.body, this.config.layout.variant);
-    }
+    // Theme is now managed by ThemeService - no need for manual setup here
   }
 
   ngOnInit(): void {

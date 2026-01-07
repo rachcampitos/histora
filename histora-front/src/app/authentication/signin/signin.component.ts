@@ -59,28 +59,13 @@ export class SigninComponent
 
   ngOnInit() {
     this.authForm = this.formBuilder.group({
-      email: ['admin@histora.pe', [Validators.required, Validators.email]],
-      password: ['admin123', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
     });
   }
 
   get f() {
     return this.authForm.controls;
-  }
-
-  adminSet() {
-    this.authForm.get('email')?.setValue('admin@histora.pe');
-    this.authForm.get('password')?.setValue('admin123');
-  }
-
-  doctorSet() {
-    this.authForm.get('email')?.setValue('doctor@histora.pe');
-    this.authForm.get('password')?.setValue('doctor123');
-  }
-
-  patientSet() {
-    this.authForm.get('email')?.setValue('patient@histora.pe');
-    this.authForm.get('password')?.setValue('patient123');
   }
 
   onSubmit() {

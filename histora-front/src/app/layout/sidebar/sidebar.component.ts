@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import { RouteInfo } from './sidebar.metadata';
 import { AuthService, Role } from '@core';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { NgScrollbar } from 'ngx-scrollbar';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { SidebarService } from './sidebar.service';
@@ -49,7 +49,7 @@ export class SidebarComponent
   listMaxWidth?: string;
   userFullName?: string;
   userImg?: string;
-  userType?: string;
+  userTypeKey = 'ROLES.USER';
   headerHeight = 60;
   currentRoute?: string;
 
@@ -59,8 +59,7 @@ export class SidebarComponent
     public elementRef: ElementRef,
     private authService: AuthService,
     private router: Router,
-    private sidebarService: SidebarService,
-    private translate: TranslateService
+    private sidebarService: SidebarService
   ) {
     super();
     this.elementRef.nativeElement.closest('body');
@@ -134,17 +133,17 @@ export class SidebarComponent
       this.userImg = undefined;
     }
 
-    // Translate role label
+    // Set role translation key (will be translated in template)
     if (userRole === Role.Admin || userRole === Role.PlatformAdmin || userRole === Role.ClinicOwner) {
-      this.userType = this.translate.instant('ROLES.ADMIN');
+      this.userTypeKey = 'ROLES.ADMIN';
     } else if (userRole === Role.Patient || userRole === Role.PatientRole) {
-      this.userType = this.translate.instant('ROLES.PATIENT');
+      this.userTypeKey = 'ROLES.PATIENT';
     } else if (userRole === Role.Doctor || userRole === Role.ClinicDoctor) {
-      this.userType = this.translate.instant('ROLES.DOCTOR');
+      this.userTypeKey = 'ROLES.DOCTOR';
     } else if (userRole === Role.ClinicStaff) {
-      this.userType = this.translate.instant('ROLES.STAFF');
+      this.userTypeKey = 'ROLES.STAFF';
     } else {
-      this.userType = this.translate.instant('ROLES.USER');
+      this.userTypeKey = 'ROLES.USER';
     }
   }
   initLeftSidebar() {

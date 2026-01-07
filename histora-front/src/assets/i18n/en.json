@@ -400,6 +400,26 @@
     "SIGNUP": {
       "TITLE": "Create Account",
       "SUBTITLE": "Register to get started",
+      "SELECT_TYPE_TITLE": "How would you like to register?",
+      "SELECT_TYPE_SUBTITLE": "Select the type of account you need",
+      "TYPE_DOCTOR_TITLE": "I'm a Doctor",
+      "TYPE_DOCTOR_DESC": "I want to manage my clinic and patients",
+      "TYPE_PATIENT_TITLE": "I'm a Patient",
+      "TYPE_PATIENT_DESC": "I want to access my medical history and book appointments",
+      "FEATURE_TRIAL": "14 days free",
+      "FEATURE_PATIENTS": "Patient management",
+      "FEATURE_APPOINTMENTS": "Appointment scheduling",
+      "FEATURE_FREE": "100% free",
+      "FEATURE_HISTORY": "Medical history",
+      "FEATURE_BOOK": "Book appointments",
+      "DOCTOR_TITLE": "Register Your Clinic",
+      "DOCTOR_SUBTITLE": "Create your account and start your free trial",
+      "PATIENT_TITLE": "Create Patient Account",
+      "PATIENT_SUBTITLE": "Access your medical information securely",
+      "CLINIC_INFO": "Clinic Information",
+      "CLINIC_NAME": "Clinic Name",
+      "CLINIC_PHONE": "Clinic Phone",
+      "CREATE_CLINIC": "Create My Clinic",
       "FIRST_NAME": "First Name",
       "LAST_NAME": "Last Name",
       "EMAIL": "Email",
@@ -447,7 +467,8 @@
       "PASSWORD_REQUIRED": "Password is required",
       "PASSWORD_MIN_LENGTH": "Password must be at least 8 characters",
       "FIRST_NAME_REQUIRED": "First name is required",
-      "LAST_NAME_REQUIRED": "Last name is required"
+      "LAST_NAME_REQUIRED": "Last name is required",
+      "CLINIC_NAME_REQUIRED": "Clinic name is required"
     }
   },
   "CLINICAL_HISTORY": {

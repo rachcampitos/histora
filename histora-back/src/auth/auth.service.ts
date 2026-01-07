@@ -316,9 +316,9 @@ export class AuthService {
     // Save token to database
     await this.usersService.setPasswordResetToken(email, hashedToken, expiresAt);
 
-    // Build reset link
+    // Build reset link (using hash routing for Angular)
     const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:4200');
-    const resetLink = `${frontendUrl}/authentication/reset-password?token=${resetToken}`;
+    const resetLink = `${frontendUrl}/#/authentication/reset-password?token=${resetToken}`;
 
     // Send email
     const emailHtml = this.emailProvider.getPasswordResetTemplate({

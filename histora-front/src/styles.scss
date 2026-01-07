@@ -1,12 +1,12 @@
 /* Histora Global Styles */
 
-/* Ensure auth pages are always accessible */
-.cdk-overlay-backdrop {
-  z-index: 900 !important;
+/* Ensure overlay menus appear above navbar (z-index: 999) */
+.cdk-overlay-container {
+  z-index: 1050 !important;
 }
 
-.cdk-overlay-container {
-  z-index: 950 !important;
+.cdk-overlay-backdrop {
+  z-index: 1040 !important;
 }
 
 /* Hide sidebar elements when not in main layout */

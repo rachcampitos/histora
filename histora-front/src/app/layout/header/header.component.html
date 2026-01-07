@@ -19,6 +19,17 @@
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
+        <!-- Theme Toggle Button -->
+        <li class="theme-toggle">
+          <button mat-icon-button class="nav-notification-icons" (click)="themeService.toggleTheme()"
+                  [attr.aria-label]="themeService.isDark() ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'"
+                  title="{{ themeService.isDark() ? 'Tema claro' : 'Tema oscuro' }}">
+            <i class="material-icons-outlined icon-color">
+              {{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}
+            </i>
+          </button>
+        </li>
+        <!-- #END# Theme Toggle Button -->
         <!-- Full Screen Button -->
         <li class="fullscreen">
           <button mat-icon-button class="nav-notification-icons" (click)="callFullscreen()"> <i

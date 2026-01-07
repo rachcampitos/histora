@@ -7,6 +7,7 @@ import {
   FormBuilder,
   FormGroup,
 } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -18,11 +19,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '@core';
 import { LoginService } from '@core/service/login.service';
 
+export type UserType = 'doctor' | 'patient' | null;
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
   imports: [
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -48,20 +52,47 @@ export class SignupComponent implements OnInit {
   isLoading = false;
   error = '';
   success = '';
+  userType: UserType = null;
 
   ngOnInit(): void {
     this.initializeForm();
   }
 
+  selectUserType(type: UserType): void {
+    this.userType = type;
+    this.error = '';
+    this.success = '';
+    this.initializeForm();
+  }
+
+  goBackToSelection(): void {
+    this.userType = null;
+    this.error = '';
+    this.success = '';
+  }
+
   private initializeForm(): void {
-    this.signupForm = this.formBuilder.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: [''],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      acceptTerms: [false, Validators.requiredTrue],
-    });
+    if (this.userType === 'doctor') {
+      this.signupForm = this.formBuilder.group({
+        firstName: ['', [Validators.required, Validators.minLength(2)]],
+        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: [''],
+        password: ['', [Validators.required, Validators.minLength(8)]],
+        clinicName: ['', [Validators.required, Validators.minLength(2)]],
+        clinicPhone: [''],
+        acceptTerms: [false, Validators.requiredTrue],
+      });
+    } else {
+      this.signupForm = this.formBuilder.group({
+        firstName: ['', [Validators.required, Validators.minLength(2)]],
+        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        email: ['', [Validators.required, Validators.email]],
+        phone: [''],
+        password: ['', [Validators.required, Validators.minLength(8)]],
+        acceptTerms: [false, Validators.requiredTrue],
+      });
+    }
   }
 
   onSubmit(): void {
@@ -70,32 +101,72 @@ export class SignupComponent implements OnInit {
       this.error = '';
       this.success = '';
 
-      const { firstName, lastName, email, phone, password } = this.signupForm.value;
-
-      this.loginService.registerPatient({
-        firstName,
-        lastName,
-        email,
-        phone,
-        password,
-      }).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          if (response && 'access_token' in response && response.access_token) {
-            this.success = 'Cuenta creada exitosamente. Redirigiendo...';
-            setTimeout(() => {
-              this.router.navigate(['/patient/dashboard']);
-            }, 1500);
-          }
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.error = err.error?.message || 'Error al crear la cuenta. Intenta de nuevo.';
-        },
-      });
+      if (this.userType === 'doctor') {
+        this.registerDoctor();
+      } else {
+        this.registerPatient();
+      }
     } else {
       this.markFormGroupTouched();
     }
+  }
+
+  private registerDoctor(): void {
+    const { firstName, lastName, email, phone, password, clinicName, clinicPhone } = this.signupForm.value;
+
+    this.loginService.register({
+      firstName,
+      lastName,
+      email,
+      phone,
+      password,
+      clinicName,
+      clinicPhone,
+    }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response && 'access_token' in response && response.access_token) {
+          this.success = 'Consultorio creado exitosamente. Redirigiendo...';
+          setTimeout(() => {
+            this.router.navigate(['/doctor/dashboard']);
+          }, 1500);
+        } else if ('error' in response) {
+          this.error = response.error || 'Error al crear la cuenta.';
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.error = err.error?.message || 'Error al crear la cuenta. Intenta de nuevo.';
+      },
+    });
+  }
+
+  private registerPatient(): void {
+    const { firstName, lastName, email, phone, password } = this.signupForm.value;
+
+    this.loginService.registerPatient({
+      firstName,
+      lastName,
+      email,
+      phone,
+      password,
+    }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response && 'access_token' in response && response.access_token) {
+          this.success = 'Cuenta creada exitosamente. Redirigiendo...';
+          setTimeout(() => {
+            this.router.navigate(['/patient/dashboard']);
+          }, 1500);
+        } else if ('error' in response) {
+          this.error = response.error || 'Error al crear la cuenta.';
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.error = err.error?.message || 'Error al crear la cuenta. Intenta de nuevo.';
+      },
+    });
   }
 
   private markFormGroupTouched(): void {

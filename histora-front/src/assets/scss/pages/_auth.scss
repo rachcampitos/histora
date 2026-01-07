@@ -7,6 +7,12 @@
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0fdfa 100%);
   position: relative;
   z-index: 1000;
+  transition: background 0.3s ease;
+
+  // Dark mode support
+  .dark & {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  }
 
   @media (max-width: 768px) {
     padding: 10px;
@@ -19,6 +25,13 @@
     overflow: hidden;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
     background: white;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+
+    // Dark mode
+    .dark & {
+      background: #1e293b;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    }
 
     @media (max-width: 768px) {
       max-width: 420px;
@@ -36,17 +49,17 @@
 
       .form-section {
         flex: 1;
-        padding: 32px 40px;
+        padding: 20px 32px;
         display: flex;
         flex-direction: column;
         justify-content: center;
 
         @media (max-width: 768px) {
-          padding: 24px 20px;
+          padding: 16px 20px;
         }
 
         @media (max-width: 480px) {
-          padding: 20px 16px;
+          padding: 14px 16px;
         }
 
         .form-content {
@@ -57,28 +70,28 @@
           .brand-logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 12px;
 
             .logo-icon {
-              width: 40px;
-              height: 40px;
+              width: 32px;
+              height: 32px;
               background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%);
-              border-radius: 10px;
+              border-radius: 8px;
               display: flex;
               align-items: center;
               justify-content: center;
 
               svg, mat-icon {
                 color: white;
-                font-size: 24px;
-                width: 24px;
-                height: 24px;
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
               }
             }
 
             .logo-text {
-              font-size: 22px;
+              font-size: 20px;
               font-weight: 700;
               color: #0f172a;
               letter-spacing: -0.5px;
@@ -86,35 +99,45 @@
           }
 
           .title {
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             text-align: left;
             color: #0f172a;
             letter-spacing: -0.5px;
+            transition: color 0.3s ease;
+
+            .dark & {
+              color: #f1f5f9;
+            }
 
             @media (max-width: 480px) {
-              font-size: 22px;
+              font-size: 20px;
             }
           }
 
           .subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: #64748b;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             line-height: 1.4;
+            transition: color 0.3s ease;
+
+            .dark & {
+              color: #94a3b8;
+            }
 
             @media (max-width: 480px) {
-              font-size: 13px;
-              margin-bottom: 16px;
+              font-size: 12px;
+              margin-bottom: 12px;
             }
           }
 
           .auth-form {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 6px;
+            margin-bottom: 10px;
 
             .form-field {
               width: 100%;
@@ -122,17 +145,17 @@
               ::ng-deep {
                 .mat-mdc-form-field-outline,
                 .mat-mdc-text-field-wrapper {
-                  border-radius: 10px;
+                  border-radius: 8px;
                 }
 
                 .mat-mdc-form-field-infix {
-                  padding: 12px 12px;
+                  padding: 8px 10px;
                   min-height: auto;
                 }
 
                 .mat-mdc-floating-label {
                   color: #64748b;
-                  font-size: 14px;
+                  font-size: 13px;
                 }
 
                 .mdc-notched-outline__leading,
@@ -151,18 +174,18 @@
                 }
 
                 input {
-                  font-size: 14px;
+                  font-size: 13px;
                 }
               }
             }
 
             .create-btn {
               width: 100%;
-              height: 46px;
+              height: 40px;
               background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%) !important;
               color: white !important;
-              border-radius: 10px !important;
-              font-size: 15px;
+              border-radius: 8px !important;
+              font-size: 14px;
               font-weight: 600;
               text-transform: none !important;
               box-shadow: 0 4px 14px rgba(8, 145, 178, 0.35) !important;
@@ -171,7 +194,7 @@
 
               &:hover:not(:disabled) {
                 box-shadow: 0 6px 20px rgba(8, 145, 178, 0.45) !important;
-                transform: translateY(-2px);
+                transform: translateY(-1px);
               }
 
               &:disabled {
@@ -193,9 +216,9 @@
 
           .login-link {
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             color: #64748b;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
 
             .login-text {
               color: #0891b2;
@@ -211,7 +234,7 @@
           .divider {
             display: flex;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
 
             &::before,
             &::after {
@@ -222,9 +245,9 @@
             }
 
             span {
-              padding: 0 12px;
+              padding: 0 10px;
               color: #94a3b8;
-              font-size: 12px;
+              font-size: 11px;
               font-weight: 500;
             }
           }
@@ -232,12 +255,12 @@
           .social-login {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
 
             .social-btn {
-              width: 44px;
-              height: 44px;
-              border-radius: 10px !important;
+              width: 38px;
+              height: 38px;
+              border-radius: 8px !important;
               background: #f8fafc !important;
               border: 1px solid #e2e8f0;
               display: flex;
@@ -247,39 +270,165 @@
 
               &:hover {
                 background: #f1f5f9 !important;
-                transform: translateY(-2px);
+                transform: translateY(-1px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
                 border-color: #cbd5e1;
               }
 
               img {
-                width: 22px;
-                height: 22px;
+                width: 20px;
+                height: 20px;
               }
             }
           }
 
-          // Demo buttons - remove in production
-          .demo-buttons {
+          // User type selection cards
+          .user-type-selection {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 24px;
-            padding: 12px;
-            background: #fef3c7;
-            border-radius: 8px;
-            border: 1px solid #fcd34d;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 14px;
 
-            .demo-label {
-              font-size: 12px;
-              color: #92400e;
-              font-weight: 500;
+            .user-type-card {
+              background: #f8fafc;
+              border: 2px solid #e2e8f0;
+              border-radius: 12px;
+              padding: 14px;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              text-align: left;
+              width: 100%;
+
+              &:hover {
+                border-color: #0891b2;
+                background: #f0fdfa;
+                transform: translateY(-1px);
+                box-shadow: 0 6px 20px rgba(8, 145, 178, 0.12);
+              }
+
+              .type-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 8px;
+
+                mat-icon {
+                  font-size: 20px;
+                  width: 20px;
+                  height: 20px;
+                  color: white;
+                }
+
+                &.doctor {
+                  background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%);
+                }
+
+                &.patient {
+                  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                }
+              }
+
+              h3 {
+                font-size: 14px;
+                font-weight: 700;
+                color: #0f172a;
+                margin: 0 0 4px 0;
+              }
+
+              > p {
+                font-size: 12px;
+                color: #64748b;
+                margin: 0 0 8px 0;
+                line-height: 1.3;
+              }
+
+              .type-features {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+
+                span {
+                  display: flex;
+                  align-items: center;
+                  gap: 3px;
+                  font-size: 10px;
+                  color: #059669;
+                  background: #ecfdf5;
+                  padding: 3px 6px;
+                  border-radius: 4px;
+
+                  mat-icon {
+                    font-size: 12px;
+                    width: 12px;
+                    height: 12px;
+                  }
+                }
+              }
+            }
+          }
+
+          // Form header with back button
+          .form-header-with-back {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 10px;
+
+            .back-button {
+              margin-top: 0;
+              color: #64748b;
+              width: 32px;
+              height: 32px;
+
+              &:hover {
+                color: #0891b2;
+                background: #f0fdfa;
+              }
             }
 
-            button {
-              padding: 6px 12px;
-              font-size: 12px;
-              border-radius: 6px;
+            .title {
+              margin-bottom: 2px;
+            }
+
+            .subtitle {
+              margin-bottom: 0;
+            }
+          }
+
+          // Clinic info section
+          .clinic-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 4px 0;
+
+            .section-title {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-size: 13px;
+              font-weight: 600;
+              color: #0f172a;
+              margin: 0 0 10px 0;
+
+              mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+                color: #0891b2;
+              }
+            }
+
+            .form-field {
+              margin-bottom: 0;
+
+              &:not(:last-child) {
+                margin-bottom: 6px;
+              }
             }
           }
         }
@@ -309,61 +458,61 @@
           position: relative;
           z-index: 1;
           text-align: center;
-          padding: 28px;
+          padding: 20px;
           color: white;
 
           .feature-icon {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            margin: 0 auto 16px;
+            border-radius: 12px;
+            margin: 0 auto 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(10px);
 
             mat-icon {
-              font-size: 32px;
-              width: 32px;
-              height: 32px;
+              font-size: 26px;
+              width: 26px;
+              height: 26px;
             }
           }
 
           h2 {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             margin-bottom: 10px;
             letter-spacing: -0.5px;
           }
 
           p {
-            font-size: 14px;
+            font-size: 12px;
             opacity: 0.9;
-            line-height: 1.5;
-            max-width: 260px;
+            line-height: 1.4;
+            max-width: 220px;
             margin: 0 auto;
           }
 
           .features-list {
-            margin-top: 20px;
+            margin-top: 14px;
             text-align: left;
-            max-width: 240px;
+            max-width: 200px;
             margin-left: auto;
             margin-right: auto;
 
             .feature-item {
               display: flex;
               align-items: center;
-              gap: 10px;
-              margin-bottom: 10px;
-              font-size: 13px;
+              gap: 8px;
+              margin-bottom: 6px;
+              font-size: 11px;
               opacity: 0.95;
 
               mat-icon {
-                font-size: 18px;
-                width: 18px;
-                height: 18px;
+                font-size: 14px;
+                width: 14px;
+                height: 14px;
                 color: #5eead4;
               }
             }
@@ -387,17 +536,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
-    margin-bottom: 8px;
+    font-size: 12px;
+    margin-bottom: 4px;
 
     ::ng-deep .mat-mdc-checkbox-label {
       color: #64748b;
+      font-size: 12px;
     }
 
     .forgot-password-link {
       color: #0891b2;
       text-decoration: none;
       font-weight: 500;
+      font-size: 12px;
 
       &:hover {
         text-decoration: underline;
@@ -408,8 +559,8 @@
   .error-message {
     color: #dc2626;
     background: #fef2f2;
-    padding: 10px 12px;
-    border-radius: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
     font-size: 13px;
     border: 1px solid #fecaca;
     margin-bottom: 12px;
@@ -511,34 +662,155 @@
       }
     }
   }
+
+  // Dark mode additional styles
+  .dark & {
+    .logo-text {
+      color: #f1f5f9 !important;
+    }
+
+    .divider span {
+      color: #64748b;
+    }
+
+    .divider::before,
+    .divider::after {
+      background: #334155;
+    }
+
+    .login-link {
+      color: #94a3b8;
+    }
+
+    .social-btn {
+      background: #334155 !important;
+      border-color: #475569 !important;
+
+      &:hover {
+        background: #475569 !important;
+      }
+    }
+
+    // User type selection cards - dark mode
+    .user-type-selection .user-type-card {
+      background: #334155 !important;
+      border-color: #475569 !important;
+
+      &:hover {
+        border-color: #0891b2 !important;
+        background: #1e3a4a !important;
+      }
+
+      .type-icon {
+        &.doctor {
+          background: linear-gradient(135deg, #0e7490 0%, #0f766e 100%) !important;
+          box-shadow: 0 4px 12px rgba(14, 116, 144, 0.3);
+        }
+
+        &.patient {
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+      }
+
+      h3 {
+        color: #f1f5f9 !important;
+      }
+
+      > p {
+        color: #94a3b8 !important;
+      }
+
+      .type-features span {
+        background: #1e3a4a !important;
+        color: #5eead4 !important;
+
+        mat-icon {
+          color: #5eead4 !important;
+        }
+      }
+    }
+
+    // Right side section in dark mode
+    .right-side-section {
+      background: linear-gradient(135deg, #164e63 0%, #134e4a 50%, #115e59 100%) !important;
+
+      .right-content {
+        .feature-icon {
+          background: rgba(20, 184, 166, 0.25) !important;
+          border: 1px solid rgba(94, 234, 212, 0.3) !important;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+
+          mat-icon {
+            color: #5eead4 !important;
+          }
+        }
+      }
+    }
+
+    .clinic-section {
+      background: #334155 !important;
+      border-color: #475569 !important;
+
+      .section-title {
+        color: #f1f5f9 !important;
+
+        mat-icon {
+          color: #5eead4 !important;
+        }
+      }
+
+      .form-field {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: #475569 !important;
+        }
+      }
+    }
+
+    .form-header-with-back .back-button {
+      color: #94a3b8;
+
+      &:hover {
+        color: #0891b2;
+        background: #334155;
+      }
+    }
+
+    // Form field styles
+    ::ng-deep {
+      .mat-mdc-form-field {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: #475569 !important;
+        }
+
+        .mat-mdc-floating-label {
+          color: #94a3b8 !important;
+        }
+
+        input {
+          color: #f1f5f9 !important;
+
+          &::placeholder {
+            color: #64748b !important;
+            opacity: 0.7;
+          }
+        }
+
+        .mat-mdc-form-field-icon-prefix mat-icon,
+        .mat-mdc-form-field-icon-suffix mat-icon {
+          color: #64748b !important;
+        }
+      }
+
+      .mat-mdc-checkbox-label {
+        color: #94a3b8 !important;
+      }
+    }
+  }
 }
 
-// Override for signin demo buttons
-.d-flex.justify-content-between.lbl-alert.m-b-30 {
-  display: flex !important;
-  justify-content: center !important;
-  gap: 8px;
-  margin-bottom: 20px !important;
-  padding: 10px 12px;
-  background: #fef9c3;
-  border-radius: 8px;
-  border: 1px dashed #facc15;
 
-  &::before {
-    content: 'Demo:';
-    font-size: 12px;
-    color: #854d0e;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    margin-right: 4px;
-  }
-
-  button {
-    padding: 4px 10px !important;
-    font-size: 11px !important;
-    min-width: auto !important;
-    height: 28px !important;
-    line-height: 1 !important;
-  }
-}

@@ -12,8 +12,69 @@
             <span class="logo-text">Histora</span>
           </div>
 
-          <h2 class="title">{{ 'AUTH.SIGNUP.TITLE' | translate }}</h2>
-          <p class="subtitle">{{ 'AUTH.SIGNUP.SUBTITLE' | translate }}</p>
+          <!-- User Type Selection -->
+          @if (userType === null) {
+          <h2 class="title">{{ 'AUTH.SIGNUP.SELECT_TYPE_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'AUTH.SIGNUP.SELECT_TYPE_SUBTITLE' | translate }}</p>
+
+          <div class="user-type-selection">
+            <button type="button" class="user-type-card" (click)="selectUserType('doctor')">
+              <div class="type-icon doctor">
+                <mat-icon>medical_services</mat-icon>
+              </div>
+              <h3>{{ 'AUTH.SIGNUP.TYPE_DOCTOR_TITLE' | translate }}</h3>
+              <p>{{ 'AUTH.SIGNUP.TYPE_DOCTOR_DESC' | translate }}</p>
+              <div class="type-features">
+                <span><mat-icon>check</mat-icon> {{ 'AUTH.SIGNUP.FEATURE_TRIAL' | translate }}</span>
+                <span><mat-icon>check</mat-icon> {{ 'AUTH.SIGNUP.FEATURE_PATIENTS' | translate }}</span>
+                <span><mat-icon>check</mat-icon> {{ 'AUTH.SIGNUP.FEATURE_APPOINTMENTS' | translate }}</span>
+              </div>
+            </button>
+
+            <button type="button" class="user-type-card" (click)="selectUserType('patient')">
+              <div class="type-icon patient">
+                <mat-icon>person</mat-icon>
+              </div>
+              <h3>{{ 'AUTH.SIGNUP.TYPE_PATIENT_TITLE' | translate }}</h3>
+              <p>{{ 'AUTH.SIGNUP.TYPE_PATIENT_DESC' | translate }}</p>
+              <div class="type-features">
+                <span><mat-icon>check</mat-icon> {{ 'AUTH.SIGNUP.FEATURE_FREE' | translate }}</span>
+                <span><mat-icon>check</mat-icon> {{ 'AUTH.SIGNUP.FEATURE_HISTORY' | translate }}</span>
+                <span><mat-icon>check</mat-icon> {{ 'AUTH.SIGNUP.FEATURE_BOOK' | translate }}</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Login Link -->
+          <div class="login-link">
+            <span>{{ 'AUTH.SIGNUP.HAVE_ACCOUNT' | translate }} </span>
+            <a routerLink="/authentication/signin" class="login-text">{{ 'AUTH.SIGNUP.LOGIN' | translate }}</a>
+          </div>
+          }
+
+          <!-- Registration Form -->
+          @if (userType !== null) {
+          <div class="form-header-with-back">
+            <button mat-icon-button type="button" (click)="goBackToSelection()" class="back-button" aria-label="Volver">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div>
+              <h2 class="title">
+                @if (userType === 'doctor') {
+                {{ 'AUTH.SIGNUP.DOCTOR_TITLE' | translate }}
+                } @else {
+                {{ 'AUTH.SIGNUP.PATIENT_TITLE' | translate }}
+                }
+              </h2>
+              <p class="subtitle">
+                @if (userType === 'doctor') {
+                {{ 'AUTH.SIGNUP.DOCTOR_SUBTITLE' | translate }}
+                } @else {
+                {{ 'AUTH.SIGNUP.PATIENT_SUBTITLE' | translate }}
+                }
+              </p>
+            </div>
+          </div>
 
           <!-- Error Message -->
           @if (error) {
@@ -37,7 +98,7 @@
               <mat-form-field appearance="outline" class="form-field half">
                 <mat-label>{{ 'AUTH.SIGNUP.FIRST_NAME' | translate }}</mat-label>
                 <mat-icon matPrefix>person</mat-icon>
-                <input matInput formControlName="firstName" placeholder="Nombre" autocomplete="given-name" />
+                <input matInput formControlName="firstName" autocomplete="given-name" />
                 @if (signupForm.get('firstName')?.hasError('required')) {
                 <mat-error>{{ 'AUTH.ERRORS.FIRST_NAME_REQUIRED' | translate }}</mat-error>
                 }
@@ -45,7 +106,7 @@
 
               <mat-form-field appearance="outline" class="form-field half">
                 <mat-label>{{ 'AUTH.SIGNUP.LAST_NAME' | translate }}</mat-label>
-                <input matInput formControlName="lastName" placeholder="Apellido" autocomplete="family-name" />
+                <input matInput formControlName="lastName" autocomplete="family-name" />
                 @if (signupForm.get('lastName')?.hasError('required')) {
                 <mat-error>{{ 'AUTH.ERRORS.LAST_NAME_REQUIRED' | translate }}</mat-error>
                 }
@@ -56,7 +117,7 @@
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>{{ 'AUTH.SIGNUP.EMAIL' | translate }}</mat-label>
               <mat-icon matPrefix>email</mat-icon>
-              <input matInput type="email" formControlName="email" placeholder="correo@ejemplo.com" autocomplete="email" />
+              <input matInput type="email" formControlName="email" autocomplete="email" />
               @if (signupForm.get('email')?.hasError('required')) {
               <mat-error>{{ 'AUTH.ERRORS.EMAIL_REQUIRED' | translate }}</mat-error>
               }
@@ -69,15 +130,40 @@
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>{{ 'AUTH.SIGNUP.PHONE' | translate }}</mat-label>
               <mat-icon matPrefix>phone</mat-icon>
-              <input matInput formControlName="phone" placeholder="+51 999 999 999" autocomplete="tel" />
+              <input matInput formControlName="phone" autocomplete="tel" />
             </mat-form-field>
+
+            <!-- Clinic Fields (Only for doctors) -->
+            @if (userType === 'doctor') {
+            <div class="clinic-section">
+              <h4 class="section-title">
+                <mat-icon>business</mat-icon>
+                {{ 'AUTH.SIGNUP.CLINIC_INFO' | translate }}
+              </h4>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>{{ 'AUTH.SIGNUP.CLINIC_NAME' | translate }}</mat-label>
+                <mat-icon matPrefix>local_hospital</mat-icon>
+                <input matInput formControlName="clinicName" />
+                @if (signupForm.get('clinicName')?.hasError('required')) {
+                <mat-error>{{ 'AUTH.ERRORS.CLINIC_NAME_REQUIRED' | translate }}</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>{{ 'AUTH.SIGNUP.CLINIC_PHONE' | translate }}</mat-label>
+                <mat-icon matPrefix>phone</mat-icon>
+                <input matInput formControlName="clinicPhone" />
+              </mat-form-field>
+            </div>
+            }
 
             <!-- Password Field -->
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>{{ 'AUTH.SIGNUP.PASSWORD' | translate }}</mat-label>
               <mat-icon matPrefix>lock</mat-icon>
               <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password"
-                placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+                autocomplete="new-password" />
               <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
                 [attr.aria-label]="'Mostrar contraseña'" [attr.aria-pressed]="hidePassword" type="button">
                 <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
@@ -104,7 +190,13 @@
               <mat-spinner diameter="22" class="btn-spinner"></mat-spinner>
               }
               @if (!isLoading) {
-              <span>{{ 'AUTH.SIGNUP.CREATE_ACCOUNT' | translate }}</span>
+              <span>
+                @if (userType === 'doctor') {
+                {{ 'AUTH.SIGNUP.CREATE_CLINIC' | translate }}
+                } @else {
+                {{ 'AUTH.SIGNUP.CREATE_ACCOUNT' | translate }}
+                }
+              </span>
               }
             </button>
           </form>
@@ -126,30 +218,86 @@
               <img src="assets/images/pages/google.svg" alt="Google" width="24" height="24" />
             </button>
           </div>
+          }
         </div>
       </div>
 
       <!-- Right side - Features -->
       <div class="right-side-section">
         <div class="right-content">
+          @if (userType === 'doctor') {
           <div class="feature-icon">
-            <mat-icon>person_add</mat-icon>
+            <mat-icon>medical_services</mat-icon>
           </div>
-          <h2>Únete a Histora</h2>
-          <p>Comienza a gestionar tu consultorio de forma profesional</p>
+          <h2>Gestiona tu consultorio</h2>
+          <p>Comienza con 14 días de prueba gratis</p>
 
           <div class="features-list">
             <div class="feature-item">
               <mat-icon>check_circle</mat-icon>
-              <span>14 días de prueba gratis</span>
+              <span>Agenda de citas inteligente</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Historiales clínicos digitales</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Recordatorios automáticos</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Portal para pacientes</span>
             </div>
             <div class="feature-item">
               <mat-icon>check_circle</mat-icon>
               <span>Sin tarjeta de crédito</span>
             </div>
+          </div>
+          } @else if (userType === 'patient') {
+          <div class="feature-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+          <h2>Tu salud en tus manos</h2>
+          <p>Accede a tu información médica de forma segura</p>
+
+          <div class="features-list">
             <div class="feature-item">
               <mat-icon>check_circle</mat-icon>
-              <span>Configuración en minutos</span>
+              <span>Consulta tu historial médico</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Agenda citas fácilmente</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Descarga resultados</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Recibe recordatorios</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>100% gratuito</span>
+            </div>
+          </div>
+          } @else {
+          <div class="feature-icon">
+            <mat-icon>person_add</mat-icon>
+          </div>
+          <h2>Únete a Histora</h2>
+          <p>La plataforma médica más completa de Latinoamérica</p>
+
+          <div class="features-list">
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Fácil de usar</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Seguro y confiable</span>
             </div>
             <div class="feature-item">
               <mat-icon>check_circle</mat-icon>
@@ -157,9 +305,14 @@
             </div>
             <div class="feature-item">
               <mat-icon>check_circle</mat-icon>
-              <span>Cancela cuando quieras</span>
+              <span>Datos protegidos</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Disponible 24/7</span>
             </div>
           </div>
+          }
         </div>
       </div>
     </div>

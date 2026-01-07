@@ -16,6 +16,7 @@ import {
   LanguageService,
   RightSidebarService,
   Role,
+  ThemeService,
 } from '@core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { MatButtonModule } from '@angular/material/button';
@@ -70,7 +71,8 @@ export class HeaderComponent
     private authService: AuthService,
     private router: Router,
     public languageService: LanguageService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    public themeService: ThemeService
   ) {
     super();
   }

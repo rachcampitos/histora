@@ -48,6 +48,14 @@ export class ResetPasswordComponent implements OnInit {
   hidePassword = true;
   hideConfirmPassword = true;
 
+  // Password strength indicators
+  passwordStrength = 0;
+  passwordStrengthText = '';
+  hasMinLength = false;
+  hasUppercase = false;
+  hasNumber = false;
+  hasSpecial = false;
+
   ngOnInit() {
     this.token = this.route.snapshot.queryParams['token'] || '';
 
@@ -73,6 +81,42 @@ export class ResetPasswordComponent implements OnInit {
       return { mismatch: true };
     }
     return null;
+  }
+
+  checkPasswordStrength(): void {
+    const password = this.authForm.get('newPassword')?.value || '';
+
+    // Check requirements
+    this.hasMinLength = password.length >= 8;
+    this.hasUppercase = /[A-Z]/.test(password);
+    this.hasNumber = /[0-9]/.test(password);
+    this.hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    // Calculate strength (0-4)
+    let strength = 0;
+    if (this.hasMinLength) strength++;
+    if (this.hasUppercase) strength++;
+    if (this.hasNumber) strength++;
+    if (this.hasSpecial) strength++;
+
+    this.passwordStrength = strength;
+
+    // Set text
+    switch (strength) {
+      case 0:
+      case 1:
+        this.passwordStrengthText = 'Débil';
+        break;
+      case 2:
+        this.passwordStrengthText = 'Regular';
+        break;
+      case 3:
+        this.passwordStrengthText = 'Fuerte';
+        break;
+      case 4:
+        this.passwordStrengthText = 'Muy fuerte';
+        break;
+    }
   }
 
   get f() {
