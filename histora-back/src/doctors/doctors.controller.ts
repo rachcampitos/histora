@@ -43,6 +43,29 @@ export class DoctorsController {
     return this.doctorsService.create(user.clinicId, doctorUserId, createDoctorDto);
   }
 
+  @Get('me')
+  @Roles(UserRole.CLINIC_DOCTOR)
+  async getMyProfile(@CurrentUser() user: CurrentUserData): Promise<Doctor> {
+    const doctor = await this.doctorsService.findByUserId(user.userId);
+    if (!doctor) {
+      throw new ForbiddenException('Doctor profile not found');
+    }
+    return doctor;
+  }
+
+  @Patch('me')
+  @Roles(UserRole.CLINIC_DOCTOR)
+  async updateMyProfile(
+    @Body() updateDoctorDto: UpdateDoctorDto,
+    @CurrentUser() user: CurrentUserData,
+  ): Promise<Doctor | null> {
+    const doctor = await this.doctorsService.findByUserId(user.userId);
+    if (!doctor) {
+      throw new ForbiddenException('Doctor profile not found');
+    }
+    return this.doctorsService.updateProfileByUserId(user.userId, updateDoctorDto);
+  }
+
   @Get()
   @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
   findAll(@CurrentUser() user: CurrentUserData): Promise<Doctor[]> {

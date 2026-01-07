@@ -51,6 +51,7 @@
     },
     "DOCTOR": {
       "DASHBOARD": "Dashboard",
+      "PROFILE": "My Profile",
       "APPOINTMENTS": "Appointments",
       "DOCTORS": "Doctors",
       "PATIENTS": "Patients",
@@ -59,6 +60,7 @@
     "PATIENT": {
       "TEXT": "Patient",
       "DASHBOARD": "Dashboard",
+      "DOCTORS": "Find Doctors",
       "APPOINTMENTS": {
         "TEXT": "Appointments",
         "LIST": {
