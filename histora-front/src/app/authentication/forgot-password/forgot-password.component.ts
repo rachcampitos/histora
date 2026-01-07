@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   UntypedFormBuilder,
@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
+import { LoginService } from '@core/service/login.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -33,13 +34,14 @@ import { TranslateModule } from '@ngx-translate/core';
   ],
 })
 export class ForgotPasswordComponent implements OnInit {
+  private formBuilder = inject(UntypedFormBuilder);
+  private loginService = inject(LoginService);
+
   authForm!: UntypedFormGroup;
   submitted = false;
   isLoading = false;
   success = '';
   error = '';
-
-  constructor(private formBuilder: UntypedFormBuilder) {}
 
   ngOnInit() {
     this.authForm = this.formBuilder.group({
@@ -64,13 +66,23 @@ export class ForgotPasswordComponent implements OnInit {
     }
 
     this.isLoading = true;
+    const email = this.authForm.get('email')?.value;
 
-    // Simulate API call - in production, this should call a real API
-    setTimeout(() => {
-      this.isLoading = false;
-      this.success = 'Se ha enviado un enlace de recuperación a tu correo electrónico.';
-      this.authForm.reset();
-      this.submitted = false;
-    }, 1500);
+    this.loginService.forgotPassword(email).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if ('message' in response) {
+          this.success = response.message;
+          this.authForm.reset();
+          this.submitted = false;
+        } else if ('error' in response) {
+          this.error = response.error || 'Error al procesar la solicitud';
+        }
+      },
+      error: () => {
+        this.isLoading = false;
+        this.error = 'Error de conexión. Intenta de nuevo.';
+      },
+    });
   }
 }

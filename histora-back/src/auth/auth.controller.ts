@@ -12,6 +12,7 @@ import { AuthService, AuthResponse } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -78,6 +79,16 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'No autorizado' })
   getProfile(@CurrentUser() user: CurrentUserPayload) {
     return this.authService.getProfile(user.userId);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar recuperación de contraseña' })
+  @ApiResponse({ status: 200, description: 'Email de recuperación enviado' })
+  @ApiResponse({ status: 404, description: 'Email no registrado' })
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
   @Public()

@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -276,6 +277,26 @@ export class AuthService {
 
   async getProfile(userId: string) {
     return this.usersService.findOne(userId);
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException('No existe una cuenta con este correo electrónico');
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('La cuenta está desactivada');
+    }
+
+    // TODO: Implementar envío de email con token de recuperación
+    // Por ahora solo validamos que el email exista
+    // En producción, aquí se generaría un token y se enviaría por email
+
+    return {
+      message: 'Se ha enviado un enlace de recuperación a tu correo electrónico',
+    };
   }
 
   async googleLogin(googleUser: {

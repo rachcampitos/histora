@@ -147,6 +147,22 @@ export class LoginService {
     return this.http.get<User>(`${this.apiUrl}/auth/me`);
   }
 
+  forgotPassword(email: string): Observable<{ message: string } | { status: number; error?: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/auth/forgot-password`, { email }).pipe(
+      map((response) => ({
+        ...response,
+        status: 200,
+      })),
+      catchError((error) => {
+        console.error('Forgot password error:', error);
+        return of({
+          status: error.status || 400,
+          error: error.error?.message || 'Error al procesar la solicitud',
+        });
+      })
+    );
+  }
+
   private mapRoleToClinica(role: string): string {
     const roleMap: Record<string, string> = {
       platform_admin: 'PLATFORM_ADMIN',
