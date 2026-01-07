@@ -65,7 +65,7 @@ export class AuthService {
     // Check if email already exists
     const existingUser = await this.usersService.findByEmail(registerDto.email);
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('Este email ya está registrado');
     }
 
     // Create user as clinic owner
@@ -126,7 +126,7 @@ export class AuthService {
     // Check if email already exists
     const existingUser = await this.usersService.findByEmail(registerDto.email);
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('Este email ya está registrado');
     }
 
     // Create user as patient
@@ -168,16 +168,16 @@ export class AuthService {
     const user = await this.usersService.findByEmailWithPassword(loginDto.email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Credenciales inválidas');
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Account is inactive');
+      throw new UnauthorizedException('La cuenta está desactivada');
     }
 
     // Check if user has password (social login users may not have one)
     if (!user.password) {
-      throw new UnauthorizedException('Please use Google Sign-In for this account');
+      throw new UnauthorizedException('Por favor usa Google Sign-In para esta cuenta');
     }
 
     const isPasswordValid = await this.usersService.comparePasswords(
@@ -186,7 +186,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Credenciales inválidas');
     }
 
     // Update last login
@@ -226,16 +226,16 @@ export class AuthService {
     const user = await this.usersService.findByRefreshToken(hashedToken);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Token de actualización inválido');
     }
 
     // Check if token is expired
     if (user.refreshTokenExpires && user.refreshTokenExpires < new Date()) {
-      throw new UnauthorizedException('Refresh token expired');
+      throw new UnauthorizedException('El token de actualización ha expirado');
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Account is inactive');
+      throw new UnauthorizedException('La cuenta está desactivada');
     }
 
     // Generate new tokens
@@ -327,7 +327,7 @@ export class AuthService {
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Account is inactive');
+      throw new UnauthorizedException('La cuenta está desactivada');
     }
 
     // Update last login
