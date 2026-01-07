@@ -63,6 +63,23 @@ export class Appointment {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  // Reminder tracking
+  @Prop({
+    type: {
+      sent24h: { type: Boolean, default: false },
+      sent24hAt: { type: Date },
+      sent1h: { type: Boolean, default: false },
+      sent1hAt: { type: Date },
+    },
+    default: {},
+  })
+  reminders?: {
+    sent24h?: boolean;
+    sent24hAt?: Date;
+    sent1h?: boolean;
+    sent1hAt?: Date;
+  };
 }
 
 export const AppointmentSchema = SchemaFactory.createForClass(Appointment);

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PatientsModule } from './patients/patients.module';
@@ -27,6 +28,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    ScheduleModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URL!),
     UsersModule,
     AuthModule,
