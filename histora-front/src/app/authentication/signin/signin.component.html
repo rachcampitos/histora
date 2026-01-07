@@ -4,26 +4,30 @@
       <!-- Left side - Form -->
       <div class="form-section">
         <div class="form-content">
+          <!-- Brand Logo -->
+          <div class="brand-logo">
+            <div class="logo-icon">
+              <mat-icon>local_hospital</mat-icon>
+            </div>
+            <span class="logo-text">Histora</span>
+          </div>
+
           <h2 class="title">{{ 'AUTH.SIGNIN.TITLE' | translate }}</h2>
           <p class="subtitle">{{ 'AUTH.SIGNIN.SUBTITLE' | translate }}</p>
 
+          <!-- Demo buttons - for testing only -->
           <div class="d-flex justify-content-between lbl-alert m-b-30">
-            <div>
-              <button mat-flat-button class="adminBtn" (click)="adminSet();">Admin</button>
-            </div>
-            <div>
-              <button mat-flat-button class="doctorBtn" (click)="doctorSet();">Doctor</button>
-            </div>
-            <div>
-              <button mat-flat-button class="patientBtn" (click)="patientSet();">Paciente</button>
-            </div>
+            <button mat-flat-button class="adminBtn" (click)="adminSet();">Admin</button>
+            <button mat-flat-button class="doctorBtn" (click)="doctorSet();">Doctor</button>
+            <button mat-flat-button class="patientBtn" (click)="patientSet();">Paciente</button>
           </div>
 
           <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="auth-form">
             <!-- Email Field -->
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>{{ 'AUTH.SIGNIN.EMAIL' | translate }}</mat-label>
-              <input matInput formControlName="email" placeholder="Ingresa tu correo" type="email" />
+              <mat-icon matPrefix>email</mat-icon>
+              <input matInput formControlName="email" placeholder="correo@ejemplo.com" type="email" autocomplete="email" />
               @if (authForm.get('email')?.hasError('required')) {
               <mat-error>
                 {{ 'AUTH.ERRORS.EMAIL_REQUIRED' | translate }}
@@ -39,8 +43,9 @@
             <!-- Password Field -->
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>{{ 'AUTH.SIGNIN.PASSWORD' | translate }}</mat-label>
+              <mat-icon matPrefix>lock</mat-icon>
               <input matInput [type]="hide ? 'password' : 'text'" formControlName="password"
-                placeholder="Ingresa tu contraseña" />
+                placeholder="Tu contraseña" autocomplete="current-password" />
               <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Mostrar contraseña'"
                 [attr.aria-pressed]="hide" type="button">
                 <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
@@ -60,22 +65,23 @@
               <a routerLink="/authentication/forgot-password" class="forgot-password-link">{{ 'AUTH.SIGNIN.FORGOT_PASSWORD' | translate }}</a>
             </div>
 
+            <!-- Error Message -->
+            @if (error) {
+            <div class="error-message">
+              <mat-icon style="font-size: 18px; vertical-align: middle; margin-right: 8px;">error_outline</mat-icon>
+              {{ error }}
+            </div>
+            }
+
             <!-- Login Button -->
             <button mat-raised-button type="submit" class="create-btn" [disabled]="authForm.invalid || loading">
               @if (loading) {
-              <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+              <mat-spinner diameter="22" class="btn-spinner"></mat-spinner>
               }
               @if (!loading) {
               <span>{{ 'AUTH.SIGNIN.LOGIN' | translate }}</span>
               }
             </button>
-
-            <!-- Error Message -->
-            @if (error) {
-            <div class="error-message">
-              {{ error }}
-            </div>
-            }
           </form>
 
           <!-- Signup Link -->
@@ -84,24 +90,52 @@
             <a routerLink="/authentication/signup" class="login-text">{{ 'AUTH.SIGNIN.REGISTER' | translate }}</a>
           </div>
 
+          <!-- Divider -->
+          <div class="divider">
+            <span>o continúa con</span>
+          </div>
+
           <!-- Social Login -->
           <div class="social-login">
-            <button mat-icon-button class="social-btn google-btn" (click)="signInWithGoogle()">
-              <img src="assets/images/pages/google.svg" alt="Google login" width="24" height="24" />
-            </button>
-            <button mat-icon-button class="social-btn facebook-btn" (click)="signInWithFacebook()">
-              <img src="assets/images/pages/facebook.svg" alt="Facebook login" width="24" height="24" />
-            </button>
-            <button mat-icon-button class="social-btn apple-btn" (click)="signInWithApple()">
-              <img src="assets/images/pages/apple.svg" alt="Apple login" width="24" height="24" />
+            <button mat-icon-button class="social-btn google-btn" (click)="signInWithGoogle()" title="Iniciar sesión con Google">
+              <img src="assets/images/pages/google.svg" alt="Google" width="24" height="24" />
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Right side image -->
+      <!-- Right side - Features -->
       <div class="right-side-section">
-        <img src="assets/images/pages/bg-01.png" alt="Login" class="right-side-image" />
+        <div class="right-content">
+          <div class="feature-icon">
+            <mat-icon>medical_services</mat-icon>
+          </div>
+          <h2>Gestiona tu consultorio</h2>
+          <p>La plataforma más completa para médicos y consultorios en Latinoamérica</p>
+
+          <div class="features-list">
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Agenda de citas inteligente</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Historiales clínicos digitales</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Recordatorios por WhatsApp</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Portal para pacientes</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Reportes y estadísticas</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </mat-card>
