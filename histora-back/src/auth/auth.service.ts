@@ -25,6 +25,7 @@ export interface AuthResponse {
     lastName: string;
     role: UserRole;
     clinicId?: string;
+    avatar?: string;
   };
 }
 
@@ -115,6 +116,7 @@ export class AuthService {
         lastName: user.lastName,
         role: user.role,
         clinicId: clinic['_id'].toString(),
+        avatar: user.avatar,
       },
     };
   }
@@ -156,6 +158,7 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
+        avatar: user.avatar,
       },
     };
   }
@@ -205,6 +208,7 @@ export class AuthService {
         lastName: user.lastName,
         role: user.role,
         clinicId: user.clinicId?.toString(),
+        avatar: user.avatar,
       },
     };
   }
@@ -249,6 +253,7 @@ export class AuthService {
         lastName: user.lastName,
         role: user.role,
         clinicId: user.clinicId?.toString(),
+        avatar: user.avatar,
       },
     };
   }

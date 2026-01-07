@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
@@ -17,6 +17,7 @@ export interface Notifications {
   id?: string; // Optional unique identifier for each notification
   actionLabel?: string; // Optional action button label
   actionType?: string; // Optional action type (e.g., 'View', 'Reply', 'Mark as Important')
+  data?: Record<string, any>; // Optional data payload for navigation
 }
 
 @Component({
@@ -42,7 +43,7 @@ export interface Notifications {
     ]),
   ],
 })
-export class NotificationListComponent implements OnInit {
+export class NotificationListComponent implements OnInit, OnChanges {
   @Input() notifications: Notifications[] = [];
   @Output() markAllAsRead = new EventEmitter<void>();
   @Output() readAll = new EventEmitter<void>();
@@ -60,6 +61,12 @@ export class NotificationListComponent implements OnInit {
 
   ngOnInit() {
     this.updateUnreadCount();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['notifications']) {
+      this.updateUnreadCount();
+    }
   }
 
   // Update the unread count based on notification status

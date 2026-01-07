@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -9,6 +9,9 @@ import {
 } from './schema/appointment.schema';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto, CancelAppointmentDto } from './dto/update-appointment.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { DoctorsService } from '../doctors/doctors.service';
+import { PatientsService } from '../patients/patients.service';
 
 export interface CancellationRules {
   minHoursBeforeAppointment: number;
@@ -26,6 +29,9 @@ export class AppointmentsService {
 
   constructor(
     @InjectModel(Appointment.name) private appointmentModel: Model<AppointmentDocument>,
+    @Inject(forwardRef(() => NotificationsService)) private notificationsService: NotificationsService,
+    @Inject(forwardRef(() => DoctorsService)) private doctorsService: DoctorsService,
+    @Inject(forwardRef(() => PatientsService)) private patientsService: PatientsService,
   ) {}
 
   async create(
@@ -53,7 +59,50 @@ export class AppointmentsService {
       status: AppointmentStatus.SCHEDULED,
     });
 
-    return newAppointment.save();
+    const savedAppointment = await newAppointment.save();
+
+    // Send notification to doctor about new appointment
+    try {
+      await this.sendNewAppointmentNotification(savedAppointment, clinicId);
+    } catch (error) {
+      console.error('Failed to send appointment notification:', error);
+      // Don't fail the appointment creation if notification fails
+    }
+
+    return savedAppointment;
+  }
+
+  private async sendNewAppointmentNotification(
+    appointment: AppointmentDocument,
+    clinicId: string,
+  ): Promise<void> {
+    try {
+      // Get doctor and patient info
+      const doctor = await this.doctorsService.findOne(appointment.doctorId.toString(), clinicId);
+      const patient = await this.patientsService.findOne(appointment.patientId.toString(), clinicId);
+
+      if (!doctor || !patient || !doctor.userId) return;
+
+      const scheduledDate = new Date(appointment.scheduledDate);
+      const dateStr = scheduledDate.toLocaleDateString('es-PE', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      await this.notificationsService.notifyDoctorNewAppointment({
+        id: (appointment._id as any).toString(),
+        doctorUserId: doctor.userId.toString(),
+        patientName: `${patient.firstName} ${patient.lastName}`,
+        date: dateStr,
+        time: appointment.startTime,
+        clinicId,
+        reason: appointment.reasonForVisit,
+      });
+    } catch (error) {
+      // Silently fail - don't break appointment flow
+    }
   }
 
   async findAll(
@@ -265,7 +314,49 @@ export class AppointmentsService {
       )
       .exec();
 
+    // Send notification to doctor if patient cancelled
+    if (appointment && isPatientCancellation) {
+      try {
+        await this.sendCancellationNotification(existingAppointment, clinicId, cancelDto.cancellationReason);
+      } catch (error) {
+        console.error('Failed to send cancellation notification:', error);
+      }
+    }
+
     return appointment;
+  }
+
+  private async sendCancellationNotification(
+    appointment: AppointmentDocument,
+    clinicId: string,
+    reason?: string,
+  ): Promise<void> {
+    try {
+      const doctor = await this.doctorsService.findOne(appointment.doctorId.toString(), clinicId);
+      const patient = await this.patientsService.findOne(appointment.patientId.toString(), clinicId);
+
+      if (!doctor || !patient || !doctor.userId) return;
+
+      const scheduledDate = new Date(appointment.scheduledDate);
+      const dateStr = scheduledDate.toLocaleDateString('es-PE', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      await this.notificationsService.notifyDoctorAppointmentCancelled({
+        id: (appointment._id as any).toString(),
+        doctorUserId: doctor.userId.toString(),
+        patientName: `${patient.firstName} ${patient.lastName}`,
+        date: dateStr,
+        time: appointment.startTime,
+        clinicId,
+        reason,
+      });
+    } catch (error) {
+      // Silently fail - don't break cancellation flow
+    }
   }
 
   private validateCancellationTime(

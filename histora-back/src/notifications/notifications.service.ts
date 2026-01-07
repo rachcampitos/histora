@@ -435,4 +435,93 @@ export class NotificationsService {
 
     return { processed, failed };
   }
+
+  // =====================
+  // DOCTOR NOTIFICATIONS
+  // =====================
+
+  // Notify doctor when a patient books an appointment
+  async notifyDoctorNewAppointment(appointment: {
+    id: string;
+    doctorUserId: string;
+    patientName: string;
+    date: string;
+    time: string;
+    clinicId: string;
+    reason?: string;
+  }): Promise<void> {
+    await this.send({
+      userId: appointment.doctorUserId,
+      type: NotificationType.NEW_APPOINTMENT_BOOKED,
+      title: 'Nueva Cita Agendada',
+      message: `${appointment.patientName} ha agendado una cita para el ${appointment.date} a las ${appointment.time}.${appointment.reason ? ` Motivo: ${appointment.reason}` : ''}`,
+      data: { appointmentId: appointment.id },
+      appointmentId: appointment.id,
+      channels: [NotificationChannel.IN_APP, NotificationChannel.EMAIL],
+    }, appointment.clinicId);
+  }
+
+  // Notify doctor when a patient cancels an appointment
+  async notifyDoctorAppointmentCancelled(appointment: {
+    id: string;
+    doctorUserId: string;
+    patientName: string;
+    date: string;
+    time: string;
+    clinicId: string;
+    reason?: string;
+  }): Promise<void> {
+    await this.send({
+      userId: appointment.doctorUserId,
+      type: NotificationType.APPOINTMENT_CANCELLED_BY_PATIENT,
+      title: 'Cita Cancelada',
+      message: `${appointment.patientName} ha cancelado la cita del ${appointment.date} a las ${appointment.time}.${appointment.reason ? ` Motivo: ${appointment.reason}` : ''}`,
+      data: { appointmentId: appointment.id },
+      appointmentId: appointment.id,
+      channels: [NotificationChannel.IN_APP, NotificationChannel.EMAIL],
+    }, appointment.clinicId);
+  }
+
+  // Notify doctor of upcoming appointment
+  async notifyDoctorUpcomingAppointment(appointment: {
+    id: string;
+    doctorUserId: string;
+    patientName: string;
+    date: string;
+    time: string;
+    clinicId: string;
+    minutesBefore: number;
+  }): Promise<void> {
+    const timeText = appointment.minutesBefore >= 60
+      ? `${Math.floor(appointment.minutesBefore / 60)} hora(s)`
+      : `${appointment.minutesBefore} minutos`;
+
+    await this.send({
+      userId: appointment.doctorUserId,
+      type: NotificationType.UPCOMING_APPOINTMENT_REMINDER,
+      title: 'Recordatorio de Cita',
+      message: `Tiene una cita con ${appointment.patientName} en ${timeText} (${appointment.time}).`,
+      data: { appointmentId: appointment.id },
+      appointmentId: appointment.id,
+      channels: [NotificationChannel.IN_APP],
+    }, appointment.clinicId);
+  }
+
+  // Notify doctor when a patient leaves a review
+  async notifyDoctorNewReview(review: {
+    doctorUserId: string;
+    patientName: string;
+    rating: number;
+    comment?: string;
+    clinicId?: string;
+  }): Promise<void> {
+    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    await this.send({
+      userId: review.doctorUserId,
+      type: NotificationType.NEW_PATIENT_REVIEW,
+      title: 'Nueva Reseña de Paciente',
+      message: `${review.patientName} te ha dejado una reseña: ${stars}${review.comment ? ` - "${review.comment}"` : ''}`,
+      channels: [NotificationChannel.IN_APP],
+    }, review.clinicId);
+  }
 }
