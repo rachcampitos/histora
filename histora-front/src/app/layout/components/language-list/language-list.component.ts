@@ -12,6 +12,7 @@ export interface LanguageItem {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-language-list',
   templateUrl: './language-list.component.html',
   styleUrls: ['./language-list.component.scss'],

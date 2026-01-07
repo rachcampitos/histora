@@ -5,6 +5,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone: true,
     selector: 'app-today-appointment',
     templateUrl: './today-appointment.component.html',
     styleUrls: ['./today-appointment.component.scss'],

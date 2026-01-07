@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LoginService } from '@core/service/login.service';
 
 @Component({
+  standalone: true,
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],

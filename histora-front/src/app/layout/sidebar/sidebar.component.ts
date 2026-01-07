@@ -25,6 +25,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
+  standalone: true,
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],

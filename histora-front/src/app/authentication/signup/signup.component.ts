@@ -22,6 +22,7 @@ import { LoginService } from '@core/service/login.service';
 export type UserType = 'doctor' | 'patient' | null;
 
 @Component({
+  standalone: true,
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],

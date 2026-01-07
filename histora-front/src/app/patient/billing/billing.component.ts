@@ -5,6 +5,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone: true,
     selector: 'app-billing',
     templateUrl: './billing.component.html',
     styleUrls: ['./billing.component.scss'],

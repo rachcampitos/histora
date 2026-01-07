@@ -7,6 +7,7 @@ import { RouterOutlet } from '@angular/router';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 
 @Component({
+  standalone: true,
     selector: 'app-auth-layout',
     templateUrl: './auth-layout.component.html',
     styleUrls: [],

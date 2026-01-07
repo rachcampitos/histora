@@ -38,6 +38,7 @@ import { PatientFormDialogComponent, PatientFormDialogData } from './dialogs/for
 import { PatientDeleteDialogComponent, PatientDeleteDialogData } from './dialogs/delete/delete.component';
 
 @Component({
+  standalone: true,
   selector: 'app-patients',
   templateUrl: './patients.component.html',
   styleUrls: ['./patients.component.scss'],

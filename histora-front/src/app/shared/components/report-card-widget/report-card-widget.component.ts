@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 
 @Component({
+  standalone: true,
     selector: 'app-report-card-widget',
     imports: [],
     templateUrl: './report-card-widget.component.html',

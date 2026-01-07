@@ -9,6 +9,7 @@ interface Appointment {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-appointment-widget',
   imports: [],
   templateUrl: './appointment-widget.component.html',

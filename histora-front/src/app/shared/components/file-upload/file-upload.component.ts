@@ -3,6 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
+  standalone: true,
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
   providers: [

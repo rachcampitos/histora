@@ -8,6 +8,7 @@ interface Report {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-report-list',
     imports: [NgClass],
     templateUrl: './report-list.component.html',

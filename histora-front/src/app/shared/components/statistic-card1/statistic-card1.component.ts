@@ -3,6 +3,7 @@ import { Component, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
+  standalone: true,
     selector: 'app-statistic-card1',
     imports: [MatCardModule, CommonModule],
     templateUrl: './statistic-card1.component.html',

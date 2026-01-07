@@ -1,4 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { importProvidersFrom } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslateModule } from '@ngx-translate/core';
+import { FeatherModule } from 'angular-feather';
+import { allIcons } from 'angular-feather/icons';
 
 import { ChartCard1Component } from './chart-card1.component';
 
@@ -8,9 +14,16 @@ describe('ChartCard1Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChartCard1Component]
-    })
-    .compileComponents();
+      imports: [
+        ChartCard1Component,
+        NoopAnimationsModule,
+        HttpClientTestingModule,
+        TranslateModule.forRoot(),
+      ],
+      providers: [
+        importProvidersFrom(FeatherModule.pick(allIcons)),
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChartCard1Component);
     component = fixture.componentInstance;

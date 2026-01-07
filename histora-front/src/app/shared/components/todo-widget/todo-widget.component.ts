@@ -20,6 +20,7 @@ interface Todo {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-todo-widget',
     imports: [
         MatIcon,

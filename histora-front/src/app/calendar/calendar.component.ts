@@ -40,6 +40,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
+  standalone: true,
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],

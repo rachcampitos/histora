@@ -14,6 +14,7 @@ export interface Employee {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-emp-status',
   imports: [MatCardModule, MatButtonModule, MatTableModule, CommonModule],
   templateUrl: './emp-status.component.html',

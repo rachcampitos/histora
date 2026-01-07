@@ -8,6 +8,7 @@ interface Activity {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-recent-activity',
     imports: [],
     templateUrl: './recent-activity.component.html',

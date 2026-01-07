@@ -10,6 +10,7 @@ import { HeaderComponent } from '../../header/header.component';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 
 @Component({
+  standalone: true,
     selector: 'app-main-layout',
     templateUrl: './main-layout.component.html',
     styleUrls: [],

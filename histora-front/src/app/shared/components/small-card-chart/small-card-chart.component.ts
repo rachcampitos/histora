@@ -4,6 +4,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
+  standalone: true,
   selector: 'app-small-card-chart',
   imports: [MatCardModule, NgApexchartsModule, MatIconModule],
   templateUrl: './small-card-chart.component.html',

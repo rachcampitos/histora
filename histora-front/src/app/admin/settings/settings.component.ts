@@ -14,6 +14,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { AuthService } from '@core/service/auth.service';
 
 @Component({
+  standalone: true,
   selector: 'app-admin-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],

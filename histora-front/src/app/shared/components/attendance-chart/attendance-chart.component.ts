@@ -23,6 +23,7 @@ export type chartOptions = {
 };
 
 @Component({
+  standalone: true,
     selector: 'app-attendance-chart',
     imports: [
         MatCardModule,

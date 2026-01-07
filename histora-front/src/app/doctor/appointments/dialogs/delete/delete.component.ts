@@ -18,6 +18,7 @@ export interface AppointmentDeleteDialogData {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-appointment-delete-dialog',
   templateUrl: './delete.component.html',
   styleUrls: ['./delete.component.scss'],

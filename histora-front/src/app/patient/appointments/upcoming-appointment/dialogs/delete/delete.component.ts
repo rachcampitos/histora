@@ -20,6 +20,7 @@ export interface DialogData {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-upcomming-appointment-delete',
     templateUrl: './delete.component.html',
     styleUrls: ['./delete.component.scss'],

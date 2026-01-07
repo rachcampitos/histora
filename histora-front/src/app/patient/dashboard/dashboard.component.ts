@@ -83,6 +83,7 @@ export type radialChartOptions = {
   plotOptions: ApexPlotOptions;
 };
 @Component({
+  standalone: true,
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],

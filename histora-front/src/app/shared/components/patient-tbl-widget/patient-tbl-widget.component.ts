@@ -16,6 +16,7 @@ export interface Patient {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-patient-tbl-widget',
   imports: [
     MatCardModule,

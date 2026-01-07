@@ -9,6 +9,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone: true,
     selector: 'app-settings',
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.scss'],

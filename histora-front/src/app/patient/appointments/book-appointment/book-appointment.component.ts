@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TranslateModule } from '@ngx-translate/core';
 @Component({
+  standalone: true,
     selector: 'app-book-appointment',
     templateUrl: './book-appointment.component.html',
     styleUrls: ['./book-appointment.component.scss'],

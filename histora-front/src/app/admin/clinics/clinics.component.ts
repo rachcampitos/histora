@@ -31,6 +31,7 @@ interface Clinic {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-admin-clinics',
   templateUrl: './clinics.component.html',
   styleUrls: ['./clinics.component.scss'],

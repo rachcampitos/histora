@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
+  standalone: true,
     selector: 'app-appointment-card',
     imports: [MatCardModule],
     templateUrl: './appointment-card.component.html',

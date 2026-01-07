@@ -5,6 +5,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone: true,
     selector: 'app-prescriptions',
     templateUrl: './prescriptions.component.html',
     styleUrls: ['./prescriptions.component.scss'],

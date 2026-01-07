@@ -14,6 +14,7 @@ export interface HandoffNote {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-handoff-notes',
   templateUrl: './handoff-notes.component.html',
   styleUrls: ['./handoff-notes.component.scss'],

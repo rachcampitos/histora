@@ -10,6 +10,7 @@ export interface Medicine {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-medicine-list',
     imports: [MatCardModule, MatTableModule, CommonModule],
     templateUrl: './medicine-list.component.html',

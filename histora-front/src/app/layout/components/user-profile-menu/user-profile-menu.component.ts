@@ -7,6 +7,7 @@ import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone: true,
   selector: 'app-user-profile-menu',
   templateUrl: './user-profile-menu.component.html',
   styleUrls: ['./user-profile-menu.component.scss'],

@@ -3,6 +3,7 @@ import { FeatherModule } from 'angular-feather';
 import { RouterLink } from '@angular/router';
 
 @Component({
+  standalone: true,
     selector: 'app-breadcrumb',
     templateUrl: './breadcrumb.component.html',
     styleUrls: ['./breadcrumb.component.scss'],

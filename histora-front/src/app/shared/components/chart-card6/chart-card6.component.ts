@@ -5,6 +5,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 
 @Component({
   selector: 'app-chart-card6',
+  standalone: true,
   imports: [NgApexchartsModule, MatCardModule, CommonModule],
   templateUrl: './chart-card6.component.html',
   styleUrl: './chart-card6.component.scss',

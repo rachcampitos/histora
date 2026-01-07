@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { AuthService, Role } from '@core';
 
 @Component({
+  standalone: true,
   selector: 'app-page500',
   templateUrl: './page500.component.html',
   styleUrls: ['./page500.component.scss'],

@@ -18,6 +18,7 @@ export interface Employee {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-emp-task-tab',
     imports: [MatTabsModule, NgClass],
     templateUrl: './emp-task-tab.component.html',

@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { LocalStorageService } from '@shared/services';
 import { MatCardModule } from '@angular/material/card';
 @Component({
+  standalone: true,
   selector: 'app-locked',
   templateUrl: './locked.component.html',
   styleUrls: ['./locked.component.scss'],

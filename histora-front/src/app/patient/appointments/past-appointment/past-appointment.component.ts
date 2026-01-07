@@ -43,6 +43,7 @@ import { TableShowHideColumnComponent } from '@shared/components/table-show-hide
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone: true,
   selector: 'app-past-appointment',
   templateUrl: './past-appointment.component.html',
   styleUrls: ['./past-appointment.component.scss'],

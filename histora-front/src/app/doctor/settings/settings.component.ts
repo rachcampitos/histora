@@ -12,6 +12,7 @@ import { AuthService } from '@core';
 import { UploadsService } from '@core/service/uploads.service';
 
 @Component({
+  standalone: true,
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],

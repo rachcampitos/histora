@@ -18,6 +18,7 @@ import { NgScrollbar } from 'ngx-scrollbar';
 import { FeatherIconsComponent } from '@shared/components/feather-icons/feather-icons.component';
 
 @Component({
+  standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-right-sidebar',
     templateUrl: './right-sidebar.component.html',

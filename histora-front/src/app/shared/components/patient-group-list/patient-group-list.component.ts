@@ -8,6 +8,7 @@ interface PatientGroup {
   colorClass: string;
 }
 @Component({
+  standalone: true,
     selector: 'app-patient-group-list',
     imports: [NgClass],
     templateUrl: './patient-group-list.component.html',

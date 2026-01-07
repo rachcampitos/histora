@@ -11,6 +11,7 @@ interface Document {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-document-list',
     imports: [NgClass],
     templateUrl: './document-list.component.html',

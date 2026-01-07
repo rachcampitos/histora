@@ -19,6 +19,7 @@ export interface DialogData {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-past-appointment-delete',
     templateUrl: './delete.component.html',
     styleUrls: ['./delete.component.scss'],

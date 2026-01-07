@@ -29,6 +29,7 @@ export interface Operation {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-operations-tbl-widget',
   imports: [
     MatCardModule,

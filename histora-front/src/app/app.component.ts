@@ -3,6 +3,7 @@ import { Event, Router, NavigationStart, NavigationEnd, RouterModule } from '@an
 import { PageLoaderComponent } from './layout/page-loader/page-loader.component';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   imports: [
     RouterModule,

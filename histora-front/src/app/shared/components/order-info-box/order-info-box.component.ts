@@ -3,6 +3,7 @@ import { Component, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
+  standalone: true,
     selector: 'app-order-info-box',
     imports: [MatCardModule, CommonModule],
     templateUrl: './order-info-box.component.html',

@@ -9,6 +9,7 @@ interface Review {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-review-widget',
   imports: [],
   templateUrl: './review-widget.component.html',

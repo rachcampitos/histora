@@ -12,6 +12,7 @@ export interface Message {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-chat-widget',
   imports: [
     NgScrollbar,

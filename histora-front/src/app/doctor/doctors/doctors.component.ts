@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
+  standalone: true,
     selector: 'app-doctors',
     templateUrl: './doctors.component.html',
     styleUrls: ['./doctors.component.scss'],

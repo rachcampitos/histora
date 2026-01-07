@@ -3,6 +3,7 @@ import { Component, input } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
+  standalone: true,
     selector: 'app-info-box1',
     imports: [MatProgressBarModule, NgClass],
     templateUrl: './info-box1.component.html',

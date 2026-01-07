@@ -9,6 +9,7 @@ import { MatDivider } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
+  standalone: true,
   selector: 'app-table-show-hide-column',
   imports: [
     FormsModule,

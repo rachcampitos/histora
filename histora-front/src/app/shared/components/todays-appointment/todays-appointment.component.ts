@@ -15,6 +15,7 @@ export interface Patient {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-todays-appointment',
   imports: [
     MatCardModule,

@@ -9,6 +9,7 @@ interface Schedule {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-emp-schedule',
     imports: [],
     templateUrl: './emp-schedule.component.html',

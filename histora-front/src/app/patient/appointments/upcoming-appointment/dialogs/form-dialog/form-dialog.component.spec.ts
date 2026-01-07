@@ -1,9 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { provideHttpClient } from "@angular/common/http";
-import { provideHttpClientTesting } from "@angular/common/http/testing";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { TranslateModule } from "@ngx-translate/core";
+import { importProvidersFrom } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { TranslateModule } from '@ngx-translate/core';
+import { FeatherModule } from 'angular-feather';
+import { allIcons } from 'angular-feather/icons';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { UpcommingAppointmentFormComponent } from "./form-dialog.component";
 import { UpcomingAppointment } from "../../upcoming-appointment.model";
@@ -11,10 +15,6 @@ import { UpcomingAppointment } from "../../upcoming-appointment.model";
 describe("UpcommingAppointmentFormComponent", () => {
   let component: UpcommingAppointmentFormComponent;
   let fixture: ComponentFixture<UpcommingAppointmentFormComponent>;
-
-  const mockDialogRef = {
-    close: jasmine.createSpy('close')
-  };
 
   const mockDialogData = {
     action: 'add',
@@ -27,12 +27,14 @@ describe("UpcommingAppointmentFormComponent", () => {
         imports: [
           UpcommingAppointmentFormComponent,
           NoopAnimationsModule,
+          HttpClientTestingModule,
+          RouterTestingModule,
           TranslateModule.forRoot(),
         ],
         providers: [
-          provideHttpClient(),
-          provideHttpClientTesting(),
-          { provide: MatDialogRef, useValue: mockDialogRef },
+          importProvidersFrom(FeatherModule.pick(allIcons)),
+          provideNativeDateAdapter(),
+          { provide: MatDialogRef, useValue: { close: jasmine.createSpy('close') } },
           { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         ],
       }).compileComponents();

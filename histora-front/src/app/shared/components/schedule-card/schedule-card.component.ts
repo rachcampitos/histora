@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 @Component({
+  standalone: true,
     selector: 'app-schedule-card',
     imports: [CommonModule],
     templateUrl: './schedule-card.component.html',

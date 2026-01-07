@@ -14,6 +14,7 @@ interface Task {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-assign-task',
   imports: [MatTableModule, CommonModule],
   templateUrl: './assign-task.component.html',

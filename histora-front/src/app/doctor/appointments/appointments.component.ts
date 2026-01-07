@@ -39,6 +39,7 @@ import { AppointmentFormDialogComponent, AppointmentFormDialogData } from './dia
 import { AppointmentDeleteDialogComponent, AppointmentDeleteDialogData } from './dialogs/delete/delete.component';
 
 @Component({
+  standalone: true,
   selector: 'app-appointments',
   templateUrl: './appointments.component.html',
   styleUrls: ['./appointments.component.scss'],

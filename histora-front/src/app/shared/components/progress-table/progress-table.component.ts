@@ -11,6 +11,7 @@ export interface SubjectProgress {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-progress-table',
   imports: [MatCardModule, MatButtonModule, MatTableModule, MatProgressBar],
   templateUrl: './progress-table.component.html',

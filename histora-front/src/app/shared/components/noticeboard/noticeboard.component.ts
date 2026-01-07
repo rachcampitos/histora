@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
+  standalone: true,
   selector: 'app-noticeboard',
   imports: [MatCardModule],
   templateUrl: './noticeboard.component.html',

@@ -38,6 +38,7 @@ interface Plan {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-admin-subscriptions',
   templateUrl: './subscriptions.component.html',
   styleUrls: ['./subscriptions.component.scss'],

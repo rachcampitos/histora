@@ -9,6 +9,7 @@ interface EarningSource {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-earning-source',
     imports: [NgClass],
     templateUrl: './earning-source.component.html',

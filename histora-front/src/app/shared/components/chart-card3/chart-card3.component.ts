@@ -20,6 +20,7 @@ export type ChartOptions = {
 };
 
 @Component({
+  standalone: true,
     selector: 'app-chart-card3',
     imports: [MatCardModule, NgApexchartsModule, MatIconModule],
     templateUrl: './chart-card3.component.html',

@@ -41,6 +41,7 @@ interface RecentClinic {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-admin-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

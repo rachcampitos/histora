@@ -6,6 +6,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
+  standalone: true,
   selector: 'app-top-performer',
   imports: [
     MatTabsModule,

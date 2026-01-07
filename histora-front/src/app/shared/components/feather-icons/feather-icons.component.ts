@@ -3,6 +3,7 @@ import { FeatherModule } from 'angular-feather';
 
 @Component({
     selector: 'app-feather-icons',
+    standalone: true,
     templateUrl: './feather-icons.component.html',
     styleUrls: ['./feather-icons.component.scss'],
     imports: [FeatherModule]

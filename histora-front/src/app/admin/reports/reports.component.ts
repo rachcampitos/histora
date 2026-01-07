@@ -27,6 +27,7 @@ import {
 } from 'ng-apexcharts';
 
 @Component({
+  standalone: true,
   selector: 'app-admin-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],

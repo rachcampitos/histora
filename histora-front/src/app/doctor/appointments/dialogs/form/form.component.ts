@@ -42,6 +42,7 @@ export interface AppointmentFormDialogData {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-appointment-form-dialog',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss'],

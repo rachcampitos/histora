@@ -15,6 +15,7 @@ interface Event {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-event-card',
     imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule],
     templateUrl: './event-card.component.html',

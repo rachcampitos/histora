@@ -1,16 +1,34 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { importProvidersFrom } from '@angular/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { TranslateModule } from '@ngx-translate/core';
+import { FeatherModule } from 'angular-feather';
+import { allIcons } from 'angular-feather/icons';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
-import { PatientsComponent } from "./patients.component";
+import { PatientsComponent } from './patients.component';
 
-describe("PatientsComponent", () => {
+describe('PatientsComponent', () => {
   let component: PatientsComponent;
   let fixture: ComponentFixture<PatientsComponent>;
 
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-    imports: [PatientsComponent],
-}).compileComponents();
+        imports: [
+          PatientsComponent,
+          NoopAnimationsModule,
+          HttpClientTestingModule,
+          RouterTestingModule,
+          TranslateModule.forRoot(),
+        ],
+        providers: [
+          importProvidersFrom(FeatherModule.pick(allIcons)),
+          provideNativeDateAdapter(),
+        ],
+      }).compileComponents();
     })
   );
 
@@ -20,7 +38,7 @@ describe("PatientsComponent", () => {
     fixture.detectChanges();
   });
 
-  it("should create", () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });

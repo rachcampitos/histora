@@ -10,6 +10,7 @@ export interface Post {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-latest-post',
     imports: [MatIconModule],
     templateUrl: './latest-post.component.html',

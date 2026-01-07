@@ -12,6 +12,7 @@ interface Activity {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-activity-list',
     imports: [NgClass],
     templateUrl: './activity-list.component.html',

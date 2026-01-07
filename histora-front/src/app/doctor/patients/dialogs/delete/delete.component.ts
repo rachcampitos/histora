@@ -17,6 +17,7 @@ export interface PatientDeleteDialogData {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-patient-delete-dialog',
   templateUrl: './delete.component.html',
   styleUrls: ['./delete.component.scss'],

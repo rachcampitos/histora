@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LoginService } from '@core/service/login.service';
 
 @Component({
+  standalone: true,
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss'],

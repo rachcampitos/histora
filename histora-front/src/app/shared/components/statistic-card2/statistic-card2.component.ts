@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
+  standalone: true,
     selector: 'app-statistic-card2',
     imports: [MatCardModule, MatIconModule],
     templateUrl: './statistic-card2.component.html',

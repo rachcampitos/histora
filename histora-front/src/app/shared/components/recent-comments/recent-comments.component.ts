@@ -10,6 +10,7 @@ interface Comment {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-recent-comments',
     imports: [],
     templateUrl: './recent-comments.component.html',

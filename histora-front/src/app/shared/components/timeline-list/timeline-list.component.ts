@@ -8,6 +8,7 @@ export interface TimelineItem {
 }
 
 @Component({
+  standalone: true,
     selector: 'app-timeline-list',
     imports: [],
     templateUrl: './timeline-list.component.html',

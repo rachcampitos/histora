@@ -28,6 +28,7 @@ interface User {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-admin-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],

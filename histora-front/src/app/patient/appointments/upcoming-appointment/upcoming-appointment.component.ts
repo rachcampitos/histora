@@ -46,6 +46,7 @@ import { TableShowHideColumnComponent } from '@shared/components/table-show-hide
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone: true,
   selector: 'app-upcoming-appointment',
   templateUrl: './upcoming-appointment.component.html',
   styleUrls: ['./upcoming-appointment.component.scss'],

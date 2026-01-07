@@ -12,6 +12,7 @@ import { rowsAnimation } from '@shared/table.animations';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
+  standalone: true,
     selector: 'app-table-card',
     animations: [rowsAnimation],
     imports: [

@@ -8,6 +8,7 @@ import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
     selector: 'app-chart-card4',
+    standalone: true,
     imports: [NgxChartsModule, MatCardModule, CommonModule, BaseChartDirective],
     templateUrl: './chart-card4.component.html',
     styleUrls: ['./chart-card4.component.scss']

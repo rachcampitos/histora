@@ -14,6 +14,7 @@ interface Order {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-new-order-list',
   imports: [MatTableModule, MatButtonModule],
   templateUrl: './new-order-list.component.html',

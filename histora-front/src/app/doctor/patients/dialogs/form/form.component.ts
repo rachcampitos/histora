@@ -30,6 +30,7 @@ export interface PatientFormDialogData {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-patient-form-dialog',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss'],

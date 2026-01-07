@@ -28,6 +28,7 @@ export type RadialChartOptions = {
 
 @Component({
   selector: 'app-feedback-widget',
+  standalone: true,
   templateUrl: './feedback-widget.component.html',
   styleUrls: ['./feedback-widget.component.scss'],
   imports: [MatCardModule, MatIconModule, NgApexchartsModule],

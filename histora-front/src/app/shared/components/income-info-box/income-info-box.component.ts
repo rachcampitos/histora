@@ -3,6 +3,7 @@ import { Component, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
+  standalone: true,
     selector: 'app-income-info-box',
     imports: [MatCardModule, CommonModule],
     templateUrl: './income-info-box.component.html',
