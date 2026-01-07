@@ -1,9 +1,11 @@
 import { Controller, Post, Get, Body, Query, Logger, HttpCode } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SkipThrottle } from '@nestjs/throttler';
 import { ChatbotService } from './chatbot.service';
 import { WhatsAppWebhookDto } from './dto/whatsapp-webhook.dto';
 
 @Controller('webhook/whatsapp')
+@SkipThrottle() // Webhooks from Meta should not be rate limited
 export class ChatbotController {
   private readonly logger = new Logger(ChatbotController.name);
   private readonly verifyToken: string;

@@ -3,9 +3,25 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Security: Helmet for HTTP headers protection
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+          scriptSrc: ["'self'"],
+        },
+      },
+      crossOriginEmbedderPolicy: false, // Allow embedding for OAuth
+    }),
+  );
 
   // Increase body size limit for file uploads (base64 images)
   app.use(json({ limit: '10mb' }));
@@ -15,14 +31,22 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   // Enable CORS for frontend - configurable via environment
+  const defaultOrigins = [
+    'http://localhost:4200',
+    'http://localhost:8100',
+    'https://app.historahealth.com',
+    'https://historahealth.com',
+  ];
+
   const corsOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
-    : ['http://localhost:4200', 'http://localhost:8100'];
+    : defaultOrigins;
 
   app.enableCors({
     origin: corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   app.useGlobalPipes(
