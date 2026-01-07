@@ -3,6 +3,9 @@ import { getModelToken } from '@nestjs/mongoose';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { Appointment, AppointmentStatus, BookedBy } from './schema/appointment.schema';
+import { NotificationsService } from '../notifications/notifications.service';
+import { DoctorsService } from '../doctors/doctors.service';
+import { PatientsService } from '../patients/patients.service';
 import {
   createMockModel,
   configureMockFind,
@@ -11,6 +14,19 @@ import {
   configureMockCountDocuments,
   MockModel,
 } from '../../test/mocks/mongoose-model.mock';
+
+const mockNotificationsService = {
+  notifyDoctorNewAppointment: jest.fn(),
+  notifyDoctorAppointmentCancelled: jest.fn(),
+};
+
+const mockDoctorsService = {
+  findOne: jest.fn(),
+};
+
+const mockPatientsService = {
+  findOne: jest.fn(),
+};
 
 describe('AppointmentsService', () => {
   let service: AppointmentsService;
@@ -51,6 +67,18 @@ describe('AppointmentsService', () => {
         {
           provide: getModelToken(Appointment.name),
           useValue: appointmentModel,
+        },
+        {
+          provide: NotificationsService,
+          useValue: mockNotificationsService,
+        },
+        {
+          provide: DoctorsService,
+          useValue: mockDoctorsService,
+        },
+        {
+          provide: PatientsService,
+          useValue: mockPatientsService,
         },
       ],
     }).compile();

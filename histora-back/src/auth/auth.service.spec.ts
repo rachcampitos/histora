@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { ClinicsService } from '../clinics/clinics.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { EmailProvider } from '../notifications/providers/email.provider';
 import { UserRole } from '../users/schema/user.schema';
 
 describe('AuthService', () => {
@@ -63,6 +64,11 @@ describe('AuthService', () => {
       get: jest.fn().mockReturnValue('7d'),
     };
 
+    const mockEmailProvider = {
+      send: jest.fn().mockResolvedValue({ success: true }),
+      getPasswordResetTemplate: jest.fn().mockReturnValue('<html>Reset Password</html>'),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -71,6 +77,7 @@ describe('AuthService', () => {
         { provide: SubscriptionsService, useValue: mockSubscriptionsService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: EmailProvider, useValue: mockEmailProvider },
       ],
     }).compile();
 

@@ -9,6 +9,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { UsersModule } from '../users/users.module';
 import { ClinicsModule } from '../clinics/clinics.module';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { EmailProvider } from '../notifications/providers/email.provider';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, EmailProvider],
   exports: [AuthService, JwtModule, PassportModule],
 })
 export class AuthModule {}

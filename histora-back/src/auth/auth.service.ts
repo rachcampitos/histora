@@ -14,6 +14,7 @@ import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UserRole } from '../users/schema/user.schema';
 import { JwtPayload } from './strategies/jwt.strategy';
+import { EmailProvider } from '../notifications/providers/email.provider';
 import { randomBytes, createHash } from 'crypto';
 
 export interface AuthResponse {
@@ -44,7 +45,10 @@ export class AuthService {
     private configService: ConfigService,
     private clinicsService: ClinicsService,
     private subscriptionsService: SubscriptionsService,
+    private emailProvider: EmailProvider,
   ) {}
+
+  private readonly RESET_TOKEN_EXPIRY_HOURS = 24;
 
   private generateRefreshToken(): string {
     return randomBytes(64).toString('hex');
@@ -301,12 +305,55 @@ export class AuthService {
       throw new UnauthorizedException('La cuenta está desactivada');
     }
 
-    // TODO: Implementar envío de email con token de recuperación
-    // Por ahora solo validamos que el email exista
-    // En producción, aquí se generaría un token y se enviaría por email
+    // Generate reset token
+    const resetToken = randomBytes(32).toString('hex');
+    const hashedToken = this.hashToken(resetToken);
+
+    // Set expiry time
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + this.RESET_TOKEN_EXPIRY_HOURS);
+
+    // Save token to database
+    await this.usersService.setPasswordResetToken(email, hashedToken, expiresAt);
+
+    // Build reset link
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:4200');
+    const resetLink = `${frontendUrl}/authentication/reset-password?token=${resetToken}`;
+
+    // Send email
+    const emailHtml = this.emailProvider.getPasswordResetTemplate({
+      userName: `${user.firstName} ${user.lastName}`,
+      resetLink,
+      expiresIn: '24 horas',
+    });
+
+    await this.emailProvider.send({
+      to: email,
+      subject: 'Recuperar Contraseña - Histora',
+      html: emailHtml,
+    });
 
     return {
       message: 'Se ha enviado un enlace de recuperación a tu correo electrónico',
+    };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    const hashedToken = this.hashToken(token);
+    const user = await this.usersService.findByPasswordResetToken(hashedToken);
+
+    if (!user) {
+      throw new UnauthorizedException('El enlace de recuperación es inválido o ha expirado');
+    }
+
+    // Update password
+    await this.usersService.updatePassword(user['_id'].toString(), newPassword);
+
+    // Clear reset token
+    await this.usersService.clearPasswordResetToken(user['_id'].toString());
+
+    return {
+      message: 'Tu contraseña ha sido actualizada exitosamente',
     };
   }
 

@@ -427,6 +427,20 @@
       "SEND": "Send Instructions",
       "BACK_TO_LOGIN": "Back to Login"
     },
+    "RESET": {
+      "TITLE": "Reset Password",
+      "SUBTITLE": "Enter your new password",
+      "NEW_PASSWORD": "New Password",
+      "CONFIRM_PASSWORD": "Confirm Password",
+      "SUBMIT": "Reset Password",
+      "BACK_TO": "Back to",
+      "LOGIN": "Login",
+      "REDIRECT": "You will be redirected to login in a few seconds...",
+      "PASSWORD_REQUIRED": "Password is required",
+      "PASSWORD_MIN": "Minimum 8 characters",
+      "CONFIRM_REQUIRED": "Please confirm your password",
+      "PASSWORD_MISMATCH": "Passwords do not match"
+    },
     "ERRORS": {
       "EMAIL_REQUIRED": "Email is required",
       "EMAIL_INVALID": "Enter a valid email",

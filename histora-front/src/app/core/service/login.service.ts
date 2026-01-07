@@ -163,6 +163,22 @@ export class LoginService {
     );
   }
 
+  resetPassword(token: string, newPassword: string): Observable<{ message: string } | { status: number; error?: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/auth/reset-password`, { token, newPassword }).pipe(
+      map((response) => ({
+        ...response,
+        status: 200,
+      })),
+      catchError((error) => {
+        console.error('Reset password error:', error);
+        return of({
+          status: error.status || 400,
+          error: error.error?.message || 'Error al restablecer la contraseña',
+        });
+      })
+    );
+  }
+
   private mapRoleToClinica(role: string): string {
     const roleMap: Record<string, string> = {
       platform_admin: 'PLATFORM_ADMIN',

@@ -427,6 +427,20 @@
       "SEND": "Enviar Instrucciones",
       "BACK_TO_LOGIN": "Volver al Inicio de Sesión"
     },
+    "RESET": {
+      "TITLE": "Restablecer Contraseña",
+      "SUBTITLE": "Ingresa tu nueva contraseña",
+      "NEW_PASSWORD": "Nueva Contraseña",
+      "CONFIRM_PASSWORD": "Confirmar Contraseña",
+      "SUBMIT": "Restablecer Contraseña",
+      "BACK_TO": "Volver a",
+      "LOGIN": "Iniciar Sesión",
+      "REDIRECT": "Serás redirigido al login en unos segundos...",
+      "PASSWORD_REQUIRED": "La contraseña es requerida",
+      "PASSWORD_MIN": "Mínimo 8 caracteres",
+      "CONFIRM_REQUIRED": "Confirma tu contraseña",
+      "PASSWORD_MISMATCH": "Las contraseñas no coinciden"
+    },
     "ERRORS": {
       "EMAIL_REQUIRED": "El correo es requerido",
       "EMAIL_INVALID": "Ingresa un correo válido",
