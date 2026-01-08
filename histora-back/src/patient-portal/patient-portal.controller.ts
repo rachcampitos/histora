@@ -201,4 +201,32 @@ export class PatientPortalController {
     }
     return this.patientPortalService.getDoctorAvailability(doctorId, new Date(date));
   }
+
+  @Get('dashboard')
+  getDashboardData(@CurrentUser() user: CurrentUserData) {
+    if (!user.patientProfileId) {
+      throw new ForbiddenException('User does not have a patient profile');
+    }
+    return this.patientPortalService.getDashboardData(user.patientProfileId);
+  }
+
+  @Get('vitals/history/:vitalType')
+  getVitalsHistory(
+    @Param('vitalType') vitalType: string,
+    @CurrentUser() user: CurrentUserData,
+    @Query('limit') limit?: number,
+  ) {
+    if (!user.patientProfileId) {
+      throw new ForbiddenException('User does not have a patient profile');
+    }
+    const validTypes = ['heartRate', 'bloodPressure', 'weight', 'temperature', 'bloodGlucose', 'oxygenSaturation'];
+    if (!validTypes.includes(vitalType)) {
+      throw new BadRequestException(`Invalid vital type. Must be one of: ${validTypes.join(', ')}`);
+    }
+    return this.patientPortalService.getVitalsHistory(
+      user.patientProfileId,
+      vitalType,
+      limit ? Number(limit) : 7,
+    );
+  }
 }

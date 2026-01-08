@@ -389,6 +389,174 @@ export class PatientPortalService {
     return true;
   }
 
+  async getDashboardData(patientId: string) {
+    // Get latest vitals
+    const latestVitals = await this.vitalsModel
+      .findOne({ patientId, isDeleted: false })
+      .sort({ recordedAt: -1 })
+      .exec();
+
+    // Get vitals from last month for comparison
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const lastMonthVitals = await this.vitalsModel
+      .find({
+        patientId,
+        isDeleted: false,
+        recordedAt: { $gte: oneMonthAgo },
+      })
+      .sort({ recordedAt: -1 })
+      .exec();
+
+    // Calculate statistics
+    const calculateStats = (currentValue: number | undefined, historicalValues: number[]) => {
+      if (!currentValue || historicalValues.length === 0) {
+        return { value: currentValue || 0, change: 0, trend: 'stable' as const };
+      }
+      const avg = historicalValues.reduce((a, b) => a + b, 0) / historicalValues.length;
+      const change = avg > 0 ? Math.round(((currentValue - avg) / avg) * 100) : 0;
+      const trend = change > 0 ? 'up' as const : change < 0 ? 'down' as const : 'stable' as const;
+      return { value: currentValue, change, trend };
+    };
+
+    const historicalHeartRates = lastMonthVitals
+      .filter((v) => v.heartRate)
+      .map((v) => v.heartRate as number);
+    const historicalSystolic = lastMonthVitals
+      .filter((v) => v.systolicBP)
+      .map((v) => v.systolicBP as number);
+    const historicalGlucose = lastMonthVitals
+      .filter((v) => v.bloodGlucose)
+      .map((v) => v.bloodGlucose as number);
+
+    // Get active prescriptions (from last 30 days consultations)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const recentConsultations = await this.consultationModel
+      .find({
+        patientId,
+        isDeleted: false,
+        date: { $gte: thirtyDaysAgo },
+        'prescriptions.0': { $exists: true },
+      })
+      .sort({ date: -1 })
+      .exec();
+
+    const activeMedications = recentConsultations.flatMap((c) =>
+      c.prescriptions.map((p) => ({
+        name: p.medication,
+        dosage: p.dosage,
+        frequency: p.frequency,
+        route: p.route || 'oral',
+        instructions: p.instructions,
+      })),
+    );
+
+    // Get upcoming appointments
+    const upcomingAppointments = await this.appointmentModel
+      .find({
+        patientId,
+        isDeleted: false,
+        scheduledDate: { $gte: new Date() },
+        status: { $in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED] },
+      })
+      .populate('doctorId', 'firstName lastName specialty')
+      .sort({ scheduledDate: 1, startTime: 1 })
+      .limit(5)
+      .exec();
+
+    // Get heart rate history for chart (last 7 readings)
+    const heartRateHistory = await this.vitalsModel
+      .find({
+        patientId,
+        isDeleted: false,
+        heartRate: { $exists: true },
+      })
+      .sort({ recordedAt: -1 })
+      .limit(7)
+      .select('heartRate recordedAt')
+      .exec();
+
+    return {
+      vitals: {
+        heartRate: calculateStats(latestVitals?.heartRate, historicalHeartRates),
+        bloodPressure: {
+          systolic: calculateStats(latestVitals?.systolicBP, historicalSystolic),
+          diastolic: latestVitals?.diastolicBP || 0,
+        },
+        bloodGlucose: calculateStats(latestVitals?.bloodGlucose, historicalGlucose),
+        oxygenSaturation: latestVitals?.oxygenSaturation || 0,
+        temperature: latestVitals?.temperature || 0,
+        weight: latestVitals?.weight || 0,
+        bmi: latestVitals?.bmi || 0,
+        lastRecordedAt: latestVitals?.recordedAt,
+      },
+      medications: activeMedications,
+      upcomingAppointments: upcomingAppointments.map((apt) => ({
+        id: apt._id,
+        date: apt.scheduledDate,
+        time: apt.startTime,
+        doctor: apt.doctorId,
+        reason: apt.reasonForVisit,
+        status: apt.status,
+      })),
+      charts: {
+        heartRateHistory: heartRateHistory.reverse().map((v) => ({
+          date: v.recordedAt,
+          value: v.heartRate,
+        })),
+      },
+    };
+  }
+
+  async getVitalsHistory(patientId: string, vitalType: string, limit: number) {
+    const fieldMap: Record<string, string> = {
+      heartRate: 'heartRate',
+      bloodPressure: 'systolicBP diastolicBP',
+      weight: 'weight bmi',
+      temperature: 'temperature',
+      bloodGlucose: 'bloodGlucose',
+      oxygenSaturation: 'oxygenSaturation',
+    };
+
+    const selectFields = `${fieldMap[vitalType]} recordedAt`;
+
+    const queryFilter: Record<string, any> = {
+      patientId,
+      isDeleted: false,
+    };
+
+    // Only get records that have the requested vital
+    if (vitalType === 'bloodPressure') {
+      queryFilter.systolicBP = { $exists: true };
+    } else {
+      queryFilter[vitalType] = { $exists: true };
+    }
+
+    const vitals = await this.vitalsModel
+      .find(queryFilter)
+      .sort({ recordedAt: -1 })
+      .limit(limit)
+      .select(selectFields)
+      .exec();
+
+    return vitals.reverse().map((v) => {
+      const record: any = { date: v.recordedAt };
+      if (vitalType === 'bloodPressure') {
+        record.systolic = v.systolicBP;
+        record.diastolic = v.diastolicBP;
+      } else if (vitalType === 'weight') {
+        record.weight = v.weight;
+        record.bmi = v.bmi;
+      } else {
+        record.value = (v as any)[vitalType];
+      }
+      return record;
+    });
+  }
+
   private calculateAvailableSlots(
     workingHours: { start: string; end: string; breakStart: string; breakEnd: string },
     bookedSlots: { start: string; end: string }[],
