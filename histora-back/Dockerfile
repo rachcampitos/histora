@@ -6,14 +6,14 @@ RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-# Copy package files from histora-back
-COPY histora-back/package*.json ./
+# Copy package files
+COPY package*.json ./
 
 # Install all dependencies (including dev)
 RUN npm ci
 
-# Copy source code from histora-back
-COPY histora-back/ .
+# Copy source code
+COPY . .
 
 # Build the application
 RUN npm run build
@@ -27,7 +27,7 @@ RUN apk add --no-cache python3 make g++
 WORKDIR /app
 
 # Copy package files
-COPY histora-back/package*.json ./
+COPY package*.json ./
 
 # Install production dependencies
 RUN npm ci --only=production
