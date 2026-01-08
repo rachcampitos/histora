@@ -15,10 +15,10 @@ async function seedUsers() {
   console.log('Starting user and clinic seeding...');
 
   // 1. Create or get admin user
-  let adminUser = await userModel.findOne({ email: 'admin@histora.pe' });
+  let adminUser = await userModel.findOne({ email: 'admin@historahealth.com' });
   if (!adminUser) {
     adminUser = await userModel.create({
-      email: 'admin@histora.pe',
+      email: 'admin@historahealth.com',
       password: await bcrypt.hash('admin123', 10),
       firstName: 'Admin',
       lastName: 'Histora',
@@ -28,16 +28,16 @@ async function seedUsers() {
       isEmailVerified: true,
       authProvider: 'local',
     });
-    console.log('Created admin user: admin@histora.pe');
+    console.log('Created admin user: admin@historahealth.com');
   } else {
     console.log('Admin user already exists, skipping...');
   }
 
   // 2. Create or get doctor user (clinic owner)
-  let doctorUser = await userModel.findOne({ email: 'doctor@histora.pe' });
+  let doctorUser = await userModel.findOne({ email: 'doctor@historahealth.com' });
   if (!doctorUser) {
     doctorUser = await userModel.create({
-      email: 'doctor@histora.pe',
+      email: 'doctor@historahealth.com',
       password: await bcrypt.hash('doctor123', 10),
       firstName: 'Carlos',
       lastName: 'Méndez',
@@ -47,7 +47,7 @@ async function seedUsers() {
       isEmailVerified: true,
       authProvider: 'local',
     });
-    console.log('Created doctor user: doctor@histora.pe');
+    console.log('Created doctor user: doctor@historahealth.com');
   } else {
     console.log('Doctor user already exists');
   }
@@ -60,7 +60,7 @@ async function seedUsers() {
       slug: 'consultorio-dr-mendez',
       ownerId: doctorUser._id,
       phone: '+51 999 000 002',
-      email: 'doctor@histora.pe',
+      email: 'doctor@historahealth.com',
       specialties: ['Medicina General'],
       address: {
         street: 'Av. Ejemplo 123',
@@ -85,10 +85,10 @@ async function seedUsers() {
   }
 
   // 5. Create patient user
-  let patientUser = await userModel.findOne({ email: 'patient@histora.pe' });
+  let patientUser = await userModel.findOne({ email: 'patient@historahealth.com' });
   if (!patientUser) {
     patientUser = await userModel.create({
-      email: 'patient@histora.pe',
+      email: 'patient@historahealth.com',
       password: await bcrypt.hash('patient123', 10),
       firstName: 'María',
       lastName: 'García',
@@ -98,16 +98,16 @@ async function seedUsers() {
       isEmailVerified: true,
       authProvider: 'local',
     });
-    console.log('Created patient user: patient@histora.pe');
+    console.log('Created patient user: patient@historahealth.com');
   } else {
     console.log('Patient user already exists, skipping...');
   }
 
   // 6. Create additional test doctor (associated with same clinic)
-  let drRodriguez = await userModel.findOne({ email: 'dr.rodriguez@histora.pe' });
+  let drRodriguez = await userModel.findOne({ email: 'dr.rodriguez@historahealth.com' });
   if (!drRodriguez) {
     drRodriguez = await userModel.create({
-      email: 'dr.rodriguez@histora.pe',
+      email: 'dr.rodriguez@historahealth.com',
       password: await bcrypt.hash('Password123!', 10),
       firstName: 'Ana',
       lastName: 'Rodríguez López',
@@ -118,7 +118,7 @@ async function seedUsers() {
       isEmailVerified: true,
       authProvider: 'local',
     });
-    console.log('Created doctor: dr.rodriguez@histora.pe');
+    console.log('Created doctor: dr.rodriguez@historahealth.com');
   } else {
     console.log('Dr. Rodriguez already exists, skipping...');
   }
@@ -146,11 +146,11 @@ async function seedUsers() {
   console.log('Seeding completed!');
   console.log('========================================\n');
   console.log('--- Demo Credentials (Login Page) ---');
-  console.log('Admin:   admin@histora.pe / admin123');
-  console.log('Doctor:  doctor@histora.pe / doctor123');
-  console.log('Patient: patient@histora.pe / patient123');
+  console.log('Admin:   admin@historahealth.com / admin123');
+  console.log('Doctor:  doctor@historahealth.com / doctor123');
+  console.log('Patient: patient@historahealth.com / patient123');
   console.log('\n--- Additional Test Users ---');
-  console.log('Doctor:  dr.rodriguez@histora.pe / Password123!');
+  console.log('Doctor:  dr.rodriguez@historahealth.com / Password123!');
   console.log('Patient: juan.perez@gmail.com / Patient123!');
   console.log('\n--- Clinic ---');
   console.log(`Clinic ID: ${clinic._id}`);
