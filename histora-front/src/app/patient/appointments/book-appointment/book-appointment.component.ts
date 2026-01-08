@@ -37,7 +37,6 @@ export class BookAppointmentComponent implements OnInit {
   private doctorsService = inject(DoctorsService);
 
   bookingForm: UntypedFormGroup;
-  isDisabled = true;
   doctors: DoctorProfile[] = [];
   isLoadingDoctors = true;
   minDate = new Date();
