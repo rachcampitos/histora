@@ -530,10 +530,29 @@
       "DARK": "Oscuro"
     },
     "SECURITY": {
-      "TITLE": "Seguridad",
+      "TITLE": "Configuración de Seguridad",
+      "USERNAME": "Nombre de Usuario",
+      "CURRENT_PASSWORD": "Contraseña Actual",
+      "NEW_PASSWORD": "Nueva Contraseña",
       "TWO_FACTOR": "Autenticación de Dos Factores",
       "LOGIN_HISTORY": "Historial de Inicio de Sesión",
       "ACTIVE_SESSIONS": "Sesiones Activas"
+    },
+    "ACCOUNT": {
+      "TITLE": "Configuración de Cuenta",
+      "FIRST_NAME": "Nombre",
+      "LAST_NAME": "Apellido",
+      "CITY": "Ciudad",
+      "EMAIL": "Correo Electrónico",
+      "COUNTRY": "País",
+      "DATE_OF_BIRTH": "Fecha de Nacimiento",
+      "MOBILE": "Teléfono Móvil",
+      "BLOOD_GROUP": "Grupo Sanguíneo",
+      "ADDRESS": "Dirección"
+    },
+    "MESSAGES": {
+      "SECURITY_SAVED": "Configuración de seguridad guardada",
+      "ACCOUNT_SAVED": "Configuración de cuenta guardada"
     },
     "CLINIC": {
       "TITLE": "Configuración de Clínica",

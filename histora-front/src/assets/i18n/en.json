@@ -530,10 +530,29 @@
       "DARK": "Dark"
     },
     "SECURITY": {
-      "TITLE": "Security",
+      "TITLE": "Security Settings",
+      "USERNAME": "Username",
+      "CURRENT_PASSWORD": "Current Password",
+      "NEW_PASSWORD": "New Password",
       "TWO_FACTOR": "Two-Factor Authentication",
       "LOGIN_HISTORY": "Login History",
       "ACTIVE_SESSIONS": "Active Sessions"
+    },
+    "ACCOUNT": {
+      "TITLE": "Account Settings",
+      "FIRST_NAME": "First Name",
+      "LAST_NAME": "Last Name",
+      "CITY": "City",
+      "EMAIL": "Email",
+      "COUNTRY": "Country",
+      "DATE_OF_BIRTH": "Date of Birth",
+      "MOBILE": "Mobile",
+      "BLOOD_GROUP": "Blood Group",
+      "ADDRESS": "Address"
+    },
+    "MESSAGES": {
+      "SECURITY_SAVED": "Security settings saved",
+      "ACCOUNT_SAVED": "Account settings saved"
     },
     "CLINIC": {
       "TITLE": "Clinic Settings",
