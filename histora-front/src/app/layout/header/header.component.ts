@@ -14,7 +14,6 @@ import {
   AuthService,
   InConfiguration,
   LanguageService,
-  RightSidebarService,
   Role,
   ThemeService,
 } from '@core';
@@ -67,7 +66,6 @@ export class HeaderComponent
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2,
     public elementRef: ElementRef,
-    private rightSidebarService: RightSidebarService,
     private configService: ConfigService,
     private authService: AuthService,
     private router: Router,

@@ -9,7 +9,7 @@ import { allIcons } from 'angular-feather/icons';
 import { BehaviorSubject, of } from 'rxjs';
 import { HeaderComponent } from './header.component';
 import { ConfigService } from '@config';
-import { AuthService, LanguageService, RightSidebarService, ThemeService } from '@core';
+import { AuthService, LanguageService, ThemeService } from '@core';
 import { NotificationsService } from '@core/service/notifications.service';
 
 describe('HeaderComponent', () => {
@@ -51,11 +51,6 @@ describe('HeaderComponent', () => {
     setLanguage: jasmine.createSpy('setLanguage'),
   };
 
-  const mockRightSidebarService = {
-    sidebarState: new BehaviorSubject<boolean>(false),
-    setRightSidebar: jasmine.createSpy('setRightSidebar'),
-  };
-
   const mockThemeService = {
     isDark: jasmine.createSpy('isDark').and.returnValue(false),
     isDarkMode: jasmine.createSpy('isDarkMode').and.returnValue(false),
@@ -86,7 +81,6 @@ describe('HeaderComponent', () => {
           { provide: ConfigService, useValue: mockConfigService },
           { provide: AuthService, useValue: mockAuthService },
           { provide: LanguageService, useValue: mockLanguageService },
-          { provide: RightSidebarService, useValue: mockRightSidebarService },
           { provide: ThemeService, useValue: mockThemeService },
           { provide: NotificationsService, useValue: mockNotificationsService },
         ],

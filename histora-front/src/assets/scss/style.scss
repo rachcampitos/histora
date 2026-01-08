@@ -47,12 +47,10 @@
 @include meta.load-css("components/_navbar");
 @include meta.load-css("components/_navtabs.scss");
 @include meta.load-css("components/_noticeboard.scss");
-@include meta.load-css("components/_rightsidebar.scss");
 @include meta.load-css("components/_searchbar.scss");
 @include meta.load-css("components/_switch.scss");
 @include meta.load-css("components/_thumbnails.scss");
 @include meta.load-css("components/_todo.scss");
-@include meta.load-css("components/_settingSidebar.scss");
 @include meta.load-css("components/_schedule-widget.scss");
 
 /*                 [4. Apps]                   				*/

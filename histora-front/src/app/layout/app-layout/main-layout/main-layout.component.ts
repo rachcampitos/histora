@@ -1,10 +1,9 @@
 import { Direction, BidiModule } from '@angular/cdk/bidi';
 import { AfterViewInit, Component, Inject, Renderer2, DOCUMENT } from '@angular/core';
-import { DirectionService, InConfiguration, RightSidebarService } from '@core';
+import { DirectionService, InConfiguration } from '@core';
 import { ConfigService } from '@config';
 
 import { RouterOutlet } from '@angular/router';
-import { RightSidebarComponent } from '../../right-sidebar/right-sidebar.component';
 import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { HeaderComponent } from '../../header/header.component';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
@@ -17,11 +16,9 @@ import { UnsubscribeOnDestroyAdapter } from '@shared';
     imports: [
         HeaderComponent,
         SidebarComponent,
-        RightSidebarComponent,
         BidiModule,
         RouterOutlet,
     ],
-    providers: [RightSidebarService]
 })
 export class MainLayoutComponent extends UnsubscribeOnDestroyAdapter implements AfterViewInit {
   direction!: Direction;
