@@ -220,6 +220,12 @@ export class HeaderComponent
           this.router.navigate(['/doctor/reviews']);
         }
         break;
+      case 'view-user':
+        // Navigate to admin users page (for admin notifications)
+        if (userRole === Role.PlatformAdmin || userRole === Role.PlatformAdminUI) {
+          this.router.navigate(['/admin/users']);
+        }
+        break;
       default:
         console.log('Default action for notification:', notification);
     }

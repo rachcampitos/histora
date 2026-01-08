@@ -23,6 +23,9 @@ export enum NotificationType {
   NEW_PATIENT_REVIEW = 'new_patient_review',
   UPCOMING_APPOINTMENT_REMINDER = 'upcoming_appointment_reminder',
   PATIENT_MESSAGE = 'patient_message',
+  // Admin notifications
+  NEW_DOCTOR_REGISTERED = 'new_doctor_registered',
+  NEW_PATIENT_REGISTERED = 'new_patient_registered',
 }
 
 export enum NotificationChannel {

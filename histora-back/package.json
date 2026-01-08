@@ -20,7 +20,8 @@
     "test:e2e": "jest --config jest-e2e.json",
     "seed:users": "ts-node -r tsconfig-paths/register src/database/seeds/seed-users.ts",
     "seed:vitals": "ts-node -r tsconfig-paths/register src/database/seeds/seed-vitals.ts",
-    "seed:all": "npm run seed:users && npm run seed:vitals"
+    "seed:all": "npm run seed:users && npm run seed:vitals",
+    "db:cleanup": "ts-node -r tsconfig-paths/register src/database/seeds/cleanup-test-users.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

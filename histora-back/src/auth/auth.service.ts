@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   ConflictException,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +11,7 @@ import { UsersService } from '../users/users.service';
 import { ClinicsService } from '../clinics/clinics.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { DoctorsService } from '../doctors/doctors.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -34,6 +36,8 @@ export interface AuthResponse {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   // Token expiry durations
   private readonly SHORT_REFRESH_TOKEN_DAYS = 1; // Sin "Recordarme": 1 día
   private readonly LONG_REFRESH_TOKEN_DAYS = 30; // Con "Recordarme": 30 días
@@ -48,6 +52,7 @@ export class AuthService {
     private subscriptionsService: SubscriptionsService,
     private doctorsService: DoctorsService,
     private emailProvider: EmailProvider,
+    private notificationsService: NotificationsService,
   ) {}
 
   private readonly RESET_TOKEN_EXPIRY_HOURS = 24;
@@ -132,6 +137,17 @@ export class AuthService {
     const refreshToken = this.generateRefreshToken();
     await this.saveRefreshToken(user['_id'].toString(), refreshToken);
 
+    // Notify admins about new doctor registration (async, don't block)
+    this.notificationsService.notifyAdminNewDoctorRegistered({
+      id: user['_id'].toString(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      clinicName: registerDto.clinicName,
+    }).catch(err => {
+      this.logger.error(`Failed to notify admins about new doctor: ${err.message}`);
+    });
+
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: refreshToken,
@@ -174,6 +190,16 @@ export class AuthService {
     // Generate and save refresh token
     const refreshToken = this.generateRefreshToken();
     await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+
+    // Notify admins about new patient registration (async, don't block)
+    this.notificationsService.notifyAdminNewPatientRegistered({
+      id: user['_id'].toString(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    }).catch(err => {
+      this.logger.error(`Failed to notify admins about new patient: ${err.message}`);
+    });
 
     return {
       access_token: this.jwtService.sign(payload),

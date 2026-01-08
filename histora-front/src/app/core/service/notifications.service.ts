@@ -133,6 +133,9 @@ export class NotificationsService {
       payment_received: 'payment',
       welcome: 'celebration',
       general: 'notifications',
+      // Admin notifications
+      new_doctor_registered: 'person_add',
+      new_patient_registered: 'person_add',
     };
 
     const colorMap: Record<string, string> = {
@@ -147,12 +150,18 @@ export class NotificationsService {
       payment_received: 'notification-green',
       welcome: 'notification-purple',
       general: 'notification-blue',
+      // Admin notifications
+      new_doctor_registered: 'notification-green',
+      new_patient_registered: 'notification-blue',
     };
 
     const actionMap: Record<string, { label: string; type: string }> = {
       new_appointment_booked: { label: 'Ver Cita', type: 'view-appointment' },
       new_patient_review: { label: 'Ver Reseña', type: 'view-review' },
       upcoming_appointment_reminder: { label: 'Ver Cita', type: 'view-appointment' },
+      // Admin notifications - view user in admin panel
+      new_doctor_registered: { label: 'Ver Usuario', type: 'view-user' },
+      new_patient_registered: { label: 'Ver Usuario', type: 'view-user' },
     };
 
     const timeAgo = this.getTimeAgo(new Date(notification.createdAt));

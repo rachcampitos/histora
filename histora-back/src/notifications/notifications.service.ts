@@ -12,6 +12,7 @@ import {
   NotificationPreferences,
   NotificationPreferencesDocument,
 } from './schema/notification-preferences.schema';
+import { User, UserDocument, UserRole } from '../users/schema/user.schema';
 import { SendNotificationDto, SendBulkNotificationDto } from './dto/send-notification.dto';
 import { UpdateNotificationPreferencesDto } from './dto/update-preferences.dto';
 import { EmailProvider } from './providers/email.provider';
@@ -26,6 +27,7 @@ export class NotificationsService {
   constructor(
     @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
     @InjectModel(NotificationPreferences.name) private preferencesModel: Model<NotificationPreferencesDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
     private emailProvider: EmailProvider,
     private smsProvider: SmsProvider,
     private whatsappProvider: WhatsAppProvider,
@@ -523,5 +525,73 @@ export class NotificationsService {
       message: `${review.patientName} te ha dejado una reseña: ${stars}${review.comment ? ` - "${review.comment}"` : ''}`,
       channels: [NotificationChannel.IN_APP],
     }, review.clinicId);
+  }
+
+  // =====================
+  // ADMIN NOTIFICATIONS
+  // =====================
+
+  // Get all platform admin users
+  private async getPlatformAdmins(): Promise<UserDocument[]> {
+    return this.userModel.find({
+      role: UserRole.PLATFORM_ADMIN,
+      isActive: true,
+    });
+  }
+
+  // Notify admins when a new doctor (clinic owner) registers
+  async notifyAdminNewDoctorRegistered(doctor: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    clinicName: string;
+  }): Promise<void> {
+    const admins = await this.getPlatformAdmins();
+
+    for (const admin of admins) {
+      await this.send({
+        userId: admin._id.toString(),
+        type: NotificationType.NEW_DOCTOR_REGISTERED,
+        title: 'Nuevo Médico Registrado',
+        message: `${doctor.firstName} ${doctor.lastName} (${doctor.email}) se ha registrado como médico y creado el consultorio "${doctor.clinicName}".`,
+        data: {
+          userId: doctor.id,
+          email: doctor.email,
+          name: `${doctor.firstName} ${doctor.lastName}`,
+          clinicName: doctor.clinicName,
+        },
+        channels: [NotificationChannel.IN_APP, NotificationChannel.EMAIL],
+      });
+    }
+
+    this.logger.log(`Notified ${admins.length} admin(s) about new doctor: ${doctor.email}`);
+  }
+
+  // Notify admins when a new patient registers
+  async notifyAdminNewPatientRegistered(patient: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  }): Promise<void> {
+    const admins = await this.getPlatformAdmins();
+
+    for (const admin of admins) {
+      await this.send({
+        userId: admin._id.toString(),
+        type: NotificationType.NEW_PATIENT_REGISTERED,
+        title: 'Nuevo Paciente Registrado',
+        message: `${patient.firstName} ${patient.lastName} (${patient.email}) se ha registrado como paciente.`,
+        data: {
+          userId: patient.id,
+          email: patient.email,
+          name: `${patient.firstName} ${patient.lastName}`,
+        },
+        channels: [NotificationChannel.IN_APP],
+      });
+    }
+
+    this.logger.log(`Notified ${admins.length} admin(s) about new patient: ${patient.email}`);
   }
 }

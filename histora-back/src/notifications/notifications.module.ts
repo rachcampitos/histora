@@ -6,6 +6,7 @@ import { ReminderSchedulerService } from './reminder-scheduler.service';
 import { Notification, NotificationSchema } from './schema/notification.schema';
 import { NotificationPreferences, NotificationPreferencesSchema } from './schema/notification-preferences.schema';
 import { Appointment, AppointmentSchema } from '../appointments/schema/appointment.schema';
+import { User, UserSchema } from '../users/schema/user.schema';
 import { EmailProvider } from './providers/email.provider';
 import { SmsProvider } from './providers/sms.provider';
 import { WhatsAppProvider } from './providers/whatsapp.provider';
@@ -17,6 +18,7 @@ import { PushProvider } from './providers/push.provider';
       { name: Notification.name, schema: NotificationSchema },
       { name: NotificationPreferences.name, schema: NotificationPreferencesSchema },
       { name: Appointment.name, schema: AppointmentSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [NotificationsController],
