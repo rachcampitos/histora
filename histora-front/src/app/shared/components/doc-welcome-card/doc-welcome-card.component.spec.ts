@@ -5,10 +5,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { FeatherModule } from 'angular-feather';
 import { allIcons } from 'angular-feather/icons';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 import { DocWelcomeCardComponent } from './doc-welcome-card.component';
 import { AuthService } from '@core/service/auth.service';
+import { DashboardService } from '@core/service/dashboard.service';
 
 describe('DocWelcomeCardComponent', () => {
   let component: DocWelcomeCardComponent;
@@ -27,6 +28,16 @@ describe('DocWelcomeCardComponent', () => {
     user$: new BehaviorSubject(mockUser),
   };
 
+  const mockDashboardService = {
+    getStats: jasmine.createSpy('getStats').and.returnValue(of({
+      patientsCount: 10,
+      appointmentsCount: 5,
+      consultationsCount: 3,
+      todayAppointments: 2,
+      completedConsultations: 8,
+    })),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
@@ -38,6 +49,7 @@ describe('DocWelcomeCardComponent', () => {
       providers: [
         importProvidersFrom(FeatherModule.pick(allIcons)),
         { provide: AuthService, useValue: mockAuthService },
+        { provide: DashboardService, useValue: mockDashboardService },
       ],
     }).compileComponents();
 
@@ -52,5 +64,12 @@ describe('DocWelcomeCardComponent', () => {
 
   it('should display doctor name from auth service', () => {
     expect(component.doctorName).toBe('Dr. Carlos García');
+  });
+
+  it('should load dashboard stats', () => {
+    expect(mockDashboardService.getStats).toHaveBeenCalled();
+    expect(component.patientsCount).toBe(10);
+    expect(component.appointmentsCount).toBe(5);
+    expect(component.consultationsCount).toBe(8);
   });
 });

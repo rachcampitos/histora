@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService } from '@core/service/auth.service';
+import { DashboardService } from '@core/service/dashboard.service';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -14,21 +15,25 @@ import { TranslateModule } from '@ngx-translate/core';
 export class DocWelcomeCardComponent implements OnInit, OnDestroy {
   doctorName = '';
   doctorSpecialty = '';
-  private userSubscription?: Subscription;
+  private subscriptions = new Subscription();
 
-  // TODO: These should come from a service that fetches real stats
+  // Dashboard stats
   appointmentsCount = 0;
   consultationsCount = 0;
   patientsCount = 0;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private dashboardService: DashboardService
+  ) {}
 
   ngOnInit(): void {
     this.subscribeToUserUpdates();
+    this.loadStats();
   }
 
   ngOnDestroy(): void {
-    this.userSubscription?.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
   private subscribeToUserUpdates(): void {
@@ -39,11 +44,13 @@ export class DocWelcomeCardComponent implements OnInit, OnDestroy {
     }
 
     // Subscribe to updates
-    this.userSubscription = this.authService.user$.subscribe((user) => {
-      if (user && Object.keys(user).length > 0) {
-        this.updateDoctorInfo(user);
-      }
-    });
+    this.subscriptions.add(
+      this.authService.user$.subscribe((user) => {
+        if (user && Object.keys(user).length > 0) {
+          this.updateDoctorInfo(user);
+        }
+      })
+    );
   }
 
   private updateDoctorInfo(user: any): void {
@@ -53,8 +60,21 @@ export class DocWelcomeCardComponent implements OnInit, OnDestroy {
     if (this.doctorName === 'Dr.') {
       this.doctorName = 'Dr.';
     }
-    // Specialty would come from the doctor profile, not the user
-    // For now, we'll leave it empty or use a default
     this.doctorSpecialty = user.specialty || '';
+  }
+
+  private loadStats(): void {
+    this.subscriptions.add(
+      this.dashboardService.getStats().subscribe({
+        next: (stats) => {
+          this.appointmentsCount = stats.appointmentsCount;
+          this.consultationsCount = stats.completedConsultations;
+          this.patientsCount = stats.patientsCount;
+        },
+        error: (err) => {
+          console.error('Error loading dashboard stats:', err);
+        }
+      })
+    );
   }
 }
