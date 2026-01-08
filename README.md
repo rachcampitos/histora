@@ -78,11 +78,13 @@ histora/
 
 ### Autenticación y Seguridad
 - Login con email/contraseña
+- **Google Sign-In** (OAuth 2.0)
 - JWT con refresh token rotation
+- "Recordarme" con tokens de larga duración
 - Rate limiting (10/s, 100/min, 1000/h)
 - Headers de seguridad (Helmet)
 - CORS configurado
-- Roles: Admin, Doctor, Paciente
+- Roles: **Platform Admin**, Clinic Owner, Doctor, Staff, Paciente
 
 ### Panel del Médico
 - Dashboard con estadísticas
@@ -99,13 +101,29 @@ histora/
 - Portal del paciente
 - Recordatorios automáticos
 
+### Panel de Administración (Platform Admin)
+- Dashboard con KPIs de la plataforma
+- Gestión de clínicas
+- Gestión de usuarios
+- Suscripciones y planes
+- Reportes de ingresos
+- Configuración global
+- **Notificaciones automáticas** cuando nuevos usuarios se registran
+- Soporte completo para **Dark Mode**
+
 ### Sistema de Notificaciones
 - Email (SendGrid)
 - WhatsApp Business API
-- Notificaciones in-app
+- Notificaciones in-app con polling (30s)
 - Recordatorios automáticos:
   - 24 horas antes de la cita
   - 1 hora antes de la cita
+- Notificaciones para médicos:
+  - Nueva cita agendada
+  - Cita cancelada por paciente
+- Notificaciones para admins:
+  - Nuevo médico registrado
+  - Nuevo paciente registrado
 
 ### Chatbot WhatsApp
 - Consulta de médicos disponibles
@@ -314,6 +332,7 @@ cd histora-front && npm test
 - [x] Backend completo (18 módulos)
 - [x] Frontend Angular con Material
 - [x] Sistema de autenticación JWT
+- [x] **Google Sign-In** (OAuth 2.0)
 - [x] Gestión de pacientes y citas
 - [x] Historiales clínicos
 - [x] Notificaciones automáticas
@@ -321,13 +340,17 @@ cd histora-front && npm test
 - [x] Despliegue en Railway
 - [x] Dominio personalizado
 - [x] Rate limiting y seguridad
+- [x] **Panel de administración** con dark mode
+- [x] **Perfil de médico** con CV
+- [x] **Portal del paciente** completo
+- [x] Accesibilidad WCAG 2.1 AA
 
 ### Pendiente
-- [ ] Google Sign-In
-- [ ] Rediseño página de login
-- [ ] Integración WhatsApp Business
-- [ ] Exportación PDF
+- [ ] Rediseño página de login/registro
+- [ ] Integración WhatsApp Business completa
+- [ ] Exportación PDF de historiales
 - [ ] App móvil (Capacitor)
+- [ ] Sistema de pagos (Stripe/MercadoPago)
 
 ---
 
