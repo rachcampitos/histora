@@ -9,6 +9,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { UsersModule } from '../users/users.module';
 import { ClinicsModule } from '../clinics/clinics.module';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { DoctorsModule } from '../doctors/doctors.module';
 import { EmailProvider } from '../notifications/providers/email.provider';
 
 @Module({
@@ -17,6 +18,7 @@ import { EmailProvider } from '../notifications/providers/email.provider';
     UsersModule,
     forwardRef(() => ClinicsModule),
     forwardRef(() => SubscriptionsModule),
+    forwardRef(() => DoctorsModule),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

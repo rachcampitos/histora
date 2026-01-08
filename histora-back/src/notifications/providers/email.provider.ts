@@ -196,28 +196,34 @@ export class EmailProvider implements OnModuleInit {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Recuperar Contraseña - Histora</title>
+        <!--[if mso]>
+        <style type="text/css">
+          body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
+        </style>
+        <![endif]-->
       </head>
-      <body style="margin: 0; padding: 0; background-color: #f0f9ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f0f9ff;">
+      <body style="margin: 0; padding: 0; background-color: #f0f9ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f0f9ff; min-height: 100vh;">
           <tr>
             <td align="center" style="padding: 40px 20px;">
-              <table role="presentation" width="100%" style="max-width: 500px; background: white; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden;">
+              <!-- Main Container - Responsive width: 600px desktop, 100% mobile -->
+              <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); overflow: hidden;">
                 <!-- Header with gradient -->
                 <tr>
-                  <td style="background: linear-gradient(135deg, #0891b2 0%, #0d9488 50%, #14b8a6 100%); padding: 40px 30px; text-align: center;">
+                  <td style="background: linear-gradient(135deg, #0891b2 0%, #0d9488 50%, #14b8a6 100%); padding: 48px 40px; text-align: center;">
                     <table role="presentation" width="100%">
                       <tr>
                         <td align="center">
                           <!-- Logo Icon -->
-                          <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 14px; display: inline-block; line-height: 60px; margin-bottom: 16px;">
-                            <span style="font-size: 28px;">🏥</span>
+                          <div style="width: 72px; height: 72px; background: rgba(255,255,255,0.2); border-radius: 16px; display: inline-block; line-height: 72px; margin-bottom: 20px;">
+                            <span style="font-size: 32px;">🏥</span>
                           </div>
                         </td>
                       </tr>
                       <tr>
                         <td align="center">
-                          <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">Histora</h1>
-                          <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 14px;">Plataforma Médica</p>
+                          <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">Histora</h1>
+                          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 15px; font-weight: 500;">Plataforma Médica</p>
                         </td>
                       </tr>
                     </table>
@@ -226,23 +232,23 @@ export class EmailProvider implements OnModuleInit {
 
                 <!-- Main Content -->
                 <tr>
-                  <td style="padding: 40px 35px;">
+                  <td style="padding: 48px 50px;">
                     <!-- Lock Icon -->
                     <table role="presentation" width="100%">
                       <tr>
-                        <td align="center" style="padding-bottom: 24px;">
-                          <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 50%; display: inline-block; line-height: 70px;">
-                            <span style="font-size: 32px;">🔐</span>
+                        <td align="center" style="padding-bottom: 28px;">
+                          <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 50%; display: inline-block; line-height: 80px; box-shadow: 0 8px 24px rgba(251, 191, 36, 0.3);">
+                            <span style="font-size: 36px;">🔐</span>
                           </div>
                         </td>
                       </tr>
                     </table>
 
-                    <h2 style="color: #0f172a; margin: 0 0 12px; font-size: 22px; font-weight: 700; text-align: center;">
+                    <h2 style="color: #0f172a; margin: 0 0 16px; font-size: 26px; font-weight: 700; text-align: center; letter-spacing: -0.3px;">
                       Recupera tu contraseña
                     </h2>
 
-                    <p style="color: #64748b; font-size: 15px; line-height: 1.6; text-align: center; margin: 0 0 24px;">
+                    <p style="color: #64748b; font-size: 16px; line-height: 1.7; text-align: center; margin: 0 0 32px; max-width: 420px; margin-left: auto; margin-right: auto;">
                       Hola <strong style="color: #0f172a;">${data.userName}</strong>,<br>
                       Recibimos una solicitud para restablecer tu contraseña.
                     </p>
@@ -250,57 +256,69 @@ export class EmailProvider implements OnModuleInit {
                     <!-- CTA Button -->
                     <table role="presentation" width="100%">
                       <tr>
-                        <td align="center" style="padding: 10px 0 30px;">
+                        <td align="center" style="padding: 12px 0 36px;">
                           <a href="${data.resetLink}"
                              style="background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%);
                                     color: white;
-                                    padding: 16px 40px;
+                                    padding: 18px 48px;
                                     text-decoration: none;
-                                    border-radius: 10px;
+                                    border-radius: 12px;
                                     font-weight: 600;
-                                    font-size: 15px;
+                                    font-size: 16px;
                                     display: inline-block;
-                                    box-shadow: 0 4px 14px rgba(8, 145, 178, 0.35);">
+                                    box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4);
+                                    transition: transform 0.2s;">
                             Restablecer Contraseña
                           </a>
                         </td>
                       </tr>
                     </table>
 
-                    <!-- Info Box -->
-                    <table role="presentation" width="100%" style="background: #f8fafc; border-radius: 10px; margin-bottom: 24px;">
+                    <!-- Two Column Info Section (side by side on desktop) -->
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr>
-                        <td style="padding: 16px 20px;">
-                          <table role="presentation" width="100%">
+                        <!-- Info Box -->
+                        <td style="padding: 0 8px 16px 0; vertical-align: top; width: 50%;">
+                          <table role="presentation" width="100%" style="background: #f8fafc; border-radius: 12px; height: 100%;">
                             <tr>
-                              <td width="24" valign="top" style="padding-right: 12px;">
-                                <span style="font-size: 16px;">⏱️</span>
-                              </td>
-                              <td>
-                                <p style="color: #64748b; font-size: 13px; margin: 0; line-height: 1.5;">
-                                  Este enlace expira en <strong style="color: #0f172a;">${data.expiresIn}</strong>
-                                </p>
+                              <td style="padding: 20px;">
+                                <table role="presentation" width="100%">
+                                  <tr>
+                                    <td align="center" style="padding-bottom: 10px;">
+                                      <span style="font-size: 24px;">⏱️</span>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5; text-align: center;">
+                                        Expira en<br><strong style="color: #0f172a; font-size: 15px;">${data.expiresIn}</strong>
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </table>
                               </td>
                             </tr>
                           </table>
                         </td>
-                      </tr>
-                    </table>
-
-                    <!-- Security Note -->
-                    <table role="presentation" width="100%" style="background: #fef3c7; border-radius: 10px; border-left: 4px solid #f59e0b;">
-                      <tr>
-                        <td style="padding: 16px 20px;">
-                          <table role="presentation" width="100%">
+                        <!-- Security Note -->
+                        <td style="padding: 0 0 16px 8px; vertical-align: top; width: 50%;">
+                          <table role="presentation" width="100%" style="background: #fef3c7; border-radius: 12px; height: 100%;">
                             <tr>
-                              <td width="24" valign="top" style="padding-right: 12px;">
-                                <span style="font-size: 16px;">⚠️</span>
-                              </td>
-                              <td>
-                                <p style="color: #92400e; font-size: 13px; margin: 0; line-height: 1.5;">
-                                  <strong>¿No solicitaste este cambio?</strong><br>
-                                  Puedes ignorar este correo. Tu contraseña permanecerá igual.
-                                </p>
+                              <td style="padding: 20px;">
+                                <table role="presentation" width="100%">
+                                  <tr>
+                                    <td align="center" style="padding-bottom: 10px;">
+                                      <span style="font-size: 24px;">⚠️</span>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <p style="color: #92400e; font-size: 14px; margin: 0; line-height: 1.5; text-align: center;">
+                                        <strong>¿No lo solicitaste?</strong><br>Ignora este correo
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </table>
                               </td>
                             </tr>
                           </table>
@@ -312,19 +330,19 @@ export class EmailProvider implements OnModuleInit {
 
                 <!-- Divider -->
                 <tr>
-                  <td style="padding: 0 35px;">
+                  <td style="padding: 0 50px;">
                     <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;">
                   </td>
                 </tr>
 
                 <!-- Footer Link -->
                 <tr>
-                  <td style="padding: 24px 35px; text-align: center;">
-                    <p style="color: #94a3b8; font-size: 12px; margin: 0 0 8px;">
+                  <td style="padding: 28px 50px; text-align: center;">
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0 0 10px;">
                       Si el botón no funciona, copia este enlace:
                     </p>
-                    <p style="margin: 0;">
-                      <a href="${data.resetLink}" style="color: #0891b2; font-size: 11px; word-break: break-all; text-decoration: none;">
+                    <p style="margin: 0; background: #f8fafc; padding: 12px 16px; border-radius: 8px;">
+                      <a href="${data.resetLink}" style="color: #0891b2; font-size: 12px; word-break: break-all; text-decoration: none;">
                         ${data.resetLink}
                       </a>
                     </p>
@@ -333,13 +351,13 @@ export class EmailProvider implements OnModuleInit {
               </table>
 
               <!-- Footer -->
-              <table role="presentation" width="100%" style="max-width: 500px;">
+              <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%;">
                 <tr>
-                  <td style="padding: 30px 20px; text-align: center;">
-                    <p style="color: #94a3b8; font-size: 12px; margin: 0 0 8px;">
+                  <td style="padding: 32px 20px; text-align: center;">
+                    <p style="color: #94a3b8; font-size: 13px; margin: 0 0 8px;">
                       © ${new Date().getFullYear()} Histora. Todos los derechos reservados.
                     </p>
-                    <p style="color: #cbd5e1; font-size: 11px; margin: 0;">
+                    <p style="color: #cbd5e1; font-size: 12px; margin: 0;">
                       Enviado con ❤️ desde Histora
                     </p>
                   </td>

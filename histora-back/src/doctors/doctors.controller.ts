@@ -44,7 +44,7 @@ export class DoctorsController {
   }
 
   @Get('me')
-  @Roles(UserRole.CLINIC_DOCTOR)
+  @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR)
   async getMyProfile(@CurrentUser() user: CurrentUserData): Promise<Doctor> {
     const doctor = await this.doctorsService.findByUserId(user.userId);
     if (!doctor) {
@@ -54,7 +54,7 @@ export class DoctorsController {
   }
 
   @Patch('me')
-  @Roles(UserRole.CLINIC_DOCTOR)
+  @Roles(UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR)
   async updateMyProfile(
     @Body() updateDoctorDto: UpdateDoctorDto,
     @CurrentUser() user: CurrentUserData,

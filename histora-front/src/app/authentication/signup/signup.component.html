@@ -133,6 +133,22 @@
               <input matInput formControlName="phone" autocomplete="tel" />
             </mat-form-field>
 
+            <!-- Specialty Field (Only for doctors) -->
+            @if (userType === 'doctor') {
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>{{ 'AUTH.SIGNUP.SPECIALTY' | translate }}</mat-label>
+              <mat-icon matPrefix>medical_services</mat-icon>
+              <mat-select formControlName="specialty">
+                @for (specialty of specialties; track specialty) {
+                <mat-option [value]="specialty">{{ specialty }}</mat-option>
+                }
+              </mat-select>
+              @if (signupForm.get('specialty')?.hasError('required')) {
+              <mat-error>{{ 'AUTH.ERRORS.SPECIALTY_REQUIRED' | translate }}</mat-error>
+              }
+            </mat-form-field>
+            }
+
             <!-- Clinic Fields (Only for doctors) -->
             @if (userType === 'doctor') {
             <div class="clinic-section">

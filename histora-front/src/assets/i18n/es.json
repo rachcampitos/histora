@@ -536,6 +536,7 @@
       "DOCTOR_SUBTITLE": "Crea tu cuenta y comienza tu prueba gratis",
       "PATIENT_TITLE": "Crear Cuenta de Paciente",
       "PATIENT_SUBTITLE": "Accede a tu información médica de forma segura",
+      "SPECIALTY": "Especialidad Médica",
       "CLINIC_INFO": "Información del Consultorio",
       "CLINIC_NAME": "Nombre del Consultorio",
       "CLINIC_PHONE": "Teléfono del Consultorio",
@@ -606,7 +607,8 @@
       "PASSWORD_MIN_LENGTH": "La contraseña debe tener al menos 8 caracteres",
       "FIRST_NAME_REQUIRED": "El nombre es requerido",
       "LAST_NAME_REQUIRED": "El apellido es requerido",
-      "CLINIC_NAME_REQUIRED": "El nombre del consultorio es requerido"
+      "CLINIC_NAME_REQUIRED": "El nombre del consultorio es requerido",
+      "SPECIALTY_REQUIRED": "La especialidad es requerida"
     }
   },
   "CLINICAL_HISTORY": {

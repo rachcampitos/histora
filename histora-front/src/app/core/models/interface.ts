@@ -50,6 +50,7 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   phone?: string;
+  specialty?: string;
   clinicName: string;
   clinicPhone?: string;
 }

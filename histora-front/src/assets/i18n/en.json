@@ -536,6 +536,7 @@
       "DOCTOR_SUBTITLE": "Create your account and start your free trial",
       "PATIENT_TITLE": "Create Patient Account",
       "PATIENT_SUBTITLE": "Access your medical information securely",
+      "SPECIALTY": "Medical Specialty",
       "CLINIC_INFO": "Clinic Information",
       "CLINIC_NAME": "Clinic Name",
       "CLINIC_PHONE": "Clinic Phone",
@@ -588,7 +589,8 @@
       "PASSWORD_MIN_LENGTH": "Password must be at least 8 characters",
       "FIRST_NAME_REQUIRED": "First name is required",
       "LAST_NAME_REQUIRED": "Last name is required",
-      "CLINIC_NAME_REQUIRED": "Clinic name is required"
+      "CLINIC_NAME_REQUIRED": "Clinic name is required",
+      "SPECIALTY_REQUIRED": "Specialty is required"
     }
   },
   "CLINICAL_HISTORY": {

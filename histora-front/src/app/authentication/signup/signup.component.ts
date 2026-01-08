@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '@core';
 import { LoginService } from '@core/service/login.service';
@@ -40,6 +41,7 @@ export type UserType = 'doctor' | 'patient' | null;
     MatCheckboxModule,
     RouterModule,
     TranslateModule,
+    MatSelectModule,
   ],
 })
 export class SignupComponent implements OnInit {
@@ -54,6 +56,34 @@ export class SignupComponent implements OnInit {
   error = '';
   success = '';
   userType: UserType = null;
+
+  // Medical specialties list
+  specialties = [
+    'Medicina General',
+    'Medicina Interna',
+    'Cardiología',
+    'Dermatología',
+    'Endocrinología',
+    'Gastroenterología',
+    'Geriatría',
+    'Ginecología y Obstetricia',
+    'Hematología',
+    'Infectología',
+    'Nefrología',
+    'Neumología',
+    'Neurología',
+    'Oftalmología',
+    'Oncología',
+    'Otorrinolaringología',
+    'Pediatría',
+    'Psiquiatría',
+    'Reumatología',
+    'Traumatología y Ortopedia',
+    'Urología',
+    'Cirugía General',
+    'Medicina Familiar',
+    'Otra',
+  ];
 
   ngOnInit(): void {
     this.initializeForm();
@@ -79,6 +109,7 @@ export class SignupComponent implements OnInit {
         lastName: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         phone: [''],
+        specialty: ['Medicina General', [Validators.required]],
         password: ['', [Validators.required, Validators.minLength(8)]],
         clinicName: ['', [Validators.required, Validators.minLength(2)]],
         clinicPhone: [''],
@@ -113,13 +144,14 @@ export class SignupComponent implements OnInit {
   }
 
   private registerDoctor(): void {
-    const { firstName, lastName, email, phone, password, clinicName, clinicPhone } = this.signupForm.value;
+    const { firstName, lastName, email, phone, specialty, password, clinicName, clinicPhone } = this.signupForm.value;
 
     this.loginService.register({
       firstName,
       lastName,
       email,
       phone,
+      specialty,
       password,
       clinicName,
       clinicPhone,

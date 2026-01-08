@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { ClinicsService } from '../clinics/clinics.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { DoctorsService } from '../doctors/doctors.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -45,6 +46,7 @@ export class AuthService {
     private configService: ConfigService,
     private clinicsService: ClinicsService,
     private subscriptionsService: SubscriptionsService,
+    private doctorsService: DoctorsService,
     private emailProvider: EmailProvider,
   ) {}
 
@@ -100,6 +102,20 @@ export class AuthService {
     await this.usersService.update(user['_id'].toString(), {
       clinicId: clinic['_id'],
     });
+
+    // Create Doctor profile for the clinic owner (they are also a doctor)
+    await this.doctorsService.create(
+      clinic['_id'].toString(),
+      user['_id'].toString(),
+      {
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+        specialty: registerDto.specialty || 'Medicina General',
+        email: registerDto.email,
+        phone: registerDto.phone,
+        isPublicProfile: true, // Visible in public directory by default
+      },
+    );
 
     // Create trial subscription for the clinic
     await this.subscriptionsService.createTrialSubscription(clinic['_id'].toString());

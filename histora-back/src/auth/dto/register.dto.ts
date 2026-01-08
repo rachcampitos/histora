@@ -40,6 +40,11 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   clinicPhone?: string;
+
+  // Doctor specialty (optional, defaults to 'Medicina General')
+  @IsString()
+  @IsOptional()
+  specialty?: string;
 }
 
 export class RegisterPatientDto {
