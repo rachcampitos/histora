@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { FileUploadComponent } from '@shared/components/file-upload/file-upload.component';
@@ -10,32 +10,39 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { DoctorsService, DoctorProfile } from '../../../doctor/profile/doctors.service';
+
 @Component({
   standalone: true,
-    selector: 'app-book-appointment',
-    templateUrl: './book-appointment.component.html',
-    styleUrls: ['./book-appointment.component.scss'],
-    imports: [
-        BreadcrumbComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatOptionModule,
-        MatDatepickerModule,
-        MatButtonToggleModule,
-        FileUploadComponent,
-        MatButtonModule,
-        TranslateModule,
-    ]
+  selector: 'app-book-appointment',
+  templateUrl: './book-appointment.component.html',
+  styleUrls: ['./book-appointment.component.scss'],
+  imports: [
+    BreadcrumbComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatDatepickerModule,
+    MatButtonToggleModule,
+    FileUploadComponent,
+    MatButtonModule,
+    TranslateModule,
+  ]
 })
-export class BookAppointmentComponent {
+export class BookAppointmentComponent implements OnInit {
+  private fb = inject(UntypedFormBuilder);
+  private doctorsService = inject(DoctorsService);
+
   bookingForm: UntypedFormGroup;
-  hide3 = true;
-  agree3 = false;
   isDisabled = true;
-  constructor(private fb: UntypedFormBuilder) {
+  doctors: DoctorProfile[] = [];
+  isLoadingDoctors = true;
+  minDate = new Date();
+
+  constructor() {
     this.bookingForm = this.fb.group({
       first: ['', [Validators.required, Validators.pattern('[a-zA-Z]+')]],
       last: [''],
@@ -55,8 +62,31 @@ export class BookAppointmentComponent {
       uploadFile: [''],
     });
   }
+
+  ngOnInit(): void {
+    this.loadDoctors();
+  }
+
+  loadDoctors(): void {
+    this.isLoadingDoctors = true;
+    this.doctorsService.getPublicDoctors().subscribe({
+      next: (doctors) => {
+        this.doctors = doctors || [];
+        this.isLoadingDoctors = false;
+      },
+      error: (err) => {
+        console.error('Error loading doctors:', err);
+        this.doctors = [];
+        this.isLoadingDoctors = false;
+      }
+    });
+  }
+
   onSubmit() {
-    console.log('Form Value', this.bookingForm.value);
+    if (this.bookingForm.valid) {
+      console.log('Form Value', this.bookingForm.value);
+      // TODO: Implement actual appointment creation
+    }
   }
 
   get f() {

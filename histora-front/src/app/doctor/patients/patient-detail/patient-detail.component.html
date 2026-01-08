@@ -1,0 +1,398 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'PATIENTS.DETAIL.TITLE' | translate" [items]="['Doctor', 'PATIENTS.TITLE' | translate]"
+        [active_item]="fullName || 'PATIENTS.DETAIL.TITLE' | translate"></app-breadcrumb>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+    } @else if (patient) {
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <button mat-stroked-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          {{ 'COMMON.BACK' | translate }}
+        </button>
+        <div class="action-buttons">
+          <button mat-stroked-button color="primary" (click)="scheduleAppointment()">
+            <mat-icon>event</mat-icon>
+            {{ 'PATIENTS.DETAIL.SCHEDULE_APPOINTMENT' | translate }}
+          </button>
+          <button mat-raised-button color="primary" (click)="editPatient()">
+            <mat-icon>edit</mat-icon>
+            {{ 'COMMON.EDIT' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Patient Header Card -->
+      <mat-card class="patient-header-card">
+        <div class="patient-header">
+          <div class="patient-avatar">
+            <mat-icon class="avatar-icon">person</mat-icon>
+          </div>
+          <div class="patient-info">
+            <h1 class="patient-name">{{ fullName }}</h1>
+            <div class="patient-meta">
+              @if (age !== null) {
+                <span class="meta-item">
+                  <mat-icon>cake</mat-icon>
+                  {{ age }} {{ 'COMMON.YEARS' | translate }}
+                </span>
+              }
+              @if (patient.gender) {
+                <span class="meta-item">
+                  <mat-icon>{{ patient.gender === 'male' ? 'male' : patient.gender === 'female' ? 'female' : 'transgender' }}</mat-icon>
+                  {{ genderLabel }}
+                </span>
+              }
+              @if (patient.bloodType) {
+                <span class="meta-item blood-type">
+                  <mat-icon>bloodtype</mat-icon>
+                  {{ patient.bloodType }}
+                </span>
+              }
+              @if (patient.documentNumber) {
+                <span class="meta-item">
+                  <mat-icon>badge</mat-icon>
+                  {{ patient.documentType || 'DNI' }}: {{ patient.documentNumber }}
+                </span>
+              }
+            </div>
+          </div>
+          <div class="patient-quick-info">
+            @if (patient.phone) {
+              <a [href]="'tel:' + patient.phone" class="quick-info-item">
+                <mat-icon>phone</mat-icon>
+                {{ patient.phone }}
+              </a>
+            }
+            @if (patient.email) {
+              <a [href]="'mailto:' + patient.email" class="quick-info-item">
+                <mat-icon>email</mat-icon>
+                {{ patient.email }}
+              </a>
+            }
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Content Tabs -->
+      <mat-card class="content-card">
+        <mat-tab-group animationDuration="200ms">
+          <!-- Medical Information Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>medical_information</mat-icon>
+              {{ 'PATIENTS.DETAIL.MEDICAL_INFO' | translate }}
+            </ng-template>
+            <div class="tab-content">
+              <div class="info-grid">
+                <!-- Allergies -->
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>warning</mat-icon>
+                    {{ 'PATIENTS.FORM.ALLERGIES' | translate }}
+                  </h4>
+                  <div class="chips-container">
+                    @if (patient.allergies && patient.allergies.length > 0) {
+                      @for (allergy of patient.allergies; track allergy) {
+                        <mat-chip class="allergy-chip">{{ allergy }}</mat-chip>
+                      }
+                    } @else {
+                      <span class="no-data">{{ 'PATIENTS.DETAIL.NO_ALLERGIES' | translate }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Chronic Conditions -->
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>healing</mat-icon>
+                    {{ 'PATIENTS.FORM.CHRONIC_CONDITIONS' | translate }}
+                  </h4>
+                  <div class="chips-container">
+                    @if (patient.chronicConditions && patient.chronicConditions.length > 0) {
+                      @for (condition of patient.chronicConditions; track condition) {
+                        <mat-chip class="condition-chip">{{ condition }}</mat-chip>
+                      }
+                    } @else {
+                      <span class="no-data">{{ 'PATIENTS.DETAIL.NO_CONDITIONS' | translate }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Current Medications -->
+                <div class="info-section full-width">
+                  <h4 class="section-title">
+                    <mat-icon>medication</mat-icon>
+                    {{ 'PATIENTS.FORM.CURRENT_MEDICATIONS' | translate }}
+                  </h4>
+                  <div class="chips-container">
+                    @if (patient.currentMedications && patient.currentMedications.length > 0) {
+                      @for (medication of patient.currentMedications; track medication) {
+                        <mat-chip class="medication-chip">{{ medication }}</mat-chip>
+                      }
+                    } @else {
+                      <span class="no-data">{{ 'PATIENTS.DETAIL.NO_MEDICATIONS' | translate }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Insurance Information -->
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>health_and_safety</mat-icon>
+                    {{ 'PATIENTS.DETAIL.INSURANCE' | translate }}
+                  </h4>
+                  <div class="info-content">
+                    @if (patient.insuranceProvider) {
+                      <p><strong>{{ 'PATIENTS.FORM.INSURANCE_PROVIDER' | translate }}:</strong> {{ patient.insuranceProvider }}</p>
+                      @if (patient.insuranceNumber) {
+                        <p><strong>{{ 'PATIENTS.FORM.INSURANCE_NUMBER' | translate }}:</strong> {{ patient.insuranceNumber }}</p>
+                      }
+                    } @else {
+                      <span class="no-data">{{ 'PATIENTS.DETAIL.NO_INSURANCE' | translate }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>notes</mat-icon>
+                    {{ 'PATIENTS.FORM.MEDICAL_NOTES' | translate }}
+                  </h4>
+                  <div class="info-content">
+                    @if (patient.notes) {
+                      <p class="notes-text">{{ patient.notes }}</p>
+                    } @else {
+                      <span class="no-data">{{ 'PATIENTS.DETAIL.NO_NOTES' | translate }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Contact & Address Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>contact_phone</mat-icon>
+              {{ 'PATIENTS.DETAIL.CONTACT_INFO' | translate }}
+            </ng-template>
+            <div class="tab-content">
+              <div class="info-grid">
+                <!-- Contact Information -->
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>contact_mail</mat-icon>
+                    {{ 'PATIENTS.FORM.CONTACT_INFO' | translate }}
+                  </h4>
+                  <div class="contact-list">
+                    <div class="contact-item">
+                      <mat-icon>email</mat-icon>
+                      <span>{{ patient.email || '-' }}</span>
+                    </div>
+                    <div class="contact-item">
+                      <mat-icon>phone</mat-icon>
+                      <span>{{ patient.phone || '-' }}</span>
+                    </div>
+                    <div class="contact-item">
+                      <mat-icon>work</mat-icon>
+                      <span>{{ patient.occupation || '-' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Address -->
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>location_on</mat-icon>
+                    {{ 'PATIENTS.FORM.ADDRESS' | translate }}
+                  </h4>
+                  <div class="info-content">
+                    @if (fullAddress) {
+                      <p>{{ fullAddress }}</p>
+                    } @else {
+                      <span class="no-data">{{ 'PATIENTS.DETAIL.NO_ADDRESS' | translate }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="info-section full-width">
+                  <h4 class="section-title emergency">
+                    <mat-icon>emergency</mat-icon>
+                    {{ 'PATIENTS.FORM.EMERGENCY_CONTACT' | translate }}
+                  </h4>
+                  <div class="emergency-contact-card">
+                    @if (patient.emergencyContactName) {
+                      <div class="emergency-info">
+                        <div class="contact-item">
+                          <mat-icon>person</mat-icon>
+                          <span>{{ patient.emergencyContactName }}</span>
+                        </div>
+                        @if (patient.emergencyContactPhone) {
+                          <div class="contact-item">
+                            <mat-icon>phone</mat-icon>
+                            <span>{{ patient.emergencyContactPhone }}</span>
+                          </div>
+                        }
+                        @if (patient.emergencyContactRelation) {
+                          <div class="contact-item">
+                            <mat-icon>family_restroom</mat-icon>
+                            <span>{{ patient.emergencyContactRelation }}</span>
+                          </div>
+                        }
+                      </div>
+                    } @else {
+                      <span class="no-data">{{ 'PATIENTS.DETAIL.NO_EMERGENCY_CONTACT' | translate }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Visit History Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>history</mat-icon>
+              {{ 'PATIENTS.DETAIL.VISIT_HISTORY' | translate }}
+            </ng-template>
+            <div class="tab-content">
+              @if (isLoadingConsultations) {
+                <div class="loading-container small">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
+              } @else if (consultations.length === 0) {
+                <div class="empty-state">
+                  <mat-icon>event_busy</mat-icon>
+                  <p>{{ 'PATIENTS.DETAIL.NO_CONSULTATIONS' | translate }}</p>
+                  <button mat-stroked-button color="primary" (click)="scheduleAppointment()">
+                    <mat-icon>add</mat-icon>
+                    {{ 'PATIENTS.DETAIL.SCHEDULE_FIRST' | translate }}
+                  </button>
+                </div>
+              } @else {
+                <div class="consultations-list">
+                  @for (consultation of consultations; track consultation._id) {
+                    <div class="consultation-card" (click)="viewConsultation(consultation)">
+                      <div class="consultation-date">
+                        <mat-icon>event</mat-icon>
+                        <span>{{ formatDateTime(consultation.date) }}</span>
+                      </div>
+                      <div class="consultation-info">
+                        <h5 class="chief-complaint">{{ consultation.chiefComplaint || 'Consulta' }}</h5>
+                        @if (consultation.diagnoses && consultation.diagnoses.length > 0) {
+                          <div class="diagnoses">
+                            @for (diagnosis of consultation.diagnoses.slice(0, 2); track diagnosis.code) {
+                              <span class="diagnosis-badge">
+                                {{ diagnosis.code }}: {{ diagnosis.description }}
+                              </span>
+                            }
+                            @if (consultation.diagnoses.length > 2) {
+                              <span class="more-diagnoses">+{{ consultation.diagnoses.length - 2 }} más</span>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <div class="consultation-status">
+                        <span class="status-badge" [ngClass]="getStatusClass(consultation.status)">
+                          {{ getStatusLabel(consultation.status) }}
+                        </span>
+                      </div>
+                      <mat-icon class="arrow-icon">chevron_right</mat-icon>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </mat-tab>
+
+          <!-- Personal Information Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>person</mat-icon>
+              {{ 'PATIENTS.FORM.PERSONAL_INFO' | translate }}
+            </ng-template>
+            <div class="tab-content">
+              <div class="info-grid">
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>badge</mat-icon>
+                    {{ 'PATIENTS.DETAIL.IDENTIFICATION' | translate }}
+                  </h4>
+                  <div class="info-list">
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.FORM.FIRST_NAME' | translate }}:</span>
+                      <span class="value">{{ patient.firstName }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.FORM.LAST_NAME' | translate }}:</span>
+                      <span class="value">{{ patient.lastName || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.FORM.DATE_OF_BIRTH' | translate }}:</span>
+                      <span class="value">{{ formatDate(patient.dateOfBirth) }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.FORM.GENDER' | translate }}:</span>
+                      <span class="value">{{ genderLabel || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.FORM.DOCUMENT_TYPE' | translate }}:</span>
+                      <span class="value">{{ patient.documentType || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.FORM.DOCUMENT_NUMBER' | translate }}:</span>
+                      <span class="value">{{ patient.documentNumber || '-' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="info-section">
+                  <h4 class="section-title">
+                    <mat-icon>info</mat-icon>
+                    {{ 'PATIENTS.DETAIL.ADDITIONAL_INFO' | translate }}
+                  </h4>
+                  <div class="info-list">
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.TABLE.BLOOD_TYPE' | translate }}:</span>
+                      <span class="value">{{ patient.bloodType || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.FORM.OCCUPATION' | translate }}:</span>
+                      <span class="value">{{ patient.occupation || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.DETAIL.REGISTERED' | translate }}:</span>
+                      <span class="value">{{ formatDate(patient.createdAt) }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">{{ 'PATIENTS.DETAIL.LAST_UPDATED' | translate }}:</span>
+                      <span class="value">{{ formatDate(patient.updatedAt) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+    } @else {
+      <div class="error-state">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ 'PATIENTS.DETAIL.NOT_FOUND' | translate }}</p>
+        <button mat-stroked-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          {{ 'COMMON.BACK' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+</section>

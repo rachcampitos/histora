@@ -31,3 +31,111 @@
     color: #f1f5f9;
   }
 }
+
+// Mobile responsive styles for iPhone and similar devices
+@media (max-width: 480px) {
+  :host ::ng-deep {
+    .navbar {
+      .container-fluid {
+        padding: 0 8px;
+      }
+
+      .navbar-header {
+        width: auto !important;
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+
+        .bars {
+          position: relative;
+          left: 0;
+          z-index: 10;
+          order: 0;
+        }
+
+        .navbar-brand {
+          margin-left: 12px !important;
+          padding: 0;
+          height: auto;
+          flex: 1;
+          width: auto;
+
+          .brand-icon {
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            border-radius: 6px;
+          }
+
+          .logo-name {
+            font-size: 18px;
+          }
+        }
+      }
+
+      .navbar-collapse {
+        padding: 0;
+      }
+
+      .navbar-nav.navbar-right {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        float: none !important;
+
+        > li {
+          display: flex;
+          align-items: center;
+        }
+
+        .nav-notification-icons {
+          margin: 0 2px;
+          padding: 6px;
+        }
+
+        // Hide less important items on very small screens
+        .fullscreen {
+          display: none;
+        }
+
+        // Make user profile more compact
+        .user_profile {
+          .user_img {
+            width: 32px !important;
+            height: 32px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  :host ::ng-deep {
+    .navbar {
+      .navbar-header .navbar-brand {
+        .logo-name {
+          font-size: 16px;
+        }
+
+        .brand-icon {
+          width: 28px;
+          height: 28px;
+          font-size: 16px;
+        }
+      }
+
+      .navbar-nav.navbar-right {
+        .theme-toggle,
+        .fullscreen {
+          display: none;
+        }
+
+        .nav-notification-icons {
+          margin: 0 1px;
+          padding: 4px;
+        }
+      }
+    }
+  }
+}

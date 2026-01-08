@@ -5,6 +5,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -96,7 +97,8 @@ export class PatientsComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     public patientsService: PatientsService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -234,8 +236,7 @@ export class PatientsComponent implements OnInit, OnDestroy {
   }
 
   viewDetails(patient: Patient) {
-    // Navigate to patient details or open a details dialog
-    console.log('View patient details:', patient);
+    this.router.navigate(['/doctor/patients', patient._id]);
   }
 
   showNotification(

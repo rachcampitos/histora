@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfigService } from '@config';
-import { DirectionService, InConfiguration, RightSidebarService } from '@core';
+import { DirectionService, InConfiguration, RightSidebarService, ThemeService } from '@core';
 import { UnsubscribeOnDestroyAdapter } from '@shared';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -52,7 +52,8 @@ export class RightSidebarComponent
     public elementRef: ElementRef,
     private rightSidebarService: RightSidebarService,
     private configService: ConfigService,
-    private directionService: DirectionService
+    private directionService: DirectionService,
+    private themeService: ThemeService
   ) {
     super();
   }
@@ -67,23 +68,11 @@ export class RightSidebarComponent
   }
 
   ngAfterViewInit() {
-    this.selectedBgColor = localStorage.getItem('choose_skin_active') as string;
-
-    if (localStorage.getItem('menuOption')) {
-      if (localStorage.getItem('menuOption') === 'menu_dark') {
-        this.isDarkSidebar = true;
-      } else if (localStorage.getItem('menuOption') === 'menu_light') {
-        this.isDarkSidebar = false;
-      }
-    }
-
-    if (localStorage.getItem('theme')) {
-      if (localStorage.getItem('theme') === 'dark') {
-        this.isDarTheme = true;
-      } else if (localStorage.getItem('theme') === 'light') {
-        this.isDarTheme = false;
-      }
-    }
+    // Use ThemeService to get current theme state
+    const isDark = this.themeService.isDark();
+    this.isDarTheme = isDark;
+    this.isDarkSidebar = isDark;
+    this.selectedBgColor = isDark ? 'black' : 'white';
 
     if (localStorage.getItem('isRtl')) {
       if (localStorage.getItem('isRtl') === 'true') {
@@ -123,65 +112,18 @@ export class RightSidebarComponent
     localStorage.setItem('menuOption', menuOption);
   }
   lightThemeBtnClick() {
-    this.renderer.removeClass(this.document.body, 'dark');
-    this.renderer.removeClass(this.document.body, 'submenu-closed');
-    this.renderer.removeClass(this.document.body, 'menu_dark');
-    this.renderer.removeClass(this.document.body, 'logo-black');
-    if (localStorage.getItem('choose_skin')) {
-      this.renderer.removeClass(
-        this.document.body,
-        localStorage.getItem('choose_skin') as string
-      );
-    } else {
-      this.renderer.removeClass(
-        this.document.body,
-        'theme-' + this.config.layout.theme_color
-      );
-    }
-
-    this.renderer.addClass(this.document.body, 'light');
-    this.renderer.addClass(this.document.body, 'submenu-closed');
-    this.renderer.addClass(this.document.body, 'menu_light');
-    this.renderer.addClass(this.document.body, 'logo-white');
-    this.renderer.addClass(this.document.body, 'theme-white');
-    const theme = 'light';
-    const menuOption = 'menu_light';
+    // Use ThemeService to set theme - it handles DOM and localStorage
+    this.themeService.setTheme('light');
     this.selectedBgColor = 'white';
     this.isDarkSidebar = false;
-    localStorage.setItem('choose_logoheader', 'logo-white');
-    localStorage.setItem('choose_skin', 'theme-white');
-    localStorage.setItem('theme', theme);
-    localStorage.setItem('menuOption', menuOption);
+    this.isDarTheme = false;
   }
   darkThemeBtnClick() {
-    this.renderer.removeClass(this.document.body, 'light');
-    this.renderer.removeClass(this.document.body, 'submenu-closed');
-    this.renderer.removeClass(this.document.body, 'menu_light');
-    this.renderer.removeClass(this.document.body, 'logo-white');
-    if (localStorage.getItem('choose_skin')) {
-      this.renderer.removeClass(
-        this.document.body,
-        localStorage.getItem('choose_skin') as string
-      );
-    } else {
-      this.renderer.removeClass(
-        this.document.body,
-        'theme-' + this.config.layout.theme_color
-      );
-    }
-    this.renderer.addClass(this.document.body, 'dark');
-    this.renderer.addClass(this.document.body, 'submenu-closed');
-    this.renderer.addClass(this.document.body, 'menu_dark');
-    this.renderer.addClass(this.document.body, 'logo-black');
-    this.renderer.addClass(this.document.body, 'theme-black');
-    const theme = 'dark';
-    const menuOption = 'menu_dark';
+    // Use ThemeService to set theme - it handles DOM and localStorage
+    this.themeService.setTheme('dark');
     this.selectedBgColor = 'black';
     this.isDarkSidebar = true;
-    localStorage.setItem('choose_logoheader', 'logo-black');
-    localStorage.setItem('choose_skin', 'theme-black');
-    localStorage.setItem('theme', theme);
-    localStorage.setItem('menuOption', menuOption);
+    this.isDarTheme = true;
   }
   setRightSidebarWindowHeight() {
     this.innerHeight = window.innerHeight;

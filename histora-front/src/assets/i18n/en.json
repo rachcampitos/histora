@@ -84,6 +84,8 @@
     "ALL": "All",
     "SEARCH": "Search",
     "YEARS": "years",
+    "BACK": "Back",
+    "EDIT": "Edit",
     "ACTIONS_LABEL": "Actions",
     "ACTIONS": {
       "ADD": "Add",
@@ -266,6 +268,28 @@
       "LAB_RESULTS": "Lab Results",
       "DOCUMENTS": "Documents",
       "NOTES": "Notes"
+    },
+    "DETAIL": {
+      "TITLE": "Patient Detail",
+      "MEDICAL_INFO": "Medical Information",
+      "CONTACT_INFO": "Contact",
+      "VISIT_HISTORY": "Visit History",
+      "SCHEDULE_APPOINTMENT": "Schedule Appointment",
+      "NO_ALLERGIES": "No allergies recorded",
+      "NO_CONDITIONS": "No chronic conditions recorded",
+      "NO_MEDICATIONS": "No current medications",
+      "NO_INSURANCE": "No insurance information",
+      "NO_NOTES": "No medical notes",
+      "NO_ADDRESS": "No address recorded",
+      "NO_EMERGENCY_CONTACT": "No emergency contact recorded",
+      "NO_CONSULTATIONS": "No consultations recorded for this patient",
+      "SCHEDULE_FIRST": "Schedule First Appointment",
+      "INSURANCE": "Health Insurance",
+      "IDENTIFICATION": "Identification",
+      "ADDITIONAL_INFO": "Additional Information",
+      "REGISTERED": "Registered",
+      "LAST_UPDATED": "Last Updated",
+      "NOT_FOUND": "Patient not found"
     }
   },
   "APPOINTMENTS": {
@@ -307,7 +331,31 @@
       "REASON": "Reason for Visit",
       "NOTES": "Additional Notes",
       "DURATION": "Duration",
-      "MINUTES": "minutes"
+      "MINUTES": "minutes",
+      "FIRST_NAME": "First Name",
+      "LAST_NAME": "Last Name",
+      "GENDER": "Gender",
+      "MOBILE": "Mobile",
+      "ADDRESS": "Address",
+      "EMAIL": "Email",
+      "DATE_OF_BIRTH": "Date of Birth",
+      "CONSULTING_DOCTOR": "Consulting Doctor",
+      "DATE_OF_APPOINTMENT": "Date of Appointment",
+      "TIME_OF_APPOINTMENT": "Time of Appointment",
+      "APPOINTMENT_DETAILS": "Appointment Details",
+      "INJURY_CONDITION": "Injury/Condition",
+      "NOTE": "Note",
+      "UPLOAD_REPORTS": "Upload Reports",
+      "SUBMIT": "Submit",
+      "OTHER": "Other",
+      "NO_DOCTORS_AVAILABLE": "No doctors available"
+    },
+    "ERRORS": {
+      "FIRST_NAME_REQUIRED": "First name is required",
+      "GENDER_REQUIRED": "Gender is required",
+      "EMAIL_INVALID": "Please enter a valid email address",
+      "DATE_REQUIRED": "Please select a date",
+      "DOCTOR_REQUIRED": "Please select a doctor"
     },
     "DELETE_CONFIRM_MESSAGE": "Are you sure you want to delete this appointment? This action cannot be undone.",
     "STATUS": {

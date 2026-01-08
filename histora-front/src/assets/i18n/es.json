@@ -84,6 +84,8 @@
     "ALL": "Todos",
     "SEARCH": "Buscar",
     "YEARS": "años",
+    "BACK": "Volver",
+    "EDIT": "Editar",
     "ACTIONS_LABEL": "Acciones",
     "ACTIONS": {
       "ADD": "Agregar",
@@ -266,6 +268,28 @@
       "LAB_RESULTS": "Resultados de Laboratorio",
       "DOCUMENTS": "Documentos",
       "NOTES": "Notas"
+    },
+    "DETAIL": {
+      "TITLE": "Detalle del Paciente",
+      "MEDICAL_INFO": "Información Médica",
+      "CONTACT_INFO": "Contacto",
+      "VISIT_HISTORY": "Historial de Visitas",
+      "SCHEDULE_APPOINTMENT": "Agendar Cita",
+      "NO_ALLERGIES": "Sin alergias registradas",
+      "NO_CONDITIONS": "Sin condiciones crónicas registradas",
+      "NO_MEDICATIONS": "Sin medicamentos actuales",
+      "NO_INSURANCE": "Sin información de seguro",
+      "NO_NOTES": "Sin notas médicas",
+      "NO_ADDRESS": "Sin dirección registrada",
+      "NO_EMERGENCY_CONTACT": "Sin contacto de emergencia registrado",
+      "NO_CONSULTATIONS": "No hay consultas registradas para este paciente",
+      "SCHEDULE_FIRST": "Agendar Primera Cita",
+      "INSURANCE": "Seguro Médico",
+      "IDENTIFICATION": "Identificación",
+      "ADDITIONAL_INFO": "Información Adicional",
+      "REGISTERED": "Registrado",
+      "LAST_UPDATED": "Última Actualización",
+      "NOT_FOUND": "Paciente no encontrado"
     }
   },
   "APPOINTMENTS": {
@@ -307,7 +331,31 @@
       "REASON": "Motivo de la Cita",
       "NOTES": "Notas Adicionales",
       "DURATION": "Duración",
-      "MINUTES": "minutos"
+      "MINUTES": "minutos",
+      "FIRST_NAME": "Nombre",
+      "LAST_NAME": "Apellido",
+      "GENDER": "Género",
+      "MOBILE": "Teléfono Móvil",
+      "ADDRESS": "Dirección",
+      "EMAIL": "Correo Electrónico",
+      "DATE_OF_BIRTH": "Fecha de Nacimiento",
+      "CONSULTING_DOCTOR": "Médico Consultante",
+      "DATE_OF_APPOINTMENT": "Fecha de la Cita",
+      "TIME_OF_APPOINTMENT": "Hora de la Cita",
+      "APPOINTMENT_DETAILS": "Detalles de la Cita",
+      "INJURY_CONDITION": "Lesión/Condición",
+      "NOTE": "Nota",
+      "UPLOAD_REPORTS": "Subir Informes",
+      "SUBMIT": "Enviar",
+      "OTHER": "Otro",
+      "NO_DOCTORS_AVAILABLE": "No hay médicos disponibles"
+    },
+    "ERRORS": {
+      "FIRST_NAME_REQUIRED": "El nombre es requerido",
+      "GENDER_REQUIRED": "El género es requerido",
+      "EMAIL_INVALID": "Ingrese un correo válido",
+      "DATE_REQUIRED": "Seleccione una fecha",
+      "DOCTOR_REQUIRED": "Seleccione un médico"
     },
     "DELETE_CONFIRM_MESSAGE": "¿Está seguro de eliminar esta cita? Esta acción no se puede deshacer.",
     "STATUS": {

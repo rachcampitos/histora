@@ -1,0 +1,124 @@
+// Time slot label styling
+.time-slot-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 12px;
+  display: block;
+  padding-left: 12px;
+}
+
+// Time slots container for better mobile layout
+.time-slots-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  ::ng-deep {
+    .mat-button-toggle-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border: none;
+    }
+
+    .mat-button-toggle {
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      overflow: hidden;
+
+      &.mat-button-toggle-checked {
+        background-color: #0891b2;
+        border-color: #0891b2 !important;
+
+        .mat-button-toggle-label-content {
+          color: white;
+        }
+      }
+
+      .mat-button-toggle-label-content {
+        font-size: 13px;
+        padding: 8px 12px;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+// Mobile responsive styles
+@media (max-width: 768px) {
+  .time-slots-container {
+    ::ng-deep {
+      .mat-button-toggle {
+        flex: 1 1 calc(33.333% - 8px);
+        min-width: 90px;
+
+        .mat-button-toggle-label-content {
+          font-size: 12px;
+          padding: 6px 8px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .time-slots-container {
+    ::ng-deep {
+      .mat-button-toggle {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 80px;
+
+        .mat-button-toggle-label-content {
+          font-size: 11px;
+          padding: 6px 4px;
+        }
+      }
+    }
+  }
+
+  .time-slot-label {
+    font-size: 13px;
+    padding-left: 8px;
+  }
+}
+
+// Card inside title styling
+.card-inside-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #334155;
+  margin: 24px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+// Dark mode support
+:host-context(.dark) {
+  .time-slot-label {
+    color: #94a3b8;
+  }
+
+  .card-inside-title {
+    color: #e2e8f0;
+    border-bottom-color: #475569;
+  }
+
+  .time-slots-container {
+    ::ng-deep {
+      .mat-button-toggle {
+        border-color: #475569 !important;
+        background-color: #1e293b;
+
+        .mat-button-toggle-label-content {
+          color: #e2e8f0;
+        }
+
+        &.mat-button-toggle-checked {
+          background-color: #0891b2;
+          border-color: #0891b2 !important;
+        }
+      }
+    }
+  }
+}
