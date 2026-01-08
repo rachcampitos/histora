@@ -37,9 +37,11 @@
   :host ::ng-deep {
     .navbar {
       .container-fluid {
-        display: flex;
+        display: flex !important;
+        flex-direction: row !important;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: nowrap !important;
         padding: 0 8px;
         height: 56px;
       }
@@ -50,6 +52,7 @@
         align-items: center;
         padding: 0;
         flex-shrink: 0;
+        flex-grow: 0;
 
         .navbar-toggle {
           display: none;
@@ -61,13 +64,13 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 40px;
-          height: 40px;
+          width: 36px;
+          height: 36px;
           cursor: pointer;
         }
 
         .navbar-brand {
-          margin-left: 8px !important;
+          margin-left: 4px !important;
           padding: 0;
           height: auto;
           width: auto;
@@ -75,15 +78,15 @@
           align-items: center;
 
           .brand-icon {
-            width: 32px;
-            height: 32px;
-            font-size: 18px;
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
             border-radius: 6px;
           }
 
+          // Hide logo name on mobile - only show icon
           .logo-name {
-            font-size: 18px;
-            margin-left: 8px;
+            display: none !important;
           }
         }
       }
@@ -92,10 +95,15 @@
       .navbar-collapse {
         display: flex !important;
         flex-basis: auto;
+        flex-grow: 1;
+        justify-content: flex-end;
         padding: 0;
         position: static;
         height: auto !important;
         overflow: visible !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
 
         &.collapse {
           display: flex !important;
@@ -112,19 +120,27 @@
         flex-direction: row !important;
         align-items: center;
         margin: 0;
+        padding: 0;
         float: none !important;
-        flex-wrap: nowrap;
+        flex-wrap: nowrap !important;
+        gap: 2px;
 
         > li {
           display: flex;
           align-items: center;
+          flex-shrink: 0;
         }
 
         .nav-notification-icons {
-          margin: 0 2px;
-          padding: 6px;
-          min-width: 36px;
-          height: 36px;
+          margin: 0 !important;
+          padding: 4px !important;
+          min-width: 32px !important;
+          width: 32px !important;
+          height: 32px !important;
+
+          i {
+            font-size: 20px !important;
+          }
         }
 
         // Hide fullscreen on mobile (not useful)
@@ -132,11 +148,43 @@
           display: none !important;
         }
 
-        // Compact user profile
-        .user_profile {
+        // Compact notification button
+        .notification-list button.nav-notification-icons,
+        app-notification-list button.nav-notification-icons {
+          min-width: 32px !important;
+          width: 32px !important;
+          height: 32px !important;
+          padding: 4px !important;
+        }
+
+        // Compact language selector
+        app-language-list button {
+          min-width: 32px !important;
+          padding: 4px 6px !important;
+
+          span.lang-name {
+            display: none !important;
+          }
+        }
+
+        // Compact user profile - hide username, show only avatar
+        .user_profile,
+        app-user-profile-menu {
+          .user-profile-img {
+            span {
+              display: none !important;
+            }
+          }
+
           .user_img {
-            width: 32px !important;
-            height: 32px !important;
+            width: 28px !important;
+            height: 28px !important;
+          }
+
+          .user_icon {
+            font-size: 28px !important;
+            width: 28px !important;
+            height: 28px !important;
           }
         }
       }
@@ -147,34 +195,52 @@
 @media (max-width: 380px) {
   :host ::ng-deep {
     .navbar {
-      .navbar-header .navbar-brand {
-        .logo-name {
-          display: none; // Hide text, keep icon only
+      .container-fluid {
+        padding: 0 4px;
+      }
+
+      .navbar-header {
+        .bars {
+          width: 32px;
+          height: 32px;
         }
 
-        .brand-icon {
-          width: 30px;
-          height: 30px;
-          font-size: 16px;
+        .navbar-brand {
+          margin-left: 2px !important;
+
+          .brand-icon {
+            width: 26px;
+            height: 26px;
+            font-size: 14px;
+          }
         }
       }
 
       .navbar-nav.navbar-right {
+        gap: 1px;
+
         .nav-notification-icons {
-          margin: 0 1px;
-          padding: 4px;
-          min-width: 32px;
-          height: 32px;
+          min-width: 28px !important;
+          width: 28px !important;
+          height: 28px !important;
+          padding: 2px !important;
 
           i {
-            font-size: 20px;
+            font-size: 18px !important;
           }
         }
 
-        .user_profile {
+        .user_profile,
+        app-user-profile-menu {
           .user_img {
-            width: 28px !important;
-            height: 28px !important;
+            width: 26px !important;
+            height: 26px !important;
+          }
+
+          .user_icon {
+            font-size: 26px !important;
+            width: 26px !important;
+            height: 26px !important;
           }
         }
       }
