@@ -41,3 +41,26 @@ body:not(.theme-white):not(.theme-black):not(.theme-purple):not(.theme-orange):n
 .auth-container ~ .sidebar {
   display: none !important;
 }
+
+/* Prevent iOS Safari zoom on input focus */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="search"],
+  input[type="url"],
+  input[type="date"],
+  textarea,
+  select,
+  .mat-mdc-input-element,
+  .mat-mdc-select {
+    font-size: 16px !important;
+  }
+
+  /* Ensure mat-form-field inputs also have 16px */
+  .mat-mdc-form-field-input-control {
+    font-size: 16px !important;
+  }
+}
