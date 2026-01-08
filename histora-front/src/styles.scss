@@ -9,6 +9,24 @@
   z-index: 1040 !important;
 }
 
+/* Ensure mat-menu items are clickable */
+.cdk-overlay-pane {
+  z-index: 1100 !important;
+  pointer-events: auto !important;
+}
+
+.mat-mdc-menu-panel {
+  pointer-events: auto !important;
+}
+
+.mat-mdc-menu-content {
+  pointer-events: auto !important;
+}
+
+.mat-mdc-menu-item {
+  pointer-events: auto !important;
+}
+
 /* Hide sidebar elements when not in main layout */
 body:not(.theme-white):not(.theme-black):not(.theme-purple):not(.theme-orange):not(.theme-cyan):not(.theme-green):not(.theme-blue) {
   .sidebar,
