@@ -348,14 +348,23 @@
       "UPLOAD_REPORTS": "Upload Reports",
       "SUBMIT": "Submit",
       "OTHER": "Other",
-      "NO_DOCTORS_AVAILABLE": "No doctors available"
+      "NO_DOCTORS_AVAILABLE": "No doctors available",
+      "SELECT_DOCTOR_AND_DATE": "Select a doctor and date to see available time slots",
+      "LOADING_SLOTS": "Loading available time slots...",
+      "NO_SLOTS_AVAILABLE": "No time slots available for the selected date"
     },
     "ERRORS": {
       "FIRST_NAME_REQUIRED": "First name is required",
       "GENDER_REQUIRED": "Gender is required",
       "EMAIL_INVALID": "Please enter a valid email address",
       "DATE_REQUIRED": "Please select a date",
-      "DOCTOR_REQUIRED": "Please select a doctor"
+      "DOCTOR_REQUIRED": "Please select a doctor",
+      "LOADING_SLOTS_FAILED": "Failed to load available time slots",
+      "SELECT_TIME_SLOT": "Please select a time slot",
+      "CREATE_FAILED": "Failed to create appointment"
+    },
+    "MESSAGES": {
+      "APPOINTMENT_CREATED": "Appointment created successfully"
     },
     "DELETE_CONFIRM_MESSAGE": "Are you sure you want to delete this appointment? This action cannot be undone.",
     "STATUS": {

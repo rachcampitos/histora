@@ -382,6 +382,112 @@
                       </div>
                     </div>
                   </mat-tab>
+
+                  <!-- Horarios de Atención -->
+                  <mat-tab>
+                    <ng-template mat-tab-label>
+                      <mat-icon class="material-icons-outlined">schedule</mat-icon>
+                      Horarios
+                    </ng-template>
+                    <div class="tab-content">
+                      <form [formGroup]="workingHoursForm">
+                        <div class="section-header">
+                          <h4>Configuración de Horarios de Atención</h4>
+                        </div>
+
+                        <!-- Duración de cita -->
+                        <div class="row mb-4">
+                          <div class="col-md-4">
+                            <mat-form-field class="full-width" appearance="outline">
+                              <mat-label>Duración de cada cita (minutos)</mat-label>
+                              <mat-select formControlName="appointmentDuration">
+                                <mat-option [value]="15">15 minutos</mat-option>
+                                <mat-option [value]="20">20 minutos</mat-option>
+                                <mat-option [value]="30">30 minutos</mat-option>
+                                <mat-option [value]="45">45 minutos</mat-option>
+                                <mat-option [value]="60">1 hora</mat-option>
+                                <mat-option [value]="90">1 hora 30 min</mat-option>
+                                <mat-option [value]="120">2 horas</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <!-- Días de la semana -->
+                        <div class="working-hours-grid" formGroupName="days">
+                          @for (day of daysOfWeek; track day.key) {
+                            <div class="day-row" [formGroupName]="day.key">
+                              <div class="day-header">
+                                <mat-checkbox formControlName="isWorking" color="primary">
+                                  {{ day.label }}
+                                </mat-checkbox>
+                              </div>
+
+                              @if (workingHoursForm.get('days.' + day.key + '.isWorking')?.value) {
+                                <div class="time-slots">
+                                  <!-- Turno Mañana -->
+                                  <div class="time-slot">
+                                    <mat-checkbox formControlName="hasMorning" color="accent">
+                                      Mañana
+                                    </mat-checkbox>
+                                    @if (workingHoursForm.get('days.' + day.key + '.hasMorning')?.value) {
+                                      <div class="time-inputs">
+                                        <mat-form-field appearance="outline" class="time-field">
+                                          <mat-label>Desde</mat-label>
+                                          <input matInput type="time" formControlName="morningStart">
+                                        </mat-form-field>
+                                        <span class="time-separator">-</span>
+                                        <mat-form-field appearance="outline" class="time-field">
+                                          <mat-label>Hasta</mat-label>
+                                          <input matInput type="time" formControlName="morningEnd">
+                                        </mat-form-field>
+                                      </div>
+                                    }
+                                  </div>
+
+                                  <!-- Turno Tarde -->
+                                  <div class="time-slot">
+                                    <mat-checkbox formControlName="hasAfternoon" color="accent">
+                                      Tarde
+                                    </mat-checkbox>
+                                    @if (workingHoursForm.get('days.' + day.key + '.hasAfternoon')?.value) {
+                                      <div class="time-inputs">
+                                        <mat-form-field appearance="outline" class="time-field">
+                                          <mat-label>Desde</mat-label>
+                                          <input matInput type="time" formControlName="afternoonStart">
+                                        </mat-form-field>
+                                        <span class="time-separator">-</span>
+                                        <mat-form-field appearance="outline" class="time-field">
+                                          <mat-label>Hasta</mat-label>
+                                          <input matInput type="time" formControlName="afternoonEnd">
+                                        </mat-form-field>
+                                      </div>
+                                    }
+                                  </div>
+                                </div>
+                              } @else {
+                                <div class="day-off">
+                                  <span class="text-muted">No atiende</span>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+
+                        <div class="row mt-4">
+                          <div class="col-12">
+                            <button mat-raised-button color="primary" (click)="saveWorkingHours()" [disabled]="isSavingHours">
+                              @if (isSavingHours) {
+                                <mat-spinner diameter="20"></mat-spinner>
+                              } @else {
+                                <mat-icon>save</mat-icon> Guardar Horarios
+                              }
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </mat-tab>
                 </mat-tab-group>
               </form>
             </mat-card-content>

@@ -108,6 +108,40 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
+// Slots loading and hint styles
+.loading-slots {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  color: #64748b;
+
+  span {
+    font-size: 14px;
+  }
+}
+
+.slots-hint,
+.no-slots {
+  padding: 16px;
+  font-size: 14px;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.no-slots {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+// Submit button spinner
+.submit-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
 // Dark mode support
 :host-context(.dark) {
   .time-slot-label {
@@ -117,6 +151,21 @@
   .card-inside-title {
     color: #e2e8f0;
     border-bottom-color: #475569;
+  }
+
+  .loading-slots {
+    color: #94a3b8;
+  }
+
+  .slots-hint,
+  .no-slots {
+    background: #1e293b;
+    color: #94a3b8;
+  }
+
+  .no-slots {
+    background: #7f1d1d;
+    color: #fca5a5;
   }
 
   ::ng-deep {

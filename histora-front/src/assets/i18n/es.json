@@ -348,14 +348,23 @@
       "UPLOAD_REPORTS": "Subir Informes",
       "SUBMIT": "Enviar",
       "OTHER": "Otro",
-      "NO_DOCTORS_AVAILABLE": "No hay médicos disponibles"
+      "NO_DOCTORS_AVAILABLE": "No hay médicos disponibles",
+      "SELECT_DOCTOR_AND_DATE": "Seleccione un médico y una fecha para ver los horarios disponibles",
+      "LOADING_SLOTS": "Cargando horarios disponibles...",
+      "NO_SLOTS_AVAILABLE": "No hay horarios disponibles para la fecha seleccionada"
     },
     "ERRORS": {
       "FIRST_NAME_REQUIRED": "El nombre es requerido",
       "GENDER_REQUIRED": "El género es requerido",
       "EMAIL_INVALID": "Ingrese un correo válido",
       "DATE_REQUIRED": "Seleccione una fecha",
-      "DOCTOR_REQUIRED": "Seleccione un médico"
+      "DOCTOR_REQUIRED": "Seleccione un médico",
+      "LOADING_SLOTS_FAILED": "Error al cargar los horarios disponibles",
+      "SELECT_TIME_SLOT": "Por favor seleccione un horario",
+      "CREATE_FAILED": "Error al crear la cita"
+    },
+    "MESSAGES": {
+      "APPOINTMENT_CREATED": "Cita creada exitosamente"
     },
     "DELETE_CONFIRM_MESSAGE": "¿Está seguro de eliminar esta cita? Esta acción no se puede deshacer.",
     "STATUS": {

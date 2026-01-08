@@ -16,9 +16,19 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { DoctorsService, DoctorProfile } from './doctors.service';
+import { DoctorsService, DoctorProfile, DaySchedule } from './doctors.service';
 import { UploadsService } from '@core/service/uploads.service';
 import { AuthService } from '@core/service/auth.service';
+
+const DAYS_OF_WEEK = [
+  { key: 'monday', label: 'Lunes' },
+  { key: 'tuesday', label: 'Martes' },
+  { key: 'wednesday', label: 'Miércoles' },
+  { key: 'thursday', label: 'Jueves' },
+  { key: 'friday', label: 'Viernes' },
+  { key: 'saturday', label: 'Sábado' },
+  { key: 'sunday', label: 'Domingo' },
+] as const;
 
 @Component({
   selector: 'app-doctor-profile',
@@ -48,12 +58,15 @@ import { AuthService } from '@core/service/auth.service';
 export class DoctorProfileComponent implements OnInit, OnDestroy {
   doctorProfile: DoctorProfile | null = null;
   profileForm!: FormGroup;
+  workingHoursForm!: FormGroup;
   isLoading = true;
   isSaving = false;
+  isSavingHours = false;
   isUploadingCv = false;
   cvFileName = '';
   userAvatar: string | null = null;
   userName: { firstName: string; lastName: string } | null = null;
+  daysOfWeek = DAYS_OF_WEEK;
 
   private subscriptions = new Subscription();
 
@@ -65,6 +78,7 @@ export class DoctorProfileComponent implements OnInit, OnDestroy {
     private authService: AuthService
   ) {
     this.initForm();
+    this.initWorkingHoursForm();
   }
 
   ngOnInit(): void {
@@ -126,6 +140,113 @@ export class DoctorProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+  private initWorkingHoursForm(): void {
+    const daysGroup: { [key: string]: FormGroup } = {};
+
+    DAYS_OF_WEEK.forEach(day => {
+      daysGroup[day.key] = this.fb.group({
+        isWorking: [day.key !== 'saturday' && day.key !== 'sunday'], // Weekdays default to working
+        morningStart: ['09:00'],
+        morningEnd: ['13:00'],
+        afternoonStart: ['15:00'],
+        afternoonEnd: ['19:00'],
+        hasMorning: [true],
+        hasAfternoon: [true],
+      });
+    });
+
+    this.workingHoursForm = this.fb.group({
+      appointmentDuration: [30, [Validators.required, Validators.min(15), Validators.max(120)]],
+      days: this.fb.group(daysGroup),
+    });
+  }
+
+  private patchWorkingHours(profile: DoctorProfile): void {
+    if (profile.appointmentDuration) {
+      this.workingHoursForm.patchValue({ appointmentDuration: profile.appointmentDuration });
+    }
+
+    if (profile.workingHours && profile.workingHours.length > 0) {
+      profile.workingHours.forEach(daySchedule => {
+        const dayControl = this.workingHoursForm.get(`days.${daySchedule.day}`);
+        if (dayControl) {
+          const morningSlot = daySchedule.slots.find(s => {
+            const startHour = parseInt(s.start.split(':')[0]);
+            return startHour < 14;
+          });
+          const afternoonSlot = daySchedule.slots.find(s => {
+            const startHour = parseInt(s.start.split(':')[0]);
+            return startHour >= 14;
+          });
+
+          dayControl.patchValue({
+            isWorking: daySchedule.isWorking,
+            hasMorning: !!morningSlot,
+            hasAfternoon: !!afternoonSlot,
+            morningStart: morningSlot?.start || '09:00',
+            morningEnd: morningSlot?.end || '13:00',
+            afternoonStart: afternoonSlot?.start || '15:00',
+            afternoonEnd: afternoonSlot?.end || '19:00',
+          });
+        }
+      });
+    }
+  }
+
+  private buildWorkingHoursData(): DaySchedule[] {
+    const daysFormValue = this.workingHoursForm.get('days')?.value;
+    const workingHours: DaySchedule[] = [];
+
+    DAYS_OF_WEEK.forEach(day => {
+      const dayValue = daysFormValue[day.key];
+      const slots: { start: string; end: string }[] = [];
+
+      if (dayValue.isWorking) {
+        if (dayValue.hasMorning && dayValue.morningStart && dayValue.morningEnd) {
+          slots.push({ start: dayValue.morningStart, end: dayValue.morningEnd });
+        }
+        if (dayValue.hasAfternoon && dayValue.afternoonStart && dayValue.afternoonEnd) {
+          slots.push({ start: dayValue.afternoonStart, end: dayValue.afternoonEnd });
+        }
+      }
+
+      workingHours.push({
+        day: day.key as DaySchedule['day'],
+        isWorking: dayValue.isWorking,
+        slots,
+        breaks: [],
+      });
+    });
+
+    return workingHours;
+  }
+
+  saveWorkingHours(): void {
+    if (this.workingHoursForm.invalid) {
+      this.snackBar.open('Por favor complete los campos requeridos', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    this.isSavingHours = true;
+    const workingHours = this.buildWorkingHoursData();
+    const appointmentDuration = this.workingHoursForm.get('appointmentDuration')?.value;
+
+    this.subscriptions.add(
+      this.doctorsService.updateWorkingHours(workingHours, appointmentDuration).subscribe({
+        next: (profile) => {
+          this.doctorProfile = profile;
+          this.isSavingHours = false;
+          this.snackBar.open('Horarios guardados exitosamente', 'Cerrar', { duration: 3000 });
+        },
+        error: (err) => {
+          console.error('Error saving working hours:', err);
+          this.isSavingHours = false;
+          this.snackBar.open('Error al guardar los horarios', 'Cerrar', { duration: 3000 });
+        },
+      })
+    );
+  }
+
   private loadProfile(): void {
     this.isLoading = true;
     this.subscriptions.add(
@@ -179,6 +300,9 @@ export class DoctorProfileComponent implements OnInit, OnDestroy {
     if (profile.cvUrl) {
       this.cvFileName = profile.cvFormat === 'pdf' ? 'curriculum.pdf' : 'curriculum.docx';
     }
+
+    // Patch working hours
+    this.patchWorkingHours(profile);
   }
 
   // Form array getters

@@ -32,6 +32,18 @@ export interface Skill {
   percentage: number;
 }
 
+export interface TimeRange {
+  start: string;  // HH:MM format
+  end: string;    // HH:MM format
+}
+
+export interface DaySchedule {
+  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+  isWorking: boolean;
+  slots: TimeRange[];
+  breaks: TimeRange[];
+}
+
 export interface DoctorProfile {
   _id: string;
   userId: string;
@@ -60,6 +72,8 @@ export interface DoctorProfile {
   address?: string;
   city?: string;
   country?: string;
+  workingHours?: DaySchedule[];
+  appointmentDuration?: number;  // Duration in minutes (default: 30)
   createdAt?: string;
   updatedAt?: string;
 }
@@ -109,5 +123,14 @@ export class DoctorsService {
   // Get full name
   getFullName(doctor: DoctorProfile): string {
     return `Dr. ${doctor.firstName} ${doctor.lastName}`;
+  }
+
+  // Update working hours
+  updateWorkingHours(workingHours: DaySchedule[], appointmentDuration?: number): Observable<DoctorProfile> {
+    const data: Partial<DoctorProfile> = { workingHours };
+    if (appointmentDuration) {
+      data.appointmentDuration = appointmentDuration;
+    }
+    return this.http.patch<DoctorProfile>(`${this.apiUrl}/me`, data);
   }
 }

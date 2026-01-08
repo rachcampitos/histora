@@ -136,19 +136,25 @@
               <div class="row">
                 <label class="time-slot-label">{{ 'APPOINTMENTS.FORM.TIME_OF_APPOINTMENT' | translate }}:</label>
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
-                  <mat-button-toggle-group name="timeSlot" aria-label="Time Slot" class="mb-5 time-slots-container"
-                    formControlName="timeSlot">
-                    <mat-button-toggle value="slot1">10:30-11:00</mat-button-toggle>
-                    <mat-button-toggle value="slot2">11:00-11:30</mat-button-toggle>
-                    <mat-button-toggle value="slot3">11:30-12:00</mat-button-toggle>
-                    <mat-button-toggle value="slot4">12:00-12:30</mat-button-toggle>
-                    <mat-button-toggle value="slot5">12:30-01:00</mat-button-toggle>
-                    <mat-button-toggle value="slot6">03:30-04:00</mat-button-toggle>
-                    <mat-button-toggle value="slot7">04:00-04:30</mat-button-toggle>
-                    <mat-button-toggle value="slot8">04:30-05:00</mat-button-toggle>
-                    <mat-button-toggle value="slot9">05:00-05:30</mat-button-toggle>
-                    <mat-button-toggle value="slot10">05:30-06:00</mat-button-toggle>
-                  </mat-button-toggle-group>
+                  @if (!bookingForm.get('doctor')?.value || !bookingForm.get('doa')?.value) {
+                    <p class="text-muted slots-hint">{{ 'APPOINTMENTS.FORM.SELECT_DOCTOR_AND_DATE' | translate }}</p>
+                  } @else if (isLoadingSlots) {
+                    <div class="loading-slots">
+                      <mat-spinner diameter="24"></mat-spinner>
+                      <span>{{ 'APPOINTMENTS.FORM.LOADING_SLOTS' | translate }}</span>
+                    </div>
+                  } @else if (availableSlots.length === 0) {
+                    <p class="text-muted no-slots">{{ 'APPOINTMENTS.FORM.NO_SLOTS_AVAILABLE' | translate }}</p>
+                  } @else {
+                    <mat-button-toggle-group name="timeSlot" aria-label="Time Slot" class="mb-5 time-slots-container"
+                      formControlName="timeSlot">
+                      @for (slot of availableSlots; track getSlotValue(slot)) {
+                        <mat-button-toggle [value]="getSlotValue(slot)">
+                          {{ slot.startTime }} - {{ slot.endTime }}
+                        </mat-button-toggle>
+                      }
+                    </mat-button-toggle-group>
+                  }
                 </div>
               </div>
               <div class="row">
@@ -175,9 +181,14 @@
               </div>
               <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-3">
-                  <button class="btn-space" [disabled]="!bookingForm.valid" mat-flat-button
-                    color="primary">{{ 'APPOINTMENTS.FORM.SUBMIT' | translate }}</button>
-                  <button type="button" mat-flat-button class="formCancelBtn">{{ 'COMMON.ACTIONS.CANCEL' | translate }}</button>
+                  <button class="btn-space" [disabled]="!bookingForm.valid || isSubmitting" mat-flat-button
+                    color="primary">
+                    @if (isSubmitting) {
+                      <mat-spinner diameter="20" class="submit-spinner"></mat-spinner>
+                    }
+                    {{ 'APPOINTMENTS.FORM.SUBMIT' | translate }}
+                  </button>
+                  <button type="button" mat-flat-button class="formCancelBtn" [disabled]="isSubmitting">{{ 'COMMON.ACTIONS.CANCEL' | translate }}</button>
                 </div>
               </div>
             </form>
