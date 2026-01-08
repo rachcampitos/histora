@@ -42,7 +42,7 @@ export class LoginService {
               },
             ],
             permissions: this.getPermissionsForRole(user.role as string),
-            avatar: user.avatar || 'user.jpg',
+            avatar: user.avatar || this.getDefaultAvatar(user.role as string),
           },
           token: response.access_token,
           status: 200,
@@ -74,7 +74,7 @@ export class LoginService {
               },
             ],
             permissions: this.getPermissionsForRole(user.role as string),
-            avatar: user.avatar || 'user.jpg',
+            avatar: user.avatar || this.getDefaultAvatar(user.role as string),
           },
           token: response.access_token,
           status: 201,
@@ -210,5 +210,16 @@ export class LoginService {
       patient: ['canRead'],
     };
     return permissionMap[role] || ['canRead'];
+  }
+
+  private getDefaultAvatar(role: string): string {
+    const avatarMap: Record<string, string> = {
+      platform_admin: 'admin.jpg',
+      clinic_owner: 'doctor.jpg',
+      clinic_doctor: 'doctor.jpg',
+      clinic_staff: 'doctor.jpg',
+      patient: 'patient.jpg',
+    };
+    return avatarMap[role] || 'patient.jpg';
   }
 }

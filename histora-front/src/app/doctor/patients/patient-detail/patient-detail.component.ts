@@ -175,6 +175,7 @@ export class PatientDetailComponent implements OnInit {
     const dialogRef = this.dialog.open(PatientFormDialogComponent, {
       width: '800px',
       maxHeight: '90vh',
+      disableClose: true,
       data: {
         action: 'edit',
         patient: this.patient,

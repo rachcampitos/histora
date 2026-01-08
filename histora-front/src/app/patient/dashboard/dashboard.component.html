@@ -38,12 +38,14 @@
                 <p class="float-end font-b-500">{{ 'PATIENT_DASHBOARD.BLOOD_PRESSURE' | translate }}</p>
               </div>
               <div class="col-green">
-                <p class="font-b-600 float-end mb-0 font-18"> 110/70</p>
+                <p class="font-b-600 float-end mb-0 font-18">{{ vitals.bloodPressure.systolic || 120 }}/{{ vitals.bloodPressure.diastolic || 80 }}</p>
               </div>
             </div>
           </div>
           <div class="card-content msl-4 mb-3">
-            <p class="m-b-0 font-12 d-flex"><i class="material-icons col-green psr-2">trending_up</i> {{ 'PATIENT_DASHBOARD.HIGHER_THAN_LAST_MONTH' | translate:{ percent: 10 } }}
+            <p class="m-b-0 font-12 d-flex">
+              <i class="material-icons psr-2" [ngClass]="getTrendColor(vitals.bloodPressure.trend)">{{ getTrendIcon(vitals.bloodPressure.trend) }}</i>
+              {{ formatChange(vitals.bloodPressure.change) }}
             </p>
           </div>
         </div>
@@ -59,12 +61,14 @@
                 <p class="float-end font-b-500">{{ 'PATIENT_DASHBOARD.HEART_RATE' | translate }}</p>
               </div>
               <div class="col-green">
-                <p class="font-b-600 float-end mb-0 font-18">72 bpm</p>
+                <p class="font-b-600 float-end mb-0 font-18">{{ vitals.heartRate.value || 72 }} bpm</p>
               </div>
             </div>
           </div>
           <div class="card-content msl-4 mb-3">
-            <p class="m-b-0 font-12 d-flex"><i class="material-icons col-orange psr-2">trending_down</i> {{ 'PATIENT_DASHBOARD.LOWER_THAN_LAST_MONTH' | translate:{ percent: 7 } }}
+            <p class="m-b-0 font-12 d-flex">
+              <i class="material-icons psr-2" [ngClass]="getTrendColor(vitals.heartRate.trend)">{{ getTrendIcon(vitals.heartRate.trend) }}</i>
+              {{ formatChange(vitals.heartRate.change) }}
             </p>
           </div>
         </div>
@@ -80,12 +84,14 @@
                 <p class="float-end font-b-500">{{ 'PATIENT_DASHBOARD.GLUCOSE_LEVEL' | translate }}</p>
               </div>
               <div class="col-green">
-                <p class="font-b-600 float-end mb-0 font-18">88-75</p>
+                <p class="font-b-600 float-end mb-0 font-18">{{ vitals.bloodGlucose.value || 95 }} mg/dL</p>
               </div>
             </div>
           </div>
           <div class="card-content msl-4 mb-3">
-            <p class="m-b-0 font-12 d-flex"><i class="material-icons col-green psr-2">trending_up</i> {{ 'PATIENT_DASHBOARD.HIGHER_THAN_LAST_MONTH' | translate:{ percent: 12 } }}
+            <p class="m-b-0 font-12 d-flex">
+              <i class="material-icons psr-2" [ngClass]="getTrendColor(vitals.bloodGlucose.trend)">{{ getTrendIcon(vitals.bloodGlucose.trend) }}</i>
+              {{ formatChange(vitals.bloodGlucose.change) }}
             </p>
           </div>
         </div>
@@ -98,15 +104,17 @@
             </div>
             <div class="card-right">
               <div>
-                <p class="float-end font-b-500">{{ 'PATIENT_DASHBOARD.BLOOD_COUNT' | translate }}</p>
+                <p class="float-end font-b-500">{{ 'PATIENT_DASHBOARD.OXYGEN_SATURATION' | translate }}</p>
               </div>
               <div class="col-green">
-                <p class="font-b-600 float-end mb-0 font-18">9,456/mL</p>
+                <p class="font-b-600 float-end mb-0 font-18">{{ vitals.oxygenSaturation || 98 }}%</p>
               </div>
             </div>
           </div>
           <div class="card-content msl-4 mb-3">
-            <p class="m-b-0 font-12 d-flex"><i class="material-icons col-orange psr-2">trending_down</i> {{ 'PATIENT_DASHBOARD.LOWER_THAN_LAST_MONTH' | translate:{ percent: 22 } }}
+            <p class="m-b-0 font-12 d-flex">
+              <i class="material-icons col-green psr-2">check_circle</i>
+              {{ 'PATIENT_DASHBOARD.NORMAL_RANGE' | translate }}
             </p>
           </div>
         </div>
@@ -120,15 +128,21 @@
           </mat-card-header>
           <mat-card-content>
             <div class="float-start">
-              <p class="font-b-500">72 bpm <span class="text-muted font-12">({{ 'PATIENT_DASHBOARD.AVERAGE' | translate }})</span></p>
+              <p class="font-b-500">{{ vitals.heartRate.value || 72 }} bpm <span class="text-muted font-12">({{ 'PATIENT_DASHBOARD.AVERAGE' | translate }})</span></p>
             </div>
             <div class="mb-5">
-              <apx-chart [series]="restRateChartOptions.series!" [chart]="restRateChartOptions.chart!"
-                [xaxis]="restRateChartOptions.xaxis!" [stroke]="restRateChartOptions.stroke!"
-                [colors]="restRateChartOptions.colors!" [dataLabels]="restRateChartOptions.dataLabels!"
-                [legend]="restRateChartOptions.legend!" [markers]="restRateChartOptions.markers!"
-                [grid]="restRateChartOptions.grid!" [yaxis]="restRateChartOptions.yaxis!"
-                [tooltip]="restRateChartOptions.tooltip!" [title]="restRateChartOptions.title!"></apx-chart>
+              @if (restRateChartOptions?.series) {
+                <apx-chart [series]="restRateChartOptions.series!" [chart]="restRateChartOptions.chart!"
+                  [xaxis]="restRateChartOptions.xaxis!" [stroke]="restRateChartOptions.stroke!"
+                  [colors]="restRateChartOptions.colors!" [dataLabels]="restRateChartOptions.dataLabels!"
+                  [legend]="restRateChartOptions.legend!" [markers]="restRateChartOptions.markers!"
+                  [grid]="restRateChartOptions.grid!" [yaxis]="restRateChartOptions.yaxis!"
+                  [tooltip]="restRateChartOptions.tooltip!" [title]="restRateChartOptions.title!"></apx-chart>
+              } @else {
+                <div class="chart-loading">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
+              }
             </div>
           </mat-card-content>
         </mat-card>
@@ -140,16 +154,22 @@
           </mat-card-header>
           <mat-card-content>
             <div class="float-start">
-              <p class="font-b-500">129 bpm <span class="text-muted font-12">({{ 'PATIENT_DASHBOARD.AVERAGE' | translate }})</span></p>
+              <p class="font-b-500">{{ vitals.bloodPressure.systolic || 120 }}/{{ vitals.bloodPressure.diastolic || 80 }} mmHg <span class="text-muted font-12">({{ 'PATIENT_DASHBOARD.AVERAGE' | translate }})</span></p>
             </div>
             <div class="mb-5">
-              <apx-chart [series]="performanceRateChartOptions.series!" [chart]="performanceRateChartOptions.chart!"
-                [xaxis]="performanceRateChartOptions.xaxis!" [stroke]="performanceRateChartOptions.stroke!"
-                [colors]="performanceRateChartOptions.colors!" [dataLabels]="performanceRateChartOptions.dataLabels!"
-                [legend]="performanceRateChartOptions.legend!" [markers]="performanceRateChartOptions.markers!"
-                [grid]="performanceRateChartOptions.grid!" [yaxis]="performanceRateChartOptions.yaxis!"
-                [tooltip]="performanceRateChartOptions.tooltip!" [title]="performanceRateChartOptions.title!">
-              </apx-chart>
+              @if (performanceRateChartOptions?.series) {
+                <apx-chart [series]="performanceRateChartOptions.series!" [chart]="performanceRateChartOptions.chart!"
+                  [xaxis]="performanceRateChartOptions.xaxis!" [stroke]="performanceRateChartOptions.stroke!"
+                  [colors]="performanceRateChartOptions.colors!" [dataLabels]="performanceRateChartOptions.dataLabels!"
+                  [legend]="performanceRateChartOptions.legend!" [markers]="performanceRateChartOptions.markers!"
+                  [grid]="performanceRateChartOptions.grid!" [yaxis]="performanceRateChartOptions.yaxis!"
+                  [tooltip]="performanceRateChartOptions.tooltip!" [title]="performanceRateChartOptions.title!">
+                </apx-chart>
+              } @else {
+                <div class="chart-loading">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
+              }
             </div>
           </mat-card-content>
         </mat-card>

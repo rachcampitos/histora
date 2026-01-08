@@ -133,7 +133,8 @@ export class HeaderComponent
     this.userName = `${firstName} ${lastName}`.trim() || currentUser.name || 'Usuario';
 
     // Use avatar URL directly if it's a full URL, otherwise use assets path
-    if (currentUser.avatar) {
+    // Note: 'user.jpg' doesn't exist, so we fall back to role-based defaults
+    if (currentUser.avatar && currentUser.avatar !== 'user.jpg') {
       this.userImg = currentUser.avatar.startsWith('http')
         ? currentUser.avatar
         : './assets/images/user/' + currentUser.avatar;

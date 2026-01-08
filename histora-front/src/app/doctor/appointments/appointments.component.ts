@@ -177,6 +177,7 @@ export class AppointmentsComponent implements OnInit, OnDestroy {
       data: { action: 'add' } as AppointmentFormDialogData,
       width: '700px',
       maxHeight: '90vh',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -197,6 +198,7 @@ export class AppointmentsComponent implements OnInit, OnDestroy {
       data: { appointment, action: 'edit' } as AppointmentFormDialogData,
       width: '700px',
       maxHeight: '90vh',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {

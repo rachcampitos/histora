@@ -181,6 +181,7 @@ export class PatientsComponent implements OnInit, OnDestroy {
       data: { action: 'add' } as PatientFormDialogData,
       width: '800px',
       maxHeight: '90vh',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -201,6 +202,7 @@ export class PatientsComponent implements OnInit, OnDestroy {
       data: { patient, action: 'edit' } as PatientFormDialogData,
       width: '800px',
       maxHeight: '90vh',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
