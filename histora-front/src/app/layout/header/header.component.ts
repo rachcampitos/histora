@@ -77,8 +77,8 @@ export class HeaderComponent
   }
 
   listLang = [
+    { text: 'Español', flag: 'assets/images/flags/spain.svg', lang: 'es' },
     { text: 'English', flag: 'assets/images/flags/us.svg', lang: 'en' },
-    { text: 'Spanish', flag: 'assets/images/flags/spain.svg', lang: 'es' },
   ];
   notifications: Notifications[] = [];
   ngOnInit() {
@@ -282,7 +282,6 @@ export class HeaderComponent
     this.flagvalue = item.flag;
     this.langStoreValue = item.lang;
     this.languageService.setLanguage(item.lang);
-    localStorage.setItem('lang', item.lang);
   }
 
   onAccountClicked() {

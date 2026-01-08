@@ -34,6 +34,7 @@ export const appConfig: ApplicationConfig = {
     DirectionService,
     LanguageService,
     provideTranslateService({
+      defaultLanguage: 'es',
       fallbackLang: 'es',
       loader: provideTranslateHttpLoader({
         prefix: './assets/i18n/',

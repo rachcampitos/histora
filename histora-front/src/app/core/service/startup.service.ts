@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { switchMap, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { LanguageService } from './language.service';
 import { NgxRolesService, NgxPermissionsService } from 'ngx-permissions';
 import { User } from '@core/models/interface';
 
@@ -11,7 +12,8 @@ export class StartupService {
   constructor(
     private rolesService: NgxRolesService,
     private permissonsService: NgxPermissionsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private languageService: LanguageService // Initialize language service early
   ) {}
 
   /**

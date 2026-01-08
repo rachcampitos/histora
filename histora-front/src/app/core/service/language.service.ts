@@ -5,26 +5,36 @@ import { TranslateService } from '@ngx-translate/core';
   providedIn: 'root',
 })
 export class LanguageService {
-  public languages: string[] = ['es', 'en', 'de'];
+  public languages: string[] = ['es', 'en'];
   public defaultLanguage = 'es'; // Spanish as default
+  private currentLang: string;
 
   constructor(public translate: TranslateService) {
-    let selectedLang: string;
     translate.addLangs(this.languages);
     translate.setDefaultLang(this.defaultLanguage);
 
-    if (localStorage.getItem('lang')) {
-      selectedLang = localStorage.getItem('lang') as string;
+    // Get stored language or use default
+    const storedLang = localStorage.getItem('lang');
+    if (storedLang && this.languages.includes(storedLang)) {
+      this.currentLang = storedLang;
     } else {
-      // Default to Spanish if no preference is set
-      selectedLang = this.defaultLanguage;
+      this.currentLang = this.defaultLanguage;
       localStorage.setItem('lang', this.defaultLanguage);
     }
-    translate.use(selectedLang.match(/en|es|de/) ? selectedLang : this.defaultLanguage);
+
+    // Apply the language
+    translate.use(this.currentLang);
+  }
+
+  public getCurrentLang(): string {
+    return this.currentLang;
   }
 
   public setLanguage(lang: string) {
-    this.translate.use(lang);
-    localStorage.setItem('lang', lang);
+    if (this.languages.includes(lang)) {
+      this.currentLang = lang;
+      this.translate.use(lang);
+      localStorage.setItem('lang', lang);
+    }
   }
 }
