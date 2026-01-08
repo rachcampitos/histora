@@ -406,8 +406,11 @@ export class AuthService {
     googleId: string;
     picture?: string;
   }): Promise<AuthResponse> {
+    this.logger.log(`Google login attempt for: ${googleUser.email}`);
+
     // Check if user exists by googleId
     let user = await this.usersService.findByGoogleId(googleUser.googleId);
+    this.logger.log(`findByGoogleId result: ${user ? `found (role: ${user.role})` : 'not found'}`);
 
     if (!user) {
       // Check if user exists by email
@@ -444,6 +447,8 @@ export class AuthService {
     // Generate and save refresh token
     const refreshToken = this.generateRefreshToken();
     await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+
+    this.logger.log(`Google login successful for ${user.email} with role: ${user.role}`);
 
     return {
       access_token: this.jwtService.sign(payload),
