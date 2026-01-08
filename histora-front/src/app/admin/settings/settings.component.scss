@@ -101,3 +101,43 @@
     }
   }
 }
+
+// Dark Mode Styles
+:host-context(body.dark) {
+  .card {
+    background: #1a202e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+
+    .header {
+      border-bottom-color: #2a3040;
+
+      h2 {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .section-title {
+    color: #ffffff;
+    border-bottom-color: #2a3040;
+  }
+
+  .toggle-option {
+    border-bottom-color: #2a3040;
+
+    .toggle-hint {
+      color: #96a2b4;
+    }
+  }
+
+  .form-actions {
+    border-top-color: #2a3040;
+  }
+
+  ::ng-deep .mat-mdc-tab-group {
+    .mat-mdc-tab-header {
+      background: #1a202e;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
