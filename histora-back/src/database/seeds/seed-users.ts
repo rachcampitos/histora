@@ -53,7 +53,12 @@ async function seedUsers() {
   }
 
   // 3. Create clinic for the doctor if doesn't exist
-  let clinic = await clinicModel.findOne({ ownerId: doctorUser._id });
+  let clinic = await clinicModel.findOne({
+    $or: [
+      { ownerId: doctorUser._id },
+      { slug: 'consultorio-dr-mendez' }
+    ]
+  });
   if (!clinic) {
     clinic = await clinicModel.create({
       name: 'Consultorio Dr. Méndez',
@@ -72,7 +77,16 @@ async function seedUsers() {
     });
     console.log('Created clinic: Consultorio Dr. Méndez');
   } else {
-    console.log('Clinic already exists for doctor');
+    // Update clinic owner if needed
+    if (clinic.ownerId.toString() !== doctorUser._id.toString()) {
+      await clinicModel.updateOne(
+        { _id: clinic._id },
+        { $set: { ownerId: doctorUser._id } }
+      );
+      console.log('Updated clinic owner to current doctor');
+    } else {
+      console.log('Clinic already exists for doctor');
+    }
   }
 
   // 4. Update doctor user with clinicId if not set
