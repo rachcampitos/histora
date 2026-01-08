@@ -8,9 +8,10 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY package-lock.json* ./
 
 # Install all dependencies (including dev)
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -30,7 +31,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # Rebuild bcrypt for this architecture
 RUN npm rebuild bcrypt --build-from-source
