@@ -181,7 +181,7 @@
   }
 }
 
-/* 
+/*
   ##Device = Most of the Smartphones Mobiles (Portrait)
   ##Screen = B/w 320px to 479px
 */
@@ -202,6 +202,33 @@
     .navbar-header {
       width: 100%;
       padding: 0;
+      display: flex;
+      align-items: center;
+
+      // Hamburger menu icon
+      .bars {
+        position: relative;
+        left: 10px;
+        z-index: 10;
+      }
+
+      // Brand logo - add left margin for spacing
+      .navbar-brand {
+        margin-left: 45px !important;
+        flex: 1;
+        display: flex;
+        align-items: center;
+
+        .brand-icon {
+          width: 30px;
+          height: 30px;
+          font-size: 18px;
+        }
+
+        .logo-name {
+          font-size: 18px;
+        }
+      }
     }
     .navbar-toggle {
       float: right;
@@ -213,9 +240,6 @@
         display: inline-block;
       }
     }
-  }
-  .navbar-brand {
-    margin-left: 0px !important;
   }
 }
 @media (max-width: 280px) {
@@ -234,6 +258,27 @@
     .navbar-header {
       width: 100%;
       padding: 0;
+      display: flex;
+      align-items: center;
+
+      .bars {
+        position: relative;
+        left: 5px;
+      }
+
+      .navbar-brand {
+        margin-left: 35px !important;
+
+        .brand-icon {
+          width: 26px;
+          height: 26px;
+          font-size: 16px;
+        }
+
+        .logo-name {
+          font-size: 16px;
+        }
+      }
     }
     .navbar-toggle {
       margin-right: 30px !important;

@@ -228,7 +228,7 @@
   .setting-panel-header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: 18px 20px;
     color: #3f4254;
     font-size: 16px;
@@ -238,6 +238,31 @@
     background: linear-gradient(to right, #f8f9fa, #f1f2f6);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     position: relative;
+
+    span {
+      flex: 1;
+      text-align: center;
+    }
+
+    .close-panel-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      .close-icon .feather {
+        height: 20px;
+        width: 20px;
+        stroke: #3f4254;
+      }
+    }
   }
 
   .disk-server-setting {
@@ -352,15 +377,48 @@
 
     &.showSettingPanel {
       right: 0;
+
+      .settingPanelToggle {
+        display: none;
+      }
     }
 
     .settingPanelToggle {
       top: 15%;
     }
 
+    .setting-panel-header {
+      .close-panel-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
     ul.choose-theme li div {
       height: 28px;
       width: 28px;
+    }
+  }
+}
+
+// iPhone Pro specific (390px width)
+@media only screen and (max-width: 430px) {
+  .settingSidebar {
+    .settingPanelToggle {
+      left: -36px;
+      width: 36px;
+      height: 36px;
+      padding: 10px;
+
+      .setting-sidebar-icon .feather {
+        height: 16px;
+        width: 16px;
+      }
+    }
+
+    .hiddenradio .flex-col {
+      width: 90px;
     }
   }
 }
