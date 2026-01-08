@@ -16,11 +16,15 @@
   border: none !important;
   box-shadow: none !important;
   background: transparent !important;
+  overflow: visible !important;
+  padding: 4px !important;
+  margin: -4px !important;
 
   // Remove group border completely
   &.mat-button-toggle-group {
     border: none !important;
     box-shadow: none !important;
+    overflow: visible !important;
   }
 }
 
@@ -29,17 +33,19 @@
     border: none !important;
     box-shadow: none !important;
     background: transparent !important;
+    overflow: visible !important;
   }
 
   .mat-button-toggle-group-appearance-standard {
     border: none !important;
     box-shadow: none !important;
+    overflow: visible !important;
   }
 
   .time-slots-container .mat-button-toggle {
     border: 1px solid #e2e8f0 !important;
     border-radius: 8px !important;
-    overflow: hidden;
+    overflow: visible !important;
 
     &.mat-button-toggle-checked {
       background-color: #0891b2;
