@@ -11,11 +11,10 @@
           <mat-card-content>
             <div class="filters-row">
               <mat-form-field appearance="outline" class="filter-field">
-                <mat-label>Buscar</mat-label>
+                <mat-label>Buscar por nombre</mat-label>
                 <input matInput
                        [(ngModel)]="searchTerm"
-                       (keyup)="applyFilter()"
-                       placeholder="Nombre del médico...">
+                       (keyup)="applyFilter()">
                 <mat-icon matSuffix>search</mat-icon>
               </mat-form-field>
 

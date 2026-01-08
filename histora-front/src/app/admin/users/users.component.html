@@ -17,8 +17,8 @@
         <!-- Filters -->
         <div class="filters-row">
           <mat-form-field appearance="outline" class="filter-field search-field">
-            <mat-label>Buscar</mat-label>
-            <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Nombre o email...">
+            <mat-label>Buscar por nombre o email</mat-label>
+            <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()">
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
 

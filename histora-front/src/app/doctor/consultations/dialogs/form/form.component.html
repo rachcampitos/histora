@@ -39,8 +39,7 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'CONSULTATIONS.CHIEF_COMPLAINT' | translate }} *</mat-label>
-              <textarea matInput formControlName="chiefComplaint" rows="3"
-                placeholder="{{ 'CONSULTATIONS.CHIEF_COMPLAINT_PLACEHOLDER' | translate }}"></textarea>
+              <textarea matInput formControlName="chiefComplaint" rows="3"></textarea>
               @if (consultationForm.get('chiefComplaint')?.hasError('required')) {
               <mat-error>{{ 'CONSULTATIONS.ERRORS.CHIEF_COMPLAINT_REQUIRED' | translate }}</mat-error>
               }
@@ -48,8 +47,7 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'CONSULTATIONS.HISTORY_PRESENT_ILLNESS' | translate }} *</mat-label>
-              <textarea matInput formControlName="historyOfPresentIllness" rows="5"
-                placeholder="{{ 'CONSULTATIONS.HISTORY_PRESENT_ILLNESS_PLACEHOLDER' | translate }}"></textarea>
+              <textarea matInput formControlName="historyOfPresentIllness" rows="5"></textarea>
               @if (consultationForm.get('historyOfPresentIllness')?.hasError('required')) {
               <mat-error>{{ 'CONSULTATIONS.ERRORS.HPI_REQUIRED' | translate }}</mat-error>
               }
@@ -67,35 +65,30 @@
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>{{ 'CONSULTATIONS.PAST_MEDICAL_HISTORY' | translate }}</mat-label>
-                <textarea matInput formControlName="pastMedicalHistory" rows="3"
-                  placeholder="{{ 'CONSULTATIONS.PAST_MEDICAL_HISTORY_PLACEHOLDER' | translate }}"></textarea>
+                <textarea matInput formControlName="pastMedicalHistory" rows="3"></textarea>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>{{ 'CONSULTATIONS.FAMILY_HISTORY' | translate }}</mat-label>
-                <textarea matInput formControlName="familyHistory" rows="3"
-                  placeholder="{{ 'CONSULTATIONS.FAMILY_HISTORY_PLACEHOLDER' | translate }}"></textarea>
+                <textarea matInput formControlName="familyHistory" rows="3"></textarea>
               </mat-form-field>
             </div>
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>{{ 'CONSULTATIONS.SOCIAL_HISTORY' | translate }}</mat-label>
-                <textarea matInput formControlName="socialHistory" rows="3"
-                  placeholder="{{ 'CONSULTATIONS.SOCIAL_HISTORY_PLACEHOLDER' | translate }}"></textarea>
+                <textarea matInput formControlName="socialHistory" rows="3"></textarea>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>{{ 'CONSULTATIONS.ALLERGIES' | translate }}</mat-label>
-                <textarea matInput formControlName="allergies" rows="3"
-                  placeholder="{{ 'CONSULTATIONS.ALLERGIES_PLACEHOLDER' | translate }}"></textarea>
+                <textarea matInput formControlName="allergies" rows="3"></textarea>
               </mat-form-field>
             </div>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'CONSULTATIONS.CURRENT_MEDICATIONS' | translate }}</mat-label>
-              <textarea matInput formControlName="currentMedications" rows="3"
-                placeholder="{{ 'CONSULTATIONS.CURRENT_MEDICATIONS_PLACEHOLDER' | translate }}"></textarea>
+              <textarea matInput formControlName="currentMedications" rows="3"></textarea>
             </mat-form-field>
           </div>
         </mat-tab>
@@ -236,7 +229,8 @@
                 <div class="form-row">
                   <mat-form-field appearance="outline" class="code-field">
                     <mat-label>{{ 'CONSULTATIONS.DIAGNOSIS.CODE' | translate }} (CIE-10)</mat-label>
-                    <input matInput formControlName="code" placeholder="Ej: J00">
+                    <input matInput formControlName="code">
+                    <mat-hint>Ej: J00</mat-hint>
                   </mat-form-field>
 
                   <mat-form-field appearance="outline" class="flex-field">
@@ -280,8 +274,7 @@
           <div class="tab-content">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'CONSULTATIONS.TREATMENT_PLAN' | translate }}</mat-label>
-              <textarea matInput formControlName="treatmentPlan" rows="4"
-                placeholder="{{ 'CONSULTATIONS.TREATMENT_PLAN_PLACEHOLDER' | translate }}"></textarea>
+              <textarea matInput formControlName="treatmentPlan" rows="4"></textarea>
             </mat-form-field>
 
             <mat-divider></mat-divider>
@@ -314,17 +307,20 @@
 
                   <mat-form-field appearance="outline" class="small-field">
                     <mat-label>{{ 'CONSULTATIONS.PRESCRIPTION.DOSAGE' | translate }}</mat-label>
-                    <input matInput formControlName="dosage" placeholder="Ej: 500mg">
+                    <input matInput formControlName="dosage">
+                    <mat-hint>Ej: 500mg</mat-hint>
                   </mat-form-field>
 
                   <mat-form-field appearance="outline" class="small-field">
                     <mat-label>{{ 'CONSULTATIONS.PRESCRIPTION.FREQUENCY' | translate }}</mat-label>
-                    <input matInput formControlName="frequency" placeholder="Ej: c/8h">
+                    <input matInput formControlName="frequency">
+                    <mat-hint>Ej: c/8h</mat-hint>
                   </mat-form-field>
 
                   <mat-form-field appearance="outline" class="small-field">
                     <mat-label>{{ 'CONSULTATIONS.PRESCRIPTION.DURATION' | translate }}</mat-label>
-                    <input matInput formControlName="duration" placeholder="Ej: 7 días">
+                    <input matInput formControlName="duration">
+                    <mat-hint>Ej: 7 días</mat-hint>
                   </mat-form-field>
 
                   @if (!isReadOnly) {
@@ -440,8 +436,7 @@
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'CONSULTATIONS.CLINICAL_NOTES' | translate }}</mat-label>
-              <textarea matInput formControlName="clinicalNotes" rows="4"
-                placeholder="{{ 'CONSULTATIONS.CLINICAL_NOTES_PLACEHOLDER' | translate }}"></textarea>
+              <textarea matInput formControlName="clinicalNotes" rows="4"></textarea>
             </mat-form-field>
           </div>
         </mat-tab>
