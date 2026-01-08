@@ -9,9 +9,8 @@ WORKDIR /app
 # Copy package files first (better layer caching)
 COPY package.json package-lock.json ./
 
-# Install dependencies with cache mount for faster rebuilds
-RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
-    npm ci --legacy-peer-deps
+# Install dependencies
+RUN npm ci --legacy-peer-deps
 
 # Copy only necessary source files (exclude tests, docs, etc.)
 COPY src ./src
