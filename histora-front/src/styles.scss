@@ -63,4 +63,82 @@ body:not(.theme-white):not(.theme-black):not(.theme-purple):not(.theme-orange):n
   .mat-mdc-form-field-input-control {
     font-size: 16px !important;
   }
+
+  /* Mobile container adjustments */
+  section.content {
+    margin: 55px 8px 0 8px !important;
+    width: calc(100% - 16px) !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+
+    .content-block {
+      padding: 10px 5px 0 5px !important;
+    }
+  }
+
+  /* Card adjustments for mobile */
+  .card {
+    margin-bottom: 10px !important;
+    border-radius: 8px !important;
+
+    .card-header,
+    .card-body {
+      padding: 12px !important;
+    }
+  }
+
+  /* Table header adjustments */
+  .materialTableHeader {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 10px !important;
+
+    .left,
+    .right {
+      width: 100% !important;
+      float: none !important;
+    }
+
+    .tbl-title h2 {
+      font-size: 16px !important;
+    }
+
+    .tbl-search-box {
+      width: 100% !important;
+
+      .search-field {
+        width: 100% !important;
+      }
+    }
+
+    .tbl-export-btn {
+      justify-content: flex-start !important;
+      flex-wrap: wrap !important;
+      gap: 5px !important;
+    }
+  }
+
+  /* Breadcrumb adjustments */
+  .block-header {
+    padding: 0 !important;
+    margin-bottom: 10px !important;
+
+    .breadcrumb {
+      padding: 8px 0 !important;
+      font-size: 12px !important;
+    }
+  }
+
+  /* Paginator adjustments */
+  .mat-mdc-paginator {
+    .mat-mdc-paginator-container {
+      flex-wrap: wrap !important;
+      justify-content: center !important;
+      padding: 8px !important;
+    }
+
+    .mat-mdc-paginator-page-size {
+      margin-right: 0 !important;
+    }
+  }
 }
