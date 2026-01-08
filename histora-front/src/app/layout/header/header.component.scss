@@ -33,55 +33,87 @@
 }
 
 // Mobile responsive styles for iPhone and similar devices
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   :host ::ng-deep {
     .navbar {
       .container-fluid {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         padding: 0 8px;
+        height: 56px;
       }
 
       .navbar-header {
         width: auto !important;
         display: flex;
         align-items: center;
-        padding: 8px 0;
+        padding: 0;
+        flex-shrink: 0;
+
+        .navbar-toggle {
+          display: none;
+        }
 
         .bars {
           position: relative;
           left: 0;
-          z-index: 10;
-          order: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          cursor: pointer;
         }
 
         .navbar-brand {
-          margin-left: 12px !important;
+          margin-left: 8px !important;
           padding: 0;
           height: auto;
-          flex: 1;
           width: auto;
+          display: flex;
+          align-items: center;
 
           .brand-icon {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             font-size: 18px;
             border-radius: 6px;
           }
 
           .logo-name {
             font-size: 18px;
+            margin-left: 8px;
           }
         }
       }
 
+      // Force horizontal layout - override Bootstrap collapse
       .navbar-collapse {
+        display: flex !important;
+        flex-basis: auto;
         padding: 0;
+        position: static;
+        height: auto !important;
+        overflow: visible !important;
+
+        &.collapse {
+          display: flex !important;
+        }
+      }
+
+      // Hide the desktop sidemenu collapse button on mobile
+      .collapse-menu-icon {
+        display: none !important;
       }
 
       .navbar-nav.navbar-right {
-        display: flex;
+        display: flex !important;
+        flex-direction: row !important;
         align-items: center;
         margin: 0;
         float: none !important;
+        flex-wrap: nowrap;
 
         > li {
           display: flex;
@@ -91,14 +123,16 @@
         .nav-notification-icons {
           margin: 0 2px;
           padding: 6px;
+          min-width: 36px;
+          height: 36px;
         }
 
-        // Hide less important items on very small screens
+        // Hide fullscreen on mobile (not useful)
         .fullscreen {
-          display: none;
+          display: none !important;
         }
 
-        // Make user profile more compact
+        // Compact user profile
         .user_profile {
           .user_img {
             width: 32px !important;
@@ -110,30 +144,38 @@
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
   :host ::ng-deep {
     .navbar {
       .navbar-header .navbar-brand {
         .logo-name {
-          font-size: 16px;
+          display: none; // Hide text, keep icon only
         }
 
         .brand-icon {
-          width: 28px;
-          height: 28px;
+          width: 30px;
+          height: 30px;
           font-size: 16px;
         }
       }
 
       .navbar-nav.navbar-right {
-        .theme-toggle,
-        .fullscreen {
-          display: none;
-        }
-
         .nav-notification-icons {
           margin: 0 1px;
           padding: 4px;
+          min-width: 32px;
+          height: 32px;
+
+          i {
+            font-size: 20px;
+          }
+        }
+
+        .user_profile {
+          .user_img {
+            width: 28px !important;
+            height: 28px !important;
+          }
         }
       }
     }
