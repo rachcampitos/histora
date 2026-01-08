@@ -36,52 +36,74 @@
 @media (max-width: 768px) {
   :host ::ng-deep {
     .navbar {
+      min-height: 50px !important;
+
       .container-fluid {
         display: flex !important;
         flex-direction: row !important;
-        align-items: center;
-        justify-content: space-between;
+        align-items: center !important;
+        justify-content: space-between !important;
         flex-wrap: nowrap !important;
-        padding: 0 8px;
-        height: 56px;
+        padding: 0 8px !important;
+        height: 50px !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
 
       .navbar-header {
         width: auto !important;
-        display: flex;
-        align-items: center;
-        padding: 0;
-        flex-shrink: 0;
-        flex-grow: 0;
+        min-width: auto !important;
+        max-width: none !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
+        float: none !important;
 
         .navbar-toggle {
-          display: none;
+          display: none !important;
         }
 
         .bars {
-          position: relative;
-          left: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 36px;
-          height: 36px;
+          position: relative !important;
+          left: auto !important;
+          float: none !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 40px !important;
+          height: 40px !important;
           cursor: pointer;
+          flex-shrink: 0 !important;
+
+          &:before,
+          &:after {
+            position: static !important;
+            line-height: 1 !important;
+            left: auto !important;
+            top: auto !important;
+          }
         }
 
         .navbar-brand {
-          margin-left: 4px !important;
-          padding: 0;
-          height: auto;
-          width: auto;
-          display: flex;
-          align-items: center;
+          margin: 0 0 0 4px !important;
+          padding: 0 !important;
+          height: auto !important;
+          width: auto !important;
+          float: none !important;
+          display: flex !important;
+          align-items: center !important;
+          flex-shrink: 0 !important;
 
           .brand-icon {
-            width: 28px;
-            height: 28px;
-            font-size: 16px;
-            border-radius: 6px;
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 16px !important;
+            border-radius: 6px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
           }
 
           // Hide logo name on mobile - only show icon
@@ -94,16 +116,18 @@
       // Force horizontal layout - override Bootstrap collapse
       .navbar-collapse {
         display: flex !important;
-        flex-basis: auto;
-        flex-grow: 1;
-        justify-content: flex-end;
-        padding: 0;
-        position: static;
+        flex-basis: auto !important;
+        flex-grow: 1 !important;
+        justify-content: flex-end !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        position: static !important;
         height: auto !important;
         overflow: visible !important;
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
+        float: none !important;
 
         &.collapse {
           display: flex !important;
@@ -118,25 +142,26 @@
       .navbar-nav.navbar-right {
         display: flex !important;
         flex-direction: row !important;
-        align-items: center;
-        margin: 0;
-        padding: 0;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
         float: none !important;
         flex-wrap: nowrap !important;
-        gap: 2px;
+        gap: 4px !important;
 
         > li {
-          display: flex;
-          align-items: center;
-          flex-shrink: 0;
+          display: flex !important;
+          align-items: center !important;
+          flex-shrink: 0 !important;
+          margin: 0 !important;
         }
 
         .nav-notification-icons {
           margin: 0 !important;
-          padding: 4px !important;
-          min-width: 32px !important;
-          width: 32px !important;
-          height: 32px !important;
+          padding: 6px !important;
+          min-width: 36px !important;
+          width: 36px !important;
+          height: 36px !important;
 
           i {
             font-size: 20px !important;
@@ -151,18 +176,19 @@
         // Compact notification button
         .notification-list button.nav-notification-icons,
         app-notification-list button.nav-notification-icons {
-          min-width: 32px !important;
-          width: 32px !important;
-          height: 32px !important;
-          padding: 4px !important;
+          min-width: 36px !important;
+          width: 36px !important;
+          height: 36px !important;
+          padding: 6px !important;
         }
 
         // Compact language selector
         app-language-list button {
-          min-width: 32px !important;
-          padding: 4px 6px !important;
+          min-width: 36px !important;
+          padding: 6px !important;
 
-          span.lang-name {
+          span.lang-name,
+          .country-name {
             display: none !important;
           }
         }
@@ -170,21 +196,30 @@
         // Compact user profile - hide username, show only avatar
         .user_profile,
         app-user-profile-menu {
+          button {
+            padding: 4px !important;
+            min-width: auto !important;
+          }
+
           .user-profile-img {
+            display: flex !important;
+            align-items: center !important;
+
             span {
               display: none !important;
             }
           }
 
           .user_img {
-            width: 28px !important;
-            height: 28px !important;
+            width: 32px !important;
+            height: 32px !important;
+            margin: 0 !important;
           }
 
           .user_icon {
-            font-size: 28px !important;
-            width: 28px !important;
-            height: 28px !important;
+            font-size: 32px !important;
+            width: 32px !important;
+            height: 32px !important;
           }
         }
       }
@@ -196,51 +231,59 @@
   :host ::ng-deep {
     .navbar {
       .container-fluid {
-        padding: 0 4px;
+        padding: 0 4px !important;
+        height: 46px !important;
       }
 
       .navbar-header {
         .bars {
-          width: 32px;
-          height: 32px;
+          width: 36px !important;
+          height: 36px !important;
         }
 
         .navbar-brand {
           margin-left: 2px !important;
 
           .brand-icon {
-            width: 26px;
-            height: 26px;
-            font-size: 14px;
+            width: 24px !important;
+            height: 24px !important;
+            font-size: 14px !important;
           }
         }
       }
 
       .navbar-nav.navbar-right {
-        gap: 1px;
+        gap: 2px !important;
 
         .nav-notification-icons {
-          min-width: 28px !important;
-          width: 28px !important;
-          height: 28px !important;
-          padding: 2px !important;
+          min-width: 32px !important;
+          width: 32px !important;
+          height: 32px !important;
+          padding: 4px !important;
 
           i {
             font-size: 18px !important;
           }
         }
 
+        app-language-list button {
+          min-width: 32px !important;
+          width: 32px !important;
+          height: 32px !important;
+          padding: 4px !important;
+        }
+
         .user_profile,
         app-user-profile-menu {
           .user_img {
-            width: 26px !important;
-            height: 26px !important;
+            width: 28px !important;
+            height: 28px !important;
           }
 
           .user_icon {
-            font-size: 26px !important;
-            width: 26px !important;
-            height: 26px !important;
+            font-size: 28px !important;
+            width: 28px !important;
+            height: 28px !important;
           }
         }
       }
