@@ -1,0 +1,350 @@
+.services-content {
+  --background: var(--ion-color-light);
+}
+
+// Loading state
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  color: var(--ion-color-medium);
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+}
+
+// Summary section
+.summary-section {
+  padding: 16px;
+
+  .summary-card {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: var(--ion-color-primary);
+    border-radius: 12px;
+    padding: 20px 16px;
+    color: white;
+
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+
+      .summary-value {
+        font-size: 28px;
+        font-weight: 700;
+
+        &.active {
+          color: var(--ion-color-success-tint);
+        }
+
+        &.inactive {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+
+      .summary-label {
+        font-size: 12px;
+        opacity: 0.85;
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .summary-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Section styling
+.section {
+  margin-bottom: 24px;
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+
+    ion-badge {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+  }
+}
+
+// Services list
+.services-list {
+  background: transparent;
+  padding: 0 16px;
+
+  ion-item-sliding {
+    margin-bottom: 12px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  ion-item {
+    --background: white;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --inner-padding-end: 8px;
+    --min-height: 80px;
+    border-radius: 12px;
+  }
+
+  &.inactive {
+    ion-item {
+      --background: var(--ion-color-light-shade);
+    }
+
+    h3, .category, .service-details {
+      opacity: 0.6;
+    }
+  }
+}
+
+// Service icon
+.service-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+
+  ion-icon {
+    font-size: 22px;
+    color: white;
+  }
+
+  &.inactive {
+    background: var(--ion-color-medium);
+  }
+}
+
+// Service label
+ion-label {
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin-bottom: 4px !important;
+  }
+
+  .category {
+    font-size: 13px;
+    color: var(--ion-color-medium);
+    margin-bottom: 6px !important;
+  }
+
+  .service-details {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .price {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ion-color-primary);
+    }
+
+    .duration {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--ion-color-medium);
+
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Slide options
+ion-item-option {
+  --padding-start: 20px;
+  --padding-end: 20px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+// Empty state
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 80px;
+    color: var(--ion-color-medium);
+    opacity: 0.4;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    margin: 0 0 24px;
+    max-width: 280px;
+    line-height: 1.5;
+  }
+
+  ion-button {
+    --border-radius: 12px;
+    font-weight: 600;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+// FAB
+ion-fab-button {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb), 0.4);
+}
+
+// Modal styling
+.modal-content {
+  --background: var(--ion-color-light);
+
+  ion-list {
+    background: transparent;
+    padding: 16px;
+
+    ion-item {
+      --background: white;
+      --border-radius: 12px;
+      --padding-start: 16px;
+      --padding-end: 16px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+      ion-label {
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        margin-bottom: 4px;
+
+        &[position="stacked"] {
+          transform: none !important;
+        }
+      }
+
+      ion-input, ion-textarea, ion-select {
+        --padding-top: 8px;
+        --padding-bottom: 8px;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      ion-toggle {
+        --handle-width: 22px;
+        --handle-height: 22px;
+      }
+    }
+  }
+
+  .helper-text {
+    padding: 0 16px 32px;
+
+    p {
+      font-size: 12px;
+      color: var(--ion-color-medium);
+      margin: 0 0 8px;
+      line-height: 1.4;
+
+      &:first-child {
+        font-style: italic;
+      }
+    }
+  }
+}
+
+// Modal header
+ion-modal {
+  ion-header {
+    ion-toolbar {
+      --background: white;
+      --border-width: 0;
+      padding-top: 8px;
+
+      ion-title {
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      ion-button {
+        font-size: 15px;
+
+        ion-spinner {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+
+// Toggle in list
+ion-toggle {
+  padding-right: 0;
+}
+
+// Responsive adjustments
+@media (min-width: 768px) {
+  .summary-section {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .services-list {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+}

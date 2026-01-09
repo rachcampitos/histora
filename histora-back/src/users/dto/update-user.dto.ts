@@ -1,6 +1,7 @@
 import { PartialType, OmitType } from '@nestjs/mapped-types';
 import { IsDate, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Types } from 'mongoose';
 import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto extends PartialType(
@@ -14,4 +15,13 @@ export class UpdateUserDto extends PartialType(
   @IsOptional()
   @Type(() => Date)
   refreshTokenExpires?: Date;
+
+  @IsOptional()
+  doctorProfileId?: Types.ObjectId;
+
+  @IsOptional()
+  patientProfileId?: Types.ObjectId;
+
+  @IsOptional()
+  nurseProfileId?: Types.ObjectId;
 }

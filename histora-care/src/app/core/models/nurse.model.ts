@@ -1,0 +1,86 @@
+export interface Nurse {
+  _id: string;
+  userId: string;
+  user?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    avatar?: string;
+  };
+  cepNumber: string; // Colegio de Enfermeros del Peru
+  cepVerified: boolean;
+  cepVerifiedAt?: Date;
+  specialties: string[];
+  bio?: string;
+  yearsOfExperience: number;
+
+  // Services offered
+  services: NurseService[];
+
+  // Location
+  location: GeoLocation;
+  serviceRadius: number; // in kilometers
+
+  // Availability
+  isAvailable: boolean;
+  availableFrom?: string; // HH:mm format
+  availableTo?: string;
+  availableDays: number[]; // 0-6 (Sunday-Saturday)
+
+  // Stats
+  averageRating: number;
+  totalReviews: number;
+  totalServicesCompleted: number;
+
+  // Status
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface NurseService {
+  _id?: string;
+  name: string;
+  description: string;
+  category: ServiceCategory;
+  price: number;
+  currency: string;
+  durationMinutes: number;
+  isActive: boolean;
+}
+
+export type ServiceCategory =
+  | 'injection'      // Inyectables
+  | 'wound_care'     // Curaciones
+  | 'catheter'       // Sondas
+  | 'vital_signs'    // Control de signos vitales
+  | 'iv_therapy'     // Terapia intravenosa
+  | 'blood_draw'     // Toma de muestras
+  | 'medication'     // Administracion de medicamentos
+  | 'elderly_care'   // Cuidado de adulto mayor
+  | 'post_surgery'   // Cuidado post-operatorio
+  | 'other';
+
+export interface GeoLocation {
+  type: 'Point';
+  coordinates: [number, number]; // [longitude, latitude]
+  address?: string;
+  city?: string;
+  district?: string;
+}
+
+export interface NurseSearchParams {
+  latitude: number;
+  longitude: number;
+  radiusKm?: number;
+  category?: ServiceCategory;
+  minRating?: number;
+  maxPrice?: number;
+  availableNow?: boolean;
+}
+
+export interface NurseSearchResult {
+  nurse: Nurse;
+  distance: number; // in km
+}

@@ -6,14 +6,14 @@ RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json ./
+# Copy package files from histora-back subdirectory (build context is repo root)
+COPY histora-back/package.json histora-back/package-lock.json ./
 
 # Install all dependencies (including dev)
 RUN npm ci
 
 # Copy source code
-COPY . .
+COPY histora-back/ .
 
 # Build the application
 RUN npm run build

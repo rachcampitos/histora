@@ -1,0 +1,198 @@
+<ion-content class="register-content" [fullscreen]="true">
+  <div class="register-container">
+    <!-- Back Button -->
+    <ion-button fill="clear" class="back-btn" (click)="goBack()">
+      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+    </ion-button>
+
+    <!-- User Type Selection -->
+    <div class="selection-section" *ngIf="!selectedUserType">
+      <div class="brand-section">
+        <div class="logo-wrapper">
+          <ion-icon name="heart-circle" class="logo-icon"></ion-icon>
+        </div>
+        <h1 class="app-name">Histora Care</h1>
+        <p class="app-tagline">Crea tu cuenta</p>
+      </div>
+
+      <div class="type-cards">
+        <div class="type-card nurse-card" (click)="selectUserType('nurse')">
+          <div class="card-icon">
+            <ion-icon name="medkit"></ion-icon>
+          </div>
+          <h3>Soy Enfermera/o</h3>
+          <p>Quiero ofrecer mis servicios profesionales</p>
+          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+        </div>
+
+        <div class="type-card patient-card" (click)="selectUserType('patient')">
+          <div class="card-icon">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <h3>Soy Paciente</h3>
+          <p>Busco servicios de enfermería a domicilio</p>
+          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+        </div>
+      </div>
+
+      <div class="login-link">
+        <p>¿Ya tienes una cuenta?</p>
+        <ion-button fill="clear" routerLink="/auth/login">
+          Iniciar Sesión
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="form-section" *ngIf="selectedUserType">
+      <h2 class="form-title">
+        {{ selectedUserType === 'nurse' ? 'Registro de Enfermera/o' : 'Registro de Paciente' }}
+      </h2>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <!-- Name Fields -->
+        <div class="name-row">
+          <ion-item lines="none" class="input-item" [class.input-error]="firstName?.invalid && firstName?.touched">
+            <ion-input
+              formControlName="firstName"
+              placeholder="Nombre"
+              autocomplete="given-name">
+            </ion-input>
+          </ion-item>
+          <ion-item lines="none" class="input-item" [class.input-error]="lastName?.invalid && lastName?.touched">
+            <ion-input
+              formControlName="lastName"
+              placeholder="Apellido"
+              autocomplete="family-name">
+            </ion-input>
+          </ion-item>
+        </div>
+        <div class="error-message" *ngIf="(firstName?.invalid && firstName?.touched) || (lastName?.invalid && lastName?.touched)">
+          <span *ngIf="firstName?.errors?.['required'] || lastName?.errors?.['required']">Nombre y apellido son requeridos</span>
+        </div>
+
+        <!-- Email -->
+        <ion-item lines="none" class="input-item" [class.input-error]="email?.invalid && email?.touched">
+          <ion-icon name="mail-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input
+            type="email"
+            formControlName="email"
+            placeholder="Correo electrónico"
+            autocomplete="email"
+            inputmode="email">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="email?.invalid && email?.touched">
+          <span *ngIf="email?.errors?.['required']">El correo es requerido</span>
+          <span *ngIf="email?.errors?.['email']">Ingresa un correo válido</span>
+        </div>
+
+        <!-- Phone -->
+        <ion-item lines="none" class="input-item" [class.input-error]="phone?.invalid && phone?.touched">
+          <ion-icon name="call-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input
+            type="tel"
+            formControlName="phone"
+            placeholder="Teléfono (9 dígitos)"
+            autocomplete="tel"
+            inputmode="tel"
+            maxlength="9">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="phone?.invalid && phone?.touched">
+          <span *ngIf="phone?.errors?.['required']">El teléfono es requerido</span>
+          <span *ngIf="phone?.errors?.['pattern']">Ingresa 9 dígitos</span>
+        </div>
+
+        <!-- CEP Number (Nurses only) -->
+        <ng-container *ngIf="selectedUserType === 'nurse'">
+          <ion-item lines="none" class="input-item" [class.input-error]="cepNumber?.invalid && cepNumber?.touched">
+            <ion-icon name="card-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-input
+              formControlName="cepNumber"
+              placeholder="Número CEP (6 dígitos)"
+              inputmode="numeric"
+              maxlength="6">
+            </ion-input>
+          </ion-item>
+          <div class="error-message" *ngIf="cepNumber?.invalid && cepNumber?.touched">
+            <span *ngIf="cepNumber?.errors?.['required']">El número CEP es requerido</span>
+            <span *ngIf="cepNumber?.errors?.['pattern']">Ingresa 6 dígitos</span>
+          </div>
+
+          <!-- Specialties -->
+          <ion-item lines="none" class="input-item select-item">
+            <ion-icon name="list-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-select
+              formControlName="specialties"
+              placeholder="Especialidades (opcional)"
+              [multiple]="true"
+              interface="alert">
+              <ion-select-option *ngFor="let specialty of specialtiesOptions" [value]="specialty">
+                {{ specialty }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ng-container>
+
+        <!-- Password -->
+        <ion-item lines="none" class="input-item" [class.input-error]="password?.invalid && password?.touched">
+          <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Contraseña"
+            autocomplete="new-password">
+          </ion-input>
+          <ion-button fill="clear" slot="end" (click)="togglePassword()" class="password-toggle">
+            <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <div class="error-message" *ngIf="password?.invalid && password?.touched">
+          <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
+          <span *ngIf="password?.errors?.['minlength']">Mínimo 8 caracteres</span>
+        </div>
+
+        <!-- Confirm Password -->
+        <ion-item lines="none" class="input-item" [class.input-error]="confirmPassword?.invalid && confirmPassword?.touched">
+          <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            placeholder="Confirmar contraseña"
+            autocomplete="new-password">
+          </ion-input>
+          <ion-button fill="clear" slot="end" (click)="toggleConfirmPassword()" class="password-toggle">
+            <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <div class="error-message" *ngIf="confirmPassword?.invalid && confirmPassword?.touched">
+          <span *ngIf="confirmPassword?.errors?.['required']">Confirma tu contraseña</span>
+          <span *ngIf="confirmPassword?.errors?.['mismatch']">Las contraseñas no coinciden</span>
+        </div>
+
+        <!-- Terms -->
+        <div class="terms-section">
+          <ion-checkbox formControlName="acceptTerms" labelPlacement="end">
+            <span class="terms-text">
+              Acepto los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a>
+            </span>
+          </ion-checkbox>
+        </div>
+        <div class="error-message" *ngIf="acceptTerms?.invalid && acceptTerms?.touched">
+          <span>Debes aceptar los términos y condiciones</span>
+        </div>
+
+        <!-- Register Button -->
+        <ion-button
+          expand="block"
+          type="submit"
+          class="register-btn"
+          [disabled]="registerForm.invalid">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Crear Cuenta
+        </ion-button>
+      </form>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,258 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/nurse/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Servicios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="services-content">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading()">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando servicios...</p>
+  </div>
+
+  <!-- Services List -->
+  <ng-container *ngIf="!isLoading()">
+    <!-- Summary Section -->
+    <div class="summary-section">
+      <div class="summary-card">
+        <div class="summary-item">
+          <span class="summary-value">{{ services().length }}</span>
+          <span class="summary-label">Total</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-value active">{{ activeServices().length }}</span>
+          <span class="summary-label">Activos</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-value inactive">{{ inactiveServices().length }}</span>
+          <span class="summary-label">Inactivos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Services -->
+    <div class="section" *ngIf="activeServices().length > 0">
+      <div class="section-header">
+        <h2>Servicios Activos</h2>
+        <ion-badge color="success">{{ activeServices().length }}</ion-badge>
+      </div>
+
+      <ion-list class="services-list">
+        <ion-item-sliding *ngFor="let service of activeServices()">
+          <ion-item button (click)="openEditModal(service)" detail="false">
+            <div class="service-icon" slot="start">
+              <ion-icon [name]="getCategoryIcon(service.category)"></ion-icon>
+            </div>
+            <ion-label>
+              <h3>{{ service.name }}</h3>
+              <p class="category">{{ getCategoryLabel(service.category) }}</p>
+              <div class="service-details">
+                <span class="price">S/. {{ service.price | number:'1.2-2' }}</span>
+                <span class="duration">
+                  <ion-icon name="time-outline"></ion-icon>
+                  {{ formatDuration(service.durationMinutes) }}
+                </span>
+              </div>
+            </ion-label>
+            <ion-toggle
+              slot="end"
+              [checked]="service.isActive"
+              (ionChange)="toggleServiceStatus(service)"
+              (click)="$event.stopPropagation()"
+              color="success">
+            </ion-toggle>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="openEditModal(service)">
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="confirmDeleteService(service)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </div>
+
+    <!-- Inactive Services -->
+    <div class="section" *ngIf="inactiveServices().length > 0">
+      <div class="section-header">
+        <h2>Servicios Inactivos</h2>
+        <ion-badge color="medium">{{ inactiveServices().length }}</ion-badge>
+      </div>
+
+      <ion-list class="services-list inactive">
+        <ion-item-sliding *ngFor="let service of inactiveServices()">
+          <ion-item button (click)="openEditModal(service)" detail="false">
+            <div class="service-icon inactive" slot="start">
+              <ion-icon [name]="getCategoryIcon(service.category)"></ion-icon>
+            </div>
+            <ion-label>
+              <h3>{{ service.name }}</h3>
+              <p class="category">{{ getCategoryLabel(service.category) }}</p>
+              <div class="service-details">
+                <span class="price">S/. {{ service.price | number:'1.2-2' }}</span>
+                <span class="duration">
+                  <ion-icon name="time-outline"></ion-icon>
+                  {{ formatDuration(service.durationMinutes) }}
+                </span>
+              </div>
+            </ion-label>
+            <ion-toggle
+              slot="end"
+              [checked]="service.isActive"
+              (ionChange)="toggleServiceStatus(service)"
+              (click)="$event.stopPropagation()"
+              color="success">
+            </ion-toggle>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="openEditModal(service)">
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="confirmDeleteService(service)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="services().length === 0">
+      <ion-icon name="medical-outline"></ion-icon>
+      <h3>Sin servicios</h3>
+      <p>Agrega los servicios que ofreces para que los pacientes puedan encontrarte.</p>
+      <ion-button (click)="openAddModal()" expand="block">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        Agregar servicio
+      </ion-button>
+    </div>
+  </ng-container>
+
+  <!-- FAB Button -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isLoading() && services().length > 0">
+    <ion-fab-button (click)="openAddModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<!-- Service Modal -->
+<ion-modal
+  #serviceModal
+  [isOpen]="isModalOpen()"
+  (didDismiss)="closeModal()"
+  [breakpoints]="[0, 0.5, 0.75, 1]"
+  [initialBreakpoint]="0.75">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeModal()">Cancelar</ion-button>
+        </ion-buttons>
+        <ion-title>{{ isEditMode() ? 'Editar Servicio' : 'Nuevo Servicio' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="saveService()" [disabled]="isSaving()" strong>
+            <ion-spinner *ngIf="isSaving()" name="dots"></ion-spinner>
+            <span *ngIf="!isSaving()">Guardar</span>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-content">
+      <ion-list>
+        <!-- Name -->
+        <ion-item>
+          <ion-label position="stacked">Nombre del servicio *</ion-label>
+          <ion-input
+            type="text"
+            placeholder="Ej: Inyeccion intramuscular"
+            [value]="serviceForm().name"
+            (ionInput)="updateFormField('name', $event.detail.value)">
+          </ion-input>
+        </ion-item>
+
+        <!-- Description -->
+        <ion-item>
+          <ion-label position="stacked">Descripcion</ion-label>
+          <ion-textarea
+            placeholder="Describe el servicio..."
+            [value]="serviceForm().description"
+            (ionInput)="updateFormField('description', $event.detail.value)"
+            rows="3">
+          </ion-textarea>
+        </ion-item>
+
+        <!-- Category -->
+        <ion-item>
+          <ion-label position="stacked">Categoria *</ion-label>
+          <ion-select
+            placeholder="Selecciona una categoria"
+            [value]="serviceForm().category"
+            (ionChange)="updateFormField('category', $event.detail.value)"
+            interface="action-sheet">
+            <ion-select-option *ngFor="let cat of categories" [value]="cat.value">
+              {{ cat.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Price -->
+        <ion-item>
+          <ion-label position="stacked">Precio (S/.) *</ion-label>
+          <ion-input
+            type="number"
+            placeholder="0.00"
+            [value]="serviceForm().price"
+            (ionInput)="updateFormField('price', +($event.detail.value || 0))"
+            min="0"
+            step="0.50">
+          </ion-input>
+        </ion-item>
+
+        <!-- Duration -->
+        <ion-item>
+          <ion-label position="stacked">Duracion (minutos) *</ion-label>
+          <ion-input
+            type="number"
+            placeholder="30"
+            [value]="serviceForm().durationMinutes"
+            (ionInput)="updateFormField('durationMinutes', +($event.detail.value || 0))"
+            min="5"
+            step="5">
+          </ion-input>
+        </ion-item>
+
+        <!-- Active Toggle -->
+        <ion-item>
+          <ion-label>Servicio activo</ion-label>
+          <ion-toggle
+            [checked]="serviceForm().isActive"
+            (ionChange)="updateFormField('isActive', $event.detail.checked)"
+            color="success">
+          </ion-toggle>
+        </ion-item>
+      </ion-list>
+
+      <!-- Helper text -->
+      <div class="helper-text">
+        <p>* Campos requeridos</p>
+        <p>Los servicios activos apareceran en tu perfil publico y los pacientes podran solicitarlos.</p>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
