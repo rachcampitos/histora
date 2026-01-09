@@ -43,10 +43,7 @@
               "src/assets/scss/style.scss",
               "src/styles.scss"
             ],
-            "scripts": [
-              "./node_modules/moment/min/moment.min.js",
-              "./node_modules/apexcharts/dist/apexcharts.min.js"
-            ],
+            "scripts": [],
             "browser": "src/main.ts"
           },
           "configurations": {
