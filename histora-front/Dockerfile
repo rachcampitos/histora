@@ -14,7 +14,7 @@ RUN npm ci --legacy-peer-deps
 
 # Copy only necessary source files (exclude tests, docs, etc.)
 COPY src ./src
-COPY angular.json tsconfig*.json ./
+COPY angular.json tsconfig*.json ngsw-config.json ./
 COPY public ./public
 
 # Build for production with optimizations
