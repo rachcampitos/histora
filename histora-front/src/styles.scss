@@ -88,22 +88,21 @@ html, body {
   }
 }
 
-/* Ensure overlay menus appear above navbar (z-index: 999) */
+/* Ensure overlay menus appear above navbar (z-index: 999) and sidebar */
 .cdk-overlay-container {
-  z-index: 1050 !important;
+  z-index: 10000 !important;
+  position: fixed;
 }
 
-.cdk-overlay-backdrop {
-  z-index: 1040 !important;
+/* Mat-menu specific fixes */
+.cdk-overlay-connected-position-bounding-box {
+  z-index: 10001 !important;
 }
 
-/* Ensure mat-menu items are clickable */
-.cdk-overlay-pane {
-  z-index: 1100 !important;
-  pointer-events: auto !important;
-}
-
+/* Ensure menu panel is clickable and above backdrop */
 .mat-mdc-menu-panel {
+  position: relative;
+  z-index: 1 !important;
   pointer-events: auto !important;
 }
 
@@ -112,6 +111,17 @@ html, body {
 }
 
 .mat-mdc-menu-item {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure backdrop doesn't block menu clicks */
+.cdk-overlay-backdrop.cdk-overlay-transparent-backdrop {
+  pointer-events: none !important;
+}
+
+.cdk-overlay-backdrop.mat-mdc-menu-backdrop {
   pointer-events: auto !important;
 }
 
