@@ -78,7 +78,12 @@ export class SidebarComponent
   }
   @HostListener('document:mousedown', ['$event'])
   onGlobalClick(event: Event): void {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
+    const target = event.target as HTMLElement;
+    // Don't close sidebar if clicking inside CDK overlay (mat-menu, mat-dialog, etc.)
+    if (target.closest('.cdk-overlay-container')) {
+      return;
+    }
+    if (!this.elementRef.nativeElement.contains(target)) {
       this.renderer.removeClass(this.document.body, 'overlay-open');
     }
   }
