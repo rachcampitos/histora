@@ -10,7 +10,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { AuthService, AuthResponse } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
+import { RegisterDto, RegisterPatientDto, RegisterNurseDto, CompleteGoogleRegistrationDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -50,6 +50,16 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Email ya registrado' })
   registerPatient(@Body() registerDto: RegisterPatientDto): Promise<AuthResponse> {
     return this.authService.registerPatient(registerDto);
+  }
+
+  @Public()
+  @Post('register/nurse')
+  @ApiOperation({ summary: 'Registrar nueva enfermera (Histora Care)' })
+  @ApiResponse({ status: 201, description: 'Enfermera registrada exitosamente' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  @ApiResponse({ status: 409, description: 'Email o CEP ya registrado' })
+  registerNurse(@Body() registerDto: RegisterNurseDto): Promise<AuthResponse> {
+    return this.authService.registerNurse(registerDto);
   }
 
   @Public()
@@ -128,11 +138,30 @@ export class AuthController {
         access_token: authResponse.access_token,
         refresh_token: authResponse.refresh_token,
         user: JSON.stringify(authResponse.user),
+        is_new_user: authResponse.isNewUser ? 'true' : 'false',
       });
 
       res.redirect(`${this.frontendUrl}/#/auth/google/callback?${params.toString()}`);
     } catch {
       res.redirect(`${this.frontendUrl}/#/authentication/signin?error=google_auth_failed`);
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('google/complete-registration')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Completar registro de usuario de Google (seleccionar tipo)' })
+  @ApiResponse({ status: 200, description: 'Registro completado exitosamente' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  @ApiResponse({ status: 401, description: 'No autorizado' })
+  async completeGoogleRegistration(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() dto: CompleteGoogleRegistrationDto,
+  ): Promise<AuthResponse> {
+    return this.authService.completeGoogleRegistration(
+      user.userId,
+      dto.userType,
+      dto.userType === 'doctor' ? { clinicName: dto.clinicName!, clinicPhone: dto.clinicPhone } : undefined,
+    );
   }
 }

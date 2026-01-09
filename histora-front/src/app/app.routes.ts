@@ -56,6 +56,13 @@ export const APP_ROUTE: Route[] = [
       ),
   },
   {
+    path: 'auth/google/select-type',
+    loadComponent: () =>
+      import('./auth/google-select-type/google-select-type.component').then(
+        (m) => m.GoogleSelectTypeComponent
+      ),
+  },
+  {
     path: 'authentication',
     component: AuthLayoutComponent,
     loadChildren: () =>

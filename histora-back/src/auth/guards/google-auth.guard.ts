@@ -1,4 +1,4 @@
-import { Injectable, ExecutionContext, Logger } from '@nestjs/common';
+import { Injectable, ExecutionContext, Logger, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
@@ -24,6 +24,11 @@ export class GoogleAuthGuard extends AuthGuard('google') {
     if (err) {
       this.logger.error('Google Auth handleRequest error:', err);
       throw err;
+    }
+    // If user is false/null (e.g., user cancelled OAuth flow), throw error
+    if (!user) {
+      this.logger.warn('Google Auth cancelled or failed - no user returned');
+      throw new UnauthorizedException('Google authentication cancelled or failed');
     }
     return user as TUser;
   }
