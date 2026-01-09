@@ -10,6 +10,7 @@ import { UsersModule } from '../users/users.module';
 import { ClinicsModule } from '../clinics/clinics.module';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 import { DoctorsModule } from '../doctors/doctors.module';
+import { NursesModule } from '../nurses/nurses.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EmailProvider } from '../notifications/providers/email.provider';
 
@@ -20,6 +21,7 @@ import { EmailProvider } from '../notifications/providers/email.provider';
     forwardRef(() => ClinicsModule),
     forwardRef(() => SubscriptionsModule),
     forwardRef(() => DoctorsModule),
+    forwardRef(() => NursesModule),
     NotificationsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

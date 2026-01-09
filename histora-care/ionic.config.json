@@ -1,0 +1,7 @@
+{
+  "name": "histora-care",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

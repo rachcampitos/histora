@@ -1,0 +1,258 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="saveProfile()" [disabled]="isSaving() || isLoading()">
+        <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="profile-content">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading()">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando perfil...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading()">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="avatar-container">
+        <ion-avatar>
+          <img *ngIf="avatar()" [src]="avatar()" alt="Avatar">
+          <ion-icon *ngIf="!avatar()" name="person-circle" class="default-avatar"></ion-icon>
+        </ion-avatar>
+        <div class="verified-badge" *ngIf="cepVerified()">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+      </div>
+      <h1 class="nurse-name">{{ fullName() }}</h1>
+      <p class="nurse-role">Enfermera Profesional</p>
+    </div>
+
+    <!-- CEP Number Section (Display Only) -->
+    <div class="section cep-section">
+      <div class="section-header">
+        <ion-icon name="ribbon-outline"></ion-icon>
+        <h2>Numero CEP</h2>
+      </div>
+      <div class="cep-display">
+        <span class="cep-number">{{ cepNumber() }}</span>
+        <ion-chip [color]="cepVerified() ? 'success' : 'warning'" class="cep-status">
+          <ion-icon [name]="cepVerified() ? 'checkmark-circle' : 'time-outline'"></ion-icon>
+          <ion-label>{{ cepVerified() ? 'Verificado' : 'Pendiente' }}</ion-label>
+        </ion-chip>
+      </div>
+      <p class="cep-note">Colegio de Enfermeros del Peru</p>
+    </div>
+
+    <!-- Bio Section -->
+    <div class="section">
+      <div class="section-header">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <h2>Acerca de mi</h2>
+      </div>
+      <ion-textarea
+        [value]="bio()"
+        (ionInput)="onBioChange($event)"
+        placeholder="Escribe una breve descripcion sobre ti, tu experiencia y enfoque profesional..."
+        [autoGrow]="true"
+        [rows]="4"
+        [maxlength]="500"
+        class="bio-textarea">
+      </ion-textarea>
+      <p class="char-count">{{ bio().length }}/500 caracteres</p>
+    </div>
+
+    <!-- Specialties Section -->
+    <div class="section">
+      <div class="section-header">
+        <ion-icon name="medical-outline"></ion-icon>
+        <h2>Especialidades</h2>
+      </div>
+
+      <!-- Current Specialties -->
+      <div class="specialties-chips" *ngIf="specialties().length > 0">
+        <ion-chip *ngFor="let specialty of specialties()" color="primary">
+          <ion-label>{{ specialty }}</ion-label>
+          <ion-icon name="close-circle" (click)="removeSpecialty(specialty)"></ion-icon>
+        </ion-chip>
+      </div>
+      <p class="empty-text" *ngIf="specialties().length === 0">
+        Agrega tus especialidades para que los pacientes puedan encontrarte
+      </p>
+
+      <!-- Add New Specialty -->
+      <div class="add-specialty">
+        <ion-input
+          [value]="newSpecialty()"
+          (ionInput)="onNewSpecialtyChange($event)"
+          placeholder="Agregar especialidad..."
+          (keyup.enter)="addSpecialty()">
+        </ion-input>
+        <ion-button fill="clear" (click)="addSpecialty()" [disabled]="!newSpecialty()">
+          <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      <!-- Common Specialties Suggestions -->
+      <div class="suggestions" *ngIf="getAvailableCommonSpecialties().length > 0">
+        <p class="suggestions-label">Sugerencias:</p>
+        <div class="suggestions-chips">
+          <ion-chip
+            *ngFor="let specialty of getAvailableCommonSpecialties()"
+            outline
+            color="medium"
+            (click)="addCommonSpecialty(specialty)">
+            <ion-icon name="add-outline"></ion-icon>
+            <ion-label>{{ specialty }}</ion-label>
+          </ion-chip>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience Section -->
+    <div class="section">
+      <div class="section-header">
+        <ion-icon name="school-outline"></ion-icon>
+        <h2>Anos de Experiencia</h2>
+      </div>
+      <div class="experience-input">
+        <ion-input
+          type="number"
+          [value]="yearsOfExperience()"
+          (ionInput)="onYearsChange($event)"
+          [min]="0"
+          [max]="50"
+          placeholder="0">
+        </ion-input>
+        <span class="experience-label">anos</span>
+      </div>
+    </div>
+
+    <!-- Service Radius Section -->
+    <div class="section">
+      <div class="section-header">
+        <ion-icon name="locate-outline"></ion-icon>
+        <h2>Radio de Servicio</h2>
+      </div>
+      <div class="radius-display">
+        <span class="radius-value">{{ serviceRadius() }} km</span>
+      </div>
+      <ion-range
+        [value]="serviceRadius()"
+        (ionInput)="onRadiusChange($event)"
+        [min]="1"
+        [max]="30"
+        [step]="1"
+        [pin]="true"
+        [pinFormatter]="radiusFormatter"
+        color="primary">
+        <ion-label slot="start">1 km</ion-label>
+        <ion-label slot="end">30 km</ion-label>
+      </ion-range>
+      <p class="helper-text">
+        Define la distancia maxima a la que estas dispuesta a desplazarte para atender pacientes
+      </p>
+    </div>
+
+    <!-- Availability Schedule Section -->
+    <div class="section">
+      <div class="section-header">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <h2>Horario de Disponibilidad</h2>
+      </div>
+
+      <!-- Days of Week -->
+      <div class="days-selector">
+        <p class="subsection-label">Dias disponibles</p>
+        <div class="days-grid">
+          <div
+            *ngFor="let day of dayOptions"
+            class="day-chip"
+            [class.selected]="isDaySelected(day.value)"
+            (click)="toggleDay(day.value)">
+            {{ day.shortLabel }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Range -->
+      <div class="time-selector">
+        <div class="time-field">
+          <p class="subsection-label">Desde</p>
+          <ion-datetime-button datetime="from-time"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="from-time"
+                presentation="time"
+                [value]="'2024-01-01T' + availableFrom() + ':00'"
+                (ionChange)="onFromTimeChange($event)"
+                [hourCycle]="'h12'"
+                [locale]="'es-PE'">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </div>
+        <div class="time-separator">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </div>
+        <div class="time-field">
+          <p class="subsection-label">Hasta</p>
+          <ion-datetime-button datetime="to-time"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="to-time"
+                presentation="time"
+                [value]="'2024-01-01T' + availableTo() + ':00'"
+                (ionChange)="onToTimeChange($event)"
+                [hourCycle]="'h12'"
+                [locale]="'es-PE'">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="save-section">
+      <ion-button
+        expand="block"
+        (click)="saveProfile()"
+        [disabled]="isSaving()"
+        class="save-button">
+        <ion-spinner *ngIf="isSaving()" name="crescent" slot="start"></ion-spinner>
+        <span *ngIf="!isSaving()">Guardar Cambios</span>
+        <span *ngIf="isSaving()">Guardando...</span>
+      </ion-button>
+    </div>
+
+    <!-- Logout Section -->
+    <div class="logout-section">
+      <ion-button
+        expand="block"
+        fill="outline"
+        color="danger"
+        (click)="confirmLogout()"
+        class="logout-button">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        Cerrar Sesion
+      </ion-button>
+    </div>
+
+    <!-- App Version -->
+    <div class="app-version">
+      <p>Histora Care v1.0.0</p>
+    </div>
+  </ng-container>
+</ion-content>

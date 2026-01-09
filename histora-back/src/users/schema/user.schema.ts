@@ -9,6 +9,7 @@ export enum UserRole {
   CLINIC_DOCTOR = 'clinic_doctor',
   CLINIC_STAFF = 'clinic_staff',
   PATIENT = 'patient',
+  NURSE = 'nurse',
 }
 
 @Schema({ timestamps: true })
@@ -50,6 +51,9 @@ export class User {
 
   @Prop({ type: Types.ObjectId, ref: 'Patient' })
   patientProfileId?: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Nurse' })
+  nurseProfileId?: Types.ObjectId;
 
   @Prop({ default: true })
   isActive: boolean;

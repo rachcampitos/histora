@@ -1,0 +1,504 @@
+.requests-content {
+  --background: #f5f7fa;
+}
+
+// Header & Segment
+ion-header {
+  ion-toolbar {
+    --background: white;
+
+    &:last-child {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --padding-bottom: 8px;
+    }
+  }
+
+  ion-segment {
+    --background: #f1f5f9;
+    border-radius: 12px;
+
+    ion-segment-button {
+      --indicator-color: white;
+      --indicator-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      --border-radius: 10px;
+      min-height: 40px;
+      font-weight: 500;
+      text-transform: none;
+
+      ion-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        ion-badge {
+          font-size: 10px;
+          padding: 2px 6px;
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+}
+
+// Loading State
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: #64748b;
+    font-size: 14px;
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  ion-icon {
+    font-size: 72px;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  span {
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #94a3b8;
+  }
+}
+
+// Tab Content
+.tab-content {
+  padding: 16px;
+}
+
+// Request List
+.request-list {
+  background: transparent;
+  padding: 0;
+
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 12px;
+
+    &::part(native) {
+      padding: 0;
+    }
+  }
+
+  ion-item-sliding {
+    margin-bottom: 12px;
+  }
+}
+
+// Request Card
+.request-card {
+  width: 100%;
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  // Card Header
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+
+    .patient-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      ion-avatar {
+        width: 48px;
+        height: 48px;
+
+        img {
+          border-radius: 50%;
+        }
+      }
+
+      .avatar-placeholder {
+        font-size: 48px;
+        color: #cbd5e1;
+
+        &.small {
+          font-size: 40px;
+        }
+      }
+
+      .patient-details {
+        h3 {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #1e293b;
+        }
+
+        .service-type {
+          margin: 4px 0 0;
+          font-size: 13px;
+          color: #667eea;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .price-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 8px 12px;
+      text-align: center;
+
+      .currency {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.8);
+        display: block;
+      }
+
+      .amount {
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+      }
+    }
+  }
+
+  // Card Details
+  .card-details {
+    padding: 12px 0;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+
+    &.compact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .detail-row {
+        margin: 0;
+      }
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      ion-icon {
+        font-size: 18px;
+        color: #94a3b8;
+        flex-shrink: 0;
+      }
+
+      span {
+        font-size: 13px;
+        color: #64748b;
+
+        &.address {
+          color: #1e293b;
+          font-weight: 500;
+        }
+      }
+
+      &.price {
+        span {
+          color: #4caf50;
+          font-weight: 600;
+        }
+
+        ion-icon {
+          color: #4caf50;
+        }
+      }
+    }
+  }
+
+  // Card Actions
+  .card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+
+    ion-button {
+      --border-radius: 10px;
+      font-weight: 600;
+      text-transform: none;
+    }
+  }
+
+  // Quick Actions (for active cards)
+  .quick-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 12px;
+
+    ion-button {
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --color: #667eea;
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+  }
+}
+
+// Pending Card Specific
+.pending-card {
+  border-left: 4px solid #f59e0b;
+
+  .card-actions {
+    ion-button[color="success"] {
+      --background: #10b981;
+      --background-hover: #059669;
+    }
+  }
+}
+
+// Active Card Specific
+.active-card {
+  position: relative;
+  overflow: hidden;
+
+  .status-banner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px 12px;
+
+    ion-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 0 12px 0 12px;
+    }
+  }
+
+  &.status-accepted {
+    border-left: 4px solid var(--ion-color-primary);
+  }
+
+  &.status-on_the_way {
+    border-left: 4px solid var(--ion-color-tertiary);
+  }
+
+  &.status-arrived {
+    border-left: 4px solid var(--ion-color-secondary);
+  }
+
+  &.status-in_progress {
+    border-left: 4px solid #667eea;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+  }
+
+  .card-actions {
+    margin-top: 16px;
+
+    ion-button {
+      height: 44px;
+      font-size: 15px;
+    }
+  }
+}
+
+// History Card Specific
+.history-card {
+  padding: 12px 16px;
+
+  .card-header {
+    margin-bottom: 8px;
+
+    .patient-info {
+      gap: 10px;
+    }
+  }
+
+  .card-details {
+    padding: 8px 0 0;
+    border-top: none;
+    border-bottom: none;
+  }
+}
+
+// History List
+.history-list {
+  ion-item {
+    margin-bottom: 8px;
+
+    .request-card {
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+  }
+}
+
+// Rating Section
+.rating-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid #f1f5f9;
+
+  .stars {
+    display: flex;
+    gap: 2px;
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+
+  .rating-text {
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Item sliding options
+ion-item-options {
+  ion-item-option {
+    width: 60px;
+  }
+}
+
+// Status colors for border
+.request-card[class*="status-"] {
+  &.status-pending {
+    border-left-color: #f59e0b;
+  }
+
+  &.status-accepted {
+    border-left-color: var(--ion-color-primary);
+  }
+
+  &.status-on_the_way {
+    border-left-color: var(--ion-color-tertiary);
+  }
+
+  &.status-arrived {
+    border-left-color: var(--ion-color-secondary);
+  }
+
+  &.status-in_progress {
+    border-left-color: #667eea;
+  }
+
+  &.status-completed {
+    border-left-color: #10b981;
+  }
+
+  &.status-cancelled,
+  &.status-rejected {
+    border-left-color: #ef4444;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .requests-content {
+    --background: #0f172a;
+  }
+
+  ion-header ion-toolbar {
+    --background: #1e293b;
+  }
+
+  ion-header ion-segment {
+    --background: #334155;
+  }
+
+  .request-card {
+    background: #1e293b;
+
+    .card-header {
+      .patient-info .patient-details {
+        h3 {
+          color: #f1f5f9;
+        }
+      }
+    }
+
+    .card-details {
+      border-color: #334155;
+
+      .detail-row span {
+        color: #94a3b8;
+
+        &.address {
+          color: #e2e8f0;
+        }
+      }
+    }
+
+    .quick-actions {
+      border-color: #334155;
+    }
+  }
+
+  .empty-state {
+    p {
+      color: #94a3b8;
+    }
+
+    span {
+      color: #64748b;
+    }
+  }
+
+  .loading-state p {
+    color: #94a3b8;
+  }
+
+  .history-card .card-details {
+    border-color: transparent;
+  }
+
+  .rating-section {
+    border-color: #334155;
+
+    .rating-text {
+      color: #94a3b8;
+    }
+  }
+}

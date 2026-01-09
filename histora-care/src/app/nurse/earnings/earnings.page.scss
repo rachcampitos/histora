@@ -1,0 +1,365 @@
+.earnings-content {
+  --background: #f5f7fa;
+}
+
+// Period Selector
+.period-selector {
+  padding: 16px;
+  background: white;
+
+  ion-segment {
+    --background: #f1f5f9;
+    border-radius: 12px;
+
+    ion-segment-button {
+      --border-radius: 10px;
+      --indicator-color: #667eea;
+      --color: #64748b;
+      --color-checked: white;
+      min-height: 40px;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: none;
+    }
+  }
+}
+
+// Date Picker Container
+.date-picker-container {
+  padding: 0 16px 16px;
+
+  .date-picker-card {
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    ion-card-content {
+      padding: 16px;
+    }
+
+    .date-inputs {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+
+      .date-input {
+        flex: 1;
+
+        ion-label {
+          display: block;
+          font-size: 13px;
+          color: #64748b;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+
+        ion-datetime-button {
+          width: 100%;
+
+          &::part(native) {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+            color: #2c3e50;
+          }
+        }
+      }
+    }
+
+    ion-button {
+      --border-radius: 10px;
+      --background: #667eea;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+}
+
+// Date Range Display
+.date-range-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  margin: 0 16px 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  ion-icon {
+    font-size: 18px;
+    color: #667eea;
+  }
+
+  span {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+  }
+}
+
+// Loading Container
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+
+  ion-spinner {
+    --color: #667eea;
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    margin-top: 16px;
+    color: #64748b;
+    font-size: 14px;
+  }
+}
+
+// Summary Section
+.summary-section {
+  padding: 0 16px 16px;
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+// Summary Cards
+.summary-card {
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  ion-card-content {
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 22px;
+    }
+
+    &.highlight {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+      ion-icon {
+        color: white;
+      }
+    }
+  }
+
+  .card-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    .card-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2c3e50;
+      word-break: break-all;
+
+      &.negative {
+        color: #ef4444;
+      }
+
+      &.highlight {
+        color: #667eea;
+      }
+    }
+  }
+
+  // Card specific styles
+  &.total-card {
+    .card-icon {
+      background: #e0f2fe;
+
+      ion-icon {
+        color: #0ea5e9;
+      }
+    }
+  }
+
+  &.commission-card {
+    .card-icon {
+      background: #fee2e2;
+
+      ion-icon {
+        color: #ef4444;
+      }
+    }
+  }
+
+  &.net-card {
+    grid-column: 1 / -1;
+
+    ion-card-content {
+      padding: 20px;
+    }
+
+    .card-value {
+      font-size: 24px;
+    }
+  }
+
+  &.services-card {
+    .card-icon {
+      background: #dcfce7;
+
+      ion-icon {
+        color: #22c55e;
+      }
+    }
+  }
+}
+
+// History Section
+.history-section {
+  padding: 0 16px 24px;
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    ion-badge {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+  }
+}
+
+// Services List
+.services-list {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  ion-item {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --inner-padding-end: 0;
+    --min-height: 72px;
+
+    .service-date {
+      width: 70px;
+      text-align: center;
+      padding-right: 12px;
+      border-right: 2px solid #e2e8f0;
+      margin-right: 12px;
+
+      .date-day {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 500;
+        line-height: 1.4;
+      }
+    }
+
+    ion-label {
+      h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 4px;
+      }
+
+      .patient-name {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        color: #64748b;
+        margin: 0;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .service-amount {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+
+      .amount {
+        font-size: 15px;
+        font-weight: 700;
+        color: #22c55e;
+      }
+
+      ion-badge {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 8px;
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  ion-icon {
+    font-size: 64px;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  span {
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #94a3b8;
+  }
+}

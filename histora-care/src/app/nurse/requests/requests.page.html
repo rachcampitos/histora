@@ -1,0 +1,254 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Solicitudes</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [value]="currentTab()" (ionChange)="onTabChange($event)">
+      <ion-segment-button value="pending">
+        <ion-label>
+          Pendientes
+          <ion-badge *ngIf="pendingCount() > 0" color="warning">{{ pendingCount() }}</ion-badge>
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="active">
+        <ion-label>
+          Activas
+          <ion-badge *ngIf="activeCount() > 0" color="primary">{{ activeCount() }}</ion-badge>
+        </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="history">
+        <ion-label>Historial</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="requests-content">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      refreshingText="Actualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading()">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando solicitudes...</p>
+  </div>
+
+  <!-- Pending Requests Tab -->
+  <div class="tab-content" *ngIf="!isLoading() && currentTab() === 'pending'">
+    <div class="empty-state" *ngIf="pendingRequests().length === 0">
+      <ion-icon name="clipboard-outline"></ion-icon>
+      <p>No hay solicitudes pendientes</p>
+      <span>Las nuevas solicitudes apareceran aqui</span>
+    </div>
+
+    <ion-list class="request-list" *ngIf="pendingRequests().length > 0">
+      <ion-item-sliding *ngFor="let request of pendingRequests()">
+        <ion-item (click)="viewRequest(request)" button detail="false">
+          <div class="request-card pending-card">
+            <!-- Header -->
+            <div class="card-header">
+              <div class="patient-info">
+                <ion-avatar *ngIf="request.patient?.avatar">
+                  <img [src]="request.patient?.avatar" alt="Patient">
+                </ion-avatar>
+                <ion-icon *ngIf="!request.patient?.avatar" name="person-circle" class="avatar-placeholder"></ion-icon>
+                <div class="patient-details">
+                  <h3>{{ request.patient?.firstName || 'Paciente' }} {{ request.patient?.lastName || '' }}</h3>
+                  <p class="service-type">{{ request.service.name }}</p>
+                </div>
+              </div>
+              <div class="price-badge">
+                <span class="currency">S/.</span>
+                <span class="amount">{{ request.service.price }}</span>
+              </div>
+            </div>
+
+            <!-- Details -->
+            <div class="card-details">
+              <div class="detail-row">
+                <ion-icon name="location-outline"></ion-icon>
+                <span>{{ request.location.district }}, {{ request.location.city }}</span>
+              </div>
+              <div class="detail-row">
+                <ion-icon name="navigate-outline"></ion-icon>
+                <span>{{ formatDistance(request.distance) }}</span>
+              </div>
+              <div class="detail-row">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>{{ request.requestedDate | date:'dd/MM/yyyy' }} - {{ getTimeSlotLabel(request.requestedTimeSlot) }}</span>
+              </div>
+              <div class="detail-row" *ngIf="request.service.durationMinutes">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>{{ request.service.durationMinutes }} min</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card-actions">
+              <ion-button fill="outline" color="danger" size="small" (click)="rejectRequest(request, $event)">
+                <ion-icon slot="start" name="close-outline"></ion-icon>
+                Rechazar
+              </ion-button>
+              <ion-button fill="solid" color="success" size="small" (click)="acceptRequest(request, $event)">
+                <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                Aceptar
+              </ion-button>
+            </div>
+          </div>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="success" (click)="acceptRequest(request, $event)">
+            <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="rejectRequest(request, $event)">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+
+  <!-- Active Requests Tab -->
+  <div class="tab-content" *ngIf="!isLoading() && currentTab() === 'active'">
+    <div class="empty-state" *ngIf="activeRequests().length === 0">
+      <ion-icon name="medical-outline"></ion-icon>
+      <p>No tienes servicios activos</p>
+      <span>Los servicios que aceptes apareceran aqui</span>
+    </div>
+
+    <ion-list class="request-list" *ngIf="activeRequests().length > 0">
+      <ion-item *ngFor="let request of activeRequests()" (click)="viewRequest(request)" button detail="false">
+        <div class="request-card active-card">
+          <!-- Status Banner -->
+          <div class="status-banner" [ngClass]="'status-' + request.status">
+            <ion-badge [color]="getStatusColor(request.status)">
+              {{ getStatusLabel(request.status) }}
+            </ion-badge>
+          </div>
+
+          <!-- Header -->
+          <div class="card-header">
+            <div class="patient-info">
+              <ion-avatar *ngIf="request.patient?.avatar">
+                <img [src]="request.patient?.avatar" alt="Patient">
+              </ion-avatar>
+              <ion-icon *ngIf="!request.patient?.avatar" name="person-circle" class="avatar-placeholder"></ion-icon>
+              <div class="patient-details">
+                <h3>{{ request.patient?.firstName || 'Paciente' }} {{ request.patient?.lastName || '' }}</h3>
+                <p class="service-type">{{ request.service.name }}</p>
+              </div>
+            </div>
+            <div class="price-badge">
+              <span class="currency">S/.</span>
+              <span class="amount">{{ request.service.price }}</span>
+            </div>
+          </div>
+
+          <!-- Details -->
+          <div class="card-details">
+            <div class="detail-row">
+              <ion-icon name="location-outline"></ion-icon>
+              <span class="address">{{ request.location.address }}</span>
+            </div>
+            <div class="detail-row">
+              <ion-icon name="navigate-outline"></ion-icon>
+              <span>{{ formatDistance(request.distance) }}</span>
+            </div>
+            <div class="detail-row" *ngIf="request.scheduledAt">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ request.scheduledAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="detail-row" *ngIf="!request.scheduledAt">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ request.requestedDate | date:'dd/MM/yyyy' }} - {{ getTimeSlotLabel(request.requestedTimeSlot) }}</span>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <ion-button fill="clear" size="small" (click)="callPatient(request, $event)">
+              <ion-icon slot="icon-only" name="call-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" (click)="openMaps(request, $event)">
+              <ion-icon slot="icon-only" name="map-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+          <!-- Status Update Action -->
+          <div class="card-actions" *ngIf="getNextStatus(request.status)">
+            <ion-button
+              expand="block"
+              [color]="request.status === 'in_progress' ? 'success' : 'primary'"
+              (click)="updateStatus(request, getNextStatus(request.status)!, $event)">
+              <ion-icon slot="start" [name]="getNextStatusIcon(request.status)"></ion-icon>
+              {{ getNextStatusButtonLabel(request.status) }}
+            </ion-button>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- History Tab -->
+  <div class="tab-content" *ngIf="!isLoading() && currentTab() === 'history'">
+    <div class="empty-state" *ngIf="historyRequests().length === 0">
+      <ion-icon name="time-outline"></ion-icon>
+      <p>Sin historial</p>
+      <span>Tu historial de servicios aparecera aqui</span>
+    </div>
+
+    <ion-list class="request-list history-list" *ngIf="historyRequests().length > 0">
+      <ion-item *ngFor="let request of historyRequests()" (click)="viewRequest(request)" button detail>
+        <div class="request-card history-card">
+          <!-- Header -->
+          <div class="card-header">
+            <div class="patient-info">
+              <ion-icon name="person-circle" class="avatar-placeholder small"></ion-icon>
+              <div class="patient-details">
+                <h3>{{ request.patient?.firstName || 'Paciente' }} {{ request.patient?.lastName || '' }}</h3>
+                <p class="service-type">{{ request.service.name }}</p>
+              </div>
+            </div>
+            <ion-badge [color]="getStatusColor(request.status)">
+              {{ getStatusLabel(request.status) }}
+            </ion-badge>
+          </div>
+
+          <!-- Details -->
+          <div class="card-details compact">
+            <div class="detail-row">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ request.location.district }}</span>
+            </div>
+            <div class="detail-row">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ request.completedAt || request.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="detail-row price">
+              <ion-icon name="cash-outline"></ion-icon>
+              <span>S/. {{ request.service.price }}</span>
+            </div>
+          </div>
+
+          <!-- Rating -->
+          <div class="rating-section" *ngIf="request.rating">
+            <div class="stars">
+              <ion-icon *ngFor="let star of [1,2,3,4,5]"
+                [name]="star <= request.rating! ? 'star' : 'star-outline'"
+                [color]="star <= request.rating! ? 'warning' : 'medium'">
+              </ion-icon>
+            </div>
+            <span class="rating-text" *ngIf="request.review">{{ request.review }}</span>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>
