@@ -7,11 +7,10 @@ RUN apk add --no-cache python3 make g++
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-COPY package-lock.json* ./
+COPY package.json package-lock.json ./
 
 # Install all dependencies (including dev)
-RUN npm install
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -27,11 +26,11 @@ RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from builder
+COPY --from=builder /app/package.json /app/package-lock.json ./
 
 # Install production dependencies
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 # Rebuild bcrypt for this architecture
 RUN npm rebuild bcrypt --build-from-source
