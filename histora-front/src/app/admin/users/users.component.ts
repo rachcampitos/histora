@@ -268,12 +268,13 @@ export class UsersComponent implements OnInit {
 
   deleteUser(user: AdminUser): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
+      width: '420px',
       data: {
         title: 'Eliminar Usuario',
         message: `¿Estás seguro de eliminar a ${user.firstName} ${user.lastName}? Esta acción no se puede deshacer.`,
         confirmText: 'Eliminar',
         confirmColor: 'warn',
+        icon: 'delete_forever',
       },
     });
 
