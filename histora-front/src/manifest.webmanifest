@@ -1,0 +1,28 @@
+{
+  "name": "Histora - Sistema de Gestión Médica",
+  "short_name": "Histora",
+  "description": "Sistema de gestión para consultorios médicos",
+  "theme_color": "#667eea",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "assets/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["medical", "health", "productivity"],
+  "lang": "es",
+  "dir": "ltr"
+}

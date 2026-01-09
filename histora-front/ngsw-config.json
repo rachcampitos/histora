@@ -1,0 +1,58 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-performance",
+      "urls": [
+        "https://api.historahealth.com/doctors",
+        "https://api.historahealth.com/appointments",
+        "https://api.historahealth.com/patients"
+      ],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "5m",
+        "strategy": "freshness",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "api-freshness",
+      "urls": [
+        "https://api.historahealth.com/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "1m",
+        "strategy": "freshness",
+        "timeout": "5s"
+      }
+    }
+  ]
+}
