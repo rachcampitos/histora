@@ -23,6 +23,9 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PaymentsModule } from './payments/payments.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { NursesModule } from './nurses/nurses.module';
+import { ServiceRequestsModule } from './service-requests/service-requests.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -67,6 +70,9 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     PaymentsModule,
     UploadsModule,
     ChatbotModule,
+    NursesModule,
+    ServiceRequestsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
