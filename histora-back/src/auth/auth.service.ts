@@ -13,7 +13,8 @@ import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { DoctorsService } from '../doctors/doctors.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto, RegisterPatientDto } from './dto/register.dto';
+import { RegisterDto, RegisterPatientDto, RegisterNurseDto } from './dto/register.dto';
+import { NursesService } from '../nurses/nurses.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UserRole } from '../users/schema/user.schema';
 import { JwtPayload } from './strategies/jwt.strategy';
@@ -34,6 +35,10 @@ export interface AuthResponse {
   };
 }
 
+export interface GoogleAuthResponse extends AuthResponse {
+  isNewUser: boolean; // Indicates if user needs to complete registration
+}
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -51,6 +56,7 @@ export class AuthService {
     private clinicsService: ClinicsService,
     private subscriptionsService: SubscriptionsService,
     private doctorsService: DoctorsService,
+    private nursesService: NursesService,
     private emailProvider: EmailProvider,
     private notificationsService: NotificationsService,
   ) {}
@@ -215,6 +221,64 @@ export class AuthService {
     };
   }
 
+  async registerNurse(registerDto: RegisterNurseDto): Promise<AuthResponse> {
+    // Check if email already exists
+    const existingUser = await this.usersService.findByEmail(registerDto.email);
+    if (existingUser) {
+      throw new ConflictException('Este email ya está registrado');
+    }
+
+    // Create user as nurse
+    const user = await this.usersService.create({
+      email: registerDto.email,
+      password: registerDto.password,
+      firstName: registerDto.firstName,
+      lastName: registerDto.lastName,
+      phone: registerDto.phone,
+      role: UserRole.NURSE,
+    });
+
+    // Create nurse profile
+    const nurseProfile = await this.nursesService.create(user['_id'].toString(), {
+      cepNumber: registerDto.cepNumber,
+      specialties: registerDto.specialties || [],
+    });
+
+    const nurseProfileId = (nurseProfile as any)._id;
+
+    // Update user with nurseProfileId
+    await this.usersService.update(user['_id'].toString(), {
+      nurseProfileId,
+    });
+
+    // Generate JWT token
+    const payload: JwtPayload = {
+      sub: user['_id'].toString(),
+      email: user.email,
+      role: user.role,
+      nurseId: nurseProfileId.toString(),
+    };
+
+    // Generate and save refresh token
+    const refreshToken = this.generateRefreshToken();
+    await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+
+    this.logger.log(`Nurse registered: ${user.email} with CEP: ${registerDto.cepNumber}`);
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: refreshToken,
+      user: {
+        id: user['_id'].toString(),
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        avatar: user.avatar,
+      },
+    };
+  }
+
   async login(loginDto: LoginDto): Promise<AuthResponse> {
     const user = await this.usersService.findByEmailWithPassword(loginDto.email);
 
@@ -245,12 +309,19 @@ export class AuthService {
 
     const rememberMe = loginDto.rememberMe || false;
 
+    // Get nurseId if user is a nurse
+    let nurseId: string | undefined;
+    if (user.role === UserRole.NURSE && user.nurseProfileId) {
+      nurseId = user.nurseProfileId.toString();
+    }
+
     // Generate JWT token with appropriate expiry
     const payload: JwtPayload = {
       sub: user['_id'].toString(),
       email: user.email,
       role: user.role,
       clinicId: user.clinicId?.toString(),
+      nurseId,
     };
 
     const accessTokenExpiry = rememberMe
@@ -405,8 +476,10 @@ export class AuthService {
     lastName: string;
     googleId: string;
     picture?: string;
-  }): Promise<AuthResponse> {
+  }): Promise<GoogleAuthResponse> {
     this.logger.log(`Google login attempt for: ${googleUser.email}`);
+
+    let isNewUser = false;
 
     // Check if user exists by googleId
     let user = await this.usersService.findByGoogleId(googleUser.googleId);
@@ -424,8 +497,10 @@ export class AuthService {
         );
         user = existingUserByEmail;
       } else {
-        // Create new user from Google data
+        // Create new user from Google data (with default PATIENT role)
         user = await this.usersService.createFromGoogle(googleUser);
+        isNewUser = true; // Flag to indicate user needs to select their role
+        this.logger.log(`New user created from Google: ${user.email}`);
       }
     }
 
@@ -448,11 +523,12 @@ export class AuthService {
     const refreshToken = this.generateRefreshToken();
     await this.saveRefreshToken(user['_id'].toString(), refreshToken);
 
-    this.logger.log(`Google login successful for ${user.email} with role: ${user.role}`);
+    this.logger.log(`Google login successful for ${user.email} with role: ${user.role}, isNewUser: ${isNewUser}`);
 
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: refreshToken,
+      isNewUser,
       user: {
         id: user['_id'].toString(),
         email: user.email,
@@ -463,5 +539,137 @@ export class AuthService {
         avatar: user.avatar,
       },
     };
+  }
+
+  /**
+   * Complete registration for new Google users who need to select their role
+   */
+  async completeGoogleRegistration(
+    userId: string,
+    userType: 'doctor' | 'patient',
+    clinicData?: { clinicName: string; clinicPhone?: string },
+  ): Promise<AuthResponse> {
+    this.logger.log(`Completing Google registration for user ${userId} as ${userType}`);
+
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Only allow completion if user was created via Google and still has default patient role
+    if (user.authProvider !== 'google') {
+      throw new UnauthorizedException('Esta función solo está disponible para usuarios de Google');
+    }
+
+    if (userType === 'doctor') {
+      if (!clinicData?.clinicName) {
+        throw new UnauthorizedException('El nombre del consultorio es requerido');
+      }
+
+      // Create clinic
+      const clinic = await this.clinicsService.create(
+        {
+          name: clinicData.clinicName,
+          phone: clinicData.clinicPhone,
+        },
+        userId,
+      );
+
+      // Update user to clinic_owner role
+      await this.usersService.update(userId, {
+        role: UserRole.CLINIC_OWNER,
+        clinicId: clinic['_id'],
+      });
+
+      // Create trial subscription
+      await this.subscriptionsService.createTrialSubscription(
+        clinic['_id'].toString(),
+      );
+
+      // Create doctor profile
+      await this.doctorsService.create(
+        clinic['_id'].toString(),
+        userId,
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          specialty: 'Medicina General', // Default specialty
+          email: user.email,
+          phone: user.phone,
+        },
+      );
+
+      // Notify admins
+      await this.notificationsService.notifyAdminNewDoctorRegistered({
+        id: userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        clinicName: clinicData.clinicName,
+      });
+
+      // Generate new token with updated role
+      const payload: JwtPayload = {
+        sub: userId,
+        email: user.email,
+        role: UserRole.CLINIC_OWNER,
+        clinicId: clinic['_id'].toString(),
+      };
+
+      const refreshToken = this.generateRefreshToken();
+      await this.saveRefreshToken(userId, refreshToken);
+
+      this.logger.log(`Google user ${user.email} completed registration as doctor`);
+
+      return {
+        access_token: this.jwtService.sign(payload),
+        refresh_token: refreshToken,
+        user: {
+          id: userId,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: UserRole.CLINIC_OWNER,
+          clinicId: clinic['_id'].toString(),
+          avatar: user.avatar,
+        },
+      };
+    } else {
+      // Patient registration - Google users already have PATIENT role by default
+      // Just notify admins and generate new tokens
+
+      // Notify admins
+      await this.notificationsService.notifyAdminNewPatientRegistered({
+        id: userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      });
+
+      // Generate token (role stays as PATIENT)
+      const payload: JwtPayload = {
+        sub: userId,
+        email: user.email,
+        role: UserRole.PATIENT,
+      };
+
+      const refreshToken = this.generateRefreshToken();
+      await this.saveRefreshToken(userId, refreshToken);
+
+      this.logger.log(`Google user ${user.email} completed registration as patient`);
+
+      return {
+        access_token: this.jwtService.sign(payload),
+        refresh_token: refreshToken,
+        user: {
+          id: userId,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: UserRole.PATIENT,
+          avatar: user.avatar,
+        },
+      };
+    }
   }
 }

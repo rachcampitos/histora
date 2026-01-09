@@ -63,6 +63,22 @@ export class SigninComponent
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
+
+    // Check for OAuth error in query params
+    const errorParam = this.route.snapshot.queryParams['error'];
+    if (errorParam) {
+      // Clear any stale session data when redirected with OAuth error
+      this.authService.logout().subscribe();
+
+      // Show appropriate error message
+      if (errorParam === 'google_auth_failed') {
+        this.error = 'Error en la autenticación con Google. Por favor intenta de nuevo.';
+      } else if (errorParam === 'google_auth_cancelled') {
+        this.error = 'Autenticación con Google cancelada.';
+      } else {
+        this.error = 'Error de autenticación. Por favor intenta de nuevo.';
+      }
+    }
   }
 
   get f() {
