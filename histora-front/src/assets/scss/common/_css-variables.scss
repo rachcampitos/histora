@@ -1,0 +1,155 @@
+// =============================================================================
+// CSS CUSTOM PROPERTIES
+// Variables CSS para temas dinámicos y consistencia
+// =============================================================================
+
+@use "design-tokens" as tokens;
+
+:root {
+  // -----------------------------------------------------------------------------
+  // COLOR VARIABLES
+  // -----------------------------------------------------------------------------
+
+  // Brand
+  --color-primary: #{tokens.$color-primary};
+  --color-secondary: #{tokens.$color-secondary};
+  --color-brand-gradient: linear-gradient(135deg, #{tokens.$color-brand-secondary} 0%, #{tokens.$color-brand-accent} 100%);
+
+  // Semantic
+  --color-success: #{tokens.$color-success};
+  --color-error: #{tokens.$color-error};
+  --color-warning: #{tokens.$color-warning};
+  --color-info: #{tokens.$color-info};
+
+  // Surfaces
+  --surface-primary: #{tokens.$surface-primary};
+  --surface-secondary: #{tokens.$surface-secondary};
+  --surface-tertiary: #{tokens.$surface-tertiary};
+  --surface-elevated: #{tokens.$surface-elevated};
+
+  // Text
+  --text-primary: #{tokens.$text-primary};
+  --text-secondary: #{tokens.$text-secondary};
+  --text-tertiary: #{tokens.$text-tertiary};
+  --text-disabled: #{tokens.$text-disabled};
+  --text-placeholder: #{tokens.$text-placeholder};
+
+  // Borders
+  --border-light: #{tokens.$border-light};
+  --border-default: #{tokens.$border-default};
+  --border-focus: #{tokens.$border-focus};
+
+  // Shadows
+  --shadow-sm: #{tokens.$shadow-sm};
+  --shadow-md: #{tokens.$shadow-md};
+  --shadow-lg: #{tokens.$shadow-lg};
+
+  // -----------------------------------------------------------------------------
+  // SPACING VARIABLES
+  // -----------------------------------------------------------------------------
+
+  --spacing-1: #{tokens.$spacing-1};
+  --spacing-2: #{tokens.$spacing-2};
+  --spacing-3: #{tokens.$spacing-3};
+  --spacing-4: #{tokens.$spacing-4};
+  --spacing-5: #{tokens.$spacing-5};
+  --spacing-6: #{tokens.$spacing-6};
+  --spacing-8: #{tokens.$spacing-8};
+
+  // -----------------------------------------------------------------------------
+  // TYPOGRAPHY VARIABLES
+  // -----------------------------------------------------------------------------
+
+  --font-family: #{tokens.$font-family-primary};
+  --font-size-sm: #{tokens.$font-size-sm};
+  --font-size-base: #{tokens.$font-size-base};
+  --font-size-lg: #{tokens.$font-size-lg};
+  --font-size-xl: #{tokens.$font-size-xl};
+
+  // -----------------------------------------------------------------------------
+  // BORDER RADIUS VARIABLES
+  // -----------------------------------------------------------------------------
+
+  --radius-sm: #{tokens.$radius-sm};
+  --radius-md: #{tokens.$radius-md};
+  --radius-lg: #{tokens.$radius-lg};
+  --radius-full: #{tokens.$radius-full};
+
+  // -----------------------------------------------------------------------------
+  // ANIMATION VARIABLES
+  // -----------------------------------------------------------------------------
+
+  --duration-fast: #{tokens.$duration-fast};
+  --duration-normal: #{tokens.$duration-normal};
+  --duration-slow: #{tokens.$duration-slow};
+  --easing-standard: #{tokens.$easing-standard};
+
+  // -----------------------------------------------------------------------------
+  // COMPONENT VARIABLES
+  // -----------------------------------------------------------------------------
+
+  --sidebar-width: #{tokens.$sidebar-width};
+  --sidebar-width-collapsed: #{tokens.$sidebar-width-collapsed};
+  --header-height: #{tokens.$header-height};
+  --card-radius: #{tokens.$card-radius};
+}
+
+// =============================================================================
+// DARK MODE VARIABLES
+// =============================================================================
+
+body.dark {
+  // Surfaces
+  --surface-primary: #{tokens.$surface-dark-primary};
+  --surface-secondary: #{tokens.$surface-dark-secondary};
+  --surface-tertiary: #{tokens.$surface-dark-tertiary};
+  --surface-elevated: #{tokens.$surface-dark-elevated};
+
+  // Text
+  --text-primary: #{tokens.$text-dark-primary};
+  --text-secondary: #{tokens.$text-dark-secondary};
+  --text-tertiary: #{tokens.$text-dark-tertiary};
+  --text-disabled: #{tokens.$text-dark-disabled};
+  --text-placeholder: #{tokens.$text-dark-tertiary};
+
+  // Borders
+  --border-light: #{tokens.$surface-dark-tertiary};
+  --border-default: #{tokens.$surface-dark-tertiary};
+
+  // Shadows
+  --shadow-sm: #{tokens.$shadow-dark-sm};
+  --shadow-md: #{tokens.$shadow-dark-md};
+  --shadow-lg: #{tokens.$shadow-dark-lg};
+}
+
+// =============================================================================
+// HIGH CONTRAST MODE
+// =============================================================================
+
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #000000;
+    --text-secondary: #1a1a1a;
+    --border-default: #000000;
+    --color-primary: #005a8c;
+  }
+
+  body.dark {
+    --text-primary: #ffffff;
+    --text-secondary: #e5e5e5;
+    --border-default: #ffffff;
+    --surface-primary: #000000;
+  }
+}
+
+// =============================================================================
+// REDUCED MOTION
+// =============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-normal: 0.01ms;
+    --duration-slow: 0.01ms;
+  }
+}

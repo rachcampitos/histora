@@ -1,70 +1,80 @@
 <div>
   <!-- Left Sidebar -->
-  <aside id="leftsidebar" class="sidebar" (mouseenter)="mouseHover()" (mouseleave)="mouseOut()">
+  <aside id="leftsidebar" class="sidebar" role="navigation" aria-label="Menú principal"
+    (mouseenter)="mouseHover()" (mouseleave)="mouseOut()">
     <!-- Menu -->
-    <div class="menu">
+    <nav class="menu" aria-label="Navegación del sistema">
       <ng-scrollbar [style.height]="listMaxHeight + 'px'" visibility="hover">
-        <ul class="list">
-          <li class="sidebar-user-panel">
-            <div class="user-panel">
+        <ul class="list" role="menubar" aria-orientation="vertical">
+          <li class="sidebar-user-panel" role="none">
+            <div class="user-panel" role="group" aria-label="Información del usuario">
               <div class="image">
                 @if (userImg) {
-                  <img [src]="userImg" class="img-circle user-img-circle" alt="User Image" />
+                  <img [src]="userImg" class="img-circle user-img-circle" [alt]="'Foto de perfil de ' + userFullName" />
                 } @else {
-                  <mat-icon class="user-icon-circle">account_circle</mat-icon>
+                  <mat-icon class="user-icon-circle" aria-hidden="true">account_circle</mat-icon>
                 }
               </div>
             </div>
             <div class="profile-usertitle">
-              <div class="sidebar-userpic-name">{{userFullName}} </div>
-              <div class="profile-usertitle-job">{{ userTypeKey | translate }}</div>
+              <div class="sidebar-userpic-name" aria-label="Nombre de usuario">{{userFullName}} </div>
+              <div class="profile-usertitle-job" aria-label="Rol">{{ userTypeKey | translate }}</div>
             </div>
           </li>
           <!-- Top Most level menu -->
           @for (sidebarItem of sidebarItems; track sidebarItem) {
           <ng-template [ngxPermissionsOnly]="sidebarItem.role">
-            <li [routerLinkActive]="sidebarItem.submenu.length !== 0 ? 'active' : 'active-top'">
+            <li [routerLinkActive]="sidebarItem.submenu.length !== 0 ? 'active' : 'active-top'"
+              role="none">
               @if (sidebarItem.groupTitle === true) {
-              <div class="header">{{sidebarItem.title | translate}}</div>
+              <div class="header" role="separator" aria-label="Sección: {{sidebarItem.title | translate}}">{{sidebarItem.title | translate}}</div>
               }
               @if (!sidebarItem.groupTitle;) {
               <a [routerLink]="sidebarItem.class === '' ? [sidebarItem.path] : null" [ngClass]="[sidebarItem.class]"
-                (click)="callToggleMenu($event, sidebarItem.submenu.length)" class="menu-top">
-                <i [ngClass]="[sidebarItem.iconType]">{{sidebarItem.icon}}</i>
+                (click)="callToggleMenu($event, sidebarItem.submenu.length)" class="menu-top"
+                role="menuitem"
+                [attr.aria-haspopup]="sidebarItem.submenu.length > 0 ? 'menu' : null"
+                [attr.aria-expanded]="sidebarItem.submenu.length > 0 ? (sidebarItem.class.includes('toggled') ? 'true' : 'false') : null">
+                <i [ngClass]="[sidebarItem.iconType]" aria-hidden="true">{{sidebarItem.icon}}</i>
                 <span class="hide-menu">{{sidebarItem.title | translate}}
                 </span>
                 @if (sidebarItem.badge !== '' ) {
-                <span [ngClass]="[sidebarItem.badgeClass]">{{sidebarItem.badge}}</span>
+                <span [ngClass]="[sidebarItem.badgeClass]" role="status" aria-label="Notificación">{{sidebarItem.badge}}</span>
                 }
               </a>
               }
               <!-- First level menu -->
               @if (sidebarItem.submenu.length > 0) {
-              <ul class="ml-menu">
+              <ul class="ml-menu" role="menu" [attr.aria-label]="sidebarItem.title | translate">
                 @for (sidebarSubItem1 of sidebarItem.submenu; track sidebarSubItem1) {
-                <li [routerLinkActive]="sidebarSubItem1.submenu.length > 0 ? '' : 'active'">
+                <li [routerLinkActive]="sidebarSubItem1.submenu.length > 0 ? '' : 'active'" role="none">
                   <a [routerLink]="sidebarSubItem1.submenu.length > 0 ? null : [sidebarSubItem1.path]"
-                    (click)="callToggleMenu($event,sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]">
+                    (click)="callToggleMenu($event,sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]"
+                    role="menuitem"
+                    [attr.aria-haspopup]="sidebarSubItem1.submenu.length > 0 ? 'menu' : null">
                     {{sidebarSubItem1.title | translate}}
                   </a>
                   <!-- Second level menu -->
                   @if (sidebarSubItem1.submenu.length > 0) {
-                  <ul class="ml-menu-2">
+                  <ul class="ml-menu-2" role="menu" [attr.aria-label]="sidebarSubItem1.title | translate">
                     @for (sidebarSubItem2 of sidebarSubItem1.submenu; track sidebarSubItem2) {
-                    <li [routerLinkActive]="sidebarSubItem2.submenu.length > 0 ? '' : 'active'">
+                    <li [routerLinkActive]="sidebarSubItem2.submenu.length > 0 ? '' : 'active'" role="none">
                       <a [routerLink]="sidebarSubItem2.submenu.length > 0 ? null : [sidebarSubItem2.path]"
                         (click)="callToggleMenu($event,sidebarSubItem2.submenu.length)"
-                        [ngClass]="[sidebarSubItem2.class]">
+                        [ngClass]="[sidebarSubItem2.class]"
+                        role="menuitem"
+                        [attr.aria-haspopup]="sidebarSubItem2.submenu.length > 0 ? 'menu' : null">
                         {{sidebarSubItem2.title | translate}}
                       </a>
                       <!-- Third level menu -->
                       @if (sidebarSubItem2.submenu.length > 0) {
-                      <ul class="ml-menu-3">
+                      <ul class="ml-menu-3" role="menu" [attr.aria-label]="sidebarSubItem2.title | translate">
                         @for (sidebarSubItem3 of sidebarSubItem2.submenu; track sidebarSubItem3) {
-                        <li [routerLinkActive]="sidebarSubItem3.submenu.length > 0 ? '' : 'active'">
+                        <li [routerLinkActive]="sidebarSubItem3.submenu.length > 0 ? '' : 'active'" role="none">
                           <a [routerLink]="sidebarSubItem3.submenu.length > 0 ? null : [sidebarSubItem3.path]"
                             (click)="callToggleMenu($event,sidebarSubItem3.submenu.length)"
-                            [ngClass]="[sidebarSubItem3.class]">
+                            [ngClass]="[sidebarSubItem3.class]"
+                            role="menuitem">
                             {{sidebarSubItem3.title | translate}}
                           </a>
                         </li>
@@ -82,16 +92,17 @@
             </li>
           </ng-template>
           }
-          <li class="logout-menu-item">
-            <a class="" (click)="logout()" class="menu-top">
-              <i class="material-icons-outlined">power_settings_new</i>
+          <li class="logout-menu-item" role="none">
+            <a (click)="logout()" class="menu-top" role="menuitem" tabindex="0"
+              (keydown.enter)="logout()" (keydown.space)="logout(); $event.preventDefault()">
+              <i class="material-icons-outlined" aria-hidden="true">power_settings_new</i>
               <span class="hide-menu">{{ 'SIDEBAR.LOGOUT' | translate }}
               </span>
             </a>
           </li>
         </ul>
       </ng-scrollbar>
-    </div>
+    </nav>
     <!-- #Menu -->
   </aside>
   <!-- #END# Left Sidebar -->

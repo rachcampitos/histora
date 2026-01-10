@@ -49,6 +49,49 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    /* Skip link for accessibility */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 16px;
+      z-index: 100001;
+      padding: 12px 24px;
+      background-color: #0891b2;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+      top: 16px;
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+    /* Screen reader only */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+    /* Respect reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .app-loading .spinner {
+        animation: none;
+        border-color: white;
+      }
+      .skip-link {
+        transition: none;
+      }
+    }
   </style>
 
   <!-- Load fonts async with font-display swap -->
@@ -63,10 +106,16 @@
 </head>
 
 <body class="mat-typography">
+  <!-- Skip link for keyboard navigation - accessibility -->
+  <a href="#main-content" class="skip-link">
+    Saltar al contenido principal
+  </a>
+
   <app-root>
     <!-- Loading spinner while app initializes -->
-    <div class="app-loading">
-      <div class="spinner"></div>
+    <div class="app-loading" role="status" aria-label="Cargando aplicación">
+      <div class="spinner" aria-hidden="true"></div>
+      <span class="sr-only">Cargando...</span>
     </div>
   </app-root>
 

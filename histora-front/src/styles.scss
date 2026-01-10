@@ -1,4 +1,69 @@
 /* Histora Global Styles */
+/* Updated with WCAG 2.1 AA compliance fixes */
+
+// =============================================================================
+// WCAG COLOR CONTRAST FIXES
+// =============================================================================
+
+// Placeholders - WCAG AA compliant (4.5:1 ratio)
+::placeholder {
+  color: #64748b !important; // neutral-500 - passes WCAG AA
+  opacity: 1;
+}
+
+::-webkit-input-placeholder { color: #64748b !important; }
+::-moz-placeholder { color: #64748b !important; }
+:-ms-input-placeholder { color: #64748b !important; }
+
+// Secondary text and icons - WCAG AA compliant
+.text-muted,
+.text-secondary {
+  color: #475569 !important; // neutral-600 - passes WCAG AA
+}
+
+// Fix icon colors for accessibility
+.mat-icon.text-muted,
+.icon-muted,
+.icon-secondary {
+  color: #64748b !important; // neutral-500 - passes WCAG AA on white
+}
+
+// Dark mode contrast fixes
+body.dark {
+  ::placeholder {
+    color: #94a3b8 !important; // neutral-400 on dark
+  }
+
+  .text-muted,
+  .text-secondary {
+    color: #cbd5e1 !important; // neutral-300 on dark
+  }
+
+  .mat-icon.text-muted,
+  .icon-muted,
+  .icon-secondary {
+    color: #94a3b8 !important;
+  }
+}
+
+// =============================================================================
+// REDUCED MOTION SUPPORT
+// =============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// =============================================================================
+// LAYOUT FIXES
+// =============================================================================
 
 /* Prevent horizontal scroll on mobile */
 html, body {
