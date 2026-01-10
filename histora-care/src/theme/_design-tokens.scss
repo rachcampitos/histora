@@ -1,0 +1,245 @@
+// =============================================================================
+// HISTORA CARE - DESIGN TOKENS
+// Sistema unificado de tokens compartido con histora-front
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// COLOR TOKENS (Unified with main frontend)
+// -----------------------------------------------------------------------------
+
+// Brand Colors - Same as histora-front
+$color-brand-primary: #0891b2;      // Cyan-600 - Color principal de marca
+$color-brand-secondary: #667eea;    // Indigo - Gradiente secundario
+$color-brand-accent: #764ba2;       // Purple - Acento de gradiente
+
+// Semantic Colors
+$color-primary: #0891b2;
+$color-secondary: #64748b;
+$color-success: #16a34a;
+$color-error: #dc2626;
+$color-warning: #d97706;
+$color-info: #0284c7;
+
+// Neutral Colors
+$color-neutral-50: #f8fafc;
+$color-neutral-100: #f1f5f9;
+$color-neutral-200: #e2e8f0;
+$color-neutral-300: #cbd5e1;
+$color-neutral-400: #94a3b8;
+$color-neutral-500: #64748b;
+$color-neutral-600: #475569;
+$color-neutral-700: #334155;
+$color-neutral-800: #1e293b;
+$color-neutral-900: #0f172a;
+
+// Surface Colors - Light Mode
+$surface-primary: #ffffff;
+$surface-secondary: #f8fafc;
+$surface-tertiary: #f1f5f9;
+
+// Surface Colors - Dark Mode
+$surface-dark-primary: #1a202e;
+$surface-dark-secondary: #232b3e;
+$surface-dark-tertiary: #2a3347;
+
+// Text Colors - Light Mode (WCAG AA compliant)
+$text-primary: #1e293b;
+$text-secondary: #475569;
+$text-tertiary: #64748b;
+$text-placeholder: #64748b;
+
+// Text Colors - Dark Mode
+$text-dark-primary: #f1f5f9;
+$text-dark-secondary: #cbd5e1;
+$text-dark-tertiary: #94a3b8;
+
+// -----------------------------------------------------------------------------
+// IONIC COLOR MAPPINGS
+// -----------------------------------------------------------------------------
+
+// Map to Ionic CSS variables
+:root {
+  // Primary
+  --ion-color-primary: #{$color-brand-primary};
+  --ion-color-primary-rgb: 8, 145, 178;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #077d9b;
+  --ion-color-primary-tint: #1f9cbe;
+
+  // Secondary
+  --ion-color-secondary: #{$color-brand-secondary};
+  --ion-color-secondary-rgb: 102, 126, 234;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #5a6fce;
+  --ion-color-secondary-tint: #758bed;
+
+  // Tertiary (accent)
+  --ion-color-tertiary: #{$color-brand-accent};
+  --ion-color-tertiary-rgb: 118, 75, 162;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #68428f;
+  --ion-color-tertiary-tint: #845dab;
+
+  // Success
+  --ion-color-success: #{$color-success};
+  --ion-color-success-rgb: 22, 163, 74;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #138f41;
+  --ion-color-success-tint: #2dac57;
+
+  // Warning
+  --ion-color-warning: #{$color-warning};
+  --ion-color-warning-rgb: 217, 119, 6;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #bf6905;
+  --ion-color-warning-tint: #dd851f;
+
+  // Danger
+  --ion-color-danger: #{$color-error};
+  --ion-color-danger-rgb: 220, 38, 38;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #c22121;
+  --ion-color-danger-tint: #e03c3c;
+
+  // Dark
+  --ion-color-dark: #{$color-neutral-800};
+  --ion-color-dark-rgb: 30, 41, 59;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #1a2433;
+  --ion-color-dark-tint: #353f4f;
+
+  // Medium
+  --ion-color-medium: #{$color-neutral-500};
+  --ion-color-medium-rgb: 100, 116, 139;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #58667a;
+  --ion-color-medium-tint: #74828e;
+
+  // Light
+  --ion-color-light: #{$color-neutral-100};
+  --ion-color-light-rgb: 241, 245, 249;
+  --ion-color-light-contrast: #1e293b;
+  --ion-color-light-contrast-rgb: 30, 41, 59;
+  --ion-color-light-shade: #d4d8db;
+  --ion-color-light-tint: #f3f6fa;
+
+  // Brand gradient
+  --histora-gradient: linear-gradient(135deg, #{$color-brand-secondary} 0%, #{$color-brand-accent} 100%);
+
+  // Surfaces
+  --surface-primary: #{$surface-primary};
+  --surface-secondary: #{$surface-secondary};
+  --surface-tertiary: #{$surface-tertiary};
+
+  // Text
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --text-tertiary: #{$text-tertiary};
+}
+
+// -----------------------------------------------------------------------------
+// DARK MODE
+// -----------------------------------------------------------------------------
+
+body.dark {
+  --ion-background-color: #{$surface-dark-primary};
+  --ion-background-color-rgb: 26, 32, 46;
+  --ion-text-color: #{$text-dark-primary};
+  --ion-text-color-rgb: 241, 245, 249;
+
+  --ion-card-background: #{$surface-dark-secondary};
+  --ion-item-background: #{$surface-dark-secondary};
+  --ion-toolbar-background: #{$surface-dark-primary};
+
+  --surface-primary: #{$surface-dark-primary};
+  --surface-secondary: #{$surface-dark-secondary};
+  --surface-tertiary: #{$surface-dark-tertiary};
+
+  --text-primary: #{$text-dark-primary};
+  --text-secondary: #{$text-dark-secondary};
+  --text-tertiary: #{$text-dark-tertiary};
+}
+
+// -----------------------------------------------------------------------------
+// SPACING TOKENS
+// -----------------------------------------------------------------------------
+
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+$spacing-6: 24px;
+$spacing-8: 32px;
+$spacing-10: 40px;
+$spacing-12: 48px;
+
+// -----------------------------------------------------------------------------
+// BORDER RADIUS
+// -----------------------------------------------------------------------------
+
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 9999px;
+
+// -----------------------------------------------------------------------------
+// SHADOWS
+// -----------------------------------------------------------------------------
+
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+// -----------------------------------------------------------------------------
+// TYPOGRAPHY
+// -----------------------------------------------------------------------------
+
+$font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// -----------------------------------------------------------------------------
+// ANIMATION
+// -----------------------------------------------------------------------------
+
+$duration-fast: 150ms;
+$duration-normal: 250ms;
+$duration-slow: 350ms;
+
+$easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Respect reduced motion
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// TOUCH TARGETS
+// -----------------------------------------------------------------------------
+
+$touch-target-min: 44px;
+$touch-target-comfortable: 48px;

@@ -5,16 +5,22 @@
  *  Description: This is a main style scss file for import all scss files.
  *
  *  Structure (with shortcodes):
+                 [0. Design System ] - NEW: Design tokens and accessibility
                  [1. Common ]
-                 [2. Fonts ]                   
-                 [3. Components ]       
-                 [4. Apps]                   
-                 [5. Pages ]    
-                 [6. Pugins ]        
-                 [7. UI ]     
-                 [8. Browser ]     
+                 [2. Fonts ]
+                 [3. Components ]
+                 [4. Apps]
+                 [5. Pages ]
+                 [6. Pugins ]
+                 [7. UI ]
+                 [8. Browser ]
 
-                
+/*                 [0. Design System ]                   		*/
+@include meta.load-css("common/_design-tokens");
+@include meta.load-css("common/_design-mixins");
+@include meta.load-css("common/_css-variables");
+@include meta.load-css("common/_accessibility");
+
 /*                 [1. Common ]                   			*/
 @import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @include meta.load-css("common/_variables");

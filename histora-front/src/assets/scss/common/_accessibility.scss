@@ -1,0 +1,366 @@
+// =============================================================================
+// ACCESSIBILITY STYLES
+// Estilos globales para mejorar la accesibilidad WCAG 2.1 AA
+// =============================================================================
+
+@use "design-tokens" as tokens;
+@use "design-mixins" as mixins;
+
+// -----------------------------------------------------------------------------
+// SCREEN READER ONLY
+// -----------------------------------------------------------------------------
+
+/// Oculta visualmente pero mantiene accesible para lectores de pantalla
+.sr-only {
+  @include mixins.sr-only;
+}
+
+/// Muestra solo cuando está enfocado (para skip links)
+.sr-only-focusable {
+  @include mixins.sr-only;
+
+  &:focus,
+  &:active {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: tokens.$spacing-2 tokens.$spacing-4;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SKIP LINKS
+// -----------------------------------------------------------------------------
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: tokens.$spacing-4;
+  z-index: tokens.$z-index-overlay + 1;
+  padding: tokens.$spacing-3 tokens.$spacing-4;
+  background-color: tokens.$color-primary;
+  color: white;
+  font-size: tokens.$font-size-sm;
+  font-weight: tokens.$font-weight-medium;
+  text-decoration: none;
+  border-radius: tokens.$radius-md;
+  box-shadow: tokens.$shadow-lg;
+  @include mixins.transition(top);
+
+  &:focus {
+    top: tokens.$spacing-4;
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+
+  &:hover {
+    background-color: darken(tokens.$color-primary, 10%);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// FOCUS STYLES
+// -----------------------------------------------------------------------------
+
+/// Focus visible global para todos los elementos interactivos
+:focus-visible {
+  outline: 2px solid tokens.$color-primary;
+  outline-offset: 2px;
+}
+
+/// Quitar outline por defecto en focus (usamos focus-visible)
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/// Focus ring para botones y elementos interactivos
+.focus-ring {
+  @include mixins.focus-ring;
+}
+
+// Material buttons y form fields
+.mat-mdc-button,
+.mat-mdc-icon-button,
+.mat-mdc-outlined-button,
+.mat-mdc-flat-button,
+.mat-mdc-raised-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  &:focus-visible {
+    outline: 2px solid tokens.$color-primary;
+    outline-offset: 2px;
+  }
+}
+
+// Form controls
+.mat-mdc-form-field {
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: tokens.$color-primary !important;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// COLOR CONTRAST FIXES (WCAG AA)
+// -----------------------------------------------------------------------------
+
+/// Placeholders con contraste adecuado (4.5:1 mínimo)
+::placeholder {
+  color: tokens.$text-placeholder !important;
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  color: tokens.$text-placeholder !important;
+}
+
+::-moz-placeholder {
+  color: tokens.$text-placeholder !important;
+}
+
+:-ms-input-placeholder {
+  color: tokens.$text-placeholder !important;
+}
+
+/// Texto secundario e íconos con contraste adecuado
+.text-secondary,
+.text-muted {
+  color: tokens.$text-secondary !important;
+}
+
+/// Íconos secundarios con contraste WCAG
+.icon-secondary,
+.mat-icon.icon-secondary {
+  color: tokens.$text-secondary !important;
+}
+
+// Dark mode contrast fixes
+body.dark {
+  ::placeholder {
+    color: tokens.$text-dark-tertiary !important;
+  }
+
+  .text-secondary,
+  .text-muted {
+    color: tokens.$text-dark-secondary !important;
+  }
+
+  .icon-secondary,
+  .mat-icon.icon-secondary {
+    color: tokens.$text-dark-secondary !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// REDUCED MOTION
+// -----------------------------------------------------------------------------
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  // Deshabilitar específicamente animaciones problemáticas
+  .skeleton-shimmer,
+  .loading-spinner,
+  .pulse-animation {
+    animation: none !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// KEYBOARD NAVIGATION
+// -----------------------------------------------------------------------------
+
+/// Filas de tabla navegables por teclado
+tr[tabindex="0"],
+.table-row-interactive {
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px tokens.$color-primary;
+    background-color: rgba(tokens.$color-primary, 0.05);
+  }
+
+  &:hover {
+    background-color: rgba(tokens.$color-primary, 0.03);
+  }
+}
+
+/// Cards navegables por teclado
+.card-interactive[tabindex="0"] {
+  @include mixins.focus-visible;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px tokens.$color-primary, tokens.$shadow-md;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// ARIA LIVE REGIONS
+// -----------------------------------------------------------------------------
+
+/// Contenedor para anuncios de screen reader
+.aria-live-polite {
+  @include mixins.sr-only;
+}
+
+[aria-live="polite"],
+[aria-live="assertive"] {
+  &:empty {
+    display: none;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// TOUCH TARGETS
+// -----------------------------------------------------------------------------
+
+/// Asegurar tamaño mínimo de touch targets (44x44px)
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  .mat-mdc-icon-button,
+  .clickable {
+    min-width: tokens.$touch-target-min;
+    min-height: tokens.$touch-target-min;
+  }
+
+  // Icon buttons específicos
+  .mat-mdc-icon-button {
+    width: tokens.$touch-target-comfortable !important;
+    height: tokens.$touch-target-comfortable !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// HIGH CONTRAST MODE
+// -----------------------------------------------------------------------------
+
+@media (prefers-contrast: high) {
+  // Bordes más visibles
+  .card,
+  .mat-mdc-card,
+  .mat-mdc-form-field {
+    border: 2px solid currentColor !important;
+  }
+
+  // Enlaces subrayados
+  a {
+    text-decoration: underline !important;
+  }
+
+  // Botones con bordes claros
+  button,
+  .mat-mdc-button,
+  .mat-mdc-raised-button {
+    border: 2px solid currentColor !important;
+  }
+
+  // Quitar sombras que pueden confundir
+  * {
+    box-shadow: none !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// SEMANTIC HTML HELPERS
+// -----------------------------------------------------------------------------
+
+/// Landmarks visibles en modo debug
+.debug-landmarks {
+  [role="navigation"],
+  [role="main"],
+  [role="banner"],
+  [role="contentinfo"],
+  [role="complementary"],
+  nav,
+  main,
+  header,
+  footer,
+  aside {
+    outline: 2px dashed rgba(tokens.$color-primary, 0.5);
+    outline-offset: -2px;
+
+    &::before {
+      content: attr(aria-label) " (" attr(role) ")";
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 2px 4px;
+      font-size: 10px;
+      background: tokens.$color-primary;
+      color: white;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// ERROR STATES
+// -----------------------------------------------------------------------------
+
+/// Errores con iconos y colores accesibles
+[aria-invalid="true"],
+.ng-invalid.ng-touched {
+  border-color: tokens.$color-error !important;
+}
+
+/// Mensajes de error anunciados
+[role="alert"] {
+  color: tokens.$color-error;
+  font-weight: tokens.$font-weight-medium;
+}
+
+/// Error icons
+.error-icon {
+  color: tokens.$color-error;
+}
+
+// -----------------------------------------------------------------------------
+// LOADING STATES ACCESSIBLE
+// -----------------------------------------------------------------------------
+
+/// Spinner con aria-label
+.loading-spinner {
+  &[aria-label] {
+    // El label es para screen readers
+  }
+
+  &::after {
+    @include mixins.sr-only;
+    content: attr(aria-label);
+  }
+}
+
+/// Loading overlay con anuncio
+.loading-overlay {
+  [aria-busy="true"] & {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(white, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
