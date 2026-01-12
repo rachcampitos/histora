@@ -12,7 +12,7 @@ COPY histora-back/package.json histora-back/package-lock.json ./
 # Install all dependencies (including dev)
 RUN npm ci
 
-# Copy source code
+# Copy source code (cache bust: 2026-01-12-v2)
 COPY histora-back/ .
 
 # Build the application
