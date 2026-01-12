@@ -32,7 +32,7 @@ histora/
 │   │   ├── chatbot/        # WhatsApp Bot
 │   │   └── ...
 │   └── Dockerfile
-├── histora-front/          # Frontend Angular
+├── histora-front/          # Frontend Angular (Web)
 │   ├── src/app/
 │   │   ├── core/           # Servicios, guards
 │   │   ├── authentication/ # Login, registro
@@ -41,6 +41,20 @@ histora/
 │   │   └── patient/        # Panel paciente
 │   ├── Dockerfile
 │   └── nginx.conf
+├── histora-care/           # App Móvil (Ionic/Capacitor)
+│   ├── src/app/
+│   │   ├── auth/           # Login, registro
+│   │   ├── nurse/          # Panel enfermera
+│   │   │   ├── dashboard/  # Dashboard con mapa
+│   │   │   ├── requests/   # Solicitudes
+│   │   │   ├── services/   # Servicios ofrecidos
+│   │   │   ├── earnings/   # Ganancias
+│   │   │   └── profile/    # Perfil profesional
+│   │   └── patient/        # Panel paciente
+│   │       ├── map/        # Mapa con enfermeras
+│   │       ├── tracking/   # Seguimiento en tiempo real
+│   │       └── history/    # Historial de servicios
+│   └── capacitor.config.ts
 ├── railway.toml            # Config Railway
 └── README.md
 ```
@@ -62,7 +76,7 @@ histora/
 | Helmet | 8 | Seguridad HTTP |
 | Throttler | 6 | Rate limiting |
 
-### Frontend
+### Frontend (Web)
 | Tecnología | Versión | Uso |
 |------------|---------|-----|
 | Angular | 20 | Framework |
@@ -71,6 +85,15 @@ histora/
 | ApexCharts | 5 | Gráficos |
 | NGX-Translate | 17 | i18n (ES/EN) |
 | NGX-Datatable | 22 | Tablas |
+
+### Mobile (Histora Care)
+| Tecnología | Versión | Uso |
+|------------|---------|-----|
+| Angular | 20 | Framework |
+| Ionic | 8 | UI Components mobile |
+| Capacitor | 8 | APIs nativas |
+| Mapbox GL | 3 | Mapas y rutas |
+| Socket.IO | 4 | Tiempo real |
 
 ---
 
@@ -136,6 +159,22 @@ histora/
 - Navegación por teclado
 - Labels ARIA
 - Contraste adecuado
+
+### App Móvil - Histora Care
+Aplicación móvil para servicios de enfermería a domicilio.
+
+**Para Pacientes:**
+- Mapa interactivo con enfermeras cercanas (Mapbox)
+- Solicitud de servicios de salud
+- Tracking en tiempo real estilo Uber
+- Historial de servicios
+
+**Para Enfermeras:**
+- Dashboard con métricas y solicitudes
+- Gestión de disponibilidad
+- Control de servicios ofrecidos
+- Seguimiento de ganancias
+- Perfil profesional
 
 ---
 
@@ -349,7 +388,8 @@ cd histora-front && npm test
 - [ ] Rediseño página de login/registro
 - [ ] Integración WhatsApp Business completa
 - [ ] Exportación PDF de historiales
-- [ ] App móvil (Capacitor)
+- [x] App móvil Histora Care (Ionic/Capacitor)
+- [ ] Google Auth en Histora Care
 - [ ] Sistema de pagos (Stripe/MercadoPago)
 
 ---

@@ -1,0 +1,194 @@
+<section class="nurse-verifications-section">
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card pending">
+      <mat-card-content>
+        <div class="stat-icon">
+          <i-feather name="clock"></i-feather>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.pending }}</span>
+          <span class="stat-label">Pendientes</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card review">
+      <mat-card-content>
+        <div class="stat-icon">
+          <i-feather name="eye"></i-feather>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.underReview }}</span>
+          <span class="stat-label">En Revision</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card approved">
+      <mat-card-content>
+        <div class="stat-icon">
+          <i-feather name="check-circle"></i-feather>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.approved }}</span>
+          <span class="stat-label">Aprobados</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card rejected">
+      <mat-card-content>
+        <div class="stat-icon">
+          <i-feather name="x-circle"></i-feather>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.rejected }}</span>
+          <span class="stat-label">Rechazados</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Main Content Card -->
+  <mat-card class="main-card">
+    <mat-card-header>
+      <mat-card-title>Verificaciones de Enfermeras</mat-card-title>
+      <mat-card-subtitle>Revisa y aprueba las solicitudes de verificacion de Histora Care</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Filters -->
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="statusFilter" (selectionChange)="onStatusFilterChange()">
+            @for (option of statusOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Loading Spinner -->
+      @if (isLoading) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      }
+
+      <!-- Table -->
+      @if (!isLoading) {
+        <div class="table-container">
+          <table mat-table [dataSource]="dataSource" class="verifications-table">
+            <!-- Nurse Column -->
+            <ng-container matColumnDef="nurse">
+              <th mat-header-cell *matHeaderCellDef>Enfermera</th>
+              <td mat-cell *matCellDef="let row">
+                <div class="nurse-cell">
+                  @if (row.nurse?.user?.avatar) {
+                    <img [src]="row.nurse.user.avatar" class="nurse-avatar" alt="Avatar">
+                  } @else {
+                    <div class="nurse-initials">
+                      {{ getInitials(row.nurse?.user?.firstName, row.nurse?.user?.lastName) }}
+                    </div>
+                  }
+                  <div class="nurse-info">
+                    <span class="nurse-name">
+                      {{ row.nurse?.user?.firstName }} {{ row.nurse?.user?.lastName }}
+                    </span>
+                    <span class="nurse-email">{{ row.nurse?.user?.email }}</span>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- CEP Column -->
+            <ng-container matColumnDef="cep">
+              <th mat-header-cell *matHeaderCellDef>CEP</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="cep-number">{{ row.nurse?.cepNumber || '-' }}</span>
+              </td>
+            </ng-container>
+
+            <!-- DNI Column -->
+            <ng-container matColumnDef="dni">
+              <th mat-header-cell *matHeaderCellDef>DNI</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="dni-number">{{ row.dniNumber || '-' }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Estado</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="status-badge" [ngClass]="getStatusClass(row.status)">
+                  {{ getStatusLabel(row.status) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Attempt Column -->
+            <ng-container matColumnDef="attempt">
+              <th mat-header-cell *matHeaderCellDef>Intento</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="attempt-badge">#{{ row.attemptNumber }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Created At Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Fecha</th>
+              <td mat-cell *matCellDef="let row">
+                {{ row.createdAt | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="openDetail(row)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Ver Detalle</span>
+                  </button>
+                  @if (row.status === 'pending') {
+                    <button mat-menu-item (click)="markUnderReview(row)">
+                      <mat-icon>rate_review</mat-icon>
+                      <span>Marcar En Revision</span>
+                    </button>
+                  }
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                (click)="openDetail(row)"
+                class="clickable-row"></tr>
+          </table>
+
+          @if (dataSource.data.length === 0) {
+            <div class="empty-state">
+              <i-feather name="inbox" class="empty-icon"></i-feather>
+              <p>No hay verificaciones {{ statusFilter ? 'con este estado' : '' }}</p>
+            </div>
+          }
+        </div>
+
+        <mat-paginator
+          [length]="totalItems"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

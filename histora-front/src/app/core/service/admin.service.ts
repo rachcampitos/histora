@@ -140,4 +140,94 @@ export class AdminService {
       {}
     );
   }
+
+  // ============= NURSE VERIFICATION METHODS =============
+
+  private readonly nursesApiUrl = `${environment.apiUrl}/nurses`;
+
+  /**
+   * Get nurse verification statistics
+   */
+  getNurseVerificationStats(): Observable<{
+    pending: number;
+    underReview: number;
+    approved: number;
+    rejected: number;
+    total: number;
+  }> {
+    return this.http.get<{
+      pending: number;
+      underReview: number;
+      approved: number;
+      rejected: number;
+      total: number;
+    }>(`${this.nursesApiUrl}/admin/verifications/stats`);
+  }
+
+  /**
+   * Get paginated list of nurse verifications
+   */
+  getNurseVerifications(params: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  } = {}): Observable<{
+    verifications: unknown[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    let httpParams = new HttpParams();
+
+    if (params.status) {
+      httpParams = httpParams.set('status', params.status);
+    }
+    if (params.page) {
+      httpParams = httpParams.set('page', params.page.toString());
+    }
+    if (params.limit) {
+      httpParams = httpParams.set('limit', params.limit.toString());
+    }
+
+    return this.http.get<{
+      verifications: unknown[];
+      total: number;
+      page: number;
+      totalPages: number;
+    }>(`${this.nursesApiUrl}/admin/verifications`, { params: httpParams });
+  }
+
+  /**
+   * Get nurse verification detail
+   */
+  getNurseVerificationDetail(verificationId: string): Observable<unknown> {
+    return this.http.get(`${this.nursesApiUrl}/admin/verifications/${verificationId}`);
+  }
+
+  /**
+   * Mark verification as under review
+   */
+  markNurseVerificationUnderReview(verificationId: string): Observable<unknown> {
+    return this.http.patch(
+      `${this.nursesApiUrl}/admin/verifications/${verificationId}/under-review`,
+      {}
+    );
+  }
+
+  /**
+   * Approve or reject nurse verification
+   */
+  reviewNurseVerification(
+    verificationId: string,
+    review: {
+      status: 'approved' | 'rejected';
+      reviewNotes?: string;
+      rejectionReason?: string;
+    }
+  ): Observable<unknown> {
+    return this.http.patch(
+      `${this.nursesApiUrl}/admin/verifications/${verificationId}/review`,
+      review
+    );
+  }
 }

@@ -73,6 +73,18 @@
       "submenu": []
     },
     {
+      "path": "/admin/nurse-verifications",
+      "title": "MENUITEMS.ADMIN.NURSE_VERIFICATIONS",
+      "iconType": "material-icons-outlined",
+      "icon": "verified_user",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
       "path": "/admin/settings",
       "title": "MENUITEMS.ADMIN.SETTINGS",
       "iconType": "material-icons-outlined",
