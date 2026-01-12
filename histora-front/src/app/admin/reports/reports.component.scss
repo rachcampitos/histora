@@ -197,6 +197,31 @@
   }
 }
 
+// Chart container styles
+.body {
+  apx-chart {
+    display: block;
+    width: 100%;
+    min-height: 300px;
+
+    // Ensure legend items don't overlap
+    ::ng-deep {
+      .apexcharts-legend {
+        padding: 10px 0;
+
+        .apexcharts-legend-series {
+          margin: 4px 8px !important;
+        }
+      }
+
+      // Ensure chart canvas fits properly
+      .apexcharts-canvas {
+        margin: 0 auto;
+      }
+    }
+  }
+}
+
 // Dark Mode Styles
 :host-context(body.dark) {
   .card {
@@ -252,6 +277,60 @@
 
       .value {
         color: #818cf8;
+      }
+    }
+  }
+
+  // Specific chart dark mode overrides
+  .body {
+    apx-chart {
+      ::ng-deep {
+        .apexcharts-legend-text {
+          color: #b8c5d6 !important;
+        }
+
+        .apexcharts-text,
+        .apexcharts-xaxis-label,
+        .apexcharts-yaxis-label {
+          fill: #b8c5d6 !important;
+        }
+
+        .apexcharts-gridline {
+          stroke: #2a3040;
+        }
+
+        .apexcharts-tooltip {
+          background: #1a202e !important;
+          border-color: #2a3040 !important;
+          color: #ffffff !important;
+
+          .apexcharts-tooltip-title {
+            background: #2a3040 !important;
+            border-color: #2a3040 !important;
+          }
+        }
+
+        .apexcharts-datalabel {
+          fill: #ffffff !important;
+        }
+
+        // Donut chart center label
+        .apexcharts-datalabel-label,
+        .apexcharts-datalabel-value {
+          fill: #b8c5d6 !important;
+        }
+      }
+    }
+  }
+
+  // Controls styling for dark mode
+  .controls-row {
+    .export-buttons button {
+      color: #b8c5d6;
+      border-color: #3a4050;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
       }
     }
   }
