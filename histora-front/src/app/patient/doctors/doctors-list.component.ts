@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { DoctorsService, DoctorProfile } from '../../doctor/profile/doctors.service';
 import { CurrencyService } from '@core/service/currency.service';
+import { TableSkeletonComponent } from '@shared/components/skeleton-loader/table-skeleton.component';
 
 @Component({
   selector: 'app-patient-doctors-list',
@@ -38,6 +39,7 @@ import { CurrencyService } from '@core/service/currency.service';
     MatTooltipModule,
     TranslateModule,
     BreadcrumbComponent,
+    TableSkeletonComponent,
   ],
   templateUrl: './doctors-list.component.html',
   styleUrls: ['./doctors-list.component.scss'],

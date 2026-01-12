@@ -34,7 +34,8 @@
                 (click)="callToggleMenu($event, sidebarItem.submenu.length)" class="menu-top"
                 role="menuitem"
                 [attr.aria-haspopup]="sidebarItem.submenu.length > 0 ? 'menu' : null"
-                [attr.aria-expanded]="sidebarItem.submenu.length > 0 ? (sidebarItem.class.includes('toggled') ? 'true' : 'false') : null">
+                [attr.aria-expanded]="sidebarItem.submenu.length > 0 ? (sidebarItem.class.includes('toggled') ? 'true' : 'false') : null"
+                [attr.aria-current]="sidebarItem.class === '' && isRouteActive(sidebarItem.path) ? 'page' : null">
                 <i [ngClass]="[sidebarItem.iconType]" aria-hidden="true">{{sidebarItem.icon}}</i>
                 <span class="hide-menu">{{sidebarItem.title | translate}}
                 </span>
@@ -51,7 +52,8 @@
                   <a [routerLink]="sidebarSubItem1.submenu.length > 0 ? null : [sidebarSubItem1.path]"
                     (click)="callToggleMenu($event,sidebarSubItem1.submenu.length)" [ngClass]="[sidebarSubItem1.class]"
                     role="menuitem"
-                    [attr.aria-haspopup]="sidebarSubItem1.submenu.length > 0 ? 'menu' : null">
+                    [attr.aria-haspopup]="sidebarSubItem1.submenu.length > 0 ? 'menu' : null"
+                    [attr.aria-current]="sidebarSubItem1.submenu.length === 0 && isRouteActive(sidebarSubItem1.path) ? 'page' : null">
                     {{sidebarSubItem1.title | translate}}
                   </a>
                   <!-- Second level menu -->

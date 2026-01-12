@@ -39,9 +39,7 @@
         <mat-card>
           <mat-card-content>
             @if (isLoading) {
-              <div class="loading-container">
-                <mat-spinner diameter="50"></mat-spinner>
-              </div>
+              <app-table-skeleton [rows]="5" [showAvatar]="true"></app-table-skeleton>
             } @else {
               <div class="table-responsive">
                 <table mat-table [dataSource]="dataSource" matSort class="doctors-table">
