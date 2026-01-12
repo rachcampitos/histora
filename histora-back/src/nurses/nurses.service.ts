@@ -42,28 +42,49 @@ export class NursesService {
     return nurse.save();
   }
 
-  async findById(id: string): Promise<Nurse> {
+  async findById(id: string): Promise<Nurse & { user?: Record<string, unknown> }> {
     const nurse = await this.nurseModel
       .findById(id)
-      .populate('userId', 'firstName lastName email phone avatar');
+      .populate('userId', 'firstName lastName email phone avatar')
+      .lean();
 
     if (!nurse) {
       throw new NotFoundException('Nurse not found');
     }
 
-    return nurse;
+    // Transform userId to user for consistent API response
+    const { userId, ...rest } = nurse as Nurse & { userId: Record<string, unknown> };
+    return {
+      ...rest,
+      userId: (userId as { _id?: string })?._id?.toString() || nurse.userId?.toString(),
+      user: userId,
+    } as Nurse & { user?: Record<string, unknown> };
   }
 
-  async findByUserId(userId: string): Promise<Nurse> {
+  async findByUserId(userIdParam: string): Promise<Nurse & { user?: Record<string, unknown> }> {
     const nurse = await this.nurseModel
-      .findOne({ userId: new Types.ObjectId(userId) })
-      .populate('userId', 'firstName lastName email phone avatar');
+      .findOne({ userId: new Types.ObjectId(userIdParam) })
+      .populate('userId', 'firstName lastName email phone avatar')
+      .lean();
 
     if (!nurse) {
       throw new NotFoundException('Nurse profile not found');
     }
 
-    return nurse;
+    // Transform userId to user for consistent API response
+    const { userId, ...rest } = nurse as Nurse & { userId: Record<string, unknown> };
+    return {
+      ...rest,
+      userId: (userId as { _id?: string })?._id?.toString() || nurse.userId?.toString(),
+      user: userId,
+    } as Nurse & { user?: Record<string, unknown> };
+  }
+
+  /**
+   * Find nurse by CEP number (returns null if not found, doesn't throw)
+   */
+  async findByCepNumber(cepNumber: string): Promise<Nurse | null> {
+    return this.nurseModel.findOne({ cepNumber }).exec();
   }
 
   async searchNearby(searchDto: SearchNurseDto): Promise<{ nurse: Nurse; distance: number }[]> {

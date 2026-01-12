@@ -1,4 +1,6 @@
 import {
+  IsBoolean,
+  IsDate,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -6,6 +8,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { UserRole } from '../schema/user.schema';
 
 export class CreateUserDto {
@@ -37,4 +40,28 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   clinicId?: string;
+
+  // Terms and conditions acceptance
+  @IsBoolean()
+  @IsOptional()
+  termsAccepted?: boolean;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  termsAcceptedAt?: Date;
+
+  @IsString()
+  @IsOptional()
+  termsVersion?: string;
+
+  // Professional disclaimer acceptance (for nurses/doctors)
+  @IsBoolean()
+  @IsOptional()
+  professionalDisclaimerAccepted?: boolean;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  professionalDisclaimerAcceptedAt?: Date;
 }

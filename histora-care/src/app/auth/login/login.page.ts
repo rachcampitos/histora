@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -13,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
 export class LoginPage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
@@ -20,6 +21,7 @@ export class LoginPage implements OnInit {
 
   loginForm: FormGroup;
   showPassword = false;
+  googleAuthPending = computed(() => this.authService.googleAuthPending());
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -32,6 +34,30 @@ export class LoginPage implements OnInit {
   ngOnInit() {
     // Initialize auth service
     this.authService.initialize();
+
+    // Check for OAuth error in query params
+    const error = this.route.snapshot.queryParams['error'];
+    if (error) {
+      this.showOAuthError(error);
+    }
+  }
+
+  private async showOAuthError(error: string) {
+    let message = 'Error en la autenticacion';
+    if (error === 'google_auth_failed') {
+      message = 'Error en la autenticacion con Google. Por favor intenta de nuevo.';
+    } else if (error === 'google_auth_cancelled') {
+      message = 'Autenticacion con Google cancelada.';
+    }
+
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 4000,
+      position: 'bottom',
+      color: 'danger',
+      icon: 'alert-circle-outline'
+    });
+    await toast.present();
   }
 
   togglePassword() {
@@ -60,7 +86,7 @@ export class LoginPage implements OnInit {
         if (response.user.role === 'nurse') {
           this.router.navigate(['/nurse/dashboard']);
         } else if (response.user.role === 'patient') {
-          this.router.navigate(['/patient/map']);
+          this.router.navigate(['/patient/tabs/home']);
         } else {
           this.router.navigate(['/home']);
         }
@@ -139,6 +165,22 @@ export class LoginPage implements OnInit {
 
   goToRegister() {
     this.router.navigate(['/auth/register']);
+  }
+
+  async signInWithGoogle() {
+    try {
+      await this.authService.loginWithGoogle();
+    } catch (error) {
+      console.error('Error starting Google login:', error);
+      const toast = await this.toastCtrl.create({
+        message: 'Error al iniciar sesion con Google',
+        duration: 3000,
+        position: 'bottom',
+        color: 'danger',
+        icon: 'alert-circle-outline'
+      });
+      await toast.present();
+    }
   }
 
   private markFormTouched() {

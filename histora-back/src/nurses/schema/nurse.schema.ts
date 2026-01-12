@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { VerificationStatus } from './nurse-verification.schema';
 
 // Sub-schema for nurse services
 @Schema({ _id: true })
@@ -80,6 +81,14 @@ export class Nurse extends Document {
   @Prop()
   cepVerifiedAt?: Date;
 
+  // Verification status for the nurse profile
+  @Prop({
+    type: String,
+    enum: Object.values(VerificationStatus),
+    default: VerificationStatus.PENDING,
+  })
+  verificationStatus: VerificationStatus;
+
   @Prop({ type: [String], default: [] })
   specialties: string[];
 
@@ -99,6 +108,14 @@ export class Nurse extends Document {
 
   @Prop({ default: 10 }) // Default 10km radius
   serviceRadius: number;
+
+  // Extra charge per km beyond service radius
+  @Prop({ default: 0 })
+  extraChargePerKm: number;
+
+  // Minimum service fee
+  @Prop({ default: 0 })
+  minimumServiceFee: number;
 
   // Availability
   @Prop({ default: false })

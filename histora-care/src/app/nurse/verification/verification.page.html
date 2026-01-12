@@ -1,0 +1,153 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Verificacion de Identidad</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="verification-content">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading()">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando...</p>
+  </div>
+
+  <div class="verification-container" *ngIf="!isLoading()">
+    <!-- Already Approved State -->
+    <div class="status-card approved" *ngIf="isApproved()">
+      <div class="status-icon">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+      <h2>Cuenta Verificada</h2>
+      <p>Tu identidad ha sido verificada exitosamente. Ya puedes ofrecer tus servicios en la plataforma.</p>
+      <ion-button expand="block" (click)="goToProfile()">
+        <ion-icon name="person-outline" slot="start"></ion-icon>
+        Ir a mi Perfil
+      </ion-button>
+    </div>
+
+    <!-- Under Review State -->
+    <div class="status-card under-review" *ngIf="isUnderReview()">
+      <div class="status-icon">
+        <ion-icon name="time"></ion-icon>
+      </div>
+      <h2>En Revision</h2>
+      <p>Tus documentos estan siendo revisados por nuestro equipo. Este proceso puede tomar de 24 a 48 horas.</p>
+      <div class="info-box">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>Te notificaremos cuando la revision este completa.</span>
+      </div>
+    </div>
+
+    <!-- Rejected State -->
+    <div class="status-card rejected" *ngIf="isRejected()">
+      <div class="status-icon">
+        <ion-icon name="close-circle"></ion-icon>
+      </div>
+      <h2>Verificacion Rechazada</h2>
+      <p *ngIf="verification()?.rejectionReason">
+        Motivo: {{ verification()?.rejectionReason }}
+      </p>
+      <p *ngIf="!verification()?.rejectionReason">
+        Tu solicitud de verificacion fue rechazada. Por favor, revisa los documentos y vuelve a intentarlo.
+      </p>
+      <ion-button expand="block" color="primary" (click)="loadData()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Intentar de Nuevo
+      </ion-button>
+    </div>
+
+    <!-- Pending / Upload Form -->
+    <ng-container *ngIf="isPending() || isRejected()">
+      <!-- Info Header -->
+      <div class="info-header">
+        <h1>Verifica tu Identidad</h1>
+        <p>Para poder ofrecer servicios en Histora Care, necesitamos verificar tu identidad como profesional de enfermeria.</p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span>Progreso de carga</span>
+          <span class="progress-value">{{ uploadProgress() }}%</span>
+        </div>
+        <ion-progress-bar [value]="uploadProgress() / 100" color="success"></ion-progress-bar>
+      </div>
+
+      <!-- DNI Information -->
+      <div class="form-section">
+        <h3>Informacion del DNI</h3>
+
+        <ion-item lines="none" class="input-item">
+          <ion-icon name="id-card-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input
+            [value]="dniNumber()"
+            (ionInput)="onDniNumberChange($event)"
+            placeholder="Numero de DNI (8 digitos)"
+            inputmode="numeric"
+            maxlength="8">
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="input-item">
+          <ion-icon name="person-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input
+            [value]="fullNameOnDni()"
+            (ionInput)="onFullNameChange($event)"
+            placeholder="Nombre completo (como aparece en DNI)"
+            autocapitalize="words">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Documents Upload -->
+      <div class="documents-section">
+        <h3>Documentos Requeridos</h3>
+
+        <div class="document-list">
+          <div class="document-card" *ngFor="let doc of documents()" (click)="selectImage(doc.type)">
+            <div class="document-preview" [class.has-image]="doc.imageData">
+              <img *ngIf="doc.imageData" [src]="'data:' + doc.mimeType + ';base64,' + doc.imageData" alt="{{ doc.label }}">
+              <div class="placeholder" *ngIf="!doc.imageData">
+                <ion-icon [name]="doc.icon"></ion-icon>
+              </div>
+              <div class="upload-badge" *ngIf="doc.imageData">
+                <ion-icon name="checkmark"></ion-icon>
+              </div>
+            </div>
+            <div class="document-info">
+              <h4>{{ doc.label }}</h4>
+              <p>{{ doc.description }}</p>
+            </div>
+            <div class="document-action">
+              <ion-button fill="clear" size="small" *ngIf="!doc.imageData">
+                <ion-icon name="camera-outline"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" size="small" color="danger" *ngIf="doc.imageData" (click)="removeImage(doc.type); $event.stopPropagation()">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-section">
+        <ion-button
+          expand="block"
+          [disabled]="!canSubmit()"
+          (click)="submitVerification()">
+          <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+          Enviar para Verificacion
+        </ion-button>
+        <p class="disclaimer">
+          Al enviar, confirmas que los documentos son autenticos y te pertenecen.
+        </p>
+      </div>
+    </ng-container>
+  </div>
+</ion-content>

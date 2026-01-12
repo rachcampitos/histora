@@ -39,6 +39,7 @@ async function bootstrap() {
   const defaultOrigins = [
     'http://localhost:4200',
     'http://localhost:8100',
+    'http://localhost:8101',
     'https://app.historahealth.com',
     'https://historahealth.com',
   ];
@@ -53,6 +54,9 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
+
+  // Global API prefix
+  app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
     new ValidationPipe({

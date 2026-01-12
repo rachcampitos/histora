@@ -5,6 +5,8 @@ export interface LocationCoordinates {
   latitude: number;
   longitude: number;
   accuracy?: number;
+  heading?: number | null;
+  speed?: number | null;
 }
 
 @Injectable({
@@ -33,7 +35,9 @@ export class GeolocationService {
     const coords: LocationCoordinates = {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
-      accuracy: position.coords.accuracy
+      accuracy: position.coords.accuracy,
+      heading: position.coords.heading,
+      speed: position.coords.speed
     };
 
     this.locationSignal.set(coords);
@@ -61,7 +65,9 @@ export class GeolocationService {
           this.locationSignal.set({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy
+            accuracy: position.coords.accuracy,
+            heading: position.coords.heading,
+            speed: position.coords.speed
           });
         }
       }

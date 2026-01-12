@@ -1,0 +1,463 @@
+// Loading & Error States
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 16px;
+
+  ion-icon {
+    font-size: 64px;
+  }
+
+  h3 {
+    color: var(--ion-color-medium);
+    text-align: center;
+  }
+}
+
+// Profile Header Card
+.profile-header-card {
+  margin: 0 0 16px 0;
+
+  .profile-header {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .avatar-container {
+    position: relative;
+    flex-shrink: 0;
+
+    .avatar,
+    .avatar-placeholder {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .avatar-placeholder {
+      background: var(--ion-color-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 48px;
+        color: var(--ion-color-medium);
+      }
+    }
+
+    .availability-badge {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 12px; // Increased padding for better readability
+      border-radius: 12px;
+      font-size: 11px; // Slightly larger for better legibility
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Add subtle shadow
+
+      &.available {
+        background: var(--ion-color-success);
+        color: white;
+      }
+
+      &.unavailable {
+        background: var(--ion-color-medium);
+        color: white;
+      }
+    }
+  }
+
+  .profile-info {
+    flex: 1;
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+
+      .stars {
+        display: flex;
+        gap: 2px;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+
+      .rating-text {
+        font-size: 12px;
+        color: var(--ion-color-medium);
+      }
+    }
+
+    .experience {
+      font-size: 14px;
+      color: var(--ion-color-medium);
+      margin: 4px 0 8px 0;
+    }
+
+    ion-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+
+      ion-icon {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// Card Titles
+ion-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--ion-color-primary);
+  }
+}
+
+// Specialties List
+.specialties-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  ion-chip {
+    margin: 0;
+  }
+}
+
+// Service Price
+.service-price {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+// Stats Card
+.stats-card {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    text-align: center;
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+
+      ion-icon {
+        font-size: 28px;
+      }
+
+      .stat-value {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+// Footer
+ion-footer {
+  ion-toolbar {
+    padding: 8px 16px;
+    --background: var(--ion-background-color);
+  }
+
+  ion-button {
+    margin: 0;
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+  }
+}
+
+// Dark Mode Support
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  // Avatar placeholder
+  .avatar-placeholder {
+    background: #334155 !important; // More visible in dark mode
+
+    ion-icon {
+      color: #94a3b8 !important; // Better contrast
+    }
+  }
+
+  // Cards
+  ion-card {
+    --background: #1e293b;
+    border: 1px solid #334155; // Subtle border for definition
+  }
+
+  // Card titles and content
+  ion-card-title {
+    color: #f1f5f9;
+
+    ion-icon {
+      color: var(--ion-color-primary-tint);
+    }
+  }
+
+  ion-card-content {
+    color: #e2e8f0;
+
+    p {
+      color: #cbd5e1;
+    }
+  }
+
+  // Profile header
+  .profile-header {
+    .profile-info {
+      h1 {
+        color: #f1f5f9;
+      }
+
+      .experience {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  // Availability badges in dark mode
+  .availability-badge {
+    &.available {
+      background: #064e3b; // Darker green
+      color: #6ee7b7; // Lighter text
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    &.unavailable {
+      background: #1f2937; // Darker gray
+      color: #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  // Stats card
+  .stats-card {
+    .stat-value {
+      color: #f1f5f9;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+    }
+  }
+
+  // Service items
+  ion-item {
+    --background: transparent;
+    --color: #e2e8f0;
+
+    ion-label {
+      h3 {
+        color: #f1f5f9;
+      }
+
+      p {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  // Service price
+  .service-price {
+    color: #6ee7b7 !important; // Brighter in dark mode
+  }
+
+  // Chips
+  ion-chip {
+    --background: #334155;
+    --color: #e2e8f0;
+
+    ion-icon {
+      color: var(--ion-color-primary-tint);
+    }
+  }
+
+  // Footer button
+  ion-footer {
+    ion-toolbar {
+      --background: #0f172a;
+      border-top: 1px solid #334155;
+    }
+  }
+
+  // Loading and error states
+  .loading-container,
+  .error-container {
+    h3 {
+      color: #94a3b8;
+    }
+  }
+}
+
+// Reviews Card
+.reviews-card {
+  .reviews-loading,
+  .no-reviews {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    gap: 12px;
+
+    ion-icon {
+      font-size: 48px;
+    }
+
+    p {
+      color: var(--ion-color-medium);
+      text-align: center;
+      margin: 0;
+    }
+  }
+
+  .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .review-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ion-color-light-shade);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    ion-avatar {
+      width: 36px;
+      height: 36px;
+    }
+
+    .avatar-placeholder-small {
+      background: var(--ion-color-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 20px;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+
+  .reviewer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .reviewer-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--histora-text-primary, #2d3748);
+  }
+
+  .review-date {
+    font-size: 12px;
+    color: var(--ion-color-medium);
+  }
+
+  .review-rating {
+    display: flex;
+    gap: 2px;
+
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+
+  .review-comment {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--histora-text-secondary, #6c757d);
+  }
+
+  .show-more-btn {
+    margin-top: 8px;
+    --color: var(--ion-color-primary);
+    font-size: 14px;
+    text-transform: none;
+  }
+}
+
+// iOS safe area
+ion-content {
+  --padding-bottom: 100px;
+}
+
+// Dark Mode - Reviews
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  .reviews-card {
+    .reviewer-name {
+      color: #f1f5f9;
+    }
+
+    .review-comment {
+      color: #cbd5e1;
+    }
+
+    .review-item {
+      border-bottom-color: #334155;
+    }
+
+    .avatar-placeholder-small {
+      background: #334155;
+
+      ion-icon {
+        color: #94a3b8;
+      }
+    }
+  }
+}

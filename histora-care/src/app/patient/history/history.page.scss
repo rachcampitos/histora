@@ -1,0 +1,573 @@
+// Variables
+$primary-color: #667eea;
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$danger-color: #ef4444;
+$text-dark: #1a1a1a;
+$text-muted: #a1a1aa;
+$border-color: #e7e5e4;
+
+// Tabs Container
+.tabs-container {
+  padding: 12px 16px;
+  background: var(--ion-background-color, #ffffff);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  ion-segment {
+    --background: var(--ion-color-light);
+    border-radius: 12px;
+
+    ion-segment-button {
+      --indicator-color: var(--ion-color-primary);
+      --color: var(--ion-color-medium);
+      --color-checked: var(--ion-color-primary-contrast);
+      --indicator-height: 100%;
+      --border-radius: 10px;
+      min-height: 40px;
+      font-weight: 500;
+      font-size: 13px;
+
+      ion-badge {
+        margin-left: 6px;
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+    }
+  }
+}
+
+// Loading State
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  gap: 16px;
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    color: $text-muted;
+  }
+}
+
+// Error State
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  p {
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: $text-muted;
+    max-width: 280px;
+  }
+
+  ion-button {
+    --border-radius: 10px;
+  }
+}
+
+// Empty State
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e7e5e4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    ion-icon {
+      font-size: 36px;
+      color: #64748b;
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+
+      ion-icon {
+        color: #3b82f6;
+      }
+    }
+
+    &.completed {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+
+      ion-icon {
+        color: $success-color;
+      }
+    }
+
+    &.cancelled {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+
+      ion-icon {
+        color: $danger-color;
+      }
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  p {
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: $text-muted;
+    max-width: 260px;
+    line-height: 1.5;
+  }
+
+  ion-button {
+    --border-radius: 10px;
+  }
+}
+
+// Service List
+.service-list {
+  padding: 0 16px;
+  background: transparent;
+
+  ion-list-header {
+    padding-left: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Service Card
+.service-card {
+  margin: 0 0 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+
+  ion-card-content {
+    padding: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .nurse-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+
+    .nurse-avatar {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .nurse-avatar-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, $primary-color 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      span {
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+      }
+    }
+
+    .nurse-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+
+      .nurse-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: $text-dark;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .nurse-cep {
+        font-size: 12px;
+        color: $text-muted;
+      }
+    }
+  }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 8px;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+
+  .service-info {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid $border-color;
+
+    .service-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+
+      ion-icon {
+        font-size: 18px;
+        color: $primary-color;
+      }
+
+      span {
+        font-size: 14px;
+        font-weight: 600;
+        color: $text-dark;
+      }
+    }
+
+    .service-category {
+      font-size: 12px;
+      color: $text-muted;
+      text-transform: capitalize;
+      margin-left: 26px;
+    }
+  }
+
+  .service-details {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      ion-icon {
+        font-size: 16px;
+        color: $text-muted;
+      }
+
+      span {
+        font-size: 13px;
+        color: $text-dark;
+      }
+    }
+  }
+
+  .service-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+
+    ion-icon {
+      font-size: 16px;
+      color: $text-muted;
+    }
+
+    span {
+      font-size: 13px;
+      color: $text-muted;
+    }
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid $border-color;
+
+    .service-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: $success-color;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      ion-button {
+        --border-radius: 8px;
+        --padding-start: 12px;
+        --padding-end: 12px;
+        font-size: 12px;
+        height: 32px;
+      }
+
+      .arrow-icon {
+        font-size: 20px;
+        color: $text-muted;
+        margin-left: 4px;
+      }
+    }
+  }
+
+  .rating-display {
+    display: flex;
+    gap: 2px;
+
+    ion-icon {
+      font-size: 16px;
+      color: #d1d5db;
+
+      &.filled {
+        color: $warning-color;
+      }
+    }
+  }
+}
+
+// Bottom Spacer
+.bottom-spacer {
+  height: 100px;
+}
+
+// Dark Mode
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  .tabs-container {
+    background: var(--ion-background-color, #1a1a1a);
+
+    ion-segment {
+      --background: #1e293b;
+    }
+  }
+
+  .loading-container {
+    p {
+      color: #a1a1aa;
+    }
+  }
+
+  .error-container {
+    h3 {
+      color: #f1f5f9;
+    }
+
+    p {
+      color: #a1a1aa;
+    }
+  }
+
+  .empty-container {
+    .empty-icon {
+      background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+
+      ion-icon {
+        color: #a1a1aa;
+      }
+
+      &.active {
+        background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+
+        ion-icon {
+          color: #60a5fa;
+        }
+      }
+
+      &.completed {
+        background: linear-gradient(135deg, #064e3b 0%, #1e293b 100%);
+
+        ion-icon {
+          color: #34d399;
+        }
+      }
+
+      &.cancelled {
+        background: linear-gradient(135deg, #7f1d1d 0%, #1e293b 100%);
+
+        ion-icon {
+          color: #f87171;
+        }
+      }
+    }
+
+    h3 {
+      color: #f1f5f9;
+    }
+
+    p {
+      color: #a1a1aa;
+    }
+  }
+
+  .service-card {
+    --background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    .nurse-info {
+      .nurse-details {
+        .nurse-name {
+          color: #f1f5f9;
+        }
+
+        .nurse-cep {
+          color: #a1a1aa;
+        }
+      }
+    }
+
+    .service-info {
+      border-bottom-color: #334155;
+
+      .service-name {
+        ion-icon {
+          color: var(--ion-color-primary-tint);
+        }
+
+        span {
+          color: #f1f5f9;
+        }
+      }
+
+      .service-category {
+        color: #a1a1aa;
+      }
+    }
+
+    .service-details {
+      .detail-item {
+        ion-icon {
+          color: #64748b;
+        }
+
+        span {
+          color: #e7e5e4;
+        }
+      }
+    }
+
+    .service-location {
+      ion-icon {
+        color: #64748b;
+      }
+
+      span {
+        color: #a1a1aa;
+      }
+    }
+
+    .card-footer {
+      border-top-color: #334155;
+
+      .service-price {
+        color: #34d399;
+      }
+
+      .card-actions {
+        .arrow-icon {
+          color: #64748b;
+        }
+      }
+    }
+
+    .rating-display {
+      ion-icon {
+        color: #475569;
+
+        &.filled {
+          color: #fbbf24;
+        }
+      }
+    }
+  }
+}
+
+// iOS specific adjustments
+.ios {
+  .tabs-container {
+    padding-top: 8px;
+  }
+
+  .service-card {
+    ion-card-content {
+      padding: 14px;
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.service-card {
+  animation: fadeIn 0.3s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}

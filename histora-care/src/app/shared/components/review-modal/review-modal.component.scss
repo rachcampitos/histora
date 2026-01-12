@@ -1,0 +1,245 @@
+// Variables
+$primary-color: #667eea;
+$star-color: #fbbf24;
+$star-empty-color: #d1d5db;
+$text-dark: #1a1a1a;
+$text-muted: #a1a1aa;
+
+// Header styling
+ion-header {
+  ion-toolbar {
+    --background: transparent;
+
+    ion-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Main container
+.review-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+// Nurse info section
+.nurse-info {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ion-color-light);
+
+  .nurse-label {
+    margin: 0 0 4px;
+    font-size: 14px;
+    color: $text-muted;
+  }
+
+  .nurse-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: $text-dark;
+  }
+}
+
+// Rating section
+.rating-section {
+  text-align: center;
+
+  .rating-instruction {
+    margin: 0 0 16px;
+    font-size: 16px;
+    color: $text-dark;
+    font-weight: 500;
+  }
+
+  .stars-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .star-button {
+    background: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border-radius: 50%;
+
+    &:active {
+      transform: scale(0.9);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px $primary-color;
+    }
+
+    ion-icon {
+      font-size: 40px;
+      color: $star-empty-color;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    &.filled ion-icon {
+      color: $star-color;
+      transform: scale(1.1);
+    }
+
+    &:hover ion-icon {
+      transform: scale(1.15);
+    }
+  }
+
+  .rating-label {
+    margin: 16px 0 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: $primary-color;
+    animation: fadeIn 0.3s ease;
+  }
+}
+
+// Comment section
+.comment-section {
+  .comment-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: $text-dark;
+  }
+
+  .comment-textarea {
+    --background: var(--histora-surface, #f8fafc);
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border: 1px solid var(--ion-color-light);
+    border-radius: 12px;
+    font-size: 15px;
+
+    &:focus-within {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+    }
+  }
+}
+
+// Footer buttons
+ion-footer {
+  background: var(--ion-background-color);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+
+  .footer-buttons {
+    display: flex;
+    gap: 12px;
+
+    ion-button {
+      flex: 1;
+      --border-radius: 12px;
+      font-weight: 600;
+      height: 48px;
+
+      &[fill="outline"] {
+        --border-width: 2px;
+      }
+
+      ion-spinner {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+// Animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Dark mode support
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  .nurse-info {
+    border-bottom-color: #334155;
+
+    .nurse-label {
+      color: #a1a1aa;
+    }
+
+    .nurse-name {
+      color: #f1f5f9;
+    }
+  }
+
+  .rating-section {
+    .rating-instruction {
+      color: #f1f5f9;
+    }
+
+    .star-button {
+      ion-icon {
+        color: #475569;
+      }
+
+      &.filled ion-icon {
+        color: $star-color;
+      }
+    }
+
+    .rating-label {
+      color: #818cf8;
+    }
+  }
+
+  .comment-section {
+    .comment-label {
+      color: #f1f5f9;
+    }
+
+    .comment-textarea {
+      --background: #1e293b;
+      border-color: #334155;
+
+      &:focus-within {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+      }
+    }
+  }
+
+  ion-footer {
+    background: var(--ion-background-color);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Responsive adjustments for smaller screens
+@media (max-width: 360px) {
+  .rating-section {
+    .star-button {
+      padding: 4px;
+
+      ion-icon {
+        font-size: 32px;
+      }
+    }
+  }
+}

@@ -1,18 +1,12 @@
-import { Component, OnInit, OnDestroy, inject, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, AfterViewInit, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController, ModalController } from '@ionic/angular';
-import * as L from 'leaflet';
 import { GeolocationService } from '../../core/services/geolocation.service';
+import { MapboxService } from '../../core/services/mapbox.service';
 import { NurseApiService } from '../../core/services/nurse.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { NurseSearchResult } from '../../core/models';
-
-// Fix Leaflet default marker icon path issue
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'assets/leaflet/marker-icon-2x.png',
-  iconUrl: 'assets/leaflet/marker-icon.png',
-  shadowUrl: 'assets/leaflet/marker-shadow.png',
-});
+import { NurseListModalComponent } from '../../shared/components/nurse-list-modal/nurse-list-modal.component';
 
 @Component({
   selector: 'app-map',
@@ -24,16 +18,28 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
+  private modalCtrl = inject(ModalController);
   private geolocationService = inject(GeolocationService);
   private nurseService = inject(NurseApiService);
+  private mapboxService = inject(MapboxService);
+  private themeService = inject(ThemeService);
 
-  private map: L.Map | null = null;
-  private userMarker: L.Marker | null = null;
-  private nurseMarkers: L.Marker[] = [];
+  private mapInitialized = false;
+  private isClosing = false; // Flag to prevent infinite close loops
 
-  // User location
-  userLat = -12.0464; // Default: Lima, Peru
+  constructor() {
+    // React to theme changes
+    effect(() => {
+      const isDark = this.themeService.isDarkMode();
+      if (this.mapInitialized) {
+        this.mapboxService.setStyle(isDark ? 'dark' : 'streets');
+      }
+    });
+  }
+
+  // User location [lng, lat] format for Mapbox
   userLng = -77.0428;
+  userLat = -12.0464; // Default: Lima, Peru
   searchRadius = 10; // km
 
   // Search results
@@ -67,28 +73,31 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.map) {
-      this.map.remove();
-      this.map = null;
-    }
+    this.mapboxService.destroy();
   }
 
   private initMap() {
-    // Initialize map centered on Lima
-    this.map = L.map('map', {
-      center: [this.userLat, this.userLng],
-      zoom: 14,
-      zoomControl: false
-    });
+    if (this.mapInitialized) return;
 
-    // Add tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19
-    }).addTo(this.map);
+    try {
+      // Use ThemeService to determine initial map style
+      const isDarkMode = this.themeService.isDarkMode();
+      const mapStyle = isDarkMode
+        ? 'mapbox://styles/mapbox/dark-v11'
+        : 'mapbox://styles/mapbox/streets-v12';
 
-    // Add zoom control to bottom right
-    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+      this.mapboxService.initMap({
+        container: 'map',
+        center: [this.userLng, this.userLat],
+        zoom: 14,
+        style: mapStyle
+      });
+      this.mapInitialized = true;
+
+      // Theme changes are handled by the effect in constructor
+    } catch (error) {
+      console.error('Error initializing map:', error);
+    }
   }
 
   async getUserLocation() {
@@ -104,7 +113,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       this.userLng = position.longitude;
 
       // Update map view
-      this.map?.setView([this.userLat, this.userLng], 15);
+      this.mapboxService.centerOn([this.userLng, this.userLat], 15);
 
       // Add/update user marker
       this.updateUserMarker();
@@ -121,6 +130,9 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       });
       await toast.present();
 
+      // Add marker at default location
+      this.updateUserMarker();
+
       // Still search with default location
       await this.searchNearbyNurses();
     } finally {
@@ -129,24 +141,28 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateUserMarker() {
-    if (!this.map) return;
+    // Create custom user marker element
+    const userElement = this.createUserMarkerElement();
 
-    // Remove existing marker
-    if (this.userMarker) {
-      this.map.removeLayer(this.userMarker);
-    }
-
-    // Create custom user icon
-    const userIcon = L.divIcon({
-      className: 'user-marker',
-      html: '<div class="user-marker-inner"><ion-icon name="location"></ion-icon></div>',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40]
+    // User marker is 40px with pulse, anchor center and offset popup above
+    this.mapboxService.addMarker('user', [this.userLng, this.userLat], {
+      element: userElement,
+      anchor: 'center',
+      popup: '<strong>Tu ubicación</strong>',
+      popupOffset: [0, -28]
     });
+  }
 
-    this.userMarker = L.marker([this.userLat, this.userLng], { icon: userIcon })
-      .addTo(this.map)
-      .bindPopup('<strong>Tu ubicación</strong>');
+  private createUserMarkerElement(): HTMLElement {
+    const el = document.createElement('div');
+    el.className = 'user-marker';
+    el.innerHTML = `
+      <div class="user-marker-pulse"></div>
+      <div class="user-marker-icon">
+        <ion-icon name="location"></ion-icon>
+      </div>
+    `;
+    return el;
   }
 
   async searchNearbyNurses() {
@@ -157,8 +173,8 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
         latitude: this.userLat,
         longitude: this.userLng,
         radiusKm: this.searchRadius,
-        category: (this.selectedCategory as any) || undefined,
-        availableNow: true
+        category: (this.selectedCategory as any) || undefined
+        // Removed availableNow filter to show all nurses
       }).toPromise();
 
       this.nearbyNurses = results || [];
@@ -187,67 +203,132 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private updateNurseMarkers() {
-    if (!this.map) return;
+  private previousNurseCount = 0;
 
-    // Clear existing markers
-    this.nurseMarkers.forEach(marker => this.map?.removeLayer(marker));
-    this.nurseMarkers = [];
+  private updateNurseMarkers() {
+    // Clear ALL existing nurse markers (use previous count)
+    for (let i = 0; i < Math.max(this.previousNurseCount, 20); i++) {
+      this.mapboxService.removeMarker(`nurse-${i}`);
+    }
+    this.previousNurseCount = this.nearbyNurses.length;
+
+    const allCoordinates: [number, number][] = [[this.userLng, this.userLat]];
 
     // Add markers for each nurse
-    this.nearbyNurses.forEach(result => {
+    this.nearbyNurses.forEach((result, index) => {
       const nurse = result.nurse;
       if (!nurse.location?.coordinates) return;
 
       const [lng, lat] = nurse.location.coordinates;
+      allCoordinates.push([lng, lat]);
 
-      // Create custom nurse icon
-      const nurseIcon = L.divIcon({
-        className: 'nurse-marker',
-        html: `<div class="nurse-marker-inner">
-          <ion-icon name="medkit"></ion-icon>
-        </div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 36]
+      // Create custom nurse marker element
+      const nurseElement = this.createNurseMarkerElement(result);
+
+      // Use anchor 'center' for circular avatar markers
+      // Popup offset [0, -30] positions it above the 44px marker
+      this.mapboxService.addMarker(`nurse-${index}`, [lng, lat], {
+        element: nurseElement,
+        anchor: 'center',
+        popup: `
+          <div class="nurse-popup">
+            <strong>${nurse.user?.firstName || 'Enfermera'} ${nurse.user?.lastName || ''}</strong>
+            <p>${result.distance.toFixed(1)} km de distancia</p>
+            <p>Rating: ${nurse.averageRating.toFixed(1)} (${nurse.totalReviews} reseñas)</p>
+          </div>
+        `,
+        popupOffset: [0, -30],
+        onPopupClose: () => this.onMapboxPopupClose()
       });
-
-      const marker = L.marker([lat, lng], { icon: nurseIcon })
-        .addTo(this.map!)
-        .on('click', () => this.selectNurse(result));
-
-      // Add popup with nurse info
-      const popupContent = `
-        <div class="nurse-popup">
-          <strong>${nurse.user?.firstName || 'Enfermera'} ${nurse.user?.lastName || ''}</strong>
-          <p>${result.distance.toFixed(1)} km de distancia</p>
-          <p>Rating: ${nurse.averageRating.toFixed(1)} (${nurse.totalReviews} reseñas)</p>
-        </div>
-      `;
-      marker.bindPopup(popupContent);
-
-      this.nurseMarkers.push(marker);
     });
 
     // Fit bounds to show all markers if there are any
-    if (this.nurseMarkers.length > 0 && this.userMarker) {
-      const group = L.featureGroup([this.userMarker, ...this.nurseMarkers]);
-      this.map.fitBounds(group.getBounds().pad(0.1));
+    if (allCoordinates.length > 1) {
+      this.mapboxService.fitBounds(allCoordinates, 60);
     }
+  }
+
+  private createNurseMarkerElement(result: NurseSearchResult): HTMLElement {
+    const el = document.createElement('div');
+    el.className = 'nurse-map-marker';
+
+    const avatarUrl = result.nurse.user?.avatar || 'assets/img/default-avatar.png';
+    const isAvailable = result.nurse.isAvailable;
+
+    el.innerHTML = `
+      <div class="nurse-marker-avatar ${isAvailable ? 'available' : ''}">
+        <img src="${avatarUrl}" alt="${result.nurse.user?.firstName || 'Enfermera'}" onerror="this.src='assets/img/default-avatar.png'">
+        ${isAvailable ? '<span class="availability-dot"></span>' : ''}
+      </div>
+    `;
+
+    // Add click handler
+    el.addEventListener('click', () => {
+      this.selectNurse(result);
+    });
+
+    return el;
   }
 
   selectNurse(result: NurseSearchResult) {
     this.selectedNurse = result;
+
+    // Center map on selected nurse
+    if (result.nurse.location?.coordinates) {
+      const [lng, lat] = result.nurse.location.coordinates;
+      this.mapboxService.centerOn([lng, lat], 16);
+    }
   }
 
   closeNurseCard() {
+    if (this.isClosing) return;
+    this.isClosing = true;
+
     this.selectedNurse = null;
+    this.mapboxService.closeAllPopups(); // Close any open Mapbox popups
+    this.zoomOutToShowAllNurses();
+
+    // Reset flag after a short delay
+    setTimeout(() => this.isClosing = false, 100);
+  }
+
+  /**
+   * Handle Mapbox popup close - also close the nurse card
+   */
+  private onMapboxPopupClose() {
+    if (this.isClosing) return;
+    this.isClosing = true;
+
+    this.selectedNurse = null; // Close nurse card
+    this.zoomOutToShowAllNurses();
+
+    // Reset flag after a short delay
+    setTimeout(() => this.isClosing = false, 100);
+  }
+
+  /**
+   * Zoom out to show all nurses on the map
+   */
+  private zoomOutToShowAllNurses() {
+    if (this.nearbyNurses.length > 0) {
+      const allCoordinates: [number, number][] = [[this.userLng, this.userLat]];
+      this.nearbyNurses.forEach(result => {
+        if (result.nurse.location?.coordinates) {
+          const [lng, lat] = result.nurse.location.coordinates;
+          allCoordinates.push([lng, lat]);
+        }
+      });
+      this.mapboxService.fitBounds(allCoordinates, 60);
+    }
   }
 
   viewNurseProfile(nurseId: string) {
+    // Navigate outside tabs to the nurse profile view
     this.router.navigate(['/patient/search'], { queryParams: { nurseId } });
   }
 
   requestService(nurseId: string) {
+    // Navigate outside tabs to the request form
     this.router.navigate(['/patient/request'], { queryParams: { nurseId } });
   }
 
@@ -260,12 +341,40 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   centerOnUser() {
-    if (this.map && this.userLat && this.userLng) {
-      this.map.setView([this.userLat, this.userLng], 15);
-    }
+    this.mapboxService.centerOn([this.userLng, this.userLat], 15);
   }
 
   refreshLocation() {
     this.getUserLocation();
+  }
+
+  async viewNurseList() {
+    const modal = await this.modalCtrl.create({
+      component: NurseListModalComponent,
+      componentProps: {
+        nurses: this.nearbyNurses
+      },
+      // Use card modal style for better scroll support
+      presentingElement: await this.modalCtrl.getTop() || undefined,
+      canDismiss: true
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data) {
+      switch (data.action) {
+        case 'select':
+          this.selectNurse(data.nurse);
+          break;
+        case 'viewProfile':
+          this.viewNurseProfile(data.nurseId);
+          break;
+        case 'requestService':
+          this.requestService(data.nurseId);
+          break;
+      }
+    }
   }
 }

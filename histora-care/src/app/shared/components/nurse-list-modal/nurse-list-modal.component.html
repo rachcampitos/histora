@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Enfermeras Cercanas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="nurses-count ion-padding-horizontal ion-padding-top">
+    <ion-icon name="people-outline"></ion-icon>
+    <span>{{ nurses.length }} {{ nurses.length === 1 ? 'enfermera encontrada' : 'enfermeras encontradas' }}</span>
+  </div>
+
+  <ion-list lines="none" class="nurse-list">
+    <ion-item *ngFor="let result of nurses" button detail="false" (click)="selectNurse(result)">
+      <div class="nurse-item-content">
+        <div class="nurse-avatar-container">
+          <ion-avatar>
+            <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'"
+                 [alt]="result.nurse.user?.firstName">
+          </ion-avatar>
+          <span class="availability-dot" *ngIf="result.nurse.isAvailable"></span>
+        </div>
+
+        <div class="nurse-details">
+          <div class="nurse-header">
+            <h3>{{ result.nurse.user?.firstName }} {{ result.nurse.user?.lastName }}</h3>
+            <span class="availability-badge" [class.available]="result.nurse.isAvailable">
+              {{ result.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
+            </span>
+          </div>
+
+          <div class="nurse-meta">
+            <span class="distance">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ result.distance.toFixed(1) }} km
+            </span>
+            <span class="rating" *ngIf="result.nurse.averageRating > 0">
+              <ion-icon name="star"></ion-icon>
+              {{ result.nurse.averageRating.toFixed(1) }}
+              <span class="reviews">({{ result.nurse.totalReviews }})</span>
+            </span>
+          </div>
+
+          <div class="nurse-specialties" *ngIf="result.nurse.specialties?.length">
+            <ion-chip *ngFor="let specialty of result.nurse.specialties.slice(0, 2)" size="small">
+              {{ specialty }}
+            </ion-chip>
+            <span class="more-count" *ngIf="result.nurse.specialties.length > 2">
+              +{{ result.nurse.specialties.length - 2 }}
+            </span>
+          </div>
+
+          <div class="nurse-price" *ngIf="result.nurse.services?.length">
+            <span class="from">Desde</span>
+            <span class="price">S/ {{ getMinPrice(result.nurse.services) }}</span>
+          </div>
+        </div>
+
+        <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <div class="empty-state" *ngIf="nurses.length === 0">
+    <ion-icon name="search-outline"></ion-icon>
+    <h3>No hay enfermeras cercanas</h3>
+    <p>Intenta ampliar el radio de búsqueda</p>
+  </div>
+</ion-content>

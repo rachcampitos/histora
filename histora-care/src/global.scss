@@ -32,6 +32,315 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* Only use class-based dark mode - we control it via ThemeService */
+@import "@ionic/angular/css/palettes/dark.class.css";
+/* dark.system.css removed - ThemeService handles system preference detection */
+
+/* Mapbox GL CSS */
+@import "mapbox-gl/dist/mapbox-gl.css";
+
+/* ==========================================================================
+   Custom Global Styles for Histora Care
+   ========================================================================== */
+
+/* Brand Colors - Single source of truth */
+:root {
+  /* Primary brand color */
+  --ion-color-primary: #667eea;
+  --ion-color-primary-rgb: 102, 126, 234;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #5a6fce;
+  --ion-color-primary-tint: #758aec;
+
+  /* Success color for availability, completed states */
+  --ion-color-success: #10b981;
+  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-shade: #0e9f6e;
+  --ion-color-success-tint: #28c094;
+
+  /* === Light Theme - Warm Healthcare Palette === */
+  /* Off-white cálido para reducir fatiga visual */
+  --ion-background-color: #faf9f7;
+  --ion-background-color-rgb: 250, 249, 247;
+
+  /* Texto con undertones cálidos */
+  --ion-text-color: #1a1a1a;
+  --ion-text-color-rgb: 26, 26, 26;
+
+  /* Custom semantic colors - Warm palette */
+  --histora-text-primary: #1a1a1a;
+  --histora-text-secondary: #52525b;
+  --histora-text-muted: #a1a1aa;
+  --histora-background: #faf9f7;
+  --histora-surface: #ffffff;
+  --histora-surface-secondary: #f5f4f2;
+  --histora-border: #e7e5e4;
+  --histora-border-light: #f5f4f2;
+
+  /* Item backgrounds */
+  --histora-item-background: #ffffff;
+  --histora-item-background-hover: #f5f4f2;
+}
+
+/* Dark mode styles mixin */
+@mixin dark-mode-styles {
+  --histora-text-primary: #f1f5f9;
+  --histora-text-secondary: #cbd5e1;
+  --histora-text-muted: #94a3b8;
+  --histora-background: #0f172a;
+  --histora-surface: #1e293b;
+  --histora-border: #334155;
+
+  /* Ensure Ionic components adapt properly */
+  --ion-text-color: #f1f5f9;
+  --ion-text-color-rgb: 241, 245, 249;
+  --ion-background-color: #0f172a;
+  --ion-background-color-rgb: 15, 23, 42;
+  --ion-border-color: #334155;
+}
+
+@mixin dark-mode-components {
+  // Ensure chips have proper dark mode styling
+  ion-chip {
+    --background: #334155;
+    --color: #e2e8f0;
+  }
+
+  // Ensure badges have proper contrast
+  ion-badge {
+    // Primary badges
+    &[color="primary"] {
+      --background: #667eea;
+      --color: #ffffff;
+    }
+
+    // Success badges
+    &[color="success"] {
+      --background: #064e3b;
+      --color: #6ee7b7;
+    }
+  }
+
+  // Better item contrast in dark mode
+  ion-item {
+    --background: transparent;
+    --color: #e2e8f0;
+    --border-color: #334155;
+
+    ion-label {
+      color: #e2e8f0;
+
+      h2, h3 {
+        color: #f1f5f9;
+      }
+
+      p {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  // Card improvements
+  ion-card {
+    --background: #1e293b;
+    --color: #e2e8f0;
+    border: 1px solid #334155;
+  }
+
+  ion-card-title {
+    color: #f1f5f9;
+  }
+
+  ion-card-content {
+    color: #cbd5e1;
+  }
+
+  // Button improvements
+  ion-button {
+    // Outline buttons
+    &[fill="outline"] {
+      --border-color: #475569;
+      --color: #e2e8f0;
+
+      &:hover:not([disabled]) {
+        --background: rgba(51, 65, 85, 0.3);
+      }
+    }
+
+    // Clear buttons
+    &[fill="clear"] {
+      --color: #cbd5e1;
+    }
+  }
+
+  // Select improvements
+  ion-select {
+    --placeholder-color: #94a3b8;
+    color: #e2e8f0;
+  }
+
+  // Input improvements
+  ion-input,
+  ion-textarea {
+    --color: #e2e8f9;
+    --placeholder-color: #94a3b8;
+  }
+
+  // Spinner colors
+  ion-spinner {
+    --color: var(--ion-color-primary-tint);
+  }
+}
+
+/* Dark mode overrides - Controlled by ThemeService via class */
+body.ion-palette-dark,
+body.dark {
+  @include dark-mode-styles;
+  @include dark-mode-components;
+}
+
+/* ==========================================================================
+   Accessibility Enhancements (WCAG 2.1 AA)
+   ========================================================================== */
+
+/* Focus indicators for keyboard navigation */
+ion-button:focus-visible,
+ion-item:focus-visible,
+ion-input:focus-visible,
+ion-select:focus-visible,
+ion-checkbox:focus-visible,
+ion-toggle:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline and rely on our custom one */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 3px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Ensure sufficient color contrast for placeholder text */
+ion-input::part(placeholder),
+ion-textarea::part(placeholder) {
+  color: #6b7280 !important; /* Meets 4.5:1 contrast on light backgrounds */
+  opacity: 1;
+}
+
+/* Screen reader only utility class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip to main content link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ion-color-primary);
+  color: white;
+  padding: 8px 16px;
+  z-index: 100000;
+  transition: top 0.3s;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Mapbox & Marker Styles
+   ========================================================================== */
+
+/* Nurse marker animation */
+.nurse-marker .marker-pulse {
+  animation: marker-pulse 2s infinite;
+}
+
+@keyframes marker-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Hide Mapbox logo (ensure legal compliance with Mapbox ToS) */
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
+/* Smaller attribution */
+.mapboxgl-ctrl-attrib {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+/* Loading state for buttons */
+ion-button.loading {
+  --opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Error state for inputs */
+.input-error {
+  --border-color: var(--ion-color-danger);
+}
+
+/* Error message styling */
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 12px;
+  padding: 4px 16px;
+  margin-top: 4px;
+}
+
+/* Theme selector action sheet - selected option styling */
+ion-action-sheet {
+  .selected-theme {
+    font-weight: 700;
+    color: var(--ion-color-primary) !important;
+
+    .action-sheet-button-inner {
+      color: var(--ion-color-primary) !important;
+    }
+
+    ion-icon {
+      color: var(--ion-color-primary) !important;
+    }
+  }
+}

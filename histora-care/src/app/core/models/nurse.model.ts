@@ -1,3 +1,5 @@
+export type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected';
+
 export interface Nurse {
   _id: string;
   userId: string;
@@ -11,6 +13,7 @@ export interface Nurse {
   cepNumber: string; // Colegio de Enfermeros del Peru
   cepVerified: boolean;
   cepVerifiedAt?: Date;
+  verificationStatus: VerificationStatus;
   specialties: string[];
   bio?: string;
   yearsOfExperience: number;
@@ -21,6 +24,8 @@ export interface Nurse {
   // Location
   location: GeoLocation;
   serviceRadius: number; // in kilometers
+  extraChargePerKm?: number;
+  minimumServiceFee?: number;
 
   // Availability
   isAvailable: boolean;
@@ -37,6 +42,41 @@ export interface Nurse {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+// Verification document types
+export type VerificationDocumentType = 'cep_front' | 'cep_back' | 'dni_front' | 'dni_back' | 'selfie_with_dni';
+
+export interface VerificationDocument {
+  url: string;
+  publicId: string;
+  type: VerificationDocumentType;
+  uploadedAt: Date;
+}
+
+export interface NurseVerification {
+  id: string;
+  nurseId: string;
+  userId: string;
+  documents: VerificationDocument[];
+  status: VerificationStatus;
+  dniNumber?: string;
+  fullNameOnDni?: string;
+  reviewedAt?: Date;
+  reviewNotes?: string;
+  rejectionReason?: string;
+  attemptNumber: number;
+  createdAt: Date;
+  nurse?: {
+    cepNumber: string;
+    specialties: string[];
+    user?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      avatar?: string;
+    };
+  };
 }
 
 export interface NurseService {
@@ -83,4 +123,19 @@ export interface NurseSearchParams {
 export interface NurseSearchResult {
   nurse: Nurse;
   distance: number; // in km
+}
+
+export interface NurseReview {
+  _id: string;
+  nurseId: string;
+  patientId: string;
+  patient?: {
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+  };
+  serviceRequestId?: string;
+  rating: number;
+  comment: string;
+  createdAt: Date;
 }

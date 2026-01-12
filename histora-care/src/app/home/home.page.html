@@ -1,20 +1,18 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="splash-content">
+  <div class="splash-container">
+    <!-- Logo and Brand -->
+    <div class="brand-section">
+      <div class="logo-wrapper">
+        <ion-icon name="heart-circle" class="logo-icon"></ion-icon>
+      </div>
+      <h1 class="app-name">Histora Care</h1>
+      <p class="app-tagline">Servicios de enfermería a domicilio</p>
+    </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <!-- Loading Indicator -->
+    <div class="loading-section">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando...</p>
+    </div>
   </div>
 </ion-content>

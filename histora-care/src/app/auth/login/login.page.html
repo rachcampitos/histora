@@ -16,34 +16,47 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <!-- Email Field -->
         <ion-item lines="none" class="input-item" [class.input-error]="email?.invalid && email?.touched">
-          <ion-icon name="mail-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-icon name="mail-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
           <ion-input
             type="email"
             formControlName="email"
             placeholder="Correo electrónico"
             autocomplete="email"
-            inputmode="email">
+            inputmode="email"
+            aria-label="Correo electrónico"
+            [attr.aria-invalid]="email?.invalid && email?.touched"
+            [attr.aria-describedby]="email?.invalid && email?.touched ? 'email-error' : null">
           </ion-input>
         </ion-item>
-        <div class="error-message" *ngIf="email?.invalid && email?.touched">
+        <div id="email-error" class="error-message" role="alert" *ngIf="email?.invalid && email?.touched">
           <span *ngIf="email?.errors?.['required']">El correo es requerido</span>
           <span *ngIf="email?.errors?.['email']">Ingresa un correo válido</span>
         </div>
 
         <!-- Password Field -->
         <ion-item lines="none" class="input-item" [class.input-error]="password?.invalid && password?.touched">
-          <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-icon name="lock-closed-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
           <ion-input
             [type]="showPassword ? 'text' : 'password'"
             formControlName="password"
             placeholder="Contraseña"
-            autocomplete="current-password">
+            autocomplete="current-password"
+            aria-label="Contraseña"
+            [attr.aria-invalid]="password?.invalid && password?.touched"
+            [attr.aria-describedby]="password?.invalid && password?.touched ? 'password-error' : null">
           </ion-input>
-          <ion-button fill="clear" slot="end" (click)="togglePassword()" class="password-toggle">
-            <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          <ion-button
+            fill="clear"
+            slot="end"
+            (click)="togglePassword()"
+            class="password-toggle"
+            type="button"
+            [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            [attr.aria-pressed]="showPassword">
+            <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
           </ion-button>
         </ion-item>
-        <div class="error-message" *ngIf="password?.invalid && password?.touched">
+        <div id="password-error" class="error-message" role="alert" *ngIf="password?.invalid && password?.touched">
           <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
           <span *ngIf="password?.errors?.['minlength']">Mínimo 8 caracteres</span>
         </div>
@@ -71,7 +84,26 @@
 
       <!-- Divider -->
       <div class="divider">
-        <span>o</span>
+        <span>o continuar con</span>
+      </div>
+
+      <!-- Social Login -->
+      <div class="social-login">
+        <ion-button
+          expand="block"
+          fill="outline"
+          class="google-btn"
+          (click)="signInWithGoogle()"
+          [disabled]="googleAuthPending()"
+          aria-label="Iniciar sesion con Google">
+          @if (googleAuthPending()) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            <span>Conectando...</span>
+          } @else {
+            <ion-icon name="logo-google" slot="start"></ion-icon>
+            <span>Google</span>
+          }
+        </ion-button>
       </div>
 
       <!-- Register Link -->

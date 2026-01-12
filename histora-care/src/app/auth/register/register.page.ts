@@ -49,8 +49,10 @@ export class RegisterPage implements OnInit {
       // Nurse specific
       cepNumber: [''],
       specialties: [[]],
-      // Terms acceptance
-      acceptTerms: [false, [Validators.requiredTrue]]
+      // Terms acceptance (for both)
+      acceptTerms: [false, [Validators.requiredTrue]],
+      // Professional disclaimer (for nurses)
+      acceptProfessionalDisclaimer: [false]
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -62,10 +64,13 @@ export class RegisterPage implements OnInit {
     // Update validators based on user type
     if (type === 'nurse') {
       this.registerForm.get('cepNumber')?.setValidators([Validators.required, Validators.pattern(/^[0-9]{6}$/)]);
+      this.registerForm.get('acceptProfessionalDisclaimer')?.setValidators([Validators.requiredTrue]);
     } else {
       this.registerForm.get('cepNumber')?.clearValidators();
+      this.registerForm.get('acceptProfessionalDisclaimer')?.clearValidators();
     }
     this.registerForm.get('cepNumber')?.updateValueAndValidity();
+    this.registerForm.get('acceptProfessionalDisclaimer')?.updateValueAndValidity();
   }
 
   goBack() {
@@ -107,7 +112,7 @@ export class RegisterPage implements OnInit {
     });
     await loading.present();
 
-    const { firstName, lastName, email, phone, password, cepNumber, specialties } = this.registerForm.value;
+    const { firstName, lastName, email, phone, password, cepNumber, specialties, acceptTerms, acceptProfessionalDisclaimer } = this.registerForm.value;
 
     if (this.selectedUserType === 'nurse') {
       this.authService.registerNurse({
@@ -117,19 +122,22 @@ export class RegisterPage implements OnInit {
         phone,
         password,
         cepNumber,
-        specialties: specialties || []
+        specialties: specialties || [],
+        termsAccepted: acceptTerms,
+        professionalDisclaimerAccepted: acceptProfessionalDisclaimer
       }).subscribe({
         next: async () => {
           await loading.dismiss();
           const toast = await this.toastCtrl.create({
-            message: 'Cuenta creada exitosamente',
+            message: 'Cuenta creada. Ahora verifica tu identidad.',
             duration: 3000,
             position: 'bottom',
             color: 'success',
             icon: 'checkmark-circle-outline'
           });
           await toast.present();
-          this.router.navigate(['/nurse/dashboard']);
+          // Redirect to verification page for nurses
+          this.router.navigate(['/nurse/verification']);
         },
         error: async (error) => {
           await loading.dismiss();
@@ -154,7 +162,7 @@ export class RegisterPage implements OnInit {
             icon: 'checkmark-circle-outline'
           });
           await toast.present();
-          this.router.navigate(['/patient/map']);
+          this.router.navigate(['/patient/tabs/home']);
         },
         error: async (error) => {
           await loading.dismiss();
@@ -199,4 +207,5 @@ export class RegisterPage implements OnInit {
   get confirmPassword() { return this.registerForm.get('confirmPassword'); }
   get cepNumber() { return this.registerForm.get('cepNumber'); }
   get acceptTerms() { return this.registerForm.get('acceptTerms'); }
+  get acceptProfessionalDisclaimer() { return this.registerForm.get('acceptProfessionalDisclaimer'); }
 }

@@ -90,7 +90,15 @@ export class AuthService {
       throw new ConflictException('Este email ya está registrado');
     }
 
-    // Create user as clinic owner
+    // Validate terms acceptance
+    if (!registerDto.termsAccepted) {
+      throw new UnauthorizedException('Debe aceptar los términos y condiciones');
+    }
+    if (!registerDto.professionalDisclaimerAccepted) {
+      throw new UnauthorizedException('Debe aceptar la exención de responsabilidad profesional');
+    }
+
+    // Create user as clinic owner with terms acceptance
     const user = await this.usersService.create({
       email: registerDto.email,
       password: registerDto.password,
@@ -98,6 +106,11 @@ export class AuthService {
       lastName: registerDto.lastName,
       phone: registerDto.phone,
       role: UserRole.CLINIC_OWNER,
+      termsAccepted: true,
+      termsAcceptedAt: new Date(),
+      termsVersion: '1.0',
+      professionalDisclaimerAccepted: true,
+      professionalDisclaimerAcceptedAt: new Date(),
     });
 
     // Create clinic for the new owner
@@ -176,7 +189,12 @@ export class AuthService {
       throw new ConflictException('Este email ya está registrado');
     }
 
-    // Create user as patient
+    // Validate terms acceptance
+    if (!registerDto.termsAccepted) {
+      throw new UnauthorizedException('Debe aceptar los términos y condiciones');
+    }
+
+    // Create user as patient with terms acceptance
     const user = await this.usersService.create({
       email: registerDto.email,
       password: registerDto.password,
@@ -184,6 +202,9 @@ export class AuthService {
       lastName: registerDto.lastName,
       phone: registerDto.phone,
       role: UserRole.PATIENT,
+      termsAccepted: true,
+      termsAcceptedAt: new Date(),
+      termsVersion: '1.0',
     });
 
     // Generate JWT token
@@ -228,7 +249,15 @@ export class AuthService {
       throw new ConflictException('Este email ya está registrado');
     }
 
-    // Create user as nurse
+    // Validate terms acceptance
+    if (!registerDto.termsAccepted) {
+      throw new UnauthorizedException('Debe aceptar los términos y condiciones');
+    }
+    if (!registerDto.professionalDisclaimerAccepted) {
+      throw new UnauthorizedException('Debe aceptar la exención de responsabilidad profesional');
+    }
+
+    // Create user as nurse with terms acceptance
     const user = await this.usersService.create({
       email: registerDto.email,
       password: registerDto.password,
@@ -236,6 +265,11 @@ export class AuthService {
       lastName: registerDto.lastName,
       phone: registerDto.phone,
       role: UserRole.NURSE,
+      termsAccepted: true,
+      termsAcceptedAt: new Date(),
+      termsVersion: '1.0',
+      professionalDisclaimerAccepted: true,
+      professionalDisclaimerAcceptedAt: new Date(),
     });
 
     // Create nurse profile
@@ -546,8 +580,10 @@ export class AuthService {
    */
   async completeGoogleRegistration(
     userId: string,
-    userType: 'doctor' | 'patient',
+    userType: 'doctor' | 'patient' | 'nurse',
     clinicData?: { clinicName: string; clinicPhone?: string },
+    nurseData?: { cepNumber: string; specialties?: string[] },
+    termsData?: { termsAccepted: boolean; professionalDisclaimerAccepted?: boolean },
   ): Promise<AuthResponse> {
     this.logger.log(`Completing Google registration for user ${userId} as ${userType}`);
 
@@ -559,6 +595,16 @@ export class AuthService {
     // Only allow completion if user was created via Google and still has default patient role
     if (user.authProvider !== 'google') {
       throw new UnauthorizedException('Esta función solo está disponible para usuarios de Google');
+    }
+
+    // Validate terms acceptance
+    if (!termsData?.termsAccepted) {
+      throw new UnauthorizedException('Debe aceptar los términos y condiciones');
+    }
+
+    // Validate professional disclaimer for doctors and nurses
+    if ((userType === 'doctor' || userType === 'nurse') && !termsData?.professionalDisclaimerAccepted) {
+      throw new UnauthorizedException('Debe aceptar la exención de responsabilidad profesional');
     }
 
     if (userType === 'doctor') {
@@ -575,10 +621,15 @@ export class AuthService {
         userId,
       );
 
-      // Update user to clinic_owner role
+      // Update user to clinic_owner role with terms acceptance
       await this.usersService.update(userId, {
         role: UserRole.CLINIC_OWNER,
         clinicId: clinic['_id'],
+        termsAccepted: true,
+        termsAcceptedAt: new Date(),
+        termsVersion: '1.0',
+        professionalDisclaimerAccepted: true,
+        professionalDisclaimerAcceptedAt: new Date(),
       });
 
       // Create trial subscription
@@ -634,9 +685,67 @@ export class AuthService {
           avatar: user.avatar,
         },
       };
+    } else if (userType === 'nurse') {
+      // Nurse registration for Histora Care
+      if (!nurseData?.cepNumber) {
+        throw new UnauthorizedException('El número de CEP es requerido para enfermeras');
+      }
+
+      // Check if CEP number is already in use
+      const existingNurse = await this.nursesService.findByCepNumber(nurseData.cepNumber);
+      if (existingNurse) {
+        throw new UnauthorizedException('El número de CEP ya está registrado');
+      }
+
+      // Update user role to NURSE with terms acceptance
+      await this.usersService.update(userId, {
+        role: UserRole.NURSE,
+        termsAccepted: true,
+        termsAcceptedAt: new Date(),
+        termsVersion: '1.0',
+        professionalDisclaimerAccepted: true,
+        professionalDisclaimerAcceptedAt: new Date(),
+      });
+
+      // Create nurse profile
+      const nurse = await this.nursesService.create(userId, {
+        cepNumber: nurseData.cepNumber,
+        specialties: nurseData.specialties || [],
+      });
+
+      // Generate new token with updated role
+      const payload: JwtPayload = {
+        sub: userId,
+        email: user.email,
+        role: UserRole.NURSE,
+      };
+
+      const refreshToken = this.generateRefreshToken();
+      await this.saveRefreshToken(userId, refreshToken);
+
+      this.logger.log(`Google user ${user.email} completed registration as nurse`);
+
+      return {
+        access_token: this.jwtService.sign(payload),
+        refresh_token: refreshToken,
+        user: {
+          id: userId,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: UserRole.NURSE,
+          avatar: user.avatar,
+        },
+        nurseId: (nurse as { _id: { toString(): string } })._id.toString(),
+      } as AuthResponse & { nurseId: string };
     } else {
       // Patient registration - Google users already have PATIENT role by default
-      // Just notify admins and generate new tokens
+      // Save terms acceptance
+      await this.usersService.update(userId, {
+        termsAccepted: true,
+        termsAcceptedAt: new Date(),
+        termsVersion: '1.0',
+      });
 
       // Notify admins
       await this.notificationsService.notifyAdminNewPatientRegistered({

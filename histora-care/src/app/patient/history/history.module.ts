@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { HistoryPageRoutingModule } from './history-routing.module';
 
 import { HistoryPage } from './history.page';
+import { ReviewModalComponent } from '../../shared/components/review-modal';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HistoryPageRoutingModule
+    HistoryPageRoutingModule,
+    ReviewModalComponent
   ],
   declarations: [HistoryPage]
 })

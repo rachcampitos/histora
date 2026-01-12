@@ -21,6 +21,15 @@ const config: CapacitorConfig = {
       resize: 'body',
       resizeOnFullScreen: true
     }
+  },
+  // Deep link configuration for OAuth callback
+  // This enables historacare:// URL scheme
+  ios: {
+    scheme: 'historacare'
+  },
+  android: {
+    // Android uses intent filters in AndroidManifest.xml
+    // But we can set the scheme here for reference
   }
 };
 

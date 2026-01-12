@@ -1,5 +1,6 @@
 import { Injectable, ExecutionContext, Logger, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard('google') {
@@ -8,6 +9,12 @@ export class GoogleAuthGuard extends AuthGuard('google') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     this.logger.log('GoogleAuthGuard.canActivate() called');
     try {
+      const request = context.switchToHttp().getRequest<Request>();
+
+      // Get platform from query param (mobile, web, or default to web)
+      const platform = request.query.platform as string || 'web';
+      this.logger.log(`Platform detected: ${platform}`);
+
       const activate = super.canActivate(context);
       this.logger.log('super.canActivate called, waiting for result...');
       const result = (await activate) as boolean;
@@ -17,6 +24,17 @@ export class GoogleAuthGuard extends AuthGuard('google') {
       this.logger.error('Google Auth Guard error:', error);
       throw error;
     }
+  }
+
+  // Override getAuthenticateOptions to pass state with platform info
+  getAuthenticateOptions(context: ExecutionContext) {
+    const request = context.switchToHttp().getRequest<Request>();
+    const platform = request.query.platform as string || 'web';
+
+    return {
+      state: JSON.stringify({ platform }),
+      scope: ['email', 'profile'],
+    };
   }
 
   handleRequest<TUser = unknown>(err: Error | null, user: TUser | false, info: unknown): TUser {

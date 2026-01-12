@@ -1,0 +1,660 @@
+// Loading & Error States
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 16px;
+
+  ion-icon {
+    font-size: 64px;
+  }
+
+  h3 {
+    color: var(--ion-color-medium);
+    text-align: center;
+  }
+}
+
+// Request Form Container
+.request-form {
+  padding-bottom: 20px;
+}
+
+// Nurse Summary Card
+.nurse-summary-card {
+  margin: 0 0 16px 0;
+
+  .nurse-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nurse-avatar {
+    flex-shrink: 0;
+
+    img,
+    .avatar-placeholder {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .avatar-placeholder {
+      background: var(--ion-color-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 32px;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+
+  .nurse-info {
+    flex: 1;
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+
+    .nurse-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        font-weight: 500;
+
+        ion-icon {
+          font-size: 16px;
+        }
+      }
+
+      .verified-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        padding: 4px 8px;
+
+        ion-icon {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+// Card Titles
+ion-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--ion-color-primary);
+  }
+}
+
+// Services List
+.services-list {
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    border: 2px solid var(--ion-color-light);
+    transition: all 0.2s ease;
+
+    &.selected {
+      border-color: var(--ion-color-primary);
+      background: rgba(var(--ion-color-primary-rgb), 0.05);
+    }
+
+    ion-label {
+      h3 {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      p {
+        font-size: 13px;
+        color: var(--ion-color-medium);
+      }
+    }
+
+    ion-radio {
+      margin-right: 12px;
+    }
+  }
+}
+
+.no-services {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  gap: 12px;
+
+  ion-icon {
+    font-size: 48px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    text-align: center;
+    margin: 0;
+  }
+}
+
+.service-price {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ion-color-primary);
+}
+
+// Location Section
+.location-toggle {
+  margin-bottom: 16px;
+
+  ion-segment {
+    --background: var(--ion-color-light);
+    border-radius: 12px;
+
+    ion-segment-button {
+      --border-radius: 10px;
+      --indicator-color: var(--ion-color-primary);
+      --color-checked: white;
+      min-height: 48px;
+
+      ion-icon {
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+
+      ion-label {
+        font-size: 12px;
+        text-transform: none;
+      }
+    }
+  }
+}
+
+.current-location-section {
+  .location-loading,
+  .location-error,
+  .location-success {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  .location-loading {
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    color: var(--ion-color-primary);
+
+    span {
+      font-size: 14px;
+    }
+  }
+
+  .location-error {
+    background: rgba(var(--ion-color-warning-rgb), 0.1);
+
+    span {
+      flex: 1;
+      font-size: 14px;
+      color: var(--ion-color-warning-shade);
+    }
+  }
+
+  .location-success {
+    background: rgba(var(--ion-color-success-rgb), 0.1);
+
+    span {
+      flex: 1;
+      font-size: 14px;
+      color: var(--ion-color-success-shade);
+    }
+  }
+
+  .reference-input {
+    margin-top: 8px;
+  }
+}
+
+.manual-address-section {
+  ion-item {
+    margin-bottom: 8px;
+    --background: var(--ion-color-light);
+    border-radius: 12px;
+    --padding-start: 16px;
+    --inner-padding-end: 16px;
+
+    ion-label {
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    ion-input {
+      --padding-top: 8px;
+      --padding-bottom: 12px;
+    }
+  }
+}
+
+// Date & Time Section
+.date-picker-item {
+  --background: var(--ion-color-light);
+  border-radius: 12px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  margin-bottom: 16px;
+
+  ion-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  ion-datetime-button {
+    margin-top: 8px;
+  }
+}
+
+.time-slot-section {
+  .time-slot-label {
+    display: block;
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--ion-text-color);
+  }
+
+  .time-slot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .time-slot-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+    border-radius: 12px;
+    border: 2px solid var(--ion-color-light-shade);
+    background: var(--ion-color-light);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 24px;
+      color: var(--ion-color-medium);
+    }
+
+    span {
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--ion-color-dark);
+    }
+
+    &.selected {
+      border-color: var(--ion-color-primary);
+      background: rgba(var(--ion-color-primary-rgb), 0.1);
+
+      ion-icon {
+        color: var(--ion-color-primary);
+      }
+
+      span {
+        color: var(--ion-color-primary);
+        font-weight: 600;
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+// Notes Section
+ion-textarea {
+  --background: var(--ion-color-light);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  margin-top: 8px;
+}
+
+// Summary Card
+.summary-card {
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+  color: white;
+
+  ion-card-header {
+    ion-card-title {
+      color: white;
+
+      ion-icon {
+        color: white;
+      }
+    }
+  }
+
+  ion-card-content {
+    ion-item {
+      --background: transparent;
+      --color: white;
+
+      ion-label {
+        p {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 12px;
+        }
+
+        h3 {
+          color: white;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .total-item {
+      margin-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      padding-top: 8px;
+
+      ion-label h3 {
+        font-weight: 600;
+      }
+    }
+
+    .total-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: white !important;
+    }
+  }
+}
+
+// Footer
+ion-footer {
+  ion-toolbar {
+    padding: 8px 16px;
+    --background: var(--ion-background-color);
+  }
+
+  ion-button {
+    margin: 0;
+    --border-radius: 12px;
+    height: 52px;
+    font-weight: 600;
+    font-size: 16px;
+
+    ion-spinner {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+  }
+}
+
+// iOS safe area
+ion-content {
+  --padding-bottom: 100px;
+}
+
+// Dark Mode Support
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  // Avatar placeholder
+  .avatar-placeholder {
+    background: #334155 !important;
+
+    ion-icon {
+      color: #94a3b8 !important;
+    }
+  }
+
+  // Cards
+  ion-card {
+    --background: #1e293b;
+    border: 1px solid #334155;
+  }
+
+  // Card titles and content
+  ion-card-title {
+    color: #f1f5f9;
+
+    ion-icon {
+      color: var(--ion-color-primary-tint);
+    }
+  }
+
+  ion-card-content {
+    color: #e2e8f0;
+
+    p {
+      color: #cbd5e1;
+    }
+  }
+
+  // Nurse summary
+  .nurse-summary-card {
+    .nurse-info {
+      h2 {
+        color: #f1f5f9;
+      }
+    }
+  }
+
+  // Services list
+  .services-list {
+    ion-item {
+      border-color: #334155;
+      --background: #1e293b;
+
+      &.selected {
+        border-color: var(--ion-color-primary);
+        background: rgba(var(--ion-color-primary-rgb), 0.15);
+      }
+
+      ion-label {
+        h3 {
+          color: #f1f5f9;
+        }
+
+        p {
+          color: #94a3b8;
+        }
+      }
+    }
+  }
+
+  .service-price {
+    color: #6ee7b7 !important;
+  }
+
+  // Location toggle
+  .location-toggle {
+    ion-segment {
+      --background: #334155;
+
+      ion-segment-button {
+        --color: #94a3b8;
+        --color-checked: white;
+      }
+    }
+  }
+
+  .current-location-section {
+    .location-loading {
+      background: rgba(var(--ion-color-primary-rgb), 0.2);
+    }
+
+    .location-error {
+      background: rgba(var(--ion-color-warning-rgb), 0.2);
+
+      span {
+        color: #fbbf24;
+      }
+    }
+
+    .location-success {
+      background: rgba(var(--ion-color-success-rgb), 0.2);
+
+      span {
+        color: #6ee7b7;
+      }
+    }
+  }
+
+  .manual-address-section {
+    ion-item {
+      --background: #334155;
+
+      ion-label {
+        color: #e2e8f0;
+      }
+
+      ion-input {
+        color: #f1f5f9;
+      }
+    }
+  }
+
+  // Date picker
+  .date-picker-item {
+    --background: #334155;
+
+    ion-label {
+      color: #e2e8f0;
+    }
+  }
+
+  // Time slots
+  .time-slot-section {
+    .time-slot-label {
+      color: #e2e8f0;
+    }
+
+    .time-slot-option {
+      border-color: #475569;
+      background: #334155;
+
+      ion-icon {
+        color: #94a3b8;
+      }
+
+      span {
+        color: #e2e8f0;
+      }
+
+      &.selected {
+        border-color: var(--ion-color-primary);
+        background: rgba(var(--ion-color-primary-rgb), 0.2);
+
+        ion-icon {
+          color: var(--ion-color-primary-tint);
+        }
+
+        span {
+          color: var(--ion-color-primary-tint);
+        }
+      }
+    }
+  }
+
+  // Textarea
+  ion-textarea {
+    --background: #334155;
+    color: #f1f5f9;
+  }
+
+  .char-counter {
+    color: #64748b;
+  }
+
+  // Summary card in dark mode
+  .summary-card {
+    background: linear-gradient(
+      135deg,
+      var(--ion-color-primary-shade),
+      var(--ion-color-primary-tint)
+    );
+
+    ion-card-content {
+      .total-item {
+        border-top-color: rgba(255, 255, 255, 0.15);
+      }
+    }
+  }
+
+  // Footer
+  ion-footer {
+    ion-toolbar {
+      --background: #0f172a;
+      border-top: 1px solid #334155;
+    }
+  }
+
+  // Loading and error states
+  .loading-container,
+  .error-container {
+    h3 {
+      color: #94a3b8;
+    }
+  }
+
+  // No services
+  .no-services {
+    p {
+      color: #94a3b8;
+    }
+  }
+}
+
+// Additional Ionic component styles
+ion-datetime {
+  --background: var(--ion-background-color);
+  --background-rgb: var(--ion-background-color-rgb);
+}
+
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  ion-datetime {
+    --background: #1e293b;
+  }
+}

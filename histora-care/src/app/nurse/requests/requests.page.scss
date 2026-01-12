@@ -435,7 +435,8 @@ ion-item-options {
 }
 
 // Dark mode support
-@media (prefers-color-scheme: dark) {
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
   .requests-content {
     --background: #0f172a;
   }

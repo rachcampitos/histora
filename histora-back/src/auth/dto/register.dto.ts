@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   MinLength,
+  IsBoolean,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -45,6 +46,15 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   specialty?: string;
+
+  // Terms acceptance
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar los términos y condiciones' })
+  termsAccepted: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar la exención de responsabilidad profesional' })
+  professionalDisclaimerAccepted: boolean;
 }
 
 export class RegisterPatientDto {
@@ -68,6 +78,11 @@ export class RegisterPatientDto {
   @IsString()
   @IsOptional()
   phone?: string;
+
+  // Terms acceptance
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar los términos y condiciones' })
+  termsAccepted: boolean;
 }
 
 export class RegisterNurseDto {
@@ -101,12 +116,21 @@ export class RegisterNurseDto {
   @IsOptional()
   @IsString({ each: true })
   specialties?: string[];
+
+  // Terms acceptance
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar los términos y condiciones' })
+  termsAccepted: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar la exención de responsabilidad profesional' })
+  professionalDisclaimerAccepted: boolean;
 }
 
 export class CompleteGoogleRegistrationDto {
   @IsString()
   @IsNotEmpty()
-  userType: 'doctor' | 'patient';
+  userType: 'doctor' | 'patient' | 'nurse';
 
   // Only required if userType is 'doctor'
   @IsString()
@@ -116,4 +140,23 @@ export class CompleteGoogleRegistrationDto {
   @IsString()
   @IsOptional()
   clinicPhone?: string;
+
+  // Only required if userType is 'nurse' (for Histora Care)
+  @IsString()
+  @IsOptional()
+  cepNumber?: string;
+
+  @IsOptional()
+  @IsString({ each: true })
+  specialties?: string[];
+
+  // Terms acceptance (required for all user types)
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar los términos y condiciones' })
+  termsAccepted: boolean;
+
+  // Professional disclaimer (required for doctors and nurses)
+  @IsBoolean()
+  @IsOptional()
+  professionalDisclaimerAccepted?: boolean;
 }

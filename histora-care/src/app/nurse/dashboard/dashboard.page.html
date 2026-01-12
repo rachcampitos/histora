@@ -14,6 +14,23 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
+  <!-- Verification Banner -->
+  <div class="verification-banner" *ngIf="needsVerification()" (click)="goToVerification()">
+    <div class="banner-icon" [ngClass]="verificationStatus()">
+      <ion-icon [name]="verificationStatus() === 'under_review' ? 'time' :
+                       verificationStatus() === 'rejected' ? 'alert-circle' : 'shield-checkmark'"></ion-icon>
+    </div>
+    <div class="banner-content">
+      <h4 *ngIf="verificationStatus() === 'pending'">Verifica tu identidad</h4>
+      <h4 *ngIf="verificationStatus() === 'under_review'">Verificacion en proceso</h4>
+      <h4 *ngIf="verificationStatus() === 'rejected'">Verificacion rechazada</h4>
+      <p *ngIf="verificationStatus() === 'pending'">Completa tu verificacion para poder recibir solicitudes</p>
+      <p *ngIf="verificationStatus() === 'under_review'">Estamos revisando tus documentos (24-48 hrs)</p>
+      <p *ngIf="verificationStatus() === 'rejected'">Revisa tus documentos y vuelve a intentarlo</p>
+    </div>
+    <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>
+  </div>
+
   <!-- Welcome Header -->
   <div class="welcome-section">
     <div class="welcome-text">
@@ -28,6 +45,13 @@
         color="success">
       </ion-toggle>
     </div>
+  </div>
+
+  <!-- Location Broadcasting Indicator -->
+  <div class="broadcasting-indicator" *ngIf="isBroadcastingLocation()">
+    <div class="pulse-ring"></div>
+    <ion-icon name="navigate"></ion-icon>
+    <span>Transmitiendo ubicación al paciente...</span>
   </div>
 
   <!-- Stats Cards -->
@@ -64,19 +88,61 @@
       <ion-badge color="primary">{{ activeRequests().length }}</ion-badge>
     </div>
 
-    <ion-list class="request-list">
-      <ion-item *ngFor="let request of activeRequests()" (click)="viewRequest(request)" button detail>
-        <ion-icon slot="start" name="medical-outline" color="primary"></ion-icon>
-        <ion-label>
-          <h3>{{ request.service?.name || 'Servicio' }}</h3>
-          <p>{{ request.location?.address }}</p>
-          <p class="time">{{ request.requestedDate | date:'dd/MM HH:mm' }}</p>
-        </ion-label>
-        <ion-badge slot="end" [color]="getStatusColor(request.status)">
-          {{ getStatusLabel(request.status) }}
-        </ion-badge>
-      </ion-item>
-    </ion-list>
+    <div class="active-request-cards">
+      <div class="active-request-card" *ngFor="let request of activeRequests()">
+        <div class="request-header">
+          <div class="request-info">
+            <h3>{{ request.service.name || 'Servicio' }}</h3>
+            <p class="address">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ request.location.address }}
+            </p>
+            <p class="time">
+              <ion-icon name="time-outline"></ion-icon>
+              {{ request.requestedDate | date:'dd/MM HH:mm' }}
+            </p>
+          </div>
+          <ion-badge [color]="getStatusColor(request.status)">
+            {{ getStatusLabel(request.status) }}
+          </ion-badge>
+        </div>
+
+        <!-- Patient Info -->
+        <div class="patient-info" *ngIf="request.patient">
+          <ion-avatar>
+            <img [src]="$any(request.patient).avatar || 'assets/img/default-avatar.png'" alt="Patient">
+          </ion-avatar>
+          <div class="patient-details">
+            <span class="patient-name">{{ request.patient.firstName }} {{ request.patient.lastName }}</span>
+            <a class="patient-phone" [href]="'tel:' + request.patient.phone" (click)="$event.stopPropagation()">
+              <ion-icon name="call-outline"></ion-icon>
+              {{ request.patient.phone }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="request-actions" *ngIf="getNextAction(request) as action">
+          <ion-button
+            expand="block"
+            [color]="action.color"
+            (click)="action.action()">
+            <ion-icon slot="start"
+              [name]="request.status === 'accepted' ? 'navigate' :
+                      request.status === 'on_the_way' ? 'flag' :
+                      request.status === 'arrived' ? 'play' : 'checkmark-circle'">
+            </ion-icon>
+            {{ action.label }}
+          </ion-button>
+        </div>
+
+        <!-- View Details Button -->
+        <ion-button fill="clear" size="small" (click)="viewRequest(request)">
+          Ver detalles
+          <ion-icon slot="end" name="arrow-forward"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
   </div>
 
   <!-- Pending Nearby Requests -->
@@ -93,9 +159,9 @@
       <ion-item *ngFor="let request of pendingRequests()" (click)="viewRequest(request)" button detail>
         <ion-icon slot="start" name="time-outline" color="warning"></ion-icon>
         <ion-label>
-          <h3>{{ request.service?.name || getCategoryLabel(request.service?.category || 'other') }}</h3>
-          <p>{{ request.location?.district }}, {{ request.location?.city }}</p>
-          <p class="price">S/. {{ request.service?.price }}</p>
+          <h3>{{ request.service.name || getCategoryLabel(request.service.category || 'other') }}</h3>
+          <p>{{ request.location.district }}, {{ request.location.city }}</p>
+          <p class="price">S/. {{ request.service.price }}</p>
         </ion-label>
         <div slot="end" class="distance-badge">
           <ion-icon name="navigate-outline"></ion-icon>

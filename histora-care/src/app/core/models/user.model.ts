@@ -43,7 +43,9 @@ export interface RegisterNurseRequest {
   lastName: string;
   phone: string;
   cepNumber: string; // Colegio de Enfermeros del Peru
-  specialties: string[];
+  specialties?: string[];
+  termsAccepted: boolean;
+  professionalDisclaimerAccepted: boolean;
 }
 
 export interface RegisterPatientRequest {
