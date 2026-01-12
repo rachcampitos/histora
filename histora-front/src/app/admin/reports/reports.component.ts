@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { ThemeService } from '@core/service/theme.service';
 import {
   NgApexchartsModule,
   ApexChart,
@@ -24,6 +25,7 @@ import {
   ApexTooltip,
   ApexNonAxisChartSeries,
   ApexPlotOptions,
+  ApexTheme,
 } from 'ng-apexcharts';
 
 @Component({
@@ -50,6 +52,7 @@ import {
 export class ReportsComponent implements OnInit {
   isLoading = true;
   selectedPeriod = '6months';
+  private isDarkMode = false;
 
   periodOptions = [
     { value: '30days', label: 'Últimos 30 días' },
@@ -81,6 +84,7 @@ export class ReportsComponent implements OnInit {
     fill: ApexFill;
     tooltip: ApexTooltip;
     colors: string[];
+    theme: ApexTheme;
   };
 
   clinicsGrowthChartOptions!: {
@@ -90,6 +94,7 @@ export class ReportsComponent implements OnInit {
     stroke: ApexStroke;
     dataLabels: ApexDataLabels;
     colors: string[];
+    theme: ApexTheme;
   };
 
   planDistributionChartOptions!: {
@@ -100,6 +105,7 @@ export class ReportsComponent implements OnInit {
     legend: ApexLegend;
     plotOptions: ApexPlotOptions;
     dataLabels: ApexDataLabels;
+    theme: ApexTheme;
   };
 
   churnChartOptions!: {
@@ -110,10 +116,37 @@ export class ReportsComponent implements OnInit {
     dataLabels: ApexDataLabels;
     colors: string[];
     yaxis: ApexYAxis;
+    theme: ApexTheme;
   };
 
+  constructor(private themeService: ThemeService) {
+    effect(() => {
+      const theme = this.themeService.currentTheme();
+      this.isDarkMode = theme === 'dark';
+      if (!this.isLoading) {
+        this.initAllCharts();
+      }
+    });
+  }
+
   ngOnInit(): void {
+    this.isDarkMode = this.themeService.currentTheme() === 'dark';
     this.loadReportData();
+  }
+
+  private getChartForeColor(): string {
+    return this.isDarkMode ? '#b8c5d6' : '#9aa0ac';
+  }
+
+  private getChartTheme(): ApexTheme {
+    return { mode: this.isDarkMode ? 'dark' : 'light' };
+  }
+
+  private initAllCharts(): void {
+    this.initRevenueChart();
+    this.initClinicsGrowthChart();
+    this.initPlanDistributionChart();
+    this.initChurnChart();
   }
 
   loadReportData(): void {
@@ -153,20 +186,31 @@ export class ReportsComponent implements OnInit {
         height: 350,
         type: 'area',
         toolbar: { show: true },
-        foreColor: '#9aa0ac',
+        foreColor: this.getChartForeColor(),
+        background: 'transparent',
       },
+      theme: this.getChartTheme(),
       colors: ['#7c4dff', '#ff5252'],
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 2 },
       xaxis: {
         categories: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
+        labels: {
+          style: { colors: this.getChartForeColor() },
+        },
       },
       yaxis: {
         labels: {
           formatter: (val: number) => '$' + val.toLocaleString(),
+          style: { colors: [this.getChartForeColor()] },
         },
       },
-      legend: { position: 'top', horizontalAlign: 'right' },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        labels: { colors: this.getChartForeColor() },
+        itemMargin: { horizontal: 10, vertical: 5 },
+      },
       fill: {
         type: 'gradient',
         gradient: {
@@ -176,6 +220,7 @@ export class ReportsComponent implements OnInit {
         },
       },
       tooltip: {
+        theme: this.isDarkMode ? 'dark' : 'light',
         y: {
           formatter: (val: number) => '$' + val.toLocaleString(),
         },
@@ -195,13 +240,18 @@ export class ReportsComponent implements OnInit {
         height: 300,
         type: 'bar',
         toolbar: { show: false },
-        foreColor: '#9aa0ac',
+        foreColor: this.getChartForeColor(),
+        background: 'transparent',
       },
+      theme: this.getChartTheme(),
       colors: ['#00c853'],
       dataLabels: { enabled: false },
       stroke: { show: false },
       xaxis: {
         categories: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
+        labels: {
+          style: { colors: this.getChartForeColor() },
+        },
       },
     };
   }
@@ -212,11 +262,16 @@ export class ReportsComponent implements OnInit {
       chart: {
         height: 300,
         type: 'donut',
+        foreColor: this.getChartForeColor(),
+        background: 'transparent',
       },
+      theme: this.getChartTheme(),
       labels: ['Basic', 'Professional', 'Premium', 'Enterprise'],
       colors: ['#42a5f5', '#66bb6a', '#ffca28', '#7c4dff'],
       legend: {
         position: 'bottom',
+        labels: { colors: this.getChartForeColor() },
+        itemMargin: { horizontal: 8, vertical: 4 },
       },
       plotOptions: {
         pie: {
@@ -224,9 +279,16 @@ export class ReportsComponent implements OnInit {
             size: '60%',
             labels: {
               show: true,
+              name: {
+                color: this.getChartForeColor(),
+              },
+              value: {
+                color: this.getChartForeColor(),
+              },
               total: {
                 show: true,
                 label: 'Total',
+                color: this.getChartForeColor(),
                 formatter: () => '48',
               },
             },
@@ -236,6 +298,10 @@ export class ReportsComponent implements OnInit {
       dataLabels: {
         enabled: true,
         formatter: (val: number) => val.toFixed(0) + '%',
+        style: {
+          colors: ['#ffffff'],
+        },
+        dropShadow: { enabled: false },
       },
     };
   }
@@ -252,17 +318,28 @@ export class ReportsComponent implements OnInit {
         height: 300,
         type: 'line',
         toolbar: { show: false },
-        foreColor: '#9aa0ac',
+        foreColor: this.getChartForeColor(),
+        background: 'transparent',
       },
+      theme: this.getChartTheme(),
       colors: ['#ff5252'],
-      dataLabels: { enabled: true },
+      dataLabels: {
+        enabled: true,
+        style: {
+          colors: [this.isDarkMode ? '#ffffff' : '#2c3e50'],
+        },
+      },
       stroke: { curve: 'smooth', width: 3 },
       xaxis: {
         categories: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
+        labels: {
+          style: { colors: this.getChartForeColor() },
+        },
       },
       yaxis: {
         labels: {
           formatter: (val: number) => val.toFixed(1) + '%',
+          style: { colors: [this.getChartForeColor()] },
         },
       },
     };
