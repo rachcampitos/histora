@@ -37,6 +37,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
 import { AppointmentFormDialogComponent, AppointmentFormDialogData } from './dialogs/form/form.component';
 import { AppointmentDeleteDialogComponent, AppointmentDeleteDialogData } from './dialogs/delete/delete.component';
+import { TableSkeletonComponent } from '@shared/components/skeleton-loader/table-skeleton.component';
 
 @Component({
   standalone: true,
@@ -67,6 +68,7 @@ import { AppointmentDeleteDialogComponent, AppointmentDeleteDialogData } from '.
     NgClass,
     MatDividerModule,
     TranslateModule,
+    TableSkeletonComponent,
   ],
 })
 export class AppointmentsComponent implements OnInit, OnDestroy {

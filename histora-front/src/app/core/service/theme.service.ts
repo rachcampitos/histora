@@ -1,4 +1,4 @@
-import { Injectable, Inject, Renderer2, RendererFactory2, signal, effect } from '@angular/core';
+import { Injectable, Inject, Renderer2, RendererFactory2, signal, effect, OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 export type Theme = 'light' | 'dark';
@@ -6,12 +6,17 @@ export type Theme = 'light' | 'dark';
 @Injectable({
   providedIn: 'root',
 })
-export class ThemeService {
+export class ThemeService implements OnDestroy {
   private renderer: Renderer2;
   private readonly THEME_KEY = 'histora_theme';
+  private mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
+  private mediaQuery: MediaQueryList | null = null;
 
   // Signal for reactive theme state
   currentTheme = signal<Theme>('light');
+
+  // Track if user has explicitly set a preference
+  private userHasSetPreference = signal<boolean>(false);
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -19,6 +24,7 @@ export class ThemeService {
   ) {
     this.renderer = rendererFactory.createRenderer(null, null);
     this.initializeTheme();
+    this.listenToSystemPreferenceChanges();
 
     // Effect to apply theme changes
     effect(() => {
@@ -26,15 +32,59 @@ export class ThemeService {
     });
   }
 
+  ngOnDestroy(): void {
+    // Clean up media query listener
+    if (this.mediaQuery && this.mediaQueryListener) {
+      this.mediaQuery.removeEventListener('change', this.mediaQueryListener);
+    }
+  }
+
   private initializeTheme(): void {
     const savedTheme = localStorage.getItem(this.THEME_KEY) as Theme;
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       this.currentTheme.set(savedTheme);
+      this.userHasSetPreference.set(true);
     } else {
       // Check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       this.currentTheme.set(prefersDark ? 'dark' : 'light');
+      this.userHasSetPreference.set(false);
     }
+  }
+
+  /**
+   * Listen to system preference changes and update theme if user hasn't set a preference
+   */
+  private listenToSystemPreferenceChanges(): void {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+      this.mediaQueryListener = (e: MediaQueryListEvent) => {
+        // Only auto-switch if user hasn't explicitly set a preference
+        if (!this.userHasSetPreference()) {
+          this.currentTheme.set(e.matches ? 'dark' : 'light');
+        }
+      };
+
+      this.mediaQuery.addEventListener('change', this.mediaQueryListener);
+    }
+  }
+
+  /**
+   * Reset to system preference (clears user preference)
+   */
+  useSystemPreference(): void {
+    localStorage.removeItem(this.THEME_KEY);
+    this.userHasSetPreference.set(false);
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    this.currentTheme.set(prefersDark ? 'dark' : 'light');
+  }
+
+  /**
+   * Check if theme is following system preference
+   */
+  isFollowingSystem(): boolean {
+    return !this.userHasSetPreference();
   }
 
   toggleTheme(): void {
@@ -45,6 +95,7 @@ export class ThemeService {
   setTheme(theme: Theme): void {
     this.currentTheme.set(theme);
     localStorage.setItem(this.THEME_KEY, theme);
+    this.userHasSetPreference.set(true);
   }
 
   isDark(): boolean {

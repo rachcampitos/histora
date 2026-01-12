@@ -206,4 +206,16 @@ export class SidebarComponent
       }
     });
   }
+
+  /**
+   * Check if a route is currently active for aria-current attribute
+   */
+  isRouteActive(path: string): boolean {
+    return this.router.isActive(path, {
+      paths: 'exact',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored'
+    });
+  }
 }

@@ -194,12 +194,9 @@
                 </table>
               </div>
 
-              <!-- Loading spinner -->
+              <!-- Loading skeleton -->
               @if (isLoading) {
-              <div class="tbl-spinner">
-                <mat-progress-spinner color="primary" [diameter]="40" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
+              <app-table-skeleton [rows]="5" [showAvatar]="true"></app-table-skeleton>
               }
 
               <!-- No results message -->
