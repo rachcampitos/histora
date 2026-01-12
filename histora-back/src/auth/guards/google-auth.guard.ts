@@ -26,13 +26,14 @@ export class GoogleAuthGuard extends AuthGuard('google') {
     }
   }
 
-  // Override getAuthenticateOptions to pass state with platform info
+  // Override getAuthenticateOptions to pass state with platform info and redirect_uri
   getAuthenticateOptions(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
     const platform = request.query.platform as string || 'web';
+    const redirectUri = request.query.redirect_uri as string || '';
 
     return {
-      state: JSON.stringify({ platform }),
+      state: JSON.stringify({ platform, redirectUri }),
       scope: ['email', 'profile'],
     };
   }
