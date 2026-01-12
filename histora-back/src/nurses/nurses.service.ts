@@ -42,42 +42,48 @@ export class NursesService {
     return nurse.save();
   }
 
-  async findById(id: string): Promise<Nurse & { user?: Record<string, unknown> }> {
+  async findById(id: string): Promise<Record<string, unknown>> {
     const nurse = await this.nurseModel
       .findById(id)
       .populate('userId', 'firstName lastName email phone avatar')
-      .lean();
+      .lean()
+      .exec();
 
     if (!nurse) {
       throw new NotFoundException('Nurse not found');
     }
 
     // Transform userId to user for consistent API response
-    const { userId, ...rest } = nurse as Nurse & { userId: Record<string, unknown> };
+    const nurseObj = nurse as Record<string, unknown>;
+    const populatedUser = nurseObj.userId as Record<string, unknown> | null;
+
     return {
-      ...rest,
-      userId: (userId as { _id?: string })?._id?.toString() || nurse.userId?.toString(),
-      user: userId,
-    } as Nurse & { user?: Record<string, unknown> };
+      ...nurseObj,
+      userId: populatedUser?._id?.toString() || String(nurseObj.userId),
+      user: populatedUser,
+    };
   }
 
-  async findByUserId(userIdParam: string): Promise<Nurse & { user?: Record<string, unknown> }> {
+  async findByUserId(userIdParam: string): Promise<Record<string, unknown>> {
     const nurse = await this.nurseModel
       .findOne({ userId: new Types.ObjectId(userIdParam) })
       .populate('userId', 'firstName lastName email phone avatar')
-      .lean();
+      .lean()
+      .exec();
 
     if (!nurse) {
       throw new NotFoundException('Nurse profile not found');
     }
 
     // Transform userId to user for consistent API response
-    const { userId, ...rest } = nurse as Nurse & { userId: Record<string, unknown> };
+    const nurseObj = nurse as Record<string, unknown>;
+    const populatedUser = nurseObj.userId as Record<string, unknown> | null;
+
     return {
-      ...rest,
-      userId: (userId as { _id?: string })?._id?.toString() || nurse.userId?.toString(),
-      user: userId,
-    } as Nurse & { user?: Record<string, unknown> };
+      ...nurseObj,
+      userId: populatedUser?._id?.toString() || String(nurseObj.userId),
+      user: populatedUser,
+    };
   }
 
   /**
