@@ -45,4 +45,4 @@ RUN apk del python3 make g++
 EXPOSE ${PORT:-3000}
 
 # Start the application
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
