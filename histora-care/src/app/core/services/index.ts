@@ -4,3 +4,5 @@ export * from './storage.service';
 export * from './geolocation.service';
 export * from './nurse.service';
 export * from './service-request.service';
+export * from './mapbox.service';
+export * from './websocket.service';

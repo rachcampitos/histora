@@ -5,7 +5,11 @@ import {
   Nurse,
   NurseService,
   NurseSearchParams,
-  NurseSearchResult
+  NurseSearchResult,
+  NurseReview,
+  NurseVerification,
+  VerificationStatus,
+  VerificationDocumentType
 } from '../models';
 
 @Injectable({
@@ -78,5 +82,44 @@ export class NurseApiService {
     servicesCount: number;
   }> {
     return this.api.get('/nurses/me/earnings', { startDate, endDate });
+  }
+
+  // Get reviews for a nurse
+  getNurseReviews(nurseId: string, page = 1, limit = 10): Observable<{
+    reviews: NurseReview[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    return this.api.get(`/nurses/${nurseId}/reviews`, { page, limit });
+  }
+
+  // Submit a review (for patients)
+  submitReview(nurseId: string, review: {
+    rating: number;
+    comment: string;
+    serviceRequestId?: string;
+  }): Observable<NurseReview> {
+    return this.api.post(`/nurses/${nurseId}/reviews`, review);
+  }
+
+  // ============= Verification Methods =============
+
+  // Submit verification documents
+  submitVerification(nurseId: string, data: {
+    dniNumber: string;
+    fullNameOnDni: string;
+    documents: {
+      imageData: string;
+      documentType: VerificationDocumentType;
+      mimeType?: string;
+    }[];
+  }): Observable<NurseVerification> {
+    return this.api.post(`/nurses/${nurseId}/verification`, data);
+  }
+
+  // Get verification status
+  getVerificationStatus(nurseId: string): Observable<NurseVerification | null> {
+    return this.api.get(`/nurses/${nurseId}/verification/status`);
   }
 }

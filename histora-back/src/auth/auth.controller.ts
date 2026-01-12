@@ -24,12 +24,14 @@ import { GoogleUser } from './strategies/google.strategy';
 @Controller('auth')
 export class AuthController {
   private readonly frontendUrl: string;
+  private readonly mobileScheme: string;
 
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {
     this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:4200';
+    this.mobileScheme = this.configService.get<string>('MOBILE_APP_SCHEME') || 'historacare';
   }
 
   @Public()
@@ -131,9 +133,21 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     try {
+      // Parse state to determine platform (mobile or web)
+      let platform = 'web';
+      const stateParam = req.query.state as string;
+      if (stateParam) {
+        try {
+          const state = JSON.parse(stateParam);
+          platform = state.platform || 'web';
+        } catch {
+          // Invalid state, default to web
+        }
+      }
+
       const authResponse = await this.authService.googleLogin(req.user);
 
-      // Redirect to frontend with tokens in URL params
+      // Build redirect URL params
       const params = new URLSearchParams({
         access_token: authResponse.access_token,
         refresh_token: authResponse.refresh_token,
@@ -141,9 +155,32 @@ export class AuthController {
         is_new_user: authResponse.isNewUser ? 'true' : 'false',
       });
 
-      res.redirect(`${this.frontendUrl}/#/auth/google/callback?${params.toString()}`);
+      // Redirect based on platform
+      if (platform === 'mobile') {
+        // Redirect to mobile app using deep link
+        res.redirect(`${this.mobileScheme}://oauth/callback?${params.toString()}`);
+      } else {
+        // Redirect to web frontend
+        res.redirect(`${this.frontendUrl}/#/auth/google/callback?${params.toString()}`);
+      }
     } catch {
-      res.redirect(`${this.frontendUrl}/#/authentication/signin?error=google_auth_failed`);
+      // Handle error based on platform
+      const stateParam = req.query.state as string;
+      let platform = 'web';
+      if (stateParam) {
+        try {
+          const state = JSON.parse(stateParam);
+          platform = state.platform || 'web';
+        } catch {
+          // Invalid state
+        }
+      }
+
+      if (platform === 'mobile') {
+        res.redirect(`${this.mobileScheme}://oauth/callback?error=google_auth_failed`);
+      } else {
+        res.redirect(`${this.frontendUrl}/#/authentication/signin?error=google_auth_failed`);
+      }
     }
   }
 
@@ -162,6 +199,8 @@ export class AuthController {
       user.userId,
       dto.userType,
       dto.userType === 'doctor' ? { clinicName: dto.clinicName!, clinicPhone: dto.clinicPhone } : undefined,
+      dto.userType === 'nurse' ? { cepNumber: dto.cepNumber!, specialties: dto.specialties } : undefined,
+      { termsAccepted: dto.termsAccepted, professionalDisclaimerAccepted: dto.professionalDisclaimerAccepted },
     );
   }
 }

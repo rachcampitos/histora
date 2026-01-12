@@ -1,5 +1,5 @@
 import { PartialType, OmitType } from '@nestjs/mapped-types';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Types } from 'mongoose';
 import { CreateUserDto } from './create-user.dto';
@@ -24,4 +24,28 @@ export class UpdateUserDto extends PartialType(
 
   @IsOptional()
   nurseProfileId?: Types.ObjectId;
+
+  // Terms and conditions acceptance (for updates)
+  @IsBoolean()
+  @IsOptional()
+  termsAccepted?: boolean;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  termsAcceptedAt?: Date;
+
+  @IsString()
+  @IsOptional()
+  termsVersion?: string;
+
+  // Professional disclaimer acceptance (for nurses/doctors)
+  @IsBoolean()
+  @IsOptional()
+  professionalDisclaimerAccepted?: boolean;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  professionalDisclaimerAcceptedAt?: Date;
 }

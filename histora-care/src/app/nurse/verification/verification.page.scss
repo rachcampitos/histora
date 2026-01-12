@@ -1,0 +1,466 @@
+// Variables
+$primary-color: #667eea;
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$nurse-color: #10b981;
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$danger-color: #ef4444;
+$text-dark: #1a1a1a;
+$text-muted: #6b7280;
+$bg-light: #f7fafc;
+$border-radius: 12px;
+
+.verification-content {
+  --background: #{$bg-light};
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+
+  ion-spinner {
+    --color: #{$primary-color};
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    color: $text-muted;
+    font-size: 14px;
+  }
+}
+
+.verification-container {
+  padding: 16px;
+  padding-bottom: calc(var(--ion-safe-area-bottom, 0) + 24px);
+}
+
+// Status Cards
+.status-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+
+  .status-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+
+    ion-icon {
+      font-size: 48px;
+      color: white;
+    }
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: $text-dark;
+  }
+
+  p {
+    font-size: 14px;
+    color: $text-muted;
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+
+  ion-button {
+    --border-radius: #{$border-radius};
+    font-weight: 600;
+    text-transform: none;
+  }
+
+  .info-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: $primary-color;
+
+    ion-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+  }
+
+  &.approved {
+    .status-icon {
+      background: linear-gradient(135deg, $success-color 0%, darken($success-color, 10%) 100%);
+    }
+  }
+
+  &.under-review {
+    .status-icon {
+      background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+    }
+  }
+
+  &.rejected {
+    .status-icon {
+      background: linear-gradient(135deg, $danger-color 0%, darken($danger-color, 10%) 100%);
+    }
+  }
+}
+
+// Info Header
+.info-header {
+  text-align: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: $text-muted;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Progress Section
+.progress-section {
+  background: white;
+  border-radius: $border-radius;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+
+    span {
+      color: $text-muted;
+    }
+
+    .progress-value {
+      font-weight: 600;
+      color: $success-color;
+    }
+  }
+
+  ion-progress-bar {
+    --background: #e5e7eb;
+    height: 8px;
+    border-radius: 4px;
+  }
+}
+
+// Form Section
+.form-section {
+  background: white;
+  border-radius: $border-radius;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0 0 16px;
+  }
+}
+
+.input-item {
+  --background: #f8fafc;
+  --border-radius: 10px;
+  --padding-start: 12px;
+  --min-height: 48px;
+  margin-bottom: 12px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    border-color: $primary-color;
+    --background: white;
+  }
+
+  .input-icon {
+    color: $text-muted;
+    font-size: 18px;
+    margin-right: 10px;
+  }
+
+  ion-input {
+    --placeholder-color: #a0aec0;
+    --color: #{$text-dark};
+    font-size: 14px;
+  }
+}
+
+// Documents Section
+.documents-section {
+  margin-bottom: 24px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0 0 16px;
+  }
+}
+
+.document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.document-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: $border-radius;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .document-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .placeholder {
+      width: 100%;
+      height: 100%;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 28px;
+        color: #94a3b8;
+      }
+    }
+
+    .upload-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      background: $success-color;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 12px;
+        color: white;
+      }
+    }
+
+    &.has-image {
+      border: 2px solid $success-color;
+    }
+  }
+
+  .document-info {
+    flex: 1;
+    min-width: 0;
+
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0 0 4px;
+    }
+
+    p {
+      font-size: 12px;
+      color: $text-muted;
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+
+  .document-action {
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+// Submit Section
+.submit-section {
+  ion-button {
+    --background: #{$nurse-color};
+    --background-hover: #{darken($nurse-color, 5%)};
+    --border-radius: #{$border-radius};
+    --box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    height: 52px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: none;
+
+    ion-icon {
+      font-size: 20px;
+      margin-right: 8px;
+    }
+
+    &[disabled] {
+      --background: #cbd5e0;
+      --box-shadow: none;
+      opacity: 1;
+    }
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: $text-muted;
+    margin: 12px 0 0;
+  }
+}
+
+// Dark mode
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  .verification-content {
+    --background: #1a202c;
+  }
+
+  .loading-container p {
+    color: #94a3b8;
+  }
+
+  .status-card {
+    background: #1e293b;
+
+    h2 {
+      color: white;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+
+    .info-box {
+      background: rgba(102, 126, 234, 0.15);
+    }
+  }
+
+  .info-header {
+    h1 {
+      color: white;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  .progress-section {
+    background: #1e293b;
+
+    .progress-header span {
+      color: #94a3b8;
+    }
+
+    ion-progress-bar {
+      --background: #334155;
+    }
+  }
+
+  .form-section {
+    background: #1e293b;
+
+    h3 {
+      color: white;
+    }
+  }
+
+  .input-item {
+    --background: #0f172a;
+
+    &:focus-within {
+      --background: #1e293b;
+    }
+
+    ion-input {
+      --color: white;
+      --placeholder-color: #64748b;
+    }
+
+    .input-icon {
+      color: #64748b;
+    }
+  }
+
+  .documents-section h3 {
+    color: white;
+  }
+
+  .document-card {
+    background: #1e293b;
+
+    .document-preview .placeholder {
+      background: #334155;
+
+      ion-icon {
+        color: #64748b;
+      }
+    }
+
+    .document-info {
+      h4 {
+        color: white;
+      }
+
+      p {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  .submit-section .disclaimer {
+    color: #94a3b8;
+  }
+}

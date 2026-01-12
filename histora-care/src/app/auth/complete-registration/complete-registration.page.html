@@ -1,0 +1,543 @@
+<ion-content class="complete-registration-content" [fullscreen]="true">
+  <div class="registration-container">
+    <!-- Header -->
+    <div class="header-section">
+      <ion-button fill="clear" class="back-btn" (click)="goBack()" aria-label="Volver">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+      <div class="logo-wrapper">
+        <ion-icon name="heart-circle" class="logo-icon"></ion-icon>
+      </div>
+      <h1 class="app-name">Histora Care</h1>
+    </div>
+
+    <!-- Step 1: Select User Type -->
+    @if (step() === 'select') {
+    <div class="select-section">
+      <h2 class="section-title">Completa tu registro</h2>
+      <p class="section-subtitle">Selecciona tu tipo de cuenta</p>
+
+      <div class="type-cards">
+        <!-- Nurse Card -->
+        <button class="type-card nurse-card" (click)="selectUserType('nurse')" aria-label="Registrarme como enfermera">
+          <div class="card-icon">
+            <ion-icon name="medkit"></ion-icon>
+          </div>
+          <h3>Soy Enfermera/o</h3>
+          <p>Quiero ofrecer mis servicios de enfermeria a domicilio</p>
+          <div class="card-features">
+            <span><ion-icon name="checkmark-circle"></ion-icon> Gestion de citas</span>
+            <span><ion-icon name="checkmark-circle"></ion-icon> Control de ganancias</span>
+            <span><ion-icon name="checkmark-circle"></ion-icon> Mapa de pacientes</span>
+          </div>
+        </button>
+
+        <!-- Patient Card -->
+        <button class="type-card patient-card" (click)="selectUserType('patient')" aria-label="Registrarme como paciente">
+          <div class="card-icon">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <h3>Soy Paciente</h3>
+          <p>Necesito servicios de enfermeria a domicilio</p>
+          <div class="card-features">
+            <span><ion-icon name="checkmark-circle"></ion-icon> Buscar enfermeras</span>
+            <span><ion-icon name="checkmark-circle"></ion-icon> Seguimiento en tiempo real</span>
+            <span><ion-icon name="checkmark-circle"></ion-icon> Historial de servicios</span>
+          </div>
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- Step 2: Nurse Form -->
+    @if (step() === 'form' && selectedType() === 'nurse') {
+    <div class="form-section">
+      <h2 class="section-title">Datos Profesionales</h2>
+      <p class="section-subtitle">Completa tu informacion como enfermera/o</p>
+
+      <!-- Progress indicator -->
+      <div class="progress-indicator">
+        <div class="progress-step active">
+          <span class="step-number">1</span>
+          <span class="step-label">Datos</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step">
+          <span class="step-number">2</span>
+          <span class="step-label">Documentos</span>
+        </div>
+      </div>
+
+      <form [formGroup]="nurseForm">
+        <!-- CEP Number Field -->
+        <ion-item lines="none" class="input-item" [class.input-error]="cepNumber?.invalid && cepNumber?.touched">
+          <ion-icon name="card-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
+          <ion-input
+            type="text"
+            formControlName="cepNumber"
+            placeholder="Numero de CEP"
+            aria-label="Numero de CEP del Colegio de Enfermeros"
+            [attr.aria-invalid]="cepNumber?.invalid && cepNumber?.touched"
+            [attr.aria-describedby]="cepNumber?.invalid && cepNumber?.touched ? 'cep-error' : null">
+          </ion-input>
+        </ion-item>
+        <div id="cep-error" class="error-message" role="alert" *ngIf="cepNumber?.invalid && cepNumber?.touched">
+          <span *ngIf="cepNumber?.errors?.['required']">El numero de CEP es requerido</span>
+          <span *ngIf="cepNumber?.errors?.['minlength']">Minimo 5 caracteres</span>
+        </div>
+        <p class="field-hint">Numero del Colegio de Enfermeros del Peru</p>
+
+        <!-- DNI Number Field -->
+        <ion-item lines="none" class="input-item" [class.input-error]="dniNumber?.invalid && dniNumber?.touched">
+          <ion-icon name="id-card-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
+          <ion-input
+            type="text"
+            formControlName="dniNumber"
+            placeholder="Numero de DNI"
+            maxlength="8"
+            aria-label="Numero de DNI"
+            [attr.aria-invalid]="dniNumber?.invalid && dniNumber?.touched">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" role="alert" *ngIf="dniNumber?.invalid && dniNumber?.touched">
+          <span *ngIf="dniNumber?.errors?.['required']">El numero de DNI es requerido</span>
+          <span *ngIf="dniNumber?.errors?.['pattern']">El DNI debe tener 8 digitos</span>
+        </div>
+
+        <!-- Full Name on DNI -->
+        <ion-item lines="none" class="input-item" [class.input-error]="fullNameOnDni?.invalid && fullNameOnDni?.touched">
+          <ion-icon name="person-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
+          <ion-input
+            type="text"
+            formControlName="fullNameOnDni"
+            placeholder="Nombre completo (como aparece en DNI)"
+            aria-label="Nombre completo como aparece en el DNI"
+            [attr.aria-invalid]="fullNameOnDni?.invalid && fullNameOnDni?.touched">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" role="alert" *ngIf="fullNameOnDni?.invalid && fullNameOnDni?.touched">
+          <span *ngIf="fullNameOnDni?.errors?.['required']">El nombre completo es requerido</span>
+          <span *ngIf="fullNameOnDni?.errors?.['minlength']">Minimo 3 caracteres</span>
+        </div>
+        <p class="field-hint">Tal como aparece en tu documento de identidad</p>
+
+        <!-- Specialties -->
+        <div class="specialties-section">
+          <h3>Especialidades (opcional)</h3>
+          <p class="field-hint">Selecciona los servicios que ofreces</p>
+
+          <div class="specialties-grid">
+            @for (specialty of specialtiesList; track specialty) {
+            <button
+              type="button"
+              class="specialty-chip"
+              [class.selected]="isSpecialtySelected(specialty)"
+              (click)="toggleSpecialty(specialty)"
+              [attr.aria-pressed]="isSpecialtySelected(specialty)">
+              <ion-icon [name]="isSpecialtySelected(specialty) ? 'checkmark-circle' : 'add-circle-outline'"></ion-icon>
+              {{ specialty }}
+            </button>
+            }
+          </div>
+        </div>
+
+        <!-- Continue Button -->
+        <ion-button
+          expand="block"
+          type="button"
+          class="submit-btn"
+          (click)="proceedToDocuments()"
+          [disabled]="nurseForm.invalid">
+          <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          Continuar
+        </ion-button>
+      </form>
+    </div>
+    }
+
+    <!-- Step 3: Document Upload -->
+    @if (step() === 'documents' && selectedType() === 'nurse') {
+    <div class="form-section">
+      <h2 class="section-title">Verificacion de Identidad</h2>
+      <p class="section-subtitle">Sube los documentos requeridos para verificar tu perfil</p>
+
+      <!-- Progress indicator -->
+      <div class="progress-indicator">
+        <div class="progress-step completed">
+          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+          <span class="step-label">Datos</span>
+        </div>
+        <div class="progress-line active"></div>
+        <div class="progress-step active">
+          <span class="step-number">2</span>
+          <span class="step-label">Documentos</span>
+        </div>
+      </div>
+
+      <!-- Document count -->
+      <div class="document-count">
+        <ion-icon name="documents-outline"></ion-icon>
+        <span>{{ uploadedCount }} de {{ documents().length }} documentos</span>
+      </div>
+
+      <!-- Document upload cards -->
+      <div class="documents-list">
+        @for (doc of documents(); track doc.type) {
+        <div class="document-card" [class.uploaded]="doc.previewUrl">
+          @if (doc.previewUrl) {
+          <!-- Uploaded state -->
+          <div class="document-preview">
+            <img [src]="doc.previewUrl" [alt]="doc.label" />
+            <button class="remove-btn" (click)="removeDocument(doc.type)" aria-label="Eliminar documento">
+              <ion-icon name="close-circle"></ion-icon>
+            </button>
+          </div>
+          <div class="document-info">
+            <span class="document-label">{{ doc.label }}</span>
+            <span class="document-status success">
+              <ion-icon name="checkmark-circle"></ion-icon> Subido
+            </span>
+          </div>
+          } @else {
+          <!-- Empty state -->
+          <button class="upload-area" (click)="takePhoto(doc.type)" [attr.aria-label]="'Subir ' + doc.label">
+            <ion-icon [name]="doc.icon" class="upload-icon"></ion-icon>
+            <span class="upload-label">{{ doc.label }}</span>
+            <span class="upload-hint">{{ doc.description }}</span>
+            <div class="upload-btn">
+              <ion-icon name="camera-outline"></ion-icon>
+              Subir Foto
+            </div>
+          </button>
+          }
+        </div>
+        }
+      </div>
+
+      <!-- Security notice -->
+      <div class="security-notice">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <p>
+          Tus documentos estan protegidos y solo seran utilizados para verificar tu identidad.
+          Una vez aprobada tu verificacion, podras comenzar a recibir solicitudes de servicio.
+        </p>
+      </div>
+
+      <!-- Continue Button -->
+      <ion-button
+        expand="block"
+        type="button"
+        class="submit-btn"
+        (click)="proceedToTerms()"
+        [disabled]="!allDocumentsUploaded">
+        <ion-icon name="arrow-forward" slot="end"></ion-icon>
+        Continuar
+      </ion-button>
+    </div>
+    }
+
+    <!-- Step 4: Terms and Conditions -->
+    @if (step() === 'terms') {
+    <div class="form-section terms-section">
+      <h2 class="section-title">Terminos y Condiciones</h2>
+      <p class="section-subtitle">Por favor lee y acepta los terminos para continuar</p>
+
+      @if (selectedType() === 'nurse') {
+      <!-- Progress indicator for nurses -->
+      <div class="progress-indicator">
+        <div class="progress-step completed">
+          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+          <span class="step-label">Datos</span>
+        </div>
+        <div class="progress-line completed"></div>
+        <div class="progress-step completed">
+          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+          <span class="step-label">Documentos</span>
+        </div>
+        <div class="progress-line active"></div>
+        <div class="progress-step active">
+          <span class="step-number">3</span>
+          <span class="step-label">Terminos</span>
+        </div>
+      </div>
+      }
+
+      <!-- Terms acceptance card -->
+      <div class="terms-card">
+        <div class="terms-header">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <h3>Terminos de Servicio</h3>
+        </div>
+        <div class="terms-content">
+          <p>
+            Al usar Histora Care, aceptas que la plataforma actua unicamente como
+            intermediario entre profesionales de enfermeria y pacientes.
+          </p>
+          <ul>
+            <li>La plataforma facilita la conexion entre usuarios</li>
+            <li>Los pagos se procesan de forma segura</li>
+            <li>Protegemos tu informacion personal</li>
+          </ul>
+          <button type="button" class="read-more-btn" (click)="openTermsModal()">
+            <ion-icon name="document-text-outline"></ion-icon>
+            Leer terminos completos
+          </button>
+        </div>
+        <div class="terms-checkbox" (click)="toggleTermsAccepted()">
+          <ion-checkbox [checked]="termsAccepted()" labelPlacement="end" aria-label="Aceptar terminos de servicio">
+          </ion-checkbox>
+          <span>Acepto los <strong>Terminos de Servicio</strong> y la <strong>Politica de Privacidad</strong></span>
+        </div>
+      </div>
+
+      @if (selectedType() === 'nurse') {
+      <!-- Professional disclaimer for nurses -->
+      <div class="terms-card disclaimer-card">
+        <div class="terms-header">
+          <ion-icon name="shield-checkmark-outline" class="warning-icon"></ion-icon>
+          <h3>Exencion de Responsabilidad Profesional</h3>
+        </div>
+        <div class="terms-content disclaimer-content">
+          <div class="disclaimer-important">
+            <ion-icon name="warning-outline"></ion-icon>
+            <strong>IMPORTANTE</strong>
+          </div>
+          <p>
+            Como profesional de enfermeria registrado/a en Histora Care, reconozco y acepto que:
+          </p>
+          <ul class="disclaimer-list">
+            <li>
+              <ion-icon name="alert-circle"></ion-icon>
+              <span>Soy <strong>100% responsable</strong> de la calidad y seguridad de los servicios que presto</span>
+            </li>
+            <li>
+              <ion-icon name="alert-circle"></ion-icon>
+              <span>Cuento con las <strong>licencias y certificaciones vigentes</strong> requeridas por ley</span>
+            </li>
+            <li>
+              <ion-icon name="alert-circle"></ion-icon>
+              <span>Histora Care <strong>no se responsabiliza</strong> por eventos adversos derivados de los servicios prestados</span>
+            </li>
+            <li>
+              <ion-icon name="alert-circle"></ion-icon>
+              <span>Debo mantener un <strong>seguro de responsabilidad profesional</strong> activo</span>
+            </li>
+            <li>
+              <ion-icon name="alert-circle"></ion-icon>
+              <span>Seguire los <strong>protocolos medicos y eticos</strong> establecidos por el Colegio de Enfermeros del Peru</span>
+            </li>
+          </ul>
+          <button type="button" class="read-more-btn" (click)="openDisclaimerModal()">
+            <ion-icon name="document-text-outline"></ion-icon>
+            Leer exencion completa
+          </button>
+        </div>
+        <div class="terms-checkbox" (click)="toggleProfessionalDisclaimerAccepted()">
+          <ion-checkbox [checked]="professionalDisclaimerAccepted()" labelPlacement="end" aria-label="Aceptar exencion de responsabilidad profesional">
+          </ion-checkbox>
+          <span>Acepto la <strong>Exencion de Responsabilidad Profesional</strong></span>
+        </div>
+      </div>
+      }
+
+      @if (selectedType() === 'patient') {
+      <!-- Patient disclaimer -->
+      <div class="terms-card disclaimer-card patient-disclaimer">
+        <div class="terms-header">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <h3>Informacion Importante</h3>
+        </div>
+        <div class="terms-content">
+          <p>Al usar Histora Care como paciente, entiendo que:</p>
+          <ul>
+            <li>Los profesionales son independientes y responsables de sus servicios</li>
+            <li>Histora Care facilita la conexion pero no garantiza resultados medicos</li>
+            <li>En caso de emergencia, debo contactar a los servicios de emergencia (106)</li>
+          </ul>
+        </div>
+      </div>
+      }
+
+      <!-- Submit Button -->
+      @if (selectedType() === 'patient') {
+      <ion-button
+        expand="block"
+        type="button"
+        class="submit-btn"
+        (click)="completeAsPatient()"
+        [disabled]="!canProceedFromTerms">
+        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        Completar Registro
+      </ion-button>
+      } @else {
+      <ion-button
+        expand="block"
+        type="button"
+        class="submit-btn"
+        (click)="completeAsNurse()"
+        [disabled]="!canProceedFromTerms">
+        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        Enviar Verificacion
+      </ion-button>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Terms Modal -->
+  <ion-modal [isOpen]="showTermsModal()" (didDismiss)="closeModals()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Terminos de Servicio</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModals()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content">
+        <div class="modal-body">
+          <h2>TERMINOS Y CONDICIONES DE USO</h2>
+          <p class="last-updated">Ultima actualizacion: Enero 2025</p>
+
+          <h3>1. DESCRIPCION DEL SERVICIO</h3>
+          <p>
+            Histora Care es una plataforma tecnologica que conecta a profesionales de enfermeria
+            debidamente certificados con pacientes que requieren servicios de enfermeria a domicilio.
+            La plataforma actua unicamente como intermediario tecnologico.
+          </p>
+
+          <h3>2. USO DE LA PLATAFORMA</h3>
+          <p>Al usar Histora Care, el usuario acepta:</p>
+          <ul>
+            <li>Proporcionar informacion veraz y actualizada</li>
+            <li>No usar la plataforma para fines ilegales</li>
+            <li>Respetar a otros usuarios de la plataforma</li>
+            <li>Cumplir con las leyes y regulaciones aplicables</li>
+          </ul>
+
+          <h3>3. RESPONSABILIDADES</h3>
+          <p>
+            <strong>Histora Care NO es responsable de:</strong>
+          </p>
+          <ul>
+            <li>La calidad de los servicios prestados por los profesionales</li>
+            <li>Eventos adversos o complicaciones derivadas de los servicios</li>
+            <li>La veracidad de la informacion proporcionada por los usuarios</li>
+            <li>Disputas entre profesionales y pacientes</li>
+          </ul>
+
+          <h3>4. PAGOS</h3>
+          <p>
+            Los pagos se procesan de forma segura a traves de pasarelas de pago certificadas.
+            Las tarifas son establecidas por los profesionales de forma independiente.
+          </p>
+
+          <h3>5. PRIVACIDAD</h3>
+          <p>
+            La informacion personal es tratada conforme a nuestra Politica de Privacidad
+            y la Ley de Proteccion de Datos Personales del Peru.
+          </p>
+
+          <h3>6. MODIFICACIONES</h3>
+          <p>
+            Histora Care se reserva el derecho de modificar estos terminos en cualquier momento.
+            Los usuarios seran notificados de cambios significativos.
+          </p>
+
+          <h3>7. CONTACTO</h3>
+          <p>
+            Para consultas sobre estos terminos: soporte@historacare.com
+          </p>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Professional Disclaimer Modal -->
+  <ion-modal [isOpen]="showDisclaimerModal()" (didDismiss)="closeModals()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Exencion de Responsabilidad</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModals()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content">
+        <div class="modal-body disclaimer-modal">
+          <h2>EXENCION DE RESPONSABILIDAD PROFESIONAL</h2>
+          <p class="last-updated">Version 1.0 - Enero 2025</p>
+
+          <div class="disclaimer-warning">
+            <ion-icon name="warning"></ion-icon>
+            <p>DOCUMENTO LEGALMENTE VINCULANTE - LEA CUIDADOSAMENTE</p>
+          </div>
+
+          <h3>RECONOCIMIENTO DE RESPONSABILIDAD</h3>
+          <p>
+            Yo, como profesional de enfermeria registrado en la plataforma Histora Care,
+            por la presente declaro y reconozco expresamente que:
+          </p>
+
+          <h4>1. RESPONSABILIDAD PROFESIONAL</h4>
+          <ul>
+            <li>
+              Soy el/la unico/a responsable de la calidad, seguridad y resultados de todos
+              los servicios de enfermeria que presto a traves de esta plataforma.
+            </li>
+            <li>
+              Cuento con titulo profesional valido y licencia activa del Colegio de Enfermeros
+              del Peru (CEP) que me habilita para ejercer la profesion.
+            </li>
+            <li>
+              Me comprometo a mantener mis credenciales profesionales vigentes durante todo
+              el tiempo que use la plataforma.
+            </li>
+          </ul>
+
+          <h4>2. EXENCION DE HISTORA CARE</h4>
+          <ul>
+            <li>
+              Histora Care S.A.C. actua UNICAMENTE como intermediario tecnologico que facilita
+              la conexion entre profesionales y pacientes.
+            </li>
+            <li>
+              Histora Care NO es responsable de ningun evento adverso, complicacion, lesion,
+              dano o consecuencia de cualquier naturaleza que pueda surgir de los servicios
+              que yo preste.
+            </li>
+            <li>
+              Libero y exonero expresamente a Histora Care de cualquier responsabilidad civil,
+              penal o administrativa derivada de mi practica profesional.
+            </li>
+          </ul>
+
+          <h4>3. OBLIGACIONES DEL PROFESIONAL</h4>
+          <ul>
+            <li>Mantener un seguro de responsabilidad civil profesional vigente.</li>
+            <li>Cumplir con todos los protocolos medicos y eticos establecidos.</li>
+            <li>Reportar cualquier evento adverso a las autoridades correspondientes.</li>
+            <li>Mantener la confidencialidad de la informacion del paciente.</li>
+            <li>No prestar servicios que excedan mi competencia profesional.</li>
+          </ul>
+
+          <h4>4. INDEMNIZACION</h4>
+          <p>
+            Me comprometo a indemnizar y mantener indemne a Histora Care de cualquier
+            reclamacion, demanda, dano o gasto (incluyendo honorarios de abogados) que
+            surja de mi practica profesional o del incumplimiento de este acuerdo.
+          </p>
+
+          <h4>5. DECLARACION FINAL</h4>
+          <p>
+            Al aceptar estos terminos, declaro bajo juramento que he leido, comprendido
+            y acepto todas las disposiciones aqui contenidas, y que tengo plena capacidad
+            legal para obligarme conforme a este documento.
+          </p>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

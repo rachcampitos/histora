@@ -1,8 +1,8 @@
-// Variables
+// Variables - Warm Healthcare Palette
 $primary-color: #667eea;
 $nurse-color: #10b981;
-$text-dark: #2d3748;
-$text-muted: #718096;
+$text-dark: #1a1a1a;        // Negro cálido
+$text-muted: #a1a1aa;       // Gris cálido
 
 .map-content {
   --background: transparent;
@@ -55,11 +55,17 @@ $text-muted: #718096;
 .map-controls {
   position: absolute;
   right: 12px;
-  bottom: calc(var(--ion-safe-area-bottom, 0) + 200px);
-  z-index: 1000;
+  bottom: calc(var(--ion-safe-area-bottom, 0) + 230px); // Default position above bottom-list
+  z-index: 1001; // Above nurse-card z-index
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: bottom 0.3s ease;
+
+  // When nurse card is open, move controls higher
+  &.card-open {
+    bottom: calc(var(--ion-safe-area-bottom, 0) + 380px); // Move above the nurse card
+  }
 
   .control-btn {
     --background: white;
@@ -117,7 +123,7 @@ $text-muted: #718096;
 // Selected Nurse Card
 .nurse-card {
   position: absolute;
-  bottom: calc(var(--ion-safe-area-bottom, 0) + 12px);
+  bottom: calc(var(--ion-safe-area-bottom, 0) + 70px); // Account for tab bar height
   left: 12px;
   right: 12px;
   z-index: 1000;
@@ -125,6 +131,8 @@ $text-muted: #718096;
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: calc(100vh - 200px); // Prevent card from being too tall
+  overflow-y: auto;
 
   .close-btn {
     position: absolute;
@@ -146,12 +154,39 @@ $text-muted: #718096;
 
     .nurse-info {
       flex: 1;
+      min-width: 0; // Prevent overflow
+
+      .info-row {
+        display: flex;
+        align-items: center;
+        gap: 8px; // Space between name and badge
+        margin-bottom: 6px;
+        flex-wrap: wrap; // Allow wrapping on small screens
+      }
 
       h3 {
-        margin: 0 0 4px;
+        margin: 0;
         font-size: 17px;
         font-weight: 600;
         color: $text-dark;
+        flex-shrink: 1;
+        min-width: 0; // Allow text truncation if needed
+      }
+
+      .availability-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 10px;
+        border-radius: 12px;
+        background: #fee2e2;
+        color: #dc2626; // Better contrast (WCAG AA)
+        white-space: nowrap;
+        flex-shrink: 0;
+
+        &.available {
+          background: #d1fae5;
+          color: #047857; // Better contrast (WCAG AA)
+        }
       }
 
       .nurse-meta {
@@ -171,30 +206,18 @@ $text-muted: #718096;
         }
       }
     }
-
-    .availability-badge {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 12px;
-      background: #fee2e2;
-      color: #ef4444;
-
-      &.available {
-        background: #d1fae5;
-        color: #059669;
-      }
-    }
   }
 
   .nurse-specialties {
     margin-top: 12px;
     display: flex;
-    gap: 6px;
+    gap: 8px; // Increased from 6px
     flex-wrap: wrap;
 
     ion-chip {
-      height: 26px;
+      height: 28px; // Slightly larger for better touch target
       font-size: 12px;
+      margin: 0; // Remove default chip margin
     }
   }
 
@@ -252,7 +275,7 @@ $text-muted: #718096;
 // Bottom List
 .bottom-list {
   position: absolute;
-  bottom: calc(var(--ion-safe-area-bottom, 0) + 12px);
+  bottom: calc(var(--ion-safe-area-bottom, 0) + 70px); // Account for tab bar
   left: 12px;
   right: 12px;
   z-index: 1000;
@@ -311,99 +334,401 @@ $text-muted: #718096;
   }
 }
 
-// Custom Leaflet Markers
-:global {
+// Custom Mapbox Markers
+:host ::ng-deep {
+  // User location marker
   .user-marker {
-    background: transparent;
-    border: none;
+    position: relative;
+    width: 40px;
+    height: 40px;
 
-    .user-marker-inner {
+    .user-marker-pulse {
+      position: absolute;
       width: 40px;
       height: 40px;
-      background: linear-gradient(135deg, $primary-color 0%, #764ba2 100%);
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
-
-      ion-icon {
-        transform: rotate(45deg);
-        font-size: 20px;
-        color: white;
-      }
+      background: rgba(102, 126, 234, 0.3);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
     }
-  }
 
-  .nurse-marker {
-    background: transparent;
-    border: none;
-
-    .nurse-marker-inner {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, $nurse-color 0%, #059669 100%);
+    .user-marker-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, $primary-color 0%, #764ba2 100%);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
-      border: 2px solid white;
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+      border: 3px solid white;
 
       ion-icon {
-        font-size: 18px;
+        font-size: 16px;
         color: white;
       }
     }
   }
 
-  .leaflet-popup-content-wrapper {
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  // Nurse marker with avatar
+  .nurse-map-marker {
+    cursor: pointer;
+
+    .nurse-marker-avatar {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid #9ca3af;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      background: white;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      // Availability indicator dot - positioned outside the circle
+      .availability-dot {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 14px;
+        height: 14px;
+        background: $nurse-color;
+        border: 2px solid white;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+
+      &.available {
+        border-color: $nurse-color;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+      }
+
+      &:hover {
+        transform: scale(1.15);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      }
+    }
   }
 
-  .leaflet-popup-content {
-    margin: 10px 12px;
+  // Legacy icon marker (fallback)
+  .nurse-marker-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    ion-icon {
+      font-size: 18px;
+      color: white;
+    }
+
+    &.available {
+      background: linear-gradient(135deg, $nurse-color 0%, #059669 100%);
+      box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  // Mapbox popup customization
+  .mapboxgl-popup-content {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    padding: 10px 12px;
     font-size: 13px;
     line-height: 1.4;
   }
+
+  .mapboxgl-popup-close-button {
+    font-size: 18px;
+    padding: 4px 8px;
+    color: $text-muted;
+
+    &:hover {
+      background: transparent;
+      color: $text-dark;
+    }
+  }
+
+  .nurse-popup {
+    strong {
+      color: $text-dark;
+      font-size: 14px;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: $text-muted;
+      font-size: 12px;
+    }
+  }
+
+  // Hide Mapbox logo
+  .mapboxgl-ctrl-logo {
+    display: none !important;
+  }
+
+  .mapboxgl-ctrl-attrib {
+    font-size: 10px;
+    opacity: 0.7;
+  }
 }
 
-// Dark mode
-@media (prefers-color-scheme: dark) {
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+// Dark mode mixin for reusability
+@mixin map-dark-mode {
   .search-overlay .search-bar {
-    background: #2d3748;
+    background: #1e293b;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 
     ion-item {
-      --background: #1a202c;
+      --background: #0f172a;
+      --color: #f1f5f9;
+
+      ion-select {
+        color: #f1f5f9;
+      }
     }
   }
 
   .map-controls .control-btn {
-    --background: #2d3748;
-    --color: white;
+    --background: #1e293b;
+    --color: #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .results-badge {
+    ion-badge {
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
   }
 
   .loading-overlay {
-    background: #2d3748;
+    background: #1e293b;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 
     p {
-      color: #a0aec0;
+      color: #cbd5e1;
     }
   }
 
-  .nurse-card,
+  // Nurse card - Full specificity overrides
+  .nurse-card {
+    background: #1e293b;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+    .close-btn {
+      --color: #cbd5e1;
+    }
+
+    .nurse-header {
+      .nurse-info {
+        .info-row {
+          h3 {
+            color: #f1f5f9 !important;
+          }
+        }
+
+        h3 {
+          color: #f1f5f9 !important;
+        }
+
+        .nurse-meta {
+          color: #94a3b8;
+
+          span {
+            color: #94a3b8;
+          }
+        }
+      }
+    }
+
+    .nurse-specialties {
+      ion-chip {
+        --background: #334155;
+        --color: #e2e8f0;
+      }
+    }
+
+    .nurse-services {
+      h4 {
+        color: #94a3b8;
+      }
+
+      .service-list {
+        .service-item {
+          .service-name {
+            color: #f1f5f9;
+          }
+
+          .service-price {
+            color: #10b981;
+          }
+        }
+      }
+    }
+
+    .nurse-actions {
+      ion-button[fill="outline"] {
+        --border-color: #475569;
+        --color: #e2e8f0;
+
+        &:hover {
+          --background: #334155;
+        }
+      }
+    }
+
+    // Availability badge in dark mode
+    .availability-badge {
+      &.available {
+        background: #064e3b;
+        color: #6ee7b7;
+      }
+
+      &:not(.available) {
+        background: #450a0a;
+        color: #fca5a5;
+      }
+    }
+  }
+
+  // Bottom list - Full specificity overrides
   .bottom-list {
-    background: #2d3748;
+    background: #1e293b;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
-    h3, span, h4 {
-      color: white;
+    .list-header {
+      span {
+        color: #f1f5f9;
+      }
+
+      ion-button {
+        --color: var(--ion-color-primary-tint);
+      }
     }
 
-    .nurse-meta,
-    .distance {
-      color: #a0aec0;
+    .nurse-thumbnails {
+      .thumbnail {
+        ion-avatar {
+          border-color: #10b981;
+        }
+
+        .distance {
+          color: #94a3b8;
+        }
+      }
     }
   }
+
+  // Mapbox popup dark mode
+  :host ::ng-deep {
+    .mapboxgl-popup-content {
+      background: #1e293b;
+      color: #f1f5f9;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .mapboxgl-popup-close-button {
+      color: #cbd5e1;
+
+      &:hover {
+        color: #f1f5f9;
+      }
+    }
+
+    .nurse-popup {
+      strong {
+        color: #f1f5f9;
+      }
+
+      p {
+        color: #94a3b8;
+      }
+    }
+
+    // Dark mode for nurse markers with avatar
+    .nurse-map-marker {
+      .nurse-marker-avatar {
+        border-color: #64748b;
+        background: #1e293b;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+
+        .availability-dot {
+          border-color: #1e293b;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        &.available {
+          border-color: #10b981;
+          box-shadow: 0 3px 10px rgba(16, 185, 129, 0.5);
+        }
+      }
+
+      .nurse-marker-icon {
+        border-color: #1e293b;
+
+        &.available {
+          box-shadow: 0 3px 8px rgba(16, 185, 129, 0.6);
+        }
+
+        &:not(.available) {
+          background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+      }
+    }
+
+    // User marker in dark mode
+    .user-marker {
+      .user-marker-pulse {
+        background: rgba(102, 126, 234, 0.4);
+      }
+
+      .user-marker-icon {
+        border-color: #1e293b;
+      }
+    }
+
+    // Mapbox controls
+    .mapboxgl-ctrl-attrib {
+      background-color: rgba(30, 41, 59, 0.9);
+      color: #94a3b8;
+    }
+  }
+}
+
+// Apply dark mode via class (controlled by ThemeService)
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  @include map-dark-mode;
 }

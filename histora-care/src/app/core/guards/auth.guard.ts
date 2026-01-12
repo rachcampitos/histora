@@ -33,10 +33,12 @@ export const noAuthGuard: CanActivateFn = async () => {
   }
 
   // Redirect based on role
-  if (authService.isNurse()) {
+  if (authService.isAdmin()) {
+    router.navigate(['/admin/verifications']);
+  } else if (authService.isNurse()) {
     router.navigate(['/nurse/dashboard']);
   } else {
-    router.navigate(['/patient/map']);
+    router.navigate(['/patient/tabs/home']);
   }
   return false;
 };
@@ -53,7 +55,7 @@ export const nurseGuard: CanActivateFn = async () => {
     return true;
   }
 
-  router.navigate(['/patient/map']);
+  router.navigate(['/patient/tabs/home']);
   return false;
 };
 
@@ -70,5 +72,26 @@ export const patientGuard: CanActivateFn = async () => {
   }
 
   router.navigate(['/nurse/dashboard']);
+  return false;
+};
+
+export const adminGuard: CanActivateFn = async () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  while (authService.loading()) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+
+  if (authService.isAdmin()) {
+    return true;
+  }
+
+  // Redirect based on role
+  if (authService.isNurse()) {
+    router.navigate(['/nurse/dashboard']);
+  } else {
+    router.navigate(['/patient/tabs/home']);
+  }
   return false;
 };

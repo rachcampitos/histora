@@ -1,13 +1,202 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>history</ion-title>
+    <ion-title>Historial</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">history</ion-title>
+      <ion-title size="large">Historial</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      refreshingText="Actualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Filter Tabs -->
+  <div class="tabs-container">
+    <ion-segment [value]="selectedTab()" (ionChange)="onTabChange($any($event.detail.value))">
+      @for (tab of tabs; track tab.value) {
+        <ion-segment-button [value]="tab.value">
+          <ion-label>{{ tab.label }}</ion-label>
+          @if (tab.value === 'active' && activeCount() > 0) {
+            <ion-badge color="primary">{{ activeCount() }}</ion-badge>
+          }
+        </ion-segment-button>
+      }
+    </ion-segment>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading() && !isRefreshing()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando tus servicios...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+    <div class="error-container">
+      <ion-icon name="cloud-offline-outline" color="danger"></ion-icon>
+      <h3>Error al cargar</h3>
+      <p>{{ error() }}</p>
+      <ion-button fill="outline" (click)="retry()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Reintentar
+      </ion-button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading() && !error() && filteredRequests().length === 0) {
+    <div class="empty-container">
+      @if (selectedTab() === 'all') {
+        <div class="empty-icon">
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+        <h3>Sin servicios</h3>
+        <p>Aun no has solicitado ningun servicio de enfermeria.</p>
+        <ion-button (click)="goToSearch()">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          Buscar Enfermera
+        </ion-button>
+      } @else if (selectedTab() === 'active') {
+        <div class="empty-icon active">
+          <ion-icon name="pulse-outline"></ion-icon>
+        </div>
+        <h3>Sin servicios activos</h3>
+        <p>No tienes servicios en progreso en este momento.</p>
+      } @else if (selectedTab() === 'completed') {
+        <div class="empty-icon completed">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+        </div>
+        <h3>Sin servicios completados</h3>
+        <p>Los servicios finalizados apareceran aqui.</p>
+      } @else {
+        <div class="empty-icon cancelled">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </div>
+        <h3>Sin cancelaciones</h3>
+        <p>No tienes servicios cancelados.</p>
+      }
+    </div>
+  }
+
+  <!-- Service List -->
+  @if (!isLoading() && !error() && filteredRequests().length > 0) {
+    <ion-list class="service-list">
+      @for (request of filteredRequests(); track request._id) {
+        <ion-card class="service-card" button (click)="viewRequest(request)">
+          <ion-card-content>
+            <!-- Header: Nurse info and status -->
+            <div class="card-header">
+              <div class="nurse-info">
+                @if (request.nurse?.avatar) {
+                  <ion-avatar class="nurse-avatar">
+                    <img [src]="request.nurse?.avatar" [alt]="getNurseName(request)" />
+                  </ion-avatar>
+                } @else {
+                  <div class="nurse-avatar-placeholder">
+                    <span>{{ getNurseInitials(request) }}</span>
+                  </div>
+                }
+                <div class="nurse-details">
+                  <span class="nurse-name">{{ getNurseName(request) }}</span>
+                  @if (request.nurse?.cepNumber) {
+                    <span class="nurse-cep">CEP: {{ request.nurse?.cepNumber }}</span>
+                  }
+                </div>
+              </div>
+              <ion-badge [color]="getStatusColor(request.status)" class="status-badge">
+                <ion-icon [name]="getStatusIcon(request.status)"></ion-icon>
+                {{ getStatusLabel(request.status) }}
+              </ion-badge>
+            </div>
+
+            <!-- Service info -->
+            <div class="service-info">
+              <div class="service-name">
+                <ion-icon name="medical-outline"></ion-icon>
+                <span>{{ request.service.name }}</span>
+              </div>
+              <div class="service-category">{{ request.service.category }}</div>
+            </div>
+
+            <!-- Date and location -->
+            <div class="service-details">
+              <div class="detail-item">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>{{ formatDate(request.requestedDate) }}</span>
+              </div>
+              <div class="detail-item">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>{{ formatTime(request.requestedDate) }}</span>
+              </div>
+            </div>
+
+            <div class="service-location">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ request.location.district }}, {{ request.location.city }}</span>
+            </div>
+
+            <!-- Footer: Price and actions -->
+            <div class="card-footer">
+              <div class="service-price">
+                {{ formatPrice(request.service.price, request.service.currency) }}
+              </div>
+
+              <div class="card-actions">
+                <!-- Rating display for rated services -->
+                @if (request.rating) {
+                  <div class="rating-display">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <ion-icon
+                        [name]="star <= request.rating! ? 'star' : 'star-outline'"
+                        [class.filled]="star <= request.rating!">
+                      </ion-icon>
+                    }
+                  </div>
+                }
+
+                <!-- Rate button for completed services without rating -->
+                @if (canRate(request)) {
+                  <ion-button
+                    fill="outline"
+                    size="small"
+                    color="warning"
+                    (click)="rateService(request, $event)">
+                    <ion-icon name="star-outline" slot="start"></ion-icon>
+                    Dejar resena
+                  </ion-button>
+                }
+
+                <!-- Track button for active services -->
+                @if (isActive(request)) {
+                  <ion-button fill="solid" size="small" color="primary">
+                    <ion-icon name="navigate-outline" slot="start"></ion-icon>
+                    Seguir
+                  </ion-button>
+                }
+
+                <!-- View details arrow -->
+                <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+    </ion-list>
+  }
+
+  <!-- Bottom spacer for tab bar -->
+  <div class="bottom-spacer"></div>
 </ion-content>

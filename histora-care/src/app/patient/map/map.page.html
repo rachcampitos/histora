@@ -32,11 +32,11 @@
   </div>
 
   <!-- Map Controls -->
-  <div class="map-controls">
-    <ion-button fill="clear" class="control-btn" (click)="centerOnUser()">
+  <div class="map-controls" [class.card-open]="selectedNurse" role="group" aria-label="Controles del mapa">
+    <ion-button fill="clear" class="control-btn" (click)="centerOnUser()" aria-label="Centrar mapa en mi ubicación">
       <ion-icon name="locate" slot="icon-only"></ion-icon>
     </ion-button>
-    <ion-button fill="clear" class="control-btn" (click)="refreshLocation()">
+    <ion-button fill="clear" class="control-btn" (click)="refreshLocation()" aria-label="Actualizar ubicación">
       <ion-icon name="refresh" slot="icon-only"></ion-icon>
     </ion-button>
   </div>
@@ -55,17 +55,25 @@
   </div>
 
   <!-- Selected Nurse Card -->
-  <div class="nurse-card" *ngIf="selectedNurse" [@slideUp]>
-    <ion-button fill="clear" class="close-btn" (click)="closeNurseCard()">
+  <div class="nurse-card" *ngIf="selectedNurse" [@slideUp] role="dialog" aria-labelledby="nurse-card-title">
+    <ion-button fill="clear" class="close-btn" (click)="closeNurseCard()" aria-label="Cerrar tarjeta de enfermera">
       <ion-icon name="close" slot="icon-only"></ion-icon>
     </ion-button>
 
     <div class="nurse-header">
       <ion-avatar class="nurse-avatar">
-        <img [src]="selectedNurse.nurse.user?.avatar || 'assets/img/default-avatar.png'" alt="Avatar">
+        <img [src]="selectedNurse.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + selectedNurse.nurse.user?.firstName">
       </ion-avatar>
       <div class="nurse-info">
-        <h3>{{ selectedNurse.nurse.user?.firstName }} {{ selectedNurse.nurse.user?.lastName }}</h3>
+        <div class="info-row">
+          <h3 id="nurse-card-title">{{ selectedNurse.nurse.user?.firstName }} {{ selectedNurse.nurse.user?.lastName }}</h3>
+          <div class="availability-badge"
+               [class.available]="selectedNurse.nurse.isAvailable"
+               role="status"
+               [attr.aria-label]="'Estado: ' + (selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible')">
+            {{ selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
+          </div>
+        </div>
         <div class="nurse-meta">
           <span class="distance">
             <ion-icon name="location-outline"></ion-icon>
@@ -78,13 +86,10 @@
           </span>
         </div>
       </div>
-      <div class="availability-badge" [class.available]="selectedNurse.nurse.isAvailable">
-        {{ selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
-      </div>
     </div>
 
     <div class="nurse-specialties" *ngIf="selectedNurse.nurse.specialties?.length">
-      <ion-chip *ngFor="let specialty of selectedNurse.nurse.specialties.slice(0, 3)" color="light">
+      <ion-chip *ngFor="let specialty of selectedNurse.nurse.specialties.slice(0, 3)">
         {{ specialty }}
       </ion-chip>
     </div>
@@ -118,20 +123,24 @@
   <div class="bottom-list" *ngIf="nearbyNurses.length > 0 && !selectedNurse">
     <div class="list-header">
       <span>{{ nearbyNurses.length }} enfermeras cerca de ti</span>
-      <ion-button fill="clear" size="small" routerLink="/patient/search">
+      <ion-button fill="clear" size="small" (click)="viewNurseList()">
         Ver lista
         <ion-icon name="chevron-forward" slot="end"></ion-icon>
       </ion-button>
     </div>
-    <div class="nurse-thumbnails">
+    <div class="nurse-thumbnails" role="list" aria-label="Enfermeras cercanas">
       <div
         class="thumbnail"
         *ngFor="let result of nearbyNurses.slice(0, 5)"
-        (click)="selectNurse(result)">
+        (click)="selectNurse(result)"
+        role="listitem"
+        tabindex="0"
+        (keydown.enter)="selectNurse(result)"
+        [attr.aria-label]="(result.nurse.user?.firstName || 'Enfermera') + ' a ' + result.distance.toFixed(1) + ' km'">
         <ion-avatar>
-          <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'" alt="Avatar">
+          <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + (result.nurse.user?.firstName || 'enfermera')">
         </ion-avatar>
-        <span class="distance">{{ result.distance.toFixed(1) }} km</span>
+        <span class="distance" aria-hidden="true">{{ result.distance.toFixed(1) }} km</span>
       </div>
     </div>
   </div>

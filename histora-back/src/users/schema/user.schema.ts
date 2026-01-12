@@ -84,6 +84,23 @@ export class User {
 
   @Prop()
   avatarPublicId?: string;
+
+  // Terms and conditions acceptance
+  @Prop({ default: false })
+  termsAccepted: boolean;
+
+  @Prop()
+  termsAcceptedAt?: Date;
+
+  @Prop()
+  termsVersion?: string; // Track which version of terms was accepted
+
+  // Professional disclaimer acceptance (for nurses/doctors)
+  @Prop({ default: false })
+  professionalDisclaimerAccepted: boolean;
+
+  @Prop()
+  professionalDisclaimerAcceptedAt?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -12,6 +12,6 @@ import { DoctorsModule } from '../doctors/doctors.module';
   ],
   controllers: [UploadsController],
   providers: [UploadsService, CloudinaryProvider],
-  exports: [UploadsService],
+  exports: [UploadsService, CloudinaryProvider],
 })
 export class UploadsModule {}

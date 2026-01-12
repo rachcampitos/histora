@@ -2,8 +2,8 @@
 $primary-color: #667eea;
 $primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 $error-color: #f44336;
-$text-dark: #2d3748;
-$text-muted: #718096;
+$text-dark: #1a1a1a;
+$text-muted: #a1a1aa;
 $bg-light: #f7fafc;
 $border-radius: 12px;
 
@@ -195,13 +195,47 @@ $border-radius: 12px;
     content: '';
     flex: 1;
     height: 1px;
-    background: #e2e8f0;
+    background: #e7e5e4;
   }
 
   span {
     padding: 0 16px;
     color: $text-muted;
     font-size: 13px;
+  }
+}
+
+// Social Login
+.social-login {
+  margin-bottom: 24px;
+
+  .google-btn {
+    --border-color: #e7e5e4;
+    --color: #{$text-dark};
+    --border-radius: #{$border-radius};
+    --border-width: 2px;
+    --background: white;
+    --background-hover: #f7fafc;
+    --background-activated: #f7fafc;
+    height: 52px;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: none;
+    margin: 0;
+
+    ion-icon {
+      font-size: 20px;
+      margin-right: 8px;
+      color: #4285F4;
+    }
+
+    ion-spinner {
+      margin-right: 8px;
+    }
+
+    &[disabled] {
+      opacity: 0.7;
+    }
   }
 }
 
@@ -245,7 +279,8 @@ $border-radius: 12px;
 }
 
 // Dark mode support
-@media (prefers-color-scheme: dark) {
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
   .login-content {
     --background: #1a202c;
   }
@@ -257,7 +292,7 @@ $border-radius: 12px;
   }
 
   .form-section {
-    background: #2d3748;
+    background: #1a1a1a;
 
     .form-title {
       color: white;
@@ -268,7 +303,7 @@ $border-radius: 12px;
     --background: #1a202c;
 
     &:focus-within {
-      --background: #2d3748;
+      --background: #1a1a1a;
     }
 
     &.input-error {
@@ -277,7 +312,7 @@ $border-radius: 12px;
 
     ion-input {
       --color: white;
-      --placeholder-color: #718096;
+      --placeholder-color: #a1a1aa;
     }
 
     .input-icon {
@@ -305,6 +340,16 @@ $border-radius: 12px;
   .register-section {
     p {
       color: #a0aec0;
+    }
+  }
+
+  .social-login {
+    .google-btn {
+      --border-color: #4a5568;
+      --color: white;
+      --background: #1a1a1a;
+      --background-hover: #4a5568;
+      --background-activated: #4a5568;
     }
   }
 }

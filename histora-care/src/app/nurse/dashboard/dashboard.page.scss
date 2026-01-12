@@ -2,6 +2,82 @@
   --background: #f5f7fa;
 }
 
+// Verification Banner
+.verification-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .banner-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 24px;
+      color: white;
+    }
+
+    &.pending {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    &.under_review {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    &.rejected {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+  }
+
+  .banner-content {
+    flex: 1;
+    min-width: 0;
+
+    h4 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: white;
+    }
+
+    p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  .banner-arrow {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    flex-shrink: 0;
+  }
+
+  // Background based on status
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+
+  &:has(.banner-icon.under_review) {
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  &:has(.banner-icon.rejected) {
+    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+  }
+}
+
 // Welcome Section
 .welcome-section {
   display: flex;
@@ -78,6 +154,58 @@
   }
 }
 
+// Broadcasting Indicator
+.broadcasting-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+
+  .pulse-ring {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    animation: pulse-broadcast 2s infinite;
+  }
+
+  ion-icon {
+    font-size: 20px;
+    animation: navigate-bounce 1s infinite;
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+@keyframes pulse-broadcast {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes navigate-bounce {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
 // Quick Actions
 .quick-actions {
   padding: 0 16px 16px;
@@ -115,6 +243,125 @@
       --padding-end: 8px;
       font-size: 14px;
     }
+  }
+}
+
+// Active Request Cards
+.active-request-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.active-request-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #667eea;
+
+  .request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+
+    .request-info {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      p {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 4px 0;
+        font-size: 13px;
+        color: #6c757d;
+
+        ion-icon {
+          font-size: 16px;
+          color: #94a3b8;
+        }
+
+        &.address {
+          color: #64748b;
+        }
+
+        &.time {
+          color: #667eea;
+        }
+      }
+    }
+
+    ion-badge {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+  }
+
+  .patient-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 12px;
+
+    ion-avatar {
+      width: 44px;
+      height: 44px;
+      border: 2px solid #e2e8f0;
+    }
+
+    .patient-details {
+      flex: 1;
+
+      .patient-name {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .patient-phone {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        color: #667eea;
+        text-decoration: none;
+        margin-top: 2px;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .request-actions {
+    margin-bottom: 8px;
+
+    ion-button {
+      --border-radius: 10px;
+      font-weight: 600;
+      text-transform: none;
+    }
+  }
+
+  > ion-button[fill="clear"] {
+    display: block;
+    margin: 0 auto;
+    --color: #667eea;
+    font-size: 13px;
   }
 }
 

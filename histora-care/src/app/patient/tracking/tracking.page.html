@@ -1,13 +1,209 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>tracking</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="tracking-content" [fullscreen]="true">
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando información...</p>
+  </div>
+  }
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">tracking</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Error State -->
+  @if (!isLoading() && loadError()) {
+  <div class="error-container">
+    <ion-icon name="alert-circle-outline" color="danger" class="error-icon"></ion-icon>
+    <h3>Error</h3>
+    <p>{{ loadError() }}</p>
+    <ion-button expand="block" (click)="retryLoadRequest()">
+      <ion-icon name="refresh-outline" slot="start"></ion-icon>
+      Reintentar
+    </ion-button>
+    <ion-button expand="block" fill="outline" routerLink="/patient/history">
+      <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+      Volver al historial
+    </ion-button>
+  </div>
+  }
+
+  @if (!isLoading() && !loadError()) {
+  <!-- Map Container -->
+  <div id="tracking-map" class="map-container" (load)="onMapContainerReady()"></div>
+
+  <!-- Map Controls -->
+  <div class="map-controls" role="navigation" aria-label="Navegación">
+    <ion-button fill="clear" class="control-btn" (click)="goBack()" aria-label="Volver atrás">
+      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="map-controls-right" role="group" aria-label="Controles del mapa">
+    <ion-button fill="clear" class="control-btn" (click)="centerOnPatient()" aria-label="Centrar en mi ubicación">
+      <ion-icon name="locate" slot="icon-only"></ion-icon>
+    </ion-button>
+    <ion-button fill="clear" class="control-btn" (click)="showFullRoute()" aria-label="Ver ruta completa">
+      <ion-icon name="expand" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+
+  <!-- ETA Badge -->
+  @if (eta()) {
+  <div class="eta-badge">
+    <ion-icon name="time-outline"></ion-icon>
+    <span class="eta-time">{{ formattedEta() }}</span>
+    <span class="eta-label">llegada</span>
+  </div>
+  }
+
+  <!-- Bottom Sheet -->
+  <div class="bottom-sheet">
+    <!-- Status Progress -->
+    <div class="status-progress">
+      <div class="progress-track">
+        @for (step of statusSteps; track step.key; let i = $index) {
+        <div class="progress-step"
+             [class.completed]="isStepCompleted(step.key)"
+             [class.active]="isStepActive(step.key)">
+          <div class="step-dot">
+            @if (isStepCompleted(step.key)) {
+            <ion-icon name="checkmark"></ion-icon>
+            } @else {
+            <ion-icon [name]="step.icon"></ion-icon>
+            }
+          </div>
+          <span class="step-label">{{ step.label }}</span>
+        </div>
+        @if (i < statusSteps.length - 1) {
+        <div class="progress-line"
+             [class.completed]="isStepCompleted(statusSteps[i + 1].key)"></div>
+        }
+        }
+      </div>
+    </div>
+
+    <!-- Nurse Info Card -->
+    <div class="nurse-card">
+      <div class="nurse-info">
+        <ion-avatar class="nurse-avatar">
+          @if (nurse()?.avatar) {
+          <img [src]="nurse()?.avatar" alt="Enfermera">
+          } @else {
+          <ion-icon name="person-circle" class="avatar-placeholder"></ion-icon>
+          }
+        </ion-avatar>
+        <div class="nurse-details">
+          <h3>{{ nurse()?.firstName }} {{ nurse()?.lastName }}</h3>
+          <div class="nurse-meta">
+            <span class="rating">
+              <ion-icon name="star" color="warning"></ion-icon>
+              {{ nurse()?.rating?.toFixed(1) }}
+            </span>
+            <span class="reviews">({{ nurse()?.totalReviews }} reseñas)</span>
+          </div>
+        </div>
+        <div class="nurse-actions" role="group" aria-label="Acciones de contacto">
+          <ion-button fill="clear" class="action-btn" (click)="callNurse()" aria-label="Llamar a la enfermera">
+            <ion-icon name="call" slot="icon-only" color="success"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="action-btn" (click)="openChat()" aria-label="Abrir chat con la enfermera">
+            <ion-icon name="chatbubble" slot="icon-only" color="primary"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Service Info -->
+      <div class="service-info">
+        <div class="service-name">
+          <ion-icon name="medkit-outline" color="primary"></ion-icon>
+          <span>{{ request()?.service?.name }}</span>
+        </div>
+        <div class="service-price">
+          S/. {{ request()?.service?.price }}
+        </div>
+      </div>
+
+      <!-- Route Info -->
+      <div class="route-info">
+        <div class="info-item">
+          <ion-icon name="navigate-outline"></ion-icon>
+          <div class="info-content">
+            <span class="info-value">{{ formattedDistance() }}</span>
+            <span class="info-label">distancia</span>
+          </div>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+          <ion-icon name="time-outline"></ion-icon>
+          <div class="info-content">
+            <span class="info-value">{{ formattedDuration() }}</span>
+            <span class="info-label">tiempo est.</span>
+          </div>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+          <ion-icon name="location-outline"></ion-icon>
+          <div class="info-content">
+            <span class="info-value address">{{ request()?.location?.district }}</span>
+            <span class="info-label">destino</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Message -->
+      <div class="status-message" [ngClass]="'status-' + currentStatus()" role="status" aria-live="polite">
+        @switch (currentStatus()) {
+        @case ('accepted') {
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span>Servicio aceptado, esperando a la enfermera</span>
+        }
+        @case ('on_the_way') {
+        <ion-icon name="navigate"></ion-icon>
+        <span>La enfermera está en camino</span>
+        }
+        @case ('arrived') {
+        <ion-icon name="location"></ion-icon>
+        <span>¡La enfermera ha llegado!</span>
+        }
+        @case ('in_progress') {
+        <ion-icon name="medical"></ion-icon>
+        <span>Servicio en progreso</span>
+        }
+        @case ('completed') {
+        <ion-icon name="checkmark-done"></ion-icon>
+        <span>¡Servicio completado!</span>
+        }
+        }
+      </div>
+
+      <!-- Cancel Button (only if not started) -->
+      @if (currentStatus() === 'accepted' || currentStatus() === 'on_the_way') {
+      <div class="cancel-section">
+        <ion-button fill="clear" color="danger" expand="block" (click)="cancelRequest()">
+          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+          Cancelar servicio
+        </ion-button>
+      </div>
+      }
+
+      <!-- Completed Actions -->
+      @if (currentStatus() === 'completed') {
+      <div class="completed-actions">
+        @if (shouldShowReview()) {
+        <ion-button expand="block" color="primary" (click)="openReviewModal()">
+          <ion-icon name="star-outline" slot="start"></ion-icon>
+          Calificar servicio
+        </ion-button>
+        } @else if (hasReviewed()) {
+        <div class="review-submitted">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Gracias por tu calificación</span>
+        </div>
+        }
+        <ion-button expand="block" fill="outline" routerLink="/patient/history">
+          <ion-icon name="list-outline" slot="start"></ion-icon>
+          Ver historial
+        </ion-button>
+      </div>
+      }
+    </div>
+  </div>
+  }
 </ion-content>

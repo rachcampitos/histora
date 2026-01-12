@@ -155,14 +155,14 @@
           <span class="date-day">{{ formatServiceDate(service.completedAt || service.updatedAt) }}</span>
         </div>
         <ion-label>
-          <h3>{{ service.service?.name || getCategoryLabel(service.service?.category || 'other') }}</h3>
+          <h3>{{ service.service.name || getCategoryLabel(service.service.category || 'other') }}</h3>
           <p class="patient-name">
             <ion-icon name="person-outline"></ion-icon>
             {{ getPatientName(service) }}
           </p>
         </ion-label>
         <div class="service-amount" slot="end">
-          <span class="amount">{{ formatCurrency(service.service?.price || 0) }}</span>
+          <span class="amount">{{ formatCurrency(service.service.price || 0) }}</span>
           <ion-badge color="success">Completado</ion-badge>
         </div>
       </ion-item>

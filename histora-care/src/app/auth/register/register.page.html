@@ -183,6 +183,21 @@
           <span>Debes aceptar los términos y condiciones</span>
         </div>
 
+        <!-- Professional Disclaimer (Nurses only) -->
+        <ng-container *ngIf="selectedUserType === 'nurse'">
+          <div class="terms-section professional-disclaimer">
+            <ion-checkbox formControlName="acceptProfessionalDisclaimer" labelPlacement="end">
+              <span class="terms-text">
+                Declaro que soy profesional de enfermería colegiado y que mi número CEP está vigente.
+                Entiendo que mis credenciales serán verificadas antes de poder ofrecer servicios.
+              </span>
+            </ion-checkbox>
+          </div>
+          <div class="error-message" *ngIf="acceptProfessionalDisclaimer?.invalid && acceptProfessionalDisclaimer?.touched">
+            <span>Debes aceptar la declaración profesional</span>
+          </div>
+        </ng-container>
+
         <!-- Register Button -->
         <ion-button
           expand="block"
