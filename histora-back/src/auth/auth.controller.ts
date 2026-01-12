@@ -132,14 +132,24 @@ export class AuthController {
     @Req() req: Request & { user: GoogleUser },
     @Res() res: Response,
   ): Promise<void> {
+    // Allowed frontend origins for security
+    const allowedOrigins = [
+      'https://app.historahealth.com',
+      'https://care.historahealth.com',
+      'http://localhost:4200',
+      'http://localhost:8100',
+    ];
+
     try {
-      // Parse state to determine platform (mobile or web)
+      // Parse state to determine platform and redirectUri
       let platform = 'web';
+      let redirectUri = '';
       const stateParam = req.query.state as string;
       if (stateParam) {
         try {
           const state = JSON.parse(stateParam);
           platform = state.platform || 'web';
+          redirectUri = state.redirectUri || '';
         } catch {
           // Invalid state, default to web
         }
@@ -160,17 +170,34 @@ export class AuthController {
         // Redirect to mobile app using deep link
         res.redirect(`${this.mobileScheme}://oauth/callback?${params.toString()}`);
       } else {
-        // Redirect to web frontend
-        res.redirect(`${this.frontendUrl}/#/auth/google/callback?${params.toString()}`);
+        // For web: use redirectUri if provided and allowed, otherwise use default frontendUrl
+        let targetUrl = this.frontendUrl;
+        if (redirectUri) {
+          try {
+            const redirectUrl = new URL(redirectUri);
+            const origin = redirectUrl.origin;
+            if (allowedOrigins.includes(origin)) {
+              // Use the provided redirect URI (callback path)
+              res.redirect(`${redirectUri}?${params.toString()}`);
+              return;
+            }
+          } catch {
+            // Invalid URL, use default
+          }
+        }
+        // Default: redirect to main frontend with hash routing
+        res.redirect(`${targetUrl}/#/auth/google/callback?${params.toString()}`);
       }
     } catch {
       // Handle error based on platform
       const stateParam = req.query.state as string;
       let platform = 'web';
+      let redirectUri = '';
       if (stateParam) {
         try {
           const state = JSON.parse(stateParam);
           platform = state.platform || 'web';
+          redirectUri = state.redirectUri || '';
         } catch {
           // Invalid state
         }
@@ -179,6 +206,19 @@ export class AuthController {
       if (platform === 'mobile') {
         res.redirect(`${this.mobileScheme}://oauth/callback?error=google_auth_failed`);
       } else {
+        // For web errors: try to redirect back to the original frontend
+        if (redirectUri) {
+          try {
+            const redirectUrl = new URL(redirectUri);
+            const origin = redirectUrl.origin;
+            if (allowedOrigins.includes(origin)) {
+              res.redirect(`${origin}/auth/login?error=google_auth_failed`);
+              return;
+            }
+          } catch {
+            // Invalid URL, use default
+          }
+        }
         res.redirect(`${this.frontendUrl}/#/authentication/signin?error=google_auth_failed`);
       }
     }
