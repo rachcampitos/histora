@@ -344,3 +344,79 @@ ion-action-sheet {
     }
   }
 }
+
+/* ==========================================================================
+   Alert & Modal Styles
+   ========================================================================== */
+
+ion-alert {
+  --background: var(--ion-background-color, #fff);
+  --backdrop-opacity: 0.4;
+
+  .alert-wrapper {
+    background: var(--ion-background-color, #fff) !important;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  .alert-head {
+    padding: 20px 20px 10px;
+  }
+
+  .alert-title {
+    color: var(--ion-text-color, #1a1a1a);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .alert-message {
+    color: var(--histora-text-secondary, #52525b);
+    padding: 10px 20px 20px;
+    font-size: 15px;
+  }
+
+  .alert-button-group {
+    padding: 8px;
+  }
+
+  .alert-button {
+    border-radius: 10px;
+    font-weight: 500;
+    margin: 4px;
+    min-height: 44px;
+
+    &.alert-button-role-cancel {
+      background: var(--histora-surface-secondary, #f5f4f2);
+      color: var(--histora-text-secondary, #52525b);
+    }
+
+    &.alert-button-role-destructive {
+      background: var(--ion-color-danger);
+      color: #fff;
+    }
+  }
+}
+
+/* Dark mode alert styles */
+body.ion-palette-dark ion-alert,
+body.dark ion-alert {
+  .alert-wrapper {
+    background: var(--histora-surface, #1e293b) !important;
+    border: 1px solid var(--histora-border, #334155);
+  }
+
+  .alert-title {
+    color: #f1f5f9;
+  }
+
+  .alert-message {
+    color: #cbd5e1;
+  }
+
+  .alert-button {
+    &.alert-button-role-cancel {
+      background: #334155;
+      color: #e2e8f0;
+    }
+  }
+}
