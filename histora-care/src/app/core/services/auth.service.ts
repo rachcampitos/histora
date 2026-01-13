@@ -270,4 +270,22 @@ export class AuthService {
       this.router.navigate(['/home']);
     }
   }
+
+  /**
+   * Handle OAuth success from web callback page
+   * Stores tokens and user data without navigation
+   * Navigation is handled by the callback page
+   */
+  async handleOAuthSuccess(
+    accessToken: string,
+    refreshToken: string,
+    user: AuthUser,
+    isNewUser: boolean
+  ): Promise<void> {
+    this.googleAuthPendingSignal.set(false);
+    await this.storage.set(TOKEN_KEY, accessToken);
+    await this.storage.set(REFRESH_TOKEN_KEY, refreshToken);
+    await this.storage.set(USER_KEY, user);
+    this.userSignal.set(user);
+  }
 }

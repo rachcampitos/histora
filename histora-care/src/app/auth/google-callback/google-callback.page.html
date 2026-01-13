@@ -1,0 +1,21 @@
+<ion-content class="ion-padding callback-content">
+  <div class="callback-container">
+    <div class="callback-card" [class.error]="isError">
+      @if (!isError) {
+        <div class="spinner-container">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+        </div>
+      } @else {
+        <div class="error-icon">
+          <ion-icon name="alert-circle" color="danger"></ion-icon>
+        </div>
+      }
+
+      <h2>{{ message }}</h2>
+
+      @if (!isError) {
+        <p class="subtitle">Por favor espere...</p>
+      }
+    </div>
+  </div>
+</ion-content>
