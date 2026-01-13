@@ -1,8 +1,9 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController, AlertController } from '@ionic/angular';
+import { ToastController, AlertController, ActionSheetController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeService, ThemeMode } from '../../core/services/theme.service';
 import { Nurse } from '../../core/models';
 
 interface DayOption {
@@ -23,6 +24,8 @@ export class ProfilePage implements OnInit {
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
+  private actionSheetCtrl = inject(ActionSheetController);
+  themeService = inject(ThemeService);
 
   // State signals
   nurse = signal<Nurse | null>(null);
@@ -56,25 +59,25 @@ export class ProfilePage implements OnInit {
     { value: 0, label: 'Domingo', shortLabel: 'Dom' },
     { value: 1, label: 'Lunes', shortLabel: 'Lun' },
     { value: 2, label: 'Martes', shortLabel: 'Mar' },
-    { value: 3, label: 'Miercoles', shortLabel: 'Mie' },
+    { value: 3, label: 'Miércoles', shortLabel: 'Mié' },
     { value: 4, label: 'Jueves', shortLabel: 'Jue' },
     { value: 5, label: 'Viernes', shortLabel: 'Vie' },
-    { value: 6, label: 'Sabado', shortLabel: 'Sab' },
+    { value: 6, label: 'Sábado', shortLabel: 'Sáb' },
   ];
 
   // Common specialties for suggestions
   commonSpecialties = [
-    'Enfermeria General',
+    'Enfermería General',
     'Cuidados Intensivos',
-    'Pediatria',
-    'Geriatria',
-    'Oncologia',
-    'Cardiologia',
-    'Traumatologia',
-    'Rehabilitacion',
+    'Pediatría',
+    'Geriatría',
+    'Oncología',
+    'Cardiología',
+    'Traumatología',
+    'Rehabilitación',
     'Cuidados Paliativos',
     'Diabetes',
-    'Heridas y Ostomias',
+    'Heridas y Ostomías',
     'Salud Mental',
   ];
 
@@ -235,6 +238,45 @@ export class ProfilePage implements OnInit {
 
   async logout() {
     await this.authService.logout();
+  }
+
+  async openThemeSelector() {
+    const currentTheme = this.themeService.currentTheme();
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Seleccionar Tema',
+      buttons: [
+        {
+          text: 'Claro',
+          icon: 'sunny-outline',
+          cssClass: currentTheme === 'light' ? 'selected-theme' : '',
+          handler: () => {
+            this.themeService.setTheme('light');
+          }
+        },
+        {
+          text: 'Oscuro',
+          icon: 'moon-outline',
+          cssClass: currentTheme === 'dark' ? 'selected-theme' : '',
+          handler: () => {
+            this.themeService.setTheme('dark');
+          }
+        },
+        {
+          text: 'Automático',
+          icon: 'phone-portrait-outline',
+          cssClass: currentTheme === 'auto' ? 'selected-theme' : '',
+          handler: () => {
+            this.themeService.setTheme('auto');
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: 'close-outline'
+        }
+      ]
+    });
+    await actionSheet.present();
   }
 
   goBack() {

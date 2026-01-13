@@ -41,7 +41,7 @@
     <div class="section cep-section">
       <div class="section-header">
         <ion-icon name="ribbon-outline"></ion-icon>
-        <h2>Numero CEP</h2>
+        <h2>Número CEP</h2>
       </div>
       <div class="cep-display">
         <span class="cep-number">{{ cepNumber() }}</span>
@@ -122,7 +122,7 @@
     <div class="section">
       <div class="section-header">
         <ion-icon name="school-outline"></ion-icon>
-        <h2>Anos de Experiencia</h2>
+        <h2>Años de Experiencia</h2>
       </div>
       <div class="experience-input">
         <ion-input
@@ -133,7 +133,7 @@
           [max]="50"
           placeholder="0">
         </ion-input>
-        <span class="experience-label">anos</span>
+        <span class="experience-label">años</span>
       </div>
     </div>
 
@@ -235,6 +235,24 @@
         <span *ngIf="!isSaving()">Guardar Cambios</span>
         <span *ngIf="isSaving()">Guardando...</span>
       </ion-button>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="section settings-section">
+      <div class="section-header">
+        <ion-icon name="settings-outline"></ion-icon>
+        <h2>Configuración</h2>
+      </div>
+
+      <ion-list lines="none" class="settings-list">
+        <ion-item button (click)="openThemeSelector()" detail="true">
+          <ion-icon [name]="themeService.getThemeIcon(themeService.currentTheme())" slot="start" class="setting-icon"></ion-icon>
+          <ion-label>
+            <h3>Tema</h3>
+            <p>{{ themeService.getThemeLabel(themeService.currentTheme()) }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
     </div>
 
     <!-- Logout Section -->
