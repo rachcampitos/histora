@@ -496,3 +496,154 @@
     }
   }
 }
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .dashboard-content {
+    --background: #0f172a;
+  }
+
+  // Welcome section keeps gradient
+
+  // Stats Section
+  .stats-section {
+    .stat-card {
+      background: #1e293b;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+      .stat-value {
+        color: #f1f5f9;
+      }
+
+      .stat-label {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  // Section Headers
+  .section {
+    .section-header {
+      h2 {
+        color: #f1f5f9;
+      }
+    }
+  }
+
+  // Active Request Cards
+  .active-request-card {
+    background: #1e293b;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+
+    .request-header {
+      .request-info {
+        h3 {
+          color: #f1f5f9;
+        }
+
+        p {
+          color: #94a3b8;
+
+          ion-icon {
+            color: #64748b;
+          }
+
+          &.address {
+            color: #cbd5e1;
+          }
+
+          &.time {
+            color: #818cf8;
+          }
+        }
+      }
+    }
+
+    .patient-info {
+      background: #334155;
+
+      ion-avatar {
+        border-color: #475569;
+      }
+
+      .patient-details {
+        .patient-name {
+          color: #f1f5f9;
+        }
+
+        .patient-phone {
+          color: #818cf8;
+        }
+      }
+    }
+  }
+
+  // Request List
+  .request-list {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    ion-item {
+      --background: #1e293b;
+
+      ion-label {
+        h3 {
+          color: #f1f5f9;
+        }
+
+        p {
+          color: #94a3b8;
+
+          &.time {
+            color: #818cf8;
+          }
+        }
+      }
+
+      .distance-badge {
+        color: #818cf8;
+      }
+    }
+  }
+
+  // Empty State
+  .empty-state {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    ion-icon {
+      color: #475569;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+
+    span {
+      color: #64748b;
+    }
+  }
+
+  // Quick Menu
+  .quick-menu {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    .menu-item {
+      .menu-icon {
+        background: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(167, 139, 250, 0.2) 100%);
+
+        ion-icon {
+          color: #818cf8;
+        }
+      }
+
+      span {
+        color: #94a3b8;
+      }
+    }
+  }
+}
