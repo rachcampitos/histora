@@ -808,3 +808,96 @@ body.dark .confirmation-modal {
     }
   }
 }
+
+/* ==========================================================================
+   Logout Alert - Enhanced Styling
+   ========================================================================== */
+
+ion-alert.logout-alert {
+  --backdrop-opacity: 0.5;
+
+  .alert-wrapper {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 340px;
+  }
+
+  .alert-head {
+    padding: 20px 20px 8px;
+  }
+
+  .alert-title {
+    color: #1e293b;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .alert-message {
+    color: #64748b;
+    padding: 8px 20px 20px;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .alert-button-group {
+    padding: 8px 16px 16px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .alert-button {
+    border-radius: 12px;
+    font-weight: 600;
+    margin: 0;
+    min-height: 48px;
+    text-transform: none;
+    font-size: 15px;
+    flex: 1;
+
+    // Cancel button
+    &.alert-button-role-cancel {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    // Destructive button
+    &.alert-button-role-destructive {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      font-weight: 700;
+    }
+  }
+}
+
+/* Dark mode for logout alert */
+body.ion-palette-dark ion-alert.logout-alert,
+body.dark ion-alert.logout-alert {
+  .alert-wrapper {
+    background: #1e293b;
+    border: 1px solid #475569;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .alert-title {
+    color: #f1f5f9;
+  }
+
+  .alert-message {
+    color: #94a3b8;
+  }
+
+  .alert-button {
+    &.alert-button-role-cancel {
+      background: #334155;
+      color: #f1f5f9;
+    }
+
+    &.alert-button-role-destructive {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+    }
+  }
+}
