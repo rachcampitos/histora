@@ -39,9 +39,17 @@ export class WebSocketService {
 
   /**
    * Connect to WebSocket server
+   * Note: WebSocket is optional - app works without it using HTTP polling
    */
   connect(token: string): void {
     if (this.socket?.connected) {
+      return;
+    }
+
+    // Skip WebSocket in production if not configured
+    // This prevents console errors when WebSocket server is not available
+    if (environment.production) {
+      console.log('WebSocket: Skipping connection in production (not configured)');
       return;
     }
 
@@ -51,8 +59,9 @@ export class WebSocketService {
       auth: { token },
       transports: ['websocket'],
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000
+      reconnectionAttempts: 3,
+      reconnectionDelay: 2000,
+      timeout: 5000
     });
 
     this.setupListeners();

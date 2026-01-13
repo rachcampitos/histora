@@ -594,4 +594,105 @@ export class NotificationsService {
 
     this.logger.log(`Notified ${admins.length} admin(s) about new patient: ${patient.email}`);
   }
+
+  // =====================
+  // SERVICE REQUEST NOTIFICATIONS (Histora Care)
+  // =====================
+
+  // Notify patient when nurse accepts their service request
+  async notifyPatientServiceAccepted(request: {
+    requestId: string;
+    patientUserId: string;
+    patientName: string;
+    nurseName: string;
+    serviceName: string;
+    requestedDate: string;
+    requestedTime: string;
+  }): Promise<void> {
+    await this.send({
+      userId: request.patientUserId,
+      type: NotificationType.SERVICE_REQUEST_ACCEPTED,
+      title: 'Solicitud Aceptada',
+      message: `${request.nurseName} ha aceptado tu solicitud de ${request.serviceName} para el ${request.requestedDate} a las ${request.requestedTime}. Te contactará pronto.`,
+      data: { requestId: request.requestId },
+      channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
+
+  // Notify patient when nurse rejects their service request
+  async notifyPatientServiceRejected(request: {
+    requestId: string;
+    patientUserId: string;
+    patientName: string;
+    nurseName: string;
+    serviceName: string;
+    reason?: string;
+  }): Promise<void> {
+    const reasonText = request.reason
+      ? ` Motivo: ${request.reason}`
+      : '';
+
+    await this.send({
+      userId: request.patientUserId,
+      type: NotificationType.SERVICE_REQUEST_REJECTED,
+      title: 'Solicitud No Disponible',
+      message: `Lamentablemente, ${request.nurseName} no puede atender tu solicitud de ${request.serviceName} en este momento.${reasonText} Te invitamos a buscar otro profesional disponible.`,
+      data: { requestId: request.requestId, reason: request.reason },
+      channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
+
+  // Notify patient when nurse is on the way
+  async notifyPatientNurseOnTheWay(request: {
+    requestId: string;
+    patientUserId: string;
+    nurseName: string;
+    estimatedMinutes?: number;
+  }): Promise<void> {
+    const etaText = request.estimatedMinutes
+      ? ` Tiempo estimado de llegada: ${request.estimatedMinutes} minutos.`
+      : '';
+
+    await this.send({
+      userId: request.patientUserId,
+      type: NotificationType.NURSE_ON_THE_WAY,
+      title: 'Enfermera en Camino',
+      message: `${request.nurseName} está en camino a tu ubicación.${etaText}`,
+      data: { requestId: request.requestId },
+      channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
+
+  // Notify patient when nurse arrives
+  async notifyPatientNurseArrived(request: {
+    requestId: string;
+    patientUserId: string;
+    nurseName: string;
+  }): Promise<void> {
+    await this.send({
+      userId: request.patientUserId,
+      type: NotificationType.NURSE_ARRIVED,
+      title: 'Enfermera ha Llegado',
+      message: `${request.nurseName} ha llegado a tu ubicación.`,
+      data: { requestId: request.requestId },
+      channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
+
+  // Notify patient when service is completed
+  async notifyPatientServiceCompleted(request: {
+    requestId: string;
+    patientUserId: string;
+    nurseName: string;
+    serviceName: string;
+  }): Promise<void> {
+    await this.send({
+      userId: request.patientUserId,
+      type: NotificationType.SERVICE_COMPLETED,
+      title: 'Servicio Completado',
+      message: `${request.nurseName} ha completado el servicio de ${request.serviceName}. ¡Gracias por confiar en nosotros! Por favor, califica tu experiencia.`,
+      data: { requestId: request.requestId },
+      channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
 }
