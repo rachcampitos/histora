@@ -420,3 +420,391 @@ body.dark ion-alert {
     }
   }
 }
+
+/* ==========================================================================
+   Action Sheet Dark Mode
+   ========================================================================== */
+
+ion-action-sheet {
+  --background: var(--ion-background-color, #fff);
+  --backdrop-opacity: 0.4;
+
+  .action-sheet-wrapper {
+    .action-sheet-container {
+      .action-sheet-group {
+        background: var(--ion-background-color, #fff);
+      }
+    }
+  }
+}
+
+body.ion-palette-dark ion-action-sheet,
+body.dark ion-action-sheet {
+  --background: #1e293b;
+  --color: #f1f5f9;
+
+  .action-sheet-wrapper {
+    .action-sheet-container {
+      .action-sheet-group {
+        background: #1e293b !important;
+        border-radius: 16px;
+
+        .action-sheet-title {
+          color: #94a3b8;
+          border-bottom: 1px solid #334155;
+        }
+
+        .action-sheet-button {
+          color: #f1f5f9;
+          background: transparent;
+
+          &:hover {
+            background: #334155;
+          }
+
+          &.action-sheet-selected {
+            color: var(--ion-color-primary);
+            font-weight: 600;
+          }
+
+          .action-sheet-button-inner {
+            color: inherit;
+          }
+
+          ion-icon {
+            color: #94a3b8;
+          }
+        }
+
+        .action-sheet-cancel {
+          background: #0f172a !important;
+
+          &::after {
+            background: transparent;
+          }
+
+          .action-sheet-button-inner {
+            color: var(--ion-color-primary);
+          }
+        }
+      }
+
+      // Separator between groups
+      .action-sheet-group:not(:first-child) {
+        margin-top: 8px;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   Popover Dark Mode (for ion-select with interface="popover")
+   ========================================================================== */
+
+body.ion-palette-dark ion-popover,
+body.dark ion-popover {
+  --background: #1e293b;
+  --width: auto;
+
+  ion-content {
+    --background: #1e293b;
+  }
+
+  ion-list {
+    background: #1e293b !important;
+  }
+
+  ion-item {
+    --background: #1e293b;
+    --color: #f1f5f9;
+    --border-color: #334155;
+  }
+
+  ion-radio {
+    --color-checked: var(--ion-color-primary);
+  }
+
+  ion-select-popover {
+    ion-item {
+      --background: #1e293b;
+      --color: #f1f5f9;
+
+      &.item-radio-checked {
+        --background: rgba(102, 126, 234, 0.15);
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   Modal & Datetime Dark Mode
+   ========================================================================== */
+
+body.ion-palette-dark ion-modal,
+body.dark ion-modal {
+  --background: #1e293b;
+
+  ion-header {
+    ion-toolbar {
+      --background: #1e293b;
+      --color: #f1f5f9;
+      --border-color: #334155;
+    }
+
+    ion-title {
+      color: #f1f5f9;
+    }
+
+    ion-buttons {
+      ion-button {
+        --color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  ion-content {
+    --background: #1e293b;
+  }
+}
+
+/* Datetime picker dark mode */
+body.ion-palette-dark ion-datetime,
+body.dark ion-datetime {
+  --background: #1e293b;
+  --background-rgb: 30, 41, 59;
+  --title-color: #f1f5f9;
+  color: #f1f5f9;
+
+  &::part(wheel-item) {
+    color: #f1f5f9;
+  }
+
+  &::part(wheel-item active) {
+    color: var(--ion-color-primary);
+  }
+
+  .calendar-day {
+    color: #f1f5f9;
+
+    &.calendar-day-disabled {
+      color: #475569;
+    }
+
+    &.calendar-day-active {
+      background: var(--ion-color-primary);
+      color: #fff;
+    }
+  }
+
+  .calendar-month-year {
+    color: #f1f5f9;
+  }
+
+  .datetime-calendar {
+    background: #1e293b;
+  }
+
+  .calendar-header {
+    ion-label {
+      color: #f1f5f9;
+    }
+  }
+
+  ion-buttons {
+    ion-button {
+      --color: var(--ion-color-primary);
+    }
+  }
+}
+
+/* ion-datetime-button dark mode */
+body.ion-palette-dark ion-datetime-button,
+body.dark ion-datetime-button {
+  &::part(native) {
+    background: #334155;
+    color: #f1f5f9;
+    border-radius: 8px;
+  }
+}
+
+/* ==========================================================================
+   Toolbar & Header Dark Mode
+   ========================================================================== */
+
+body.ion-palette-dark ion-toolbar,
+body.dark ion-toolbar {
+  --background: #0f172a;
+  --color: #f1f5f9;
+  --border-color: #334155;
+}
+
+body.ion-palette-dark ion-header,
+body.dark ion-header {
+  ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
+    --border-color: #334155;
+  }
+
+  ion-title {
+    color: #f1f5f9;
+  }
+
+  ion-back-button {
+    --color: #f1f5f9;
+  }
+
+  ion-buttons {
+    ion-button {
+      --color: #f1f5f9;
+    }
+  }
+}
+
+/* ==========================================================================
+   Textarea & Input Placeholder Dark Mode
+   ========================================================================== */
+
+body.ion-palette-dark,
+body.dark {
+  ion-textarea {
+    --placeholder-color: #64748b;
+    --placeholder-opacity: 1;
+  }
+
+  ion-input {
+    --placeholder-color: #64748b;
+    --placeholder-opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Radio Group & List Dark Mode
+   ========================================================================== */
+
+body.ion-palette-dark ion-radio-group,
+body.dark ion-radio-group {
+  background: transparent;
+
+  ion-list {
+    background: transparent !important;
+  }
+}
+
+body.ion-palette-dark ion-list,
+body.dark ion-list {
+  background: transparent;
+  --background: transparent;
+}
+
+/* ==========================================================================
+   Segment Dark Mode
+   ========================================================================== */
+
+body.ion-palette-dark ion-segment,
+body.dark ion-segment {
+  --background: #334155;
+
+  ion-segment-button {
+    --color: #94a3b8;
+    --color-checked: #ffffff;
+    --indicator-color: var(--ion-color-primary);
+  }
+}
+
+/* ==========================================================================
+   Footer Dark Mode
+   ========================================================================== */
+
+body.ion-palette-dark ion-footer,
+body.dark ion-footer {
+  ion-toolbar {
+    --background: #0f172a;
+    border-top: 1px solid #334155;
+  }
+}
+
+/* ==========================================================================
+   Confirmation Modal Styles
+   ========================================================================== */
+
+.confirmation-modal {
+  --background: transparent;
+  --backdrop-opacity: 0.5;
+
+  .modal-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+  }
+
+  ion-content {
+    --background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .confirmation-content {
+    background: var(--ion-background-color, #fff);
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    max-width: 320px;
+    margin: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+
+      ion-icon {
+        font-size: 40px;
+        color: #fff;
+      }
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ion-text-color);
+      margin: 0 0 12px;
+    }
+
+    p {
+      font-size: 15px;
+      color: var(--histora-text-secondary, #52525b);
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    ion-button {
+      --border-radius: 12px;
+      height: 48px;
+      font-weight: 600;
+    }
+  }
+}
+
+body.ion-palette-dark .confirmation-modal,
+body.dark .confirmation-modal {
+  .confirmation-content {
+    background: #1e293b;
+    border: 1px solid #334155;
+
+    h2 {
+      color: #f1f5f9;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+  }
+}

@@ -31,6 +31,12 @@ const routes: Routes = [
     ],
   },
 
+  // Google OAuth callback (no auth guard - handles auth tokens from Google)
+  {
+    path: 'auth/google/callback',
+    loadChildren: () => import('./auth/google-callback/google-callback.module').then(m => m.GoogleCallbackPageModule),
+  },
+
   // Complete registration (requires auth but no specific role - for new Google users)
   {
     path: 'auth/complete-registration',
