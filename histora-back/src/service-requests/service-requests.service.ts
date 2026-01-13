@@ -141,8 +141,25 @@ export class ServiceRequestsService {
     latitude: number,
     longitude: number,
     radiusKm: number,
+    nurseId?: string,
   ): Promise<ServiceRequest[]> {
     const radiusInMeters = radiusKm * 1000;
+
+    // Build the query - if nurseId provided, show requests for that nurse
+    // Otherwise show open requests (no nurse assigned)
+    const statusQuery: Record<string, unknown> = {
+      status: 'pending',
+    };
+
+    if (nurseId) {
+      // Show requests assigned to this nurse OR open requests
+      statusQuery.$or = [
+        { nurseId: new Types.ObjectId(nurseId) },
+        { nurseId: { $exists: false } },
+      ];
+    } else {
+      statusQuery.nurseId = { $exists: false };
+    }
 
     return this.serviceRequestModel.aggregate([
       {
@@ -154,10 +171,7 @@ export class ServiceRequestsService {
           distanceField: 'distance',
           maxDistance: radiusInMeters,
           spherical: true,
-          query: {
-            status: 'pending',
-            nurseId: { $exists: false },
-          },
+          query: statusQuery,
         },
       },
       {
@@ -179,10 +193,14 @@ export class ServiceRequestsService {
           requestedDate: 1,
           requestedTimeSlot: 1,
           patientNotes: 1,
+          status: 1,
+          createdAt: 1,
           distance: { $divide: ['$distance', 1000] },
           patient: {
             firstName: '$patient.firstName',
             lastName: '$patient.lastName',
+            avatar: '$patient.avatar',
+            phone: '$patient.phone',
           },
         },
       },

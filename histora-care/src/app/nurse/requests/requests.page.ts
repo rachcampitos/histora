@@ -521,4 +521,8 @@ export class RequestsPage implements OnInit, OnDestroy {
     });
     await toast.present();
   }
+
+  goBack() {
+    this.router.navigate(['/nurse/dashboard']);
+  }
 }

@@ -89,11 +89,17 @@ export class ServiceRequestsController {
   @ApiOperation({ summary: 'Get pending requests nearby (Nurse)' })
   @ApiResponse({ status: 200, description: 'List of nearby pending requests' })
   async getPendingNearby(
+    @Request() req: { user: { nurseId?: string } },
     @Query('lat') lat: number,
     @Query('lng') lng: number,
     @Query('radius') radius: number = 10,
   ) {
-    return this.serviceRequestsService.findPendingNearby(lat, lng, radius);
+    return this.serviceRequestsService.findPendingNearby(
+      lat,
+      lng,
+      radius,
+      req.user.nurseId,
+    );
   }
 
   // Nurse: Accept a request

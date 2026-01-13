@@ -30,22 +30,31 @@
   .avatar-container {
     position: relative;
     margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
 
     ion-avatar {
       width: 100px;
       height: 100px;
       border: 4px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
 
       img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: 50%;
       }
 
       .default-avatar {
-        font-size: 100px;
+        font-size: 80px;
         color: rgba(255, 255, 255, 0.8);
+        margin: 0;
+        padding: 0;
       }
     }
 
@@ -393,6 +402,44 @@ ion-range {
   }
 }
 
+// Settings Section
+.settings-section {
+  .settings-list {
+    background: transparent;
+    padding: 0;
+
+    ion-item {
+      --background: #f8f9fa;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --inner-padding-end: 8px;
+      --border-radius: 8px;
+      margin: 0;
+
+      .setting-icon {
+        font-size: 22px;
+        color: #667eea;
+        margin-right: 12px;
+      }
+
+      ion-label {
+        h3 {
+          font-size: 15px;
+          font-weight: 600;
+          color: #2c3e50;
+          margin: 0 0 2px;
+        }
+
+        p {
+          font-size: 13px;
+          color: #6c757d;
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
 // Logout Section
 .logout-section {
   padding: 0 16px;
@@ -426,5 +473,210 @@ ion-modal {
 
   ion-datetime {
     --background: white;
+  }
+}
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .profile-content {
+    --background: #0f172a;
+  }
+
+  // Loading State
+  .loading-container {
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  // Profile Header - keep gradient but adjust opacity
+  .profile-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  }
+
+  // Common Section Styles
+  .section {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    .section-header {
+      ion-icon {
+        color: #818cf8;
+      }
+
+      h2 {
+        color: #f1f5f9;
+      }
+    }
+  }
+
+  // CEP Section
+  .cep-section {
+    .cep-display {
+      background: #334155;
+
+      .cep-number {
+        color: #f1f5f9;
+      }
+    }
+
+    .cep-note {
+      color: #94a3b8;
+    }
+  }
+
+  // Bio Section
+  .bio-textarea {
+    --background: #334155;
+    --color: #f1f5f9;
+    --placeholder-color: #64748b;
+  }
+
+  .char-count {
+    color: #64748b;
+  }
+
+  // Specialties Section
+  .empty-text {
+    color: #94a3b8;
+    background: #334155;
+  }
+
+  .add-specialty {
+    background: #334155;
+
+    ion-input {
+      --color: #f1f5f9;
+      --placeholder-color: #64748b;
+    }
+  }
+
+  .suggestions {
+    .suggestions-label {
+      color: #94a3b8;
+    }
+  }
+
+  // Experience Section
+  .experience-input {
+    background: #334155;
+
+    ion-input {
+      --color: #f1f5f9;
+    }
+
+    .experience-label {
+      color: #94a3b8;
+    }
+  }
+
+  // Service Radius Section
+  .radius-display {
+    .radius-value {
+      color: #818cf8;
+    }
+  }
+
+  ion-range {
+    --bar-background: #334155;
+    --bar-background-active: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    --knob-background: #818cf8;
+    --knob-box-shadow: 0 2px 8px rgba(129, 140, 248, 0.4);
+    --pin-background: #818cf8;
+  }
+
+  .helper-text {
+    color: #64748b;
+  }
+
+  // Availability Section
+  .days-selector {
+    .subsection-label {
+      color: #94a3b8;
+    }
+
+    .days-grid {
+      .day-chip {
+        background: #334155;
+        color: #94a3b8;
+
+        &.selected {
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          color: white;
+        }
+      }
+    }
+  }
+
+  .time-selector {
+    .time-field {
+      .subsection-label {
+        color: #94a3b8;
+      }
+
+      ion-datetime-button {
+        &::part(native) {
+          background: #334155;
+          color: #f1f5f9;
+        }
+      }
+    }
+
+    .time-separator {
+      ion-icon {
+        color: #64748b;
+      }
+    }
+  }
+
+  // Save Section
+  .save-section {
+    .save-button {
+      --background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+  }
+
+  // Settings Section
+  .settings-section {
+    .settings-list {
+      ion-item {
+        --background: #334155;
+        --color: #f1f5f9;
+
+        .setting-icon {
+          color: #818cf8;
+        }
+
+        ion-label {
+          h3 {
+            color: #f1f5f9;
+          }
+
+          p {
+            color: #94a3b8;
+          }
+        }
+      }
+    }
+  }
+
+  // App Version
+  .app-version {
+    p {
+      color: #64748b;
+    }
+  }
+
+  // Modal Styles
+  ion-modal {
+    ion-datetime {
+      --background: #1e293b;
+      --background-rgb: 30, 41, 59;
+      color: #f1f5f9;
+    }
   }
 }
