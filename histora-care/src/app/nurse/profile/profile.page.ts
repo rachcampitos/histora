@@ -217,15 +217,16 @@ export class ProfilePage implements OnInit {
 
   async confirmLogout() {
     const alert = await this.alertCtrl.create({
-      header: 'Cerrar Sesion',
-      message: 'Estas segura que deseas cerrar sesion?',
+      cssClass: 'logout-alert',
+      header: 'Cerrar Sesión',
+      message: '¿Estás segura de que deseas cerrar sesión? Deberás iniciar sesión nuevamente para acceder.',
       buttons: [
         {
           text: 'Cancelar',
           role: 'cancel',
         },
         {
-          text: 'Cerrar Sesion',
+          text: 'Cerrar Sesión',
           role: 'destructive',
           handler: () => {
             this.logout();
