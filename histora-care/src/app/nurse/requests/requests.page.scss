@@ -443,19 +443,59 @@ ion-item-options {
 
   ion-header ion-toolbar {
     --background: #1e293b;
+    --color: #f1f5f9;
+
+    ion-title {
+      color: #f1f5f9;
+    }
+
+    ion-button {
+      --color: #f1f5f9;
+    }
   }
 
   ion-header ion-segment {
     --background: #334155;
+
+    ion-segment-button {
+      --color: #94a3b8;
+      --color-checked: #f1f5f9;
+      --indicator-color: #4f46e5;
+      --indicator-box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+
+      ion-label {
+        ion-badge {
+          --background: rgba(255, 255, 255, 0.2);
+          --color: #f1f5f9;
+        }
+      }
+
+      &.segment-button-checked {
+        ion-label ion-badge {
+          --background: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
   }
 
   .request-card {
     background: #1e293b;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 
     .card-header {
-      .patient-info .patient-details {
-        h3 {
-          color: #f1f5f9;
+      .patient-info {
+        .avatar-placeholder {
+          color: #475569;
+        }
+
+        .patient-details {
+          h3 {
+            color: #f1f5f9;
+          }
+
+          .service-type {
+            color: #818cf8;
+          }
         }
       }
     }
@@ -463,21 +503,42 @@ ion-item-options {
     .card-details {
       border-color: #334155;
 
-      .detail-row span {
-        color: #94a3b8;
+      .detail-row {
+        ion-icon {
+          color: #64748b;
+        }
 
-        &.address {
-          color: #e2e8f0;
+        span {
+          color: #94a3b8;
+
+          &.address {
+            color: #e2e8f0;
+          }
         }
       }
     }
 
     .quick-actions {
       border-color: #334155;
+
+      ion-button {
+        --color: #818cf8;
+      }
+    }
+  }
+
+  // Active card in progress state
+  .active-card {
+    &.status-in_progress {
+      background: linear-gradient(135deg, #1e293b 0%, #1e1b4b 100%);
     }
   }
 
   .empty-state {
+    ion-icon {
+      color: #475569;
+    }
+
     p {
       color: #94a3b8;
     }

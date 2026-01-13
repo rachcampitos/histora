@@ -363,3 +363,170 @@
     color: #94a3b8;
   }
 }
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .earnings-content {
+    --background: #0f172a;
+  }
+
+  // Header
+  ion-header ion-toolbar {
+    --background: #1e293b;
+    --color: #f1f5f9;
+
+    ion-title {
+      color: #f1f5f9;
+    }
+
+    ion-button {
+      --color: #f1f5f9;
+    }
+  }
+
+  // Period Selector
+  .period-selector {
+    background: #1e293b;
+
+    ion-segment {
+      --background: #334155;
+
+      ion-segment-button {
+        --color: #94a3b8;
+        --color-checked: white;
+      }
+    }
+  }
+
+  // Date Picker
+  .date-picker-container {
+    .date-picker-card {
+      --background: #1e293b;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+      .date-inputs {
+        .date-input {
+          ion-label {
+            color: #94a3b8;
+          }
+
+          ion-datetime-button {
+            &::part(native) {
+              background: #334155;
+              color: #f1f5f9;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Date Range Display
+  .date-range-display {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    ion-icon {
+      color: #818cf8;
+    }
+
+    span {
+      color: #94a3b8;
+    }
+  }
+
+  // Loading
+  .loading-container {
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  // Summary Cards
+  .summary-card {
+    --background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    .card-info {
+      .card-label {
+        color: #94a3b8;
+      }
+
+      .card-value {
+        color: #f1f5f9;
+
+        &.highlight {
+          color: #818cf8;
+        }
+      }
+    }
+
+    &.total-card .card-icon {
+      background: rgba(14, 165, 233, 0.2);
+    }
+
+    &.commission-card .card-icon {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    &.services-card .card-icon {
+      background: rgba(34, 197, 94, 0.2);
+    }
+  }
+
+  // History Section
+  .history-section {
+    .section-header h2 {
+      color: #f1f5f9;
+    }
+  }
+
+  // Services List
+  .services-list {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    ion-item {
+      --background: #1e293b;
+
+      .service-date {
+        border-right-color: #334155;
+
+        .date-day {
+          color: #94a3b8;
+        }
+      }
+
+      ion-label {
+        h3 {
+          color: #f1f5f9;
+        }
+
+        .patient-name {
+          color: #94a3b8;
+        }
+      }
+    }
+  }
+
+  // Empty State
+  .empty-state {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    ion-icon {
+      color: #475569;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+
+    span {
+      color: #64748b;
+    }
+  }
+}

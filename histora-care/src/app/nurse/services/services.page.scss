@@ -348,3 +348,136 @@ ion-toggle {
     margin: 0 auto;
   }
 }
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .services-content {
+    --background: #0f172a;
+  }
+
+  // Header
+  ion-header ion-toolbar {
+    --background: #1e293b;
+    --color: #f1f5f9;
+
+    ion-title {
+      color: #f1f5f9;
+    }
+
+    ion-button {
+      --color: #f1f5f9;
+    }
+  }
+
+  // Loading state
+  .loading-state {
+    color: #94a3b8;
+  }
+
+  // Section header
+  .section {
+    .section-header {
+      h2 {
+        color: #f1f5f9;
+      }
+    }
+  }
+
+  // Services list
+  .services-list {
+    ion-item-sliding {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    ion-item {
+      --background: #1e293b;
+    }
+
+    &.inactive {
+      ion-item {
+        --background: #0f172a;
+      }
+    }
+  }
+
+  // Service icon
+  .service-icon {
+    &.inactive {
+      background: #475569;
+    }
+  }
+
+  // Service label
+  ion-label {
+    h3 {
+      color: #f1f5f9;
+    }
+
+    .category {
+      color: #94a3b8;
+    }
+
+    .service-details {
+      .price {
+        color: #818cf8;
+      }
+
+      .duration {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  // Empty state
+  .empty-state {
+    h3 {
+      color: #f1f5f9;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  // Modal styling
+  .modal-content {
+    --background: #0f172a;
+
+    ion-list {
+      ion-item {
+        --background: #1e293b;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+        ion-label {
+          color: #94a3b8;
+        }
+
+        ion-input, ion-textarea, ion-select {
+          --color: #f1f5f9;
+        }
+      }
+    }
+
+    .helper-text {
+      p {
+        color: #64748b;
+      }
+    }
+  }
+
+  // Modal header
+  ion-modal {
+    ion-header {
+      ion-toolbar {
+        --background: #1e293b;
+
+        ion-title {
+          color: #f1f5f9;
+        }
+      }
+    }
+  }
+}
