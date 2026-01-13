@@ -148,8 +148,8 @@ export class AuthService {
   async loginWithGoogle(): Promise<void> {
     this.googleAuthPendingSignal.set(true);
 
-    // Construct the OAuth URL
-    const apiUrl = environment.apiUrl.replace('/api', '');
+    // Construct the OAuth URL - use apiUrl directly (includes /api prefix)
+    const apiUrl = environment.apiUrl;
 
     // Check if running on native device or browser
     const isNative = this.isNativeApp();
