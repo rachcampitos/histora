@@ -3,22 +3,30 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ServiceRequest } from './schema/service-request.schema';
 import { Nurse } from '../nurses/schema/nurse.schema';
+import { User } from '../users/schema/user.schema';
 import { CreateServiceRequestDto, RateServiceRequestDto } from './dto';
 import { NursesService } from '../nurses/nurses.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ServiceRequestsService {
+  private readonly logger = new Logger(ServiceRequestsService.name);
+
   constructor(
     @InjectModel(ServiceRequest.name)
     private serviceRequestModel: Model<ServiceRequest>,
     @InjectModel(Nurse.name)
     private nurseModel: Model<Nurse>,
+    @InjectModel(User.name)
+    private userModel: Model<User>,
     private nursesService: NursesService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(
@@ -213,7 +221,7 @@ export class ServiceRequestsService {
   async accept(id: string, nurseUserId: string): Promise<ServiceRequest> {
     const nurse = await this.nurseModel.findOne({
       userId: new Types.ObjectId(nurseUserId),
-    });
+    }).populate('userId', 'firstName lastName');
     if (!nurse) {
       throw new NotFoundException('Nurse profile not found');
     }
@@ -235,7 +243,28 @@ export class ServiceRequestsService {
       changedBy: new Types.ObjectId(nurseUserId),
     });
 
-    return request.save();
+    const savedRequest = await request.save();
+
+    // Send notification to patient
+    try {
+      const nurseUser = nurse.userId as unknown as { firstName: string; lastName: string };
+      const nurseName = `${nurseUser.firstName} ${nurseUser.lastName}`;
+      const requestedDate = new Date(request.requestedDate).toLocaleDateString('es-PE');
+
+      await this.notificationsService.notifyPatientServiceAccepted({
+        requestId: id,
+        patientUserId: request.patientId.toString(),
+        patientName: '', // Not needed for this notification
+        nurseName,
+        serviceName: request.service.name,
+        requestedDate,
+        requestedTime: request.requestedTimeSlot,
+      });
+    } catch (error) {
+      this.logger.error(`Failed to send acceptance notification: ${error.message}`);
+    }
+
+    return savedRequest;
   }
 
   async reject(
@@ -243,6 +272,10 @@ export class ServiceRequestsService {
     nurseUserId: string,
     reason?: string,
   ): Promise<ServiceRequest> {
+    const nurse = await this.nurseModel.findOne({
+      userId: new Types.ObjectId(nurseUserId),
+    }).populate('userId', 'firstName lastName');
+
     const request = await this.serviceRequestModel.findById(id);
     if (!request) {
       throw new NotFoundException('Service request not found');
@@ -257,7 +290,28 @@ export class ServiceRequestsService {
       note: reason,
     });
 
-    return request.save();
+    const savedRequest = await request.save();
+
+    // Send notification to patient
+    try {
+      const nurseUser = nurse?.userId as unknown as { firstName: string; lastName: string } | null;
+      const nurseName = nurseUser
+        ? `${nurseUser.firstName} ${nurseUser.lastName}`
+        : 'El profesional';
+
+      await this.notificationsService.notifyPatientServiceRejected({
+        requestId: id,
+        patientUserId: request.patientId.toString(),
+        patientName: '',
+        nurseName,
+        serviceName: request.service.name,
+        reason,
+      });
+    } catch (error) {
+      this.logger.error(`Failed to send rejection notification: ${error.message}`);
+    }
+
+    return savedRequest;
   }
 
   async updateStatus(
@@ -297,7 +351,45 @@ export class ServiceRequestsService {
       request.completedAt = new Date();
     }
 
-    return request.save();
+    const savedRequest = await request.save();
+
+    // Send notifications based on status change
+    try {
+      const nurse = await this.nurseModel.findById(request.nurseId).populate('userId', 'firstName lastName');
+      const nurseUser = nurse?.userId as unknown as { firstName: string; lastName: string } | null;
+      const nurseName = nurseUser
+        ? `${nurseUser.firstName} ${nurseUser.lastName}`
+        : 'La enfermera';
+
+      switch (status) {
+        case 'on_the_way':
+          await this.notificationsService.notifyPatientNurseOnTheWay({
+            requestId: id,
+            patientUserId: request.patientId.toString(),
+            nurseName,
+          });
+          break;
+        case 'arrived':
+          await this.notificationsService.notifyPatientNurseArrived({
+            requestId: id,
+            patientUserId: request.patientId.toString(),
+            nurseName,
+          });
+          break;
+        case 'completed':
+          await this.notificationsService.notifyPatientServiceCompleted({
+            requestId: id,
+            patientUserId: request.patientId.toString(),
+            nurseName,
+            serviceName: request.service.name,
+          });
+          break;
+      }
+    } catch (error) {
+      this.logger.error(`Failed to send status notification: ${error.message}`);
+    }
+
+    return savedRequest;
   }
 
   async cancel(

@@ -351,25 +351,12 @@ ion-toggle {
 
 // ============================================================
 // DARK MODE STYLES
+// Note: ion-header/ion-toolbar dark mode handled by global.scss
 // ============================================================
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
   .services-content {
     --background: #0f172a;
-  }
-
-  // Header
-  ion-header ion-toolbar {
-    --background: #1e293b;
-    --color: #f1f5f9;
-
-    ion-title {
-      color: #f1f5f9;
-    }
-
-    ion-button {
-      --color: #f1f5f9;
-    }
   }
 
   // Loading state

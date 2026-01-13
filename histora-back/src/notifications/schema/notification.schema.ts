@@ -17,6 +17,14 @@ export enum NotificationType {
   WELCOME = 'welcome',
   PASSWORD_RESET = 'password_reset',
   GENERAL = 'general',
+  // Service request notifications (Histora Care)
+  SERVICE_REQUEST_ACCEPTED = 'service_request_accepted',
+  SERVICE_REQUEST_REJECTED = 'service_request_rejected',
+  SERVICE_REQUEST_CANCELLED = 'service_request_cancelled',
+  SERVICE_STARTED = 'service_started',
+  SERVICE_COMPLETED = 'service_completed',
+  NURSE_ON_THE_WAY = 'nurse_on_the_way',
+  NURSE_ARRIVED = 'nurse_arrived',
   // Doctor notifications
   NEW_APPOINTMENT_BOOKED = 'new_appointment_booked',
   APPOINTMENT_CANCELLED_BY_PATIENT = 'appointment_cancelled_by_patient',

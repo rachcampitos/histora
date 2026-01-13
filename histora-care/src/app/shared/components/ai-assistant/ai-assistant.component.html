@@ -1,0 +1,138 @@
+<!-- FAB Button -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isOpen">
+  <ion-fab-button color="primary" (click)="openAssistant()" aria-label="Abrir Asistente Hana">
+    <ion-icon name="sparkles"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<!-- Full Screen Modal -->
+<div class="ai-overlay" *ngIf="isOpen" (click)="closeAssistant()">
+  <div class="ai-container" (click)="$event.stopPropagation()">
+
+    <!-- Edge Glow Effect -->
+    <div class="edge-glow"
+         [class.listening]="state === 'listening' || isListening"
+         [class.processing]="state === 'processing'"
+         [class.speaking]="state === 'speaking'">
+    </div>
+
+    <!-- Header -->
+    <div class="ai-header">
+      <div class="ai-avatar" [class.active]="state !== 'inactive'">
+        <ion-icon name="sparkles"></ion-icon>
+      </div>
+      <div class="ai-title-wrapper">
+        <h2 class="ai-title">Hana</h2>
+        <span class="ai-subtitle">Asistente de Salud</span>
+      </div>
+      <ion-button fill="clear" (click)="closeAssistant()" aria-label="Cerrar">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Status -->
+    <div class="ai-status">
+      <span *ngIf="isListening" class="status-badge listening">
+        <span class="voice-wave">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </span>
+        Escuchando...
+      </span>
+      <span *ngIf="state === 'processing'" class="status-badge processing">
+        <ion-spinner name="dots" color="primary"></ion-spinner>
+        Pensando...
+      </span>
+      <span *ngIf="state === 'speaking'" class="status-badge speaking">
+        <ion-icon name="volume-high"></ion-icon>
+        Hablando...
+      </span>
+    </div>
+
+    <!-- Chat Container -->
+    <div #chatContent class="chat-container">
+
+      <!-- Welcome Message -->
+      <div class="welcome-message" *ngIf="messages.length === 0">
+        <div class="welcome-icon">
+          <ion-icon name="sparkles"></ion-icon>
+        </div>
+        <h3>¡Hola! Soy Hana</h3>
+        <p>Tu asistente de salud virtual. ¿En qué puedo ayudarte?</p>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <ion-chip *ngFor="let action of suggestedActions"
+                    color="primary"
+                    outline="true"
+                    (click)="sendMessage(action.command)">
+            <ion-icon [name]="action.icon"></ion-icon>
+            <ion-label>{{ action.label }}</ion-label>
+          </ion-chip>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div *ngFor="let message of messages; trackBy: trackByMessageId"
+           class="message-wrapper"
+           [class.user]="message.role === 'user'"
+           [class.assistant]="message.role === 'assistant'">
+
+        <div class="chat-bubble">
+          <p>{{ message.content }}</p>
+
+          <!-- Suggestions -->
+          <div class="suggestions" *ngIf="message.suggestions?.length">
+            <ion-chip *ngFor="let suggestion of message.suggestions"
+                      size="small"
+                      (click)="sendMessage(suggestion)">
+              {{ suggestion }}
+            </ion-chip>
+          </div>
+        </div>
+
+        <span class="message-time">
+          {{ message.timestamp | date:'shortTime' }}
+        </span>
+      </div>
+
+      <!-- Processing Indicator -->
+      <div class="message-wrapper assistant" *ngIf="state === 'processing'">
+        <div class="chat-bubble typing">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-container">
+      <ion-button *ngIf="showVoiceButton"
+                  fill="clear"
+                  [class.active]="isListening"
+                  (click)="toggleVoiceInput()"
+                  aria-label="Entrada de voz">
+        <ion-icon slot="icon-only" [name]="isListening ? 'mic' : 'mic-outline'"
+                  [color]="isListening ? 'danger' : 'medium'"></ion-icon>
+      </ion-button>
+
+      <ion-textarea
+        [(ngModel)]="currentMessage"
+        (keydown)="handleKeyDown($event)"
+        placeholder="Escribe tu mensaje..."
+        [autoGrow]="true"
+        rows="1"
+        [disabled]="state === 'processing'">
+      </ion-textarea>
+
+      <ion-button fill="clear"
+                  [disabled]="!currentMessage.trim() || state === 'processing'"
+                  (click)="sendMessage()"
+                  aria-label="Enviar">
+        <ion-icon slot="icon-only" name="send" color="primary"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+</div>

@@ -26,6 +26,13 @@ import { ChatbotModule } from './chatbot/chatbot.module';
 import { NursesModule } from './nurses/nurses.module';
 import { ServiceRequestsModule } from './service-requests/service-requests.module';
 import { AdminModule } from './admin/admin.module';
+import { PatientVerificationModule } from './patient-verification/patient-verification.module';
+import { PatientAddressesModule } from './patient-addresses/patient-addresses.module';
+import { PatientRatingsModule } from './patient-ratings/patient-ratings.module';
+import { SafetyModule } from './safety/safety.module';
+import { TrackingModule } from './tracking/tracking.module';
+import { AIAssistantModule } from './ai-assistant/ai-assistant.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -73,6 +80,13 @@ import { AdminModule } from './admin/admin.module';
     NursesModule,
     ServiceRequestsModule,
     AdminModule,
+    PatientVerificationModule,
+    PatientAddressesModule,
+    PatientRatingsModule,
+    SafetyModule,
+    TrackingModule,
+    AIAssistantModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [

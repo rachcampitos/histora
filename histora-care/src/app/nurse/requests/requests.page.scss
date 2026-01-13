@@ -2,42 +2,13 @@
   --background: #f5f7fa;
 }
 
-// Header & Segment
+// Header & Segment - Light mode only for segment
+// Note: ion-header/ion-toolbar dark mode handled by global.scss
 ion-header {
-  ion-toolbar {
-    --background: white;
-
-    &:last-child {
-      --padding-start: 8px;
-      --padding-end: 8px;
-      --padding-bottom: 8px;
-    }
-  }
-
-  ion-segment {
-    --background: #f1f5f9;
-    border-radius: 12px;
-
-    ion-segment-button {
-      --indicator-color: white;
-      --indicator-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      --border-radius: 10px;
-      min-height: 40px;
-      font-weight: 500;
-      text-transform: none;
-
-      ion-label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        ion-badge {
-          font-size: 10px;
-          padding: 2px 6px;
-          border-radius: 10px;
-        }
-      }
-    }
+  ion-toolbar:last-child {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-bottom: 8px;
   }
 }
 
@@ -435,47 +406,11 @@ ion-item-options {
 }
 
 // Dark mode support
+// Note: ion-header/ion-toolbar/ion-segment dark mode handled by global.scss
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
   .requests-content {
     --background: #0f172a;
-  }
-
-  ion-header ion-toolbar {
-    --background: #1e293b;
-    --color: #f1f5f9;
-
-    ion-title {
-      color: #f1f5f9;
-    }
-
-    ion-button {
-      --color: #f1f5f9;
-    }
-  }
-
-  ion-header ion-segment {
-    --background: #334155;
-
-    ion-segment-button {
-      --color: #94a3b8;
-      --color-checked: #f1f5f9;
-      --indicator-color: #4f46e5;
-      --indicator-box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
-
-      ion-label {
-        ion-badge {
-          --background: rgba(255, 255, 255, 0.2);
-          --color: #f1f5f9;
-        }
-      }
-
-      &.segment-button-checked {
-        ion-label ion-badge {
-          --background: rgba(255, 255, 255, 0.3);
-        }
-      }
-    }
   }
 
   .request-card {
