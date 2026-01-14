@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
+import { ProductTourService } from '../../core/services/product-tour.service';
 import { ServiceRequest } from '../../core/models';
 
 interface HealthTip {
@@ -22,6 +23,7 @@ export class HomePage implements OnInit {
   private toastCtrl = inject(ToastController);
   private authService = inject(AuthService);
   private serviceRequestService = inject(ServiceRequestService);
+  private productTourService = inject(ProductTourService);
 
   user = this.authService.user;
   activeRequest = signal<ServiceRequest | null>(null);
@@ -62,6 +64,13 @@ export class HomePage implements OnInit {
   ionViewWillEnter() {
     // Refresh data when returning to this page
     this.loadActiveRequest();
+  }
+
+  ionViewDidEnter() {
+    // Start product tour if not completed (after a slight delay for smooth transition)
+    setTimeout(() => {
+      this.productTourService.startTour('patient_home');
+    }, 500);
   }
 
   private setRandomTip() {

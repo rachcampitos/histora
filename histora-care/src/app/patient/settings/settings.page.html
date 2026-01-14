@@ -12,19 +12,29 @@
   </ion-header>
 
   <!-- Profile Section -->
-  <div class="profile-section" (click)="editProfile()">
-    <div class="profile-avatar">
-      @if (user()?.avatar) {
-        <img [src]="user().avatar" alt="Avatar" />
-      } @else {
-        <ion-icon name="person"></ion-icon>
+  <div class="profile-section">
+    <div class="profile-avatar-wrapper" (click)="changeAvatar($event)">
+      <div class="profile-avatar">
+        @if (user()?.avatar) {
+          <img [src]="user().avatar" alt="Avatar" />
+        } @else {
+          <ion-icon name="person"></ion-icon>
+        }
+      </div>
+      <div class="avatar-edit-badge">
+        <ion-icon name="camera"></ion-icon>
+      </div>
+      @if (isUploadingAvatar()) {
+        <div class="avatar-loading">
+          <ion-spinner name="crescent" color="light"></ion-spinner>
+        </div>
       }
     </div>
-    <div class="profile-info">
+    <div class="profile-info" (click)="editProfile()">
       <h2>{{ user()?.firstName || 'Usuario' }} {{ user()?.lastName || '' }}</h2>
       <p>{{ user()?.email || '' }}</p>
     </div>
-    <ion-icon name="chevron-forward"></ion-icon>
+    <ion-icon name="chevron-forward" (click)="editProfile()"></ion-icon>
   </div>
 
   <!-- Settings List -->
@@ -59,6 +69,12 @@
     <ion-list-header>
       <ion-label>Información</ion-label>
     </ion-list-header>
+
+    <ion-item button detail="false" (click)="replayTour()">
+      <ion-icon name="school-outline" slot="start" color="primary"></ion-icon>
+      <ion-label>Ver tutorial de la app</ion-label>
+      <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+    </ion-item>
 
     <ion-item button detail="false" (click)="openHelp()">
       <ion-icon name="help-circle-outline" slot="start" color="primary"></ion-icon>

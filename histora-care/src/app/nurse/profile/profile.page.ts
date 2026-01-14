@@ -4,6 +4,7 @@ import { ToastController, AlertController, ActionSheetController } from '@ionic/
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService, ThemeMode } from '../../core/services/theme.service';
+import { UploadsService } from '../../core/services/uploads.service';
 import { Nurse } from '../../core/models';
 
 interface DayOption {
@@ -25,12 +26,14 @@ export class ProfilePage implements OnInit {
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
   private actionSheetCtrl = inject(ActionSheetController);
+  private uploadsService = inject(UploadsService);
   themeService = inject(ThemeService);
 
   // State signals
   nurse = signal<Nurse | null>(null);
   isLoading = signal(true);
   isSaving = signal(false);
+  isUploadingAvatar = signal(false);
 
   // Form state signals
   bio = signal('');
@@ -213,6 +216,39 @@ export class ProfilePage implements OnInit {
         this.isSaving.set(false);
       },
     });
+  }
+
+  async changeAvatar() {
+    if (this.isUploadingAvatar()) return;
+
+    try {
+      const photo = await this.uploadsService.promptAndGetPhoto();
+
+      if (photo) {
+        this.isUploadingAvatar.set(true);
+
+        this.uploadsService.uploadProfilePhoto(photo.base64, photo.mimeType).subscribe({
+          next: async (response) => {
+            if (response.success && response.url) {
+              await this.authService.updateUserAvatar(response.url);
+              this.showToast('Foto actualizada correctamente', 'success');
+            } else {
+              this.showToast('Error al subir la foto', 'danger');
+            }
+            this.isUploadingAvatar.set(false);
+          },
+          error: (err) => {
+            console.error('Error uploading avatar:', err);
+            this.showToast('Error al subir la foto', 'danger');
+            this.isUploadingAvatar.set(false);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error changing avatar:', error);
+      this.showToast('Error al cambiar la foto', 'danger');
+      this.isUploadingAvatar.set(false);
+    }
   }
 
   async confirmLogout() {

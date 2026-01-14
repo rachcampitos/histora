@@ -24,13 +24,19 @@
   <ng-container *ngIf="!isLoading()">
     <!-- Profile Header -->
     <div class="profile-header">
-      <div class="avatar-container">
+      <div class="avatar-container" (click)="changeAvatar()">
         <ion-avatar>
           <img *ngIf="avatar()" [src]="avatar()" alt="Avatar">
           <ion-icon *ngIf="!avatar()" name="person-circle" class="default-avatar"></ion-icon>
         </ion-avatar>
+        <div class="avatar-edit-badge">
+          <ion-icon name="camera"></ion-icon>
+        </div>
         <div class="verified-badge" *ngIf="cepVerified()">
           <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+        <div class="avatar-loading" *ngIf="isUploadingAvatar()">
+          <ion-spinner name="crescent" color="light"></ion-spinner>
         </div>
       </div>
       <h1 class="nurse-name">{{ fullName() }}</h1>

@@ -22,6 +22,7 @@ export class ThemeService {
     if (savedTheme && ['light', 'dark', 'auto'].includes(savedTheme)) {
       this.currentTheme.set(savedTheme);
     } else {
+      // Default to auto - respects user's system preference (industry standard)
       this.currentTheme.set('auto');
     }
 

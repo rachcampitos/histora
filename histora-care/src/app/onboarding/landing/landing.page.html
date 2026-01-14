@@ -1,0 +1,83 @@
+<ion-content class="landing-content" [fullscreen]="true">
+  <div class="landing-container">
+    <!-- Main Content -->
+    <div class="landing-main">
+      <!-- Logo -->
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <ion-icon name="heart-circle" class="logo-icon"></ion-icon>
+        </div>
+        <h1 class="app-name">Histora Care</h1>
+      </div>
+
+      <!-- Hero Illustration -->
+      <div class="hero-section">
+        <div class="hero-circle">
+          <ion-icon name="medkit" class="hero-icon"></ion-icon>
+        </div>
+        <div class="floating-badge badge-1">
+          <ion-icon name="shield-checkmark"></ion-icon>
+        </div>
+        <div class="floating-badge badge-2">
+          <ion-icon name="star"></ion-icon>
+        </div>
+        <div class="floating-badge badge-3">
+          <ion-icon name="location"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Value Proposition -->
+      <div class="value-section">
+        <h2 class="headline">Enfermeras profesionales certificadas en tu hogar</h2>
+        <p class="subheadline">
+          Atencion de calidad con profesionales verificados por el Colegio de Enfermeros del Peru
+        </p>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="trust-badges">
+        <div class="badge">
+          <ion-icon name="ribbon"></ion-icon>
+          <span>CEP Validado</span>
+        </div>
+        <div class="badge">
+          <ion-icon name="finger-print"></ion-icon>
+          <span>RENIEC Verificado</span>
+        </div>
+        <div class="badge">
+          <ion-icon name="scan"></ion-icon>
+          <span>Biometria IA</span>
+        </div>
+      </div>
+
+      <!-- Social Proof -->
+      <div class="social-proof">
+        <div class="stars">
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star"></ion-icon>
+          <ion-icon name="star-half"></ion-icon>
+        </div>
+        <span class="proof-text">Mas de 500 enfermeras verificadas</span>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section">
+      <ion-button expand="block" class="primary-btn" (click)="navigateToRegister()">
+        <ion-icon name="person-add" slot="start"></ion-icon>
+        Comenzar
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" class="secondary-btn" (click)="navigateToLogin()">
+        <ion-icon name="log-in" slot="start"></ion-icon>
+        Ya tengo cuenta
+      </ion-button>
+
+      <ion-button fill="clear" class="skip-btn" (click)="skip()">
+        Saltar
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

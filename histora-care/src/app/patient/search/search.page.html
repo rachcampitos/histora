@@ -59,11 +59,11 @@
                 }
               </div>
               <span class="rating-text">
-                {{ (nurse()!.averageRating || 0).toFixed(1) }} ({{ nurse()!.totalReviews || 0 }} resenas)
+                {{ (nurse()!.averageRating || 0).toFixed(1) }} ({{ nurse()!.totalReviews || 0 }} reseñas)
               </span>
             </div>
 
-            <p class="experience">{{ nurse()!.yearsOfExperience || 0 }} anos de experiencia</p>
+            <p class="experience">{{ nurse()!.yearsOfExperience || 0 }} años de experiencia</p>
 
             @if (nurse()!.cepVerified) {
               <ion-badge color="success">

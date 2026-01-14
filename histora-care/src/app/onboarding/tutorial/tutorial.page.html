@@ -1,0 +1,85 @@
+<ion-content class="tutorial-content" [fullscreen]="true">
+  <div class="tutorial-container">
+    <!-- Slides Wrapper -->
+    <div class="slides-wrapper">
+      <div class="slides-track" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+        <div
+          *ngFor="let slide of slides; let i = index"
+          class="slide"
+          [class.active]="i === currentSlide">
+          <div class="slide-content">
+            <!-- Icon/Illustration -->
+            <div class="slide-illustration">
+              <div class="icon-wrapper" [ngClass]="slide.gradient">
+                <ion-icon [name]="slide.icon"></ion-icon>
+              </div>
+            </div>
+
+            <!-- Title -->
+            <h1 class="slide-title">{{ slide.title }}</h1>
+
+            <!-- Description -->
+            <p class="slide-description">{{ slide.description }}</p>
+
+            <!-- Features (if any) -->
+            <div class="slide-features" *ngIf="slide.features">
+              <div class="feature-item" *ngFor="let feature of slide.features">
+                <ion-icon [name]="feature.icon" class="feature-icon"></ion-icon>
+                <span class="feature-text">{{ feature.text }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="tutorial-controls" [class.last-slide]="isLastSlide">
+      <ng-container *ngIf="!isLastSlide">
+        <!-- Skip Button -->
+        <ion-button fill="clear" class="skip-btn" (click)="skip()">
+          Omitir
+        </ion-button>
+
+        <!-- Pagination Dots -->
+        <div class="pagination-dots">
+          <button
+            *ngFor="let slide of slides; let i = index"
+            class="dot"
+            [class.active]="i === currentSlide"
+            (click)="goToSlide(i)"
+            [attr.aria-label]="'Ir a slide ' + (i + 1)">
+          </button>
+        </div>
+
+        <!-- Next Button -->
+        <ion-button class="next-btn" (click)="next()">
+          Siguiente
+          <ion-icon name="arrow-forward" slot="end"></ion-icon>
+        </ion-button>
+      </ng-container>
+
+      <!-- Last Slide CTA -->
+      <ng-container *ngIf="isLastSlide">
+        <div class="cta-container">
+          <!-- Pagination Dots (centered) -->
+          <div class="pagination-dots centered">
+            <button
+              *ngFor="let slide of slides; let i = index"
+              class="dot"
+              [class.active]="i === currentSlide"
+              (click)="goToSlide(i)"
+              [attr.aria-label]="'Ir a slide ' + (i + 1)">
+            </button>
+          </div>
+
+          <!-- CTA Button -->
+          <ion-button expand="block" class="cta-btn" (click)="completeAndStart()">
+            <ion-icon name="rocket" slot="start"></ion-icon>
+            Comenzar
+          </ion-button>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ion-content>

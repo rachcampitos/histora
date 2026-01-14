@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ModalController, Platform } from '@ionic/angular';
+import { AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService } from '../../core/services';
 import { ServiceRequest } from '../../core/models';
+import { ReviewModalComponent, ReviewSubmitData } from '../../shared/components/review-modal';
 import { environment } from '../../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, interval, Subscription } from 'rxjs';
 
 type TrackingStatus = 'accepted' | 'on_the_way' | 'arrived' | 'in_progress' | 'completed';
 
@@ -50,6 +51,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   // Development mode flag
   private isDevelopment = !environment.production;
   private hasRealNurseLocation = false;
+  private pollingSubscription?: Subscription;
+  private previousStatus = signal<TrackingStatus | null>(null);
 
   // Computed values
   formattedDistance = computed(() => this.mapboxService.formatDistance(this.distance()));
@@ -75,6 +78,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private platform: Platform,
     private alertController: AlertController,
+    private toastController: ToastController,
     public mapboxService: MapboxService,
     private wsService: WebSocketService,
     private geoService: GeolocationService,
@@ -95,14 +99,30 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-    // React to status updates
+    // React to status updates from WebSocket
     effect(() => {
       const status = this.wsService.statusUpdate();
       if (status && status.requestId === this.requestId()) {
-        this.currentStatus.set(status.status as TrackingStatus);
+        this.handleStatusChange(status.status as TrackingStatus);
         if (status.estimatedArrival) {
           this.eta.set(status.estimatedArrival);
         }
+      }
+    });
+
+    // React to status changes and auto-show review modal
+    effect(() => {
+      const current = this.currentStatus();
+      const previous = this.previousStatus();
+
+      // Check if status just changed to completed
+      if (current === 'completed' && previous && previous !== 'completed') {
+        // Small delay to let UI update, then show review modal
+        setTimeout(() => {
+          if (!this.hasReviewed()) {
+            this.showCompletionAndReview();
+          }
+        }, 2000);
       }
     });
   }
@@ -131,9 +151,80 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    this.stopPolling();
     this.wsService.leaveTrackingRoom(this.requestId());
     this.wsService.disconnect();
     this.mapboxService.destroy();
+  }
+
+  /**
+   * Handle status change
+   */
+  private handleStatusChange(newStatus: TrackingStatus) {
+    const currentStatus = this.currentStatus();
+    if (currentStatus !== newStatus) {
+      this.previousStatus.set(currentStatus);
+      this.currentStatus.set(newStatus);
+    }
+  }
+
+  /**
+   * Start polling for status updates (fallback when WebSocket is not available)
+   */
+  private startPolling() {
+    // Poll every 10 seconds
+    this.pollingSubscription = interval(10000).subscribe(async () => {
+      await this.pollStatus();
+    });
+  }
+
+  /**
+   * Stop polling
+   */
+  private stopPolling() {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+      this.pollingSubscription = undefined;
+    }
+  }
+
+  /**
+   * Poll for current status
+   */
+  private async pollStatus() {
+    try {
+      const request = await firstValueFrom(this.requestService.getById(this.requestId()));
+      if (request && request.status !== this.currentStatus()) {
+        this.handleStatusChange(request.status as TrackingStatus);
+
+        // Update request data
+        this.request.set(request);
+
+        // Check if reviewed
+        this.hasReviewed.set(!!request.rating);
+      }
+    } catch (error) {
+      console.error('Error polling status:', error);
+    }
+  }
+
+  /**
+   * Show completion message and review modal
+   */
+  private async showCompletionAndReview() {
+    // Show completion toast first
+    const toast = await this.toastController.create({
+      message: '¡Servicio completado! ✓',
+      duration: 2000,
+      position: 'top',
+      color: 'success',
+      icon: 'checkmark-circle'
+    });
+    await toast.present();
+
+    // Wait for toast to finish, then show review modal
+    await toast.onDidDismiss();
+    this.openReviewModal();
   }
 
   /**
@@ -257,6 +348,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       this.wsService.connect(token);
       this.wsService.joinTrackingRoom(this.requestId());
     }
+
+    // Start polling as fallback for status updates
+    this.startPolling();
 
     // Simulate nurse location when no real location is available (WebSocket disabled in production)
     // Wait a bit to see if we get real location from WebSocket
@@ -538,48 +632,82 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Open review modal/alert
+   * Open review modal using the ReviewModalComponent
    */
   async openReviewModal() {
     const nurseInfo = this.nurse();
-    const alert = await this.alertController.create({
-      header: 'Calificar servicio',
-      subHeader: nurseInfo ? `${nurseInfo.firstName} ${nurseInfo.lastName}` : 'Enfermera',
-      message: 'Tu opinión ayuda a mejorar nuestro servicio',
-      inputs: [
-        {
-          name: 'rating',
-          type: 'number',
-          min: 1,
-          max: 5,
-          placeholder: 'Calificación (1-5 estrellas)',
-          attributes: {
-            inputmode: 'numeric'
-          }
-        },
-        {
-          name: 'comment',
-          type: 'textarea',
-          placeholder: 'Escribe tu comentario (opcional)'
-        }
-      ],
-      buttons: [
-        { text: 'Más tarde', role: 'cancel' },
-        {
-          text: 'Enviar',
-          handler: async (data) => {
-            const rating = parseInt(data.rating, 10);
-            if (!rating || rating < 1 || rating > 5) {
-              this.showError('Por favor, ingresa una calificación entre 1 y 5');
-              return false;
-            }
-            await this.submitReview(rating, data.comment || '');
-            return true;
-          }
-        }
-      ]
+    const nurseName = nurseInfo ? `${nurseInfo.firstName} ${nurseInfo.lastName}` : undefined;
+
+    const modal = await this.modalController.create({
+      component: ReviewModalComponent,
+      componentProps: {
+        nurseId: nurseInfo?.id || this.request()?.nurseId,
+        serviceRequestId: this.requestId(),
+        nurseName
+      },
+      breakpoints: [0, 0.75, 1],
+      initialBreakpoint: 0.75,
+      handle: true,
+      cssClass: 'review-modal'
     });
-    await alert.present();
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<ReviewSubmitData>();
+
+    if (role === 'submit' && data) {
+      await this.submitReviewFromModal(data);
+    }
+  }
+
+  /**
+   * Submit review from modal data
+   */
+  private async submitReviewFromModal(reviewData: ReviewSubmitData) {
+    const nurseId = this.nurse()?.id || this.request()?.nurseId;
+    if (!nurseId) {
+      this.showError('No se pudo identificar a la enfermera');
+      return;
+    }
+
+    try {
+      // Submit to nurse reviews API
+      await firstValueFrom(this.nurseApiService.submitReview(nurseId, {
+        rating: reviewData.rating,
+        comment: reviewData.comment,
+        serviceRequestId: this.requestId()
+      }));
+
+      // Also update the service request rating
+      await firstValueFrom(this.requestService.rate(
+        this.requestId(),
+        reviewData.rating,
+        reviewData.comment || undefined
+      ));
+
+      this.hasReviewed.set(true);
+
+      // Show success toast
+      const toast = await this.toastController.create({
+        message: '¡Gracias por tu calificación!',
+        duration: 3000,
+        position: 'bottom',
+        color: 'success',
+        icon: 'star',
+        buttons: [
+          {
+            text: 'Ver historial',
+            handler: () => {
+              this.router.navigate(['/patient/history']);
+            }
+          }
+        ]
+      });
+      await toast.present();
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      this.showError('No se pudo enviar tu calificación. Por favor, intenta de nuevo.');
+    }
   }
 
   /**

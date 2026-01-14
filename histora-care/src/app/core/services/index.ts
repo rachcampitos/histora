@@ -7,3 +7,7 @@ export * from './service-request.service';
 export * from './mapbox.service';
 export * from './websocket.service';
 export * from './theme.service';
+export * from './uploads.service';
+export * from './safety.service';
+export * from './onboarding.service';
+export * from './product-tour.service';

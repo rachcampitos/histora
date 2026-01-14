@@ -525,6 +525,32 @@ export class RequestsPage implements OnInit, OnDestroy {
     return `${distance.toFixed(1)} km`;
   }
 
+  /**
+   * Get patient full name or fallback text
+   */
+  getPatientFullName(request: ServiceRequest): string {
+    if (request.patient?.firstName || request.patient?.lastName) {
+      const first = request.patient.firstName || '';
+      const last = request.patient.lastName || '';
+      return `${first} ${last}`.trim();
+    }
+    return 'Nombre no disponible';
+  }
+
+  /**
+   * Get patient initials for avatar placeholder
+   */
+  getPatientInitials(request: ServiceRequest): string {
+    if (request.patient) {
+      const first = request.patient.firstName?.charAt(0) || '';
+      const last = request.patient.lastName?.charAt(0) || '';
+      if (first || last) {
+        return (first + last).toUpperCase();
+      }
+    }
+    return 'P';
+  }
+
   private async showToast(message: string, color: string) {
     const toast = await this.toastCtrl.create({
       message,
