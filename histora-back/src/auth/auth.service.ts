@@ -426,6 +426,11 @@ export class AuthService {
     };
   }
 
+  async logout(userId: string): Promise<{ message: string }> {
+    await this.usersService.clearRefreshToken(userId);
+    return { message: 'Sesión cerrada exitosamente' };
+  }
+
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmailWithPassword(email);
 
