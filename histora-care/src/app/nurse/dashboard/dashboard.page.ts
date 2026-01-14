@@ -347,7 +347,13 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   viewRequest(request: ServiceRequest) {
-    this.router.navigate(['/nurse/requests', request._id]);
+    // Navigate to requests page with active tab selected
+    const tab = ['accepted', 'on_the_way', 'arrived', 'in_progress'].includes(request.status)
+      ? 'active'
+      : request.status === 'pending'
+        ? 'pending'
+        : 'history';
+    this.router.navigate(['/nurse/requests'], { queryParams: { tab, requestId: request._id } });
   }
 
   goToRequests() {

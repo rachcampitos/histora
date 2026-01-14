@@ -4,3 +4,5 @@ dist/
 
 # Template temporal (no incluir en commits)
 cliniva/
+.vercel
+.env*.local
