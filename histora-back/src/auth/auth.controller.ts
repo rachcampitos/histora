@@ -94,6 +94,17 @@ export class AuthController {
     return this.authService.getProfile(user.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Cerrar sesión (invalidar refresh token)' })
+  @ApiResponse({ status: 200, description: 'Sesión cerrada exitosamente' })
+  @ApiResponse({ status: 401, description: 'No autorizado' })
+  logout(@CurrentUser() user: CurrentUserPayload) {
+    return this.authService.logout(user.userId);
+  }
+
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
