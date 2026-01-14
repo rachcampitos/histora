@@ -9,7 +9,21 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../users/schema/user.schema';
 import { Clinic, ClinicDocument } from '../clinics/schema/clinic.schema';
+import { Nurse } from '../nurses/schema/nurse.schema';
+import { NurseVerification, VerificationStatus } from '../nurses/schema/nurse-verification.schema';
+import { ReniecUsage } from '../nurses/schema/reniec-usage.schema';
+import { ServiceRequest } from '../service-requests/schema/service-request.schema';
+import { PanicAlert, PanicAlertStatus, PanicAlertLevel } from '../safety/schema/panic-alert.schema';
 import { CreateUserDto, UpdateUserDto, UserQueryDto } from './dto/admin-user.dto';
+import {
+  DashboardStatsDto,
+  PanicAlertDto,
+  ActivityItemDto,
+  PendingVerificationDto,
+  ServiceChartDataDto,
+  LowRatedReviewDto,
+  ExpiringVerificationDto,
+} from './dto/dashboard.dto';
 
 @Injectable()
 export class AdminService {
@@ -18,6 +32,11 @@ export class AdminService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Clinic.name) private clinicModel: Model<ClinicDocument>,
+    @InjectModel(Nurse.name) private nurseModel: Model<Nurse>,
+    @InjectModel(NurseVerification.name) private nurseVerificationModel: Model<NurseVerification>,
+    @InjectModel(ReniecUsage.name) private reniecUsageModel: Model<ReniecUsage>,
+    @InjectModel(ServiceRequest.name) private serviceRequestModel: Model<ServiceRequest>,
+    @InjectModel(PanicAlert.name) private panicAlertModel: Model<PanicAlert>,
   ) {}
 
   async getUsers(query: UserQueryDto) {
@@ -268,5 +287,540 @@ export class AdminService {
       password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return password;
+  }
+
+  // ==================== DASHBOARD METHODS ====================
+
+  /**
+   * Get consolidated dashboard statistics for Histora Care admin
+   */
+  async getDashboardStats(): Promise<DashboardStatsDto> {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Nurse stats
+    const [
+      totalNurses,
+      activeNurses,
+      availableNurses,
+      verifiedNurses,
+      pendingVerifications,
+    ] = await Promise.all([
+      this.nurseModel.countDocuments(),
+      this.nurseModel.countDocuments({ isActive: true }),
+      this.nurseModel.countDocuments({ isAvailable: true, isActive: true }),
+      this.nurseModel.countDocuments({ verificationStatus: VerificationStatus.APPROVED }),
+      this.nurseVerificationModel.countDocuments({
+        status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
+      }),
+    ]);
+
+    // Service stats
+    const [
+      totalServices,
+      pendingServices,
+      acceptedServices,
+      inProgressServices,
+      completedToday,
+      cancelledToday,
+      completedThisWeek,
+    ] = await Promise.all([
+      this.serviceRequestModel.countDocuments(),
+      this.serviceRequestModel.countDocuments({ status: 'pending' }),
+      this.serviceRequestModel.countDocuments({ status: 'accepted' }),
+      this.serviceRequestModel.countDocuments({ status: 'in_progress' }),
+      this.serviceRequestModel.countDocuments({
+        status: 'completed',
+        completedAt: { $gte: startOfToday },
+      }),
+      this.serviceRequestModel.countDocuments({
+        status: 'cancelled',
+        cancelledAt: { $gte: startOfToday },
+      }),
+      this.serviceRequestModel.countDocuments({
+        status: 'completed',
+        completedAt: { $gte: startOfWeek },
+      }),
+    ]);
+
+    // Revenue this week
+    const revenueResult = await this.serviceRequestModel.aggregate([
+      {
+        $match: {
+          status: 'completed',
+          completedAt: { $gte: startOfWeek },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$service.price' },
+        },
+      },
+    ]);
+    const revenueThisWeek = revenueResult[0]?.total || 0;
+
+    // Safety stats
+    const [activePanicAlerts, activeEmergencies, resolvedThisMonth] = await Promise.all([
+      this.panicAlertModel.countDocuments({
+        status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED, PanicAlertStatus.RESPONDING] },
+      }),
+      this.panicAlertModel.countDocuments({
+        status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED] },
+        level: PanicAlertLevel.EMERGENCY,
+      }),
+      this.panicAlertModel.countDocuments({
+        status: PanicAlertStatus.RESOLVED,
+        resolvedAt: { $gte: startOfMonth },
+      }),
+    ]);
+
+    // Rating stats from service requests
+    const ratingResult = await this.serviceRequestModel.aggregate([
+      { $match: { rating: { $exists: true, $ne: null } } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          totalReviews: { $sum: 1 },
+          lowRated: {
+            $sum: { $cond: [{ $lte: ['$rating', 2] }, 1, 0] },
+          },
+          excellent: {
+            $sum: { $cond: [{ $eq: ['$rating', 5] }, 1, 0] },
+          },
+        },
+      },
+    ]);
+    const ratings = ratingResult[0] || { averageRating: 0, totalReviews: 0, lowRated: 0, excellent: 0 };
+
+    // RENIEC usage
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const reniecUsage = await this.reniecUsageModel.findOne({ year, month });
+    const reniecStats = {
+      used: reniecUsage?.queryCount || 0,
+      limit: reniecUsage?.queryLimit || 100,
+      remaining: Math.max(0, (reniecUsage?.queryLimit || 100) - (reniecUsage?.queryCount || 0)),
+      provider: process.env.RENIEC_API_PROVIDER || 'decolecta',
+    };
+
+    return {
+      nurses: {
+        total: totalNurses,
+        active: activeNurses,
+        available: availableNurses,
+        pendingVerification: pendingVerifications,
+        verified: verifiedNurses,
+      },
+      services: {
+        total: totalServices,
+        pending: pendingServices,
+        accepted: acceptedServices,
+        inProgress: inProgressServices,
+        completedToday,
+        cancelledToday,
+        completedThisWeek,
+        revenueThisWeek,
+      },
+      safety: {
+        activePanicAlerts,
+        activeEmergencies,
+        pendingIncidents: activePanicAlerts,
+        resolvedThisMonth,
+      },
+      ratings: {
+        averageRating: Math.round(ratings.averageRating * 10) / 10,
+        totalReviews: ratings.totalReviews,
+        lowRatedCount: ratings.lowRated,
+        excellentCount: ratings.excellent,
+      },
+      reniec: reniecStats,
+    };
+  }
+
+  /**
+   * Get active panic alerts for immediate attention
+   */
+  async getActivePanicAlerts(): Promise<PanicAlertDto[]> {
+    const alerts = await this.panicAlertModel
+      .find({
+        status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED, PanicAlertStatus.RESPONDING] },
+      })
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName avatar' },
+      })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .exec();
+
+    return alerts.map((alert) => {
+      const nurse = alert.nurseId as any;
+      const user = nurse?.userId as any;
+      return {
+        id: (alert as any)._id.toString(),
+        nurseId: nurse?._id?.toString() || '',
+        nurseName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+        nurseAvatar: user?.avatar || '',
+        level: alert.level,
+        status: alert.status,
+        location: alert.location,
+        message: alert.message,
+        serviceRequestId: alert.serviceRequestId?.toString(),
+        createdAt: (alert as any).createdAt,
+        policeContacted: alert.policeContacted,
+      };
+    });
+  }
+
+  /**
+   * Get recent activity feed for dashboard
+   */
+  async getRecentActivity(limit = 20): Promise<ActivityItemDto[]> {
+    const activities: ActivityItemDto[] = [];
+    const now = new Date();
+    const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    // Get recent service requests
+    const recentServices = await this.serviceRequestModel
+      .find({ createdAt: { $gte: last24Hours } })
+      .populate('patientId', 'firstName lastName')
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName' },
+      })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .exec();
+
+    for (const service of recentServices) {
+      const patient = service.patientId as any;
+      const nurse = service.nurseId as any;
+      const nurseUser = nurse?.userId as any;
+
+      if (service.status === 'completed') {
+        activities.push({
+          id: `service_${(service as any)._id}`,
+          type: 'service_completed',
+          title: 'Servicio completado',
+          description: `${nurseUser?.firstName || 'Enfermera'} completó servicio de ${service.service.name}`,
+          timestamp: service.completedAt || (service as any).updatedAt,
+          severity: 'info',
+          actionUrl: `/admin/services/${(service as any)._id}`,
+          metadata: { rating: service.rating },
+        });
+      } else if (service.status === 'cancelled') {
+        activities.push({
+          id: `cancel_${(service as any)._id}`,
+          type: 'service_cancelled',
+          title: 'Servicio cancelado',
+          description: `${patient?.firstName || 'Paciente'} canceló servicio`,
+          timestamp: service.cancelledAt || (service as any).updatedAt,
+          severity: 'warning',
+          actionUrl: `/admin/services/${(service as any)._id}`,
+          metadata: { reason: service.cancellationReason },
+        });
+      } else if (service.status === 'pending') {
+        activities.push({
+          id: `new_${(service as any)._id}`,
+          type: 'new_service_request',
+          title: 'Nueva solicitud',
+          description: `${patient?.firstName || 'Paciente'} solicitó ${service.service.name}`,
+          timestamp: (service as any).createdAt,
+          severity: 'info',
+          actionUrl: `/admin/services/${(service as any)._id}`,
+        });
+      }
+    }
+
+    // Get recent verifications
+    const recentVerifications = await this.nurseVerificationModel
+      .find({
+        $or: [
+          { status: VerificationStatus.APPROVED, reviewedAt: { $gte: last24Hours } },
+          { status: VerificationStatus.REJECTED, reviewedAt: { $gte: last24Hours } },
+          { status: VerificationStatus.PENDING, createdAt: { $gte: last24Hours } },
+        ],
+      })
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName' },
+      })
+      .sort({ updatedAt: -1 })
+      .limit(10)
+      .exec();
+
+    for (const verification of recentVerifications) {
+      const nurse = verification.nurseId as any;
+      const user = nurse?.userId as any;
+      const nurseName = user ? `${user.firstName} ${user.lastName}` : 'Enfermera';
+
+      if (verification.status === VerificationStatus.APPROVED) {
+        activities.push({
+          id: `verified_${(verification as any)._id}`,
+          type: 'verification_approved',
+          title: 'Verificación aprobada',
+          description: `${nurseName} fue verificada`,
+          timestamp: verification.reviewedAt || (verification as any).updatedAt,
+          severity: 'info',
+          actionUrl: `/admin/verifications/${(verification as any)._id}`,
+        });
+      } else if (verification.status === VerificationStatus.REJECTED) {
+        activities.push({
+          id: `rejected_${(verification as any)._id}`,
+          type: 'verification_rejected',
+          title: 'Verificación rechazada',
+          description: `${nurseName}: ${verification.rejectionReason || 'Sin razón'}`,
+          timestamp: verification.reviewedAt || (verification as any).updatedAt,
+          severity: 'warning',
+          actionUrl: `/admin/verifications/${(verification as any)._id}`,
+        });
+      } else if (verification.status === VerificationStatus.PENDING) {
+        activities.push({
+          id: `pending_${(verification as any)._id}`,
+          type: 'new_verification',
+          title: 'Nueva verificación pendiente',
+          description: `${nurseName} envió documentos`,
+          timestamp: (verification as any).createdAt,
+          severity: 'info',
+          actionUrl: `/admin/verifications/${(verification as any)._id}`,
+        });
+      }
+    }
+
+    // Get recent panic alerts
+    const recentAlerts = await this.panicAlertModel
+      .find({ createdAt: { $gte: last24Hours } })
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName' },
+      })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .exec();
+
+    for (const alert of recentAlerts) {
+      const nurse = alert.nurseId as any;
+      const user = nurse?.userId as any;
+      const nurseName = user ? `${user.firstName} ${user.lastName}` : 'Enfermera';
+
+      activities.push({
+        id: `panic_${(alert as any)._id}`,
+        type: 'panic_alert',
+        title: alert.level === PanicAlertLevel.EMERGENCY ? '🚨 EMERGENCIA' : '⚠️ Alerta de ayuda',
+        description: `${nurseName}: ${alert.message || 'Necesita asistencia'}`,
+        timestamp: (alert as any).createdAt,
+        severity: alert.level === PanicAlertLevel.EMERGENCY ? 'critical' : 'warning',
+        actionUrl: `/admin/safety/alerts/${(alert as any)._id}`,
+        metadata: { status: alert.status, location: alert.location },
+      });
+    }
+
+    // Get low rated reviews
+    const lowRatedServices = await this.serviceRequestModel
+      .find({
+        rating: { $lte: 2 },
+        reviewedAt: { $gte: last24Hours },
+      })
+      .populate('patientId', 'firstName lastName')
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName' },
+      })
+      .sort({ reviewedAt: -1 })
+      .limit(5)
+      .exec();
+
+    for (const service of lowRatedServices) {
+      const patient = service.patientId as any;
+      const nurse = service.nurseId as any;
+      const nurseUser = nurse?.userId as any;
+
+      activities.push({
+        id: `review_${(service as any)._id}`,
+        type: 'low_review',
+        title: `⭐ Reseña ${service.rating}/5`,
+        description: `${patient?.firstName || 'Paciente'} calificó a ${nurseUser?.firstName || 'Enfermera'}`,
+        timestamp: service.reviewedAt || (service as any).updatedAt,
+        severity: 'warning',
+        actionUrl: `/admin/services/${(service as any)._id}`,
+        metadata: { rating: service.rating, review: service.review },
+      });
+    }
+
+    // Sort by timestamp and limit
+    return activities
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
+  }
+
+  /**
+   * Get pending verifications with waiting time
+   */
+  async getPendingVerifications(): Promise<PendingVerificationDto[]> {
+    const verifications = await this.nurseVerificationModel
+      .find({
+        status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
+      })
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName avatar' },
+      })
+      .sort({ createdAt: 1 }) // Oldest first (longest waiting)
+      .limit(20)
+      .exec();
+
+    const now = new Date();
+
+    return verifications.map((v) => {
+      const nurse = v.nurseId as any;
+      const user = nurse?.userId as any;
+      const createdAt = (v as any).createdAt;
+      const waitingDays = Math.floor((now.getTime() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+
+      return {
+        id: (v as any)._id.toString(),
+        nurseId: nurse?._id?.toString() || '',
+        nurseName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+        nurseAvatar: user?.avatar || '',
+        cepNumber: nurse?.cepNumber || '',
+        dniNumber: v.dniNumber || '',
+        status: v.status,
+        waitingDays,
+        createdAt,
+        hasCepValidation: !!v.cepValidation?.isValid,
+        cepPhotoUrl: v.officialCepPhotoUrl,
+      };
+    });
+  }
+
+  /**
+   * Get service chart data for last 7 days
+   */
+  async getServiceChartData(): Promise<ServiceChartDataDto[]> {
+    const now = new Date();
+    const result: ServiceChartDataDto[] = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+
+      const [completed, cancelled, revenueResult] = await Promise.all([
+        this.serviceRequestModel.countDocuments({
+          status: 'completed',
+          completedAt: { $gte: startOfDay, $lt: endOfDay },
+        }),
+        this.serviceRequestModel.countDocuments({
+          status: 'cancelled',
+          cancelledAt: { $gte: startOfDay, $lt: endOfDay },
+        }),
+        this.serviceRequestModel.aggregate([
+          {
+            $match: {
+              status: 'completed',
+              completedAt: { $gte: startOfDay, $lt: endOfDay },
+            },
+          },
+          { $group: { _id: null, total: { $sum: '$service.price' } } },
+        ]),
+      ]);
+
+      result.push({
+        date: startOfDay.toISOString().split('T')[0],
+        completed,
+        cancelled,
+        revenue: revenueResult[0]?.total || 0,
+      });
+    }
+
+    return result;
+  }
+
+  /**
+   * Get low rated reviews that need attention
+   */
+  async getLowRatedReviews(): Promise<LowRatedReviewDto[]> {
+    const services = await this.serviceRequestModel
+      .find({
+        rating: { $lte: 2 },
+        review: { $exists: true, $ne: '' },
+      })
+      .populate('patientId', 'firstName lastName')
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName' },
+      })
+      .sort({ reviewedAt: -1 })
+      .limit(20)
+      .exec();
+
+    return services.map((s) => {
+      const patient = s.patientId as any;
+      const nurse = s.nurseId as any;
+      const nurseUser = nurse?.userId as any;
+
+      return {
+        id: (s as any)._id.toString(),
+        serviceRequestId: (s as any)._id.toString(),
+        patientName: patient ? `${patient.firstName} ${patient.lastName}` : 'Anónimo',
+        nurseName: nurseUser ? `${nurseUser.firstName} ${nurseUser.lastName}` : 'Unknown',
+        rating: s.rating,
+        review: s.review || '',
+        reviewedAt: s.reviewedAt || (s as any).updatedAt,
+        hasResponse: false, // TODO: implement nurse responses to reviews
+      };
+    });
+  }
+
+  /**
+   * Get nurses with verification expiring soon (monthly re-validation)
+   */
+  async getExpiringVerifications(): Promise<ExpiringVerificationDto[]> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // Find nurses verified more than 23 days ago (expiring in ~7 days)
+    const expiringNurses = await this.nurseModel
+      .find({
+        verificationStatus: VerificationStatus.APPROVED,
+        cepVerifiedAt: { $lte: thirtyDaysAgo },
+      })
+      .populate('userId', 'firstName lastName')
+      .limit(20)
+      .exec();
+
+    const now = new Date();
+
+    return Promise.all(
+      expiringNurses.map(async (nurse) => {
+        const user = nurse.userId as any;
+        const daysSinceVerified = Math.floor(
+          (now.getTime() - new Date(nurse.cepVerifiedAt!).getTime()) / (1000 * 60 * 60 * 24),
+        );
+        const daysUntilExpiry = Math.max(0, 30 - daysSinceVerified);
+
+        // Check if nurse has active services
+        const activeServices = await this.serviceRequestModel.countDocuments({
+          nurseId: nurse._id,
+          status: { $in: ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress'] },
+        });
+
+        return {
+          nurseId: (nurse as any)._id.toString(),
+          nurseName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+          cepNumber: nurse.cepNumber,
+          lastVerifiedAt: nurse.cepVerifiedAt!,
+          daysUntilExpiry,
+          hasActiveServices: activeServices > 0,
+        };
+      }),
+    );
   }
 }

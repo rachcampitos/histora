@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { RefresherCustomEvent, ToastController } from '@ionic/angular';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { ServiceRequest } from '../../core/models';
@@ -23,6 +24,7 @@ export class EarningsPage implements OnInit {
   private nurseApi = inject(NurseApiService);
   private requestService = inject(ServiceRequestService);
   private toastCtrl = inject(ToastController);
+  private destroyRef = inject(DestroyRef);
 
   // State signals
   earnings = signal<EarningsSummary | null>(null);
@@ -87,28 +89,32 @@ export class EarningsPage implements OnInit {
     const range = this.dateRange();
 
     // Load earnings summary
-    this.nurseApi.getEarnings(range.start, range.end).subscribe({
-      next: (data) => {
-        this.earnings.set(data);
-      },
-      error: (err) => {
-        console.error('Error loading earnings:', err);
-        this.showToast('Error al cargar ganancias', 'danger');
-      },
-    });
+    this.nurseApi.getEarnings(range.start, range.end)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.earnings.set(data);
+        },
+        error: (err) => {
+          console.error('Error loading earnings:', err);
+          this.showToast('Error al cargar ganancias', 'danger');
+        },
+      });
 
     // Load completed services
-    this.requestService.getNurseRequests('completed').subscribe({
-      next: (services) => {
-        this.completedServices.set(services);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading services:', err);
-        this.showToast('Error al cargar servicios', 'danger');
-        this.isLoading.set(false);
-      },
-    });
+    this.requestService.getNurseRequests('completed')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (services) => {
+          this.completedServices.set(services);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading services:', err);
+          this.showToast('Error al cargar servicios', 'danger');
+          this.isLoading.set(false);
+        },
+      });
   }
 
   onPeriodChange(event: CustomEvent) {

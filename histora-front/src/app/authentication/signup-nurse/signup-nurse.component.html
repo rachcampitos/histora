@@ -1,0 +1,245 @@
+<div class="nurse-signup-container">
+  <div class="signup-card">
+    <div class="logo-section">
+      <img src="assets/images/logo.png" alt="Histora Care" class="logo" />
+      <h1>Registro de Enfermera</h1>
+      <p class="subtitle">Histora Care - Servicios de Enfermería a Domicilio</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+        <span class="step-number">1</span>
+        <span class="step-label">Validar CEP</span>
+      </div>
+      <div class="step-line" [class.completed]="currentStep > 1"></div>
+      <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+        <span class="step-number">2</span>
+        <span class="step-label">Confirmar</span>
+      </div>
+      <div class="step-line" [class.completed]="currentStep > 2"></div>
+      <div class="step" [class.active]="currentStep >= 3">
+        <span class="step-number">3</span>
+        <span class="step-label">Completar</span>
+      </div>
+    </div>
+
+    <!-- Step 1: DNI and CEP Validation -->
+    <div class="step-content" *ngIf="currentStep === 1">
+      <div class="step-header">
+        <mat-icon>badge</mat-icon>
+        <h2>Valida tus Credenciales</h2>
+        <p>Ingresa tu DNI y número de colegiatura CEP para validar tu registro con el Colegio de Enfermeros del Perú.</p>
+      </div>
+
+      <form [formGroup]="credentialsForm" (ngSubmit)="validateCredentials()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>DNI</mat-label>
+          <input matInput formControlName="dni" placeholder="12345678" maxlength="8" />
+          <mat-icon matSuffix>person</mat-icon>
+          <mat-error *ngIf="credentialsForm.get('dni')?.hasError('required')">
+            El DNI es requerido
+          </mat-error>
+          <mat-error *ngIf="credentialsForm.get('dni')?.hasError('pattern')">
+            El DNI debe tener 8 dígitos
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Número de CEP</mat-label>
+          <input matInput formControlName="cepNumber" placeholder="123456" maxlength="6" />
+          <mat-icon matSuffix>verified_user</mat-icon>
+          <mat-error *ngIf="credentialsForm.get('cepNumber')?.hasError('required')">
+            El número de CEP es requerido
+          </mat-error>
+          <mat-error *ngIf="credentialsForm.get('cepNumber')?.hasError('pattern')">
+            El CEP debe tener entre 4 y 6 dígitos
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+          <span *ngIf="!isLoading">Validar Credenciales</span>
+        </button>
+      </form>
+
+      <div class="help-text">
+        <mat-icon>info</mat-icon>
+        <span>Validamos tu información directamente con el Colegio de Enfermeros del Perú (CEP)</span>
+      </div>
+    </div>
+
+    <!-- Step 2: Identity Confirmation -->
+    <div class="step-content" *ngIf="currentStep === 2 && cepValidation?.data">
+      <div class="step-header">
+        <mat-icon>verified</mat-icon>
+        <h2>Confirma tu Identidad</h2>
+        <p>Validamos tus credenciales con el CEP. Por favor confirma que estos datos son tuyos.</p>
+      </div>
+
+      <div class="identity-card">
+        <div class="photo-section" *ngIf="cepValidation?.data?.photoUrl">
+          <img [src]="cepValidation?.data?.photoUrl" alt="Foto oficial del CEP" class="cep-photo" />
+          <div class="verified-badge">
+            <mat-icon>verified</mat-icon>
+            <span>Foto oficial CEP</span>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <div class="info-item">
+            <label>Nombre registrado:</label>
+            <span class="value">{{ cepValidation?.data?.fullName || 'No disponible' }}</span>
+          </div>
+          <div class="info-item">
+            <label>DNI:</label>
+            <span class="value">{{ cepValidation?.data?.dni }}</span>
+          </div>
+          <div class="info-item">
+            <label>Número CEP:</label>
+            <span class="value">{{ cepValidation?.data?.cepNumber }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirmation-question">
+        <mat-icon>help_outline</mat-icon>
+        <span>¿Eres tú?</span>
+      </div>
+
+      <div class="button-group">
+        <button mat-raised-button color="primary" (click)="confirmIdentity()" class="confirm-btn">
+          <mat-icon>check</mat-icon>
+          Sí, soy yo
+        </button>
+        <button mat-stroked-button color="warn" (click)="rejectIdentity()">
+          <mat-icon>close</mat-icon>
+          No soy yo
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Complete Registration -->
+    <div class="step-content" *ngIf="currentStep === 3">
+      <div class="step-header">
+        <mat-icon>account_circle</mat-icon>
+        <h2>Completa tu Registro</h2>
+        <p>Ingresa tu email y contraseña para crear tu cuenta. Opcionalmente puedes tomar una selfie para agilizar la verificación.</p>
+      </div>
+
+      <!-- Selfie Section (Optional) -->
+      <div class="selfie-section">
+        <h3>
+          <mat-icon>camera_alt</mat-icon>
+          Selfie de Verificación (Opcional)
+        </h3>
+        <p class="selfie-info">Una selfie ayuda a verificar tu identidad más rápido comparándola con tu foto oficial del CEP.</p>
+
+        <div class="camera-container" *ngIf="showCamera">
+          <video #videoElement autoplay playsinline></video>
+          <canvas #canvasElement style="display: none;"></canvas>
+          <div class="camera-actions">
+            <button mat-fab color="primary" (click)="captureSelfie()">
+              <mat-icon>camera</mat-icon>
+            </button>
+            <button mat-mini-fab color="warn" (click)="stopCamera()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="selfie-preview" *ngIf="selfieDataUrl && !showCamera">
+          <img [src]="selfieDataUrl" alt="Tu selfie" />
+          <button mat-stroked-button color="primary" (click)="retakeSelfie()">
+            <mat-icon>refresh</mat-icon>
+            Tomar otra
+          </button>
+        </div>
+
+        <button mat-stroked-button color="primary" *ngIf="!showCamera && !selfieDataUrl" (click)="startCamera()" class="start-camera-btn">
+          <mat-icon>camera_alt</mat-icon>
+          Tomar Selfie
+        </button>
+      </div>
+
+      <!-- Account Form -->
+      <form [formGroup]="accountForm" (ngSubmit)="completeRegistration()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="tu@email.com" />
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error *ngIf="accountForm.get('email')?.hasError('required')">
+            El email es requerido
+          </mat-error>
+          <mat-error *ngIf="accountForm.get('email')?.hasError('email')">
+            Ingresa un email válido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Teléfono (opcional)</mat-label>
+          <input matInput formControlName="phone" placeholder="+51 999 999 999" />
+          <mat-icon matSuffix>phone</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" />
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="accountForm.get('password')?.hasError('required')">
+            La contraseña es requerida
+          </mat-error>
+          <mat-error *ngIf="accountForm.get('password')?.hasError('minlength')">
+            Mínimo 8 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirmar Contraseña</mat-label>
+          <input matInput formControlName="confirmPassword" [type]="hideConfirmPassword ? 'password' : 'text'" />
+          <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="accountForm.hasError('mismatch')">
+            Las contraseñas no coinciden
+          </mat-error>
+        </mat-form-field>
+
+        <div class="terms-section">
+          <mat-checkbox formControlName="termsAccepted" color="primary">
+            Acepto los <a href="/terms" target="_blank">Términos y Condiciones</a>
+          </mat-checkbox>
+          <mat-error *ngIf="accountForm.get('termsAccepted')?.touched && accountForm.get('termsAccepted')?.invalid">
+            Debe aceptar los términos
+          </mat-error>
+
+          <mat-checkbox formControlName="professionalDisclaimerAccepted" color="primary">
+            Acepto la <a href="/professional-disclaimer" target="_blank">Exención de Responsabilidad Profesional</a>
+          </mat-checkbox>
+          <mat-error *ngIf="accountForm.get('professionalDisclaimerAccepted')?.touched && accountForm.get('professionalDisclaimerAccepted')?.invalid">
+            Debe aceptar la exención profesional
+          </mat-error>
+        </div>
+
+        <div class="button-group">
+          <button mat-stroked-button type="button" (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Atrás
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
+            <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+            <span *ngIf="!isLoading">Completar Registro</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer Links -->
+    <div class="auth-footer">
+      <p>¿Ya tienes una cuenta? <a routerLink="/authentication/signin">Inicia sesión</a></p>
+      <p>¿Eres paciente? <a routerLink="/authentication/signup">Registrarte como paciente</a></p>
+    </div>
+  </div>
+</div>

@@ -1,19 +1,19 @@
 <ion-content class="login-content" [fullscreen]="true">
   <div class="login-container">
     <!-- Logo and Brand -->
-    <div class="brand-section">
-      <div class="logo-wrapper">
+    <header class="brand-section" role="banner">
+      <div class="logo-wrapper" aria-hidden="true">
         <ion-icon name="heart-circle" class="logo-icon"></ion-icon>
       </div>
       <h1 class="app-name">Histora Care</h1>
-      <p class="app-tagline">Servicios de enfermería a domicilio</p>
-    </div>
+      <p class="app-tagline">Servicios de enfermeria a domicilio</p>
+    </header>
 
     <!-- Login Form -->
-    <div class="form-section">
-      <h2 class="form-title">Iniciar Sesión</h2>
+    <main class="form-section" role="main">
+      <h2 class="form-title">Iniciar Sesion</h2>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" aria-label="Formulario de inicio de sesion">
         <!-- Email Field -->
         <ion-item lines="none" class="input-item" [class.input-error]="email?.invalid && email?.touched">
           <ion-icon name="mail-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
@@ -76,14 +76,15 @@
           expand="block"
           type="submit"
           class="login-btn"
-          [disabled]="loginForm.invalid">
-          <ion-icon name="log-in-outline" slot="start"></ion-icon>
-          Iniciar Sesión
+          [disabled]="loginForm.invalid"
+          aria-label="Iniciar sesion">
+          <ion-icon name="log-in-outline" slot="start" aria-hidden="true"></ion-icon>
+          Iniciar Sesion
         </ion-button>
       </form>
 
       <!-- Divider -->
-      <div class="divider">
+      <div class="divider" role="separator" aria-hidden="true">
         <span>o continuar con</span>
       </div>
 
@@ -97,10 +98,10 @@
           [disabled]="googleAuthPending()"
           aria-label="Iniciar sesion con Google">
           @if (googleAuthPending()) {
-            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            <ion-spinner name="crescent" slot="start" aria-hidden="true"></ion-spinner>
             <span>Conectando...</span>
           } @else {
-            <ion-icon name="logo-google" slot="start"></ion-icon>
+            <ion-icon name="logo-google" slot="start" aria-hidden="true"></ion-icon>
             <span>Google</span>
           }
         </ion-button>
@@ -109,16 +110,16 @@
       <!-- Register Link -->
       <div class="register-section">
         <p>¿No tienes una cuenta?</p>
-        <ion-button expand="block" fill="outline" class="register-btn" (click)="goToRegister()">
-          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+        <ion-button expand="block" fill="outline" class="register-btn" (click)="goToRegister()" aria-label="Crear una cuenta nueva">
+          <ion-icon name="person-add-outline" slot="start" aria-hidden="true"></ion-icon>
           Crear Cuenta
         </ion-button>
       </div>
-    </div>
+    </main>
 
     <!-- Footer -->
-    <div class="footer-section">
-      <p class="version">Versión 1.0.0</p>
-    </div>
+    <footer class="footer-section" role="contentinfo">
+      <p class="version">Version 1.0.0</p>
+    </footer>
   </div>
 </ion-content>

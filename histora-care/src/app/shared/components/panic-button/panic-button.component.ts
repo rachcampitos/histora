@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, inject, signal, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, Input, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController, ToastController, ModalController } from '@ionic/angular';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SafetyService, PanicAlertLevel, PanicAlert, TriggerPanicDto } from '../../../core/services/safety.service';
 import { GeolocationService } from '../../../core/services/geolocation.service';
 
@@ -18,6 +19,7 @@ export class PanicButtonComponent implements OnInit, OnDestroy {
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
   private modalCtrl = inject(ModalController);
+  private destroyRef = inject(DestroyRef);
 
   @Input() serviceRequestId?: string;
   @Input() patientId?: string;
@@ -41,14 +43,16 @@ export class PanicButtonComponent implements OnInit, OnDestroy {
   }
 
   async checkActiveAlert() {
-    this.safetyService.getActivePanicAlert().subscribe({
-      next: (alert) => {
-        this.activeAlert.set(alert);
-      },
-      error: (err) => {
-        console.error('Error checking active alert:', err);
-      }
-    });
+    this.safetyService.getActivePanicAlert()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (alert) => {
+          this.activeAlert.set(alert);
+        },
+        error: (err) => {
+          console.error('Error checking active alert:', err);
+        }
+      });
   }
 
   // Handle press start
@@ -175,23 +179,25 @@ export class PanicButtonComponent implements OnInit, OnDestroy {
         }
       };
 
-      this.safetyService.triggerPanic(dto).subscribe({
-        next: (alert) => {
-          this.activeAlert.set(alert);
-          this.showToast(
-            level === PanicAlertLevel.EMERGENCY
-              ? 'Alerta de EMERGENCIA enviada. Ayuda en camino.'
-              : 'Alerta enviada. Un administrador te contactará pronto.',
-            level === PanicAlertLevel.EMERGENCY ? 'danger' : 'warning'
-          );
-          this.isLoading.set(false);
-        },
-        error: (err) => {
-          console.error('Error triggering panic:', err);
-          this.showToast('Error al enviar la alerta. Intenta de nuevo.', 'danger');
-          this.isLoading.set(false);
-        }
-      });
+      this.safetyService.triggerPanic(dto)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (alert) => {
+            this.activeAlert.set(alert);
+            this.showToast(
+              level === PanicAlertLevel.EMERGENCY
+                ? 'Alerta de EMERGENCIA enviada. Ayuda en camino.'
+                : 'Alerta enviada. Un administrador te contactará pronto.',
+              level === PanicAlertLevel.EMERGENCY ? 'danger' : 'warning'
+            );
+            this.isLoading.set(false);
+          },
+          error: (err) => {
+            console.error('Error triggering panic:', err);
+            this.showToast('Error al enviar la alerta. Intenta de nuevo.', 'danger');
+            this.isLoading.set(false);
+          }
+        });
     } catch (error) {
       console.error('Error getting location:', error);
       this.showToast('Error al obtener ubicación', 'danger');
@@ -215,16 +221,18 @@ export class PanicButtonComponent implements OnInit, OnDestroy {
           text: 'Sí, cancelar',
           cssClass: 'cancel-alert-button',
           handler: () => {
-            this.safetyService.cancelPanicAlert(currentAlert._id).subscribe({
-              next: () => {
-                this.activeAlert.set(null);
-                this.showToast('Alerta cancelada', 'success');
-              },
-              error: (err) => {
-                console.error('Error cancelling alert:', err);
-                this.showToast('Error al cancelar la alerta', 'danger');
-              }
-            });
+            this.safetyService.cancelPanicAlert(currentAlert._id)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: () => {
+                  this.activeAlert.set(null);
+                  this.showToast('Alerta cancelada', 'success');
+                },
+                error: (err) => {
+                  console.error('Error cancelling alert:', err);
+                  this.showToast('Error al cancelar la alerta', 'danger');
+                }
+              });
           }
         },
       ],

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { RefresherCustomEvent, ToastController, AlertController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';

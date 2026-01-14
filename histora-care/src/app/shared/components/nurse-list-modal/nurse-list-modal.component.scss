@@ -102,7 +102,7 @@ ion-header {
       }
 
       .availability-badge {
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 600;
         padding: 3px 8px;
         border-radius: 10px;
@@ -150,13 +150,13 @@ ion-header {
 
       ion-chip {
         height: 24px;
-        font-size: 11px;
+        font-size: 12px;
         margin: 0;
         --background: var(--ion-color-light);
       }
 
       .more-count {
-        font-size: 11px;
+        font-size: 12px;
         color: $text-muted;
       }
     }

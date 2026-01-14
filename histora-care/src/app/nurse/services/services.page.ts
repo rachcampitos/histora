@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal, computed, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild, DestroyRef } from '@angular/core';
 import { AlertController, ToastController, IonModal, RefresherCustomEvent } from '@ionic/angular';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { Nurse, NurseService, ServiceCategory } from '../../core/models';
 
@@ -20,6 +21,7 @@ export class ServicesPage implements OnInit {
   private nurseApi = inject(NurseApiService);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
+  private destroyRef = inject(DestroyRef);
 
   // State signals
   nurse = signal<Nurse | null>(null);
@@ -65,30 +67,34 @@ export class ServicesPage implements OnInit {
 
   loadProfile() {
     this.isLoading.set(true);
-    this.nurseApi.getMyProfile().subscribe({
-      next: (nurse) => {
-        this.nurse.set(nurse);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading profile:', err);
-        this.showToast('Error al cargar servicios', 'danger');
-        this.isLoading.set(false);
-      },
-    });
+    this.nurseApi.getMyProfile()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (nurse) => {
+          this.nurse.set(nurse);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading profile:', err);
+          this.showToast('Error al cargar servicios', 'danger');
+          this.isLoading.set(false);
+        },
+      });
   }
 
   handleRefresh(event: RefresherCustomEvent) {
-    this.nurseApi.getMyProfile().subscribe({
-      next: (nurse) => {
-        this.nurse.set(nurse);
-        event.target.complete();
-      },
-      error: () => {
-        event.target.complete();
-        this.showToast('Error al actualizar', 'danger');
-      },
-    });
+    this.nurseApi.getMyProfile()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (nurse) => {
+          this.nurse.set(nurse);
+          event.target.complete();
+        },
+        error: () => {
+          event.target.complete();
+          this.showToast('Error al actualizar', 'danger');
+        },
+      });
   }
 
   // Modal management

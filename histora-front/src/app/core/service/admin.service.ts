@@ -1,7 +1,130 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, interval, Subscription, BehaviorSubject } from 'rxjs';
+import { switchMap, tap, catchError } from 'rxjs/operators';
 import { environment } from 'environments/environment';
+
+// ============= DASHBOARD INTERFACES =============
+
+export interface NurseStats {
+  total: number;
+  active: number;
+  available: number;
+  pendingVerification: number;
+  verified: number;
+}
+
+export interface ServiceStats {
+  total: number;
+  pending: number;
+  accepted: number;
+  inProgress: number;
+  completedToday: number;
+  cancelledToday: number;
+  completedThisWeek: number;
+  revenueThisWeek: number;
+}
+
+export interface SafetyStats {
+  activePanicAlerts: number;
+  activeEmergencies: number;
+  pendingIncidents: number;
+  resolvedThisMonth: number;
+}
+
+export interface RatingsStats {
+  averageRating: number;
+  totalReviews: number;
+  lowRatedCount: number;
+  excellentCount: number;
+}
+
+export interface ReniecStats {
+  used: number;
+  limit: number;
+  remaining: number;
+  provider: string;
+}
+
+export interface DashboardStats {
+  nurses: NurseStats;
+  services: ServiceStats;
+  safety: SafetyStats;
+  ratings: RatingsStats;
+  reniec: ReniecStats;
+}
+
+export interface PanicAlert {
+  id: string;
+  nurseId: string;
+  nurseName: string;
+  nurseAvatar: string;
+  level: 'help_needed' | 'emergency';
+  status: 'active' | 'acknowledged' | 'responding' | 'resolved' | 'false_alarm';
+  location: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
+  message?: string;
+  serviceRequestId?: string;
+  createdAt: Date;
+  policeContacted: boolean;
+}
+
+export interface ActivityItem {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  timestamp: Date;
+  severity?: 'info' | 'warning' | 'critical';
+  actionUrl?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface PendingVerification {
+  id: string;
+  nurseId: string;
+  nurseName: string;
+  nurseAvatar: string;
+  cepNumber: string;
+  dniNumber: string;
+  status: string;
+  waitingDays: number;
+  createdAt: Date;
+  hasCepValidation: boolean;
+  cepPhotoUrl?: string;
+}
+
+export interface ServiceChartData {
+  date: string;
+  completed: number;
+  cancelled: number;
+  revenue: number;
+}
+
+export interface LowRatedReview {
+  id: string;
+  serviceRequestId: string;
+  patientName: string;
+  nurseName: string;
+  rating: number;
+  review: string;
+  reviewedAt: Date;
+  hasResponse: boolean;
+}
+
+export interface ExpiringVerification {
+  nurseId: string;
+  nurseName: string;
+  cepNumber: string;
+  lastVerifiedAt: Date;
+  daysUntilExpiry: number;
+  hasActiveServices: boolean;
+}
+
+// ============= USER MANAGEMENT INTERFACES =============
 
 export interface AdminUser {
   id: string;
@@ -63,10 +186,156 @@ export interface UserQueryParams {
 @Injectable({
   providedIn: 'root',
 })
-export class AdminService {
+export class AdminService implements OnDestroy {
   private readonly apiUrl = `${environment.apiUrl}/admin`;
 
+  // Signals for reactive dashboard data
+  private _dashboardStats = signal<DashboardStats | null>(null);
+  private _panicAlerts = signal<PanicAlert[]>([]);
+  private _activity = signal<ActivityItem[]>([]);
+  private _pendingVerifications = signal<PendingVerification[]>([]);
+
+  // Public readonly signals
+  readonly dashboardStats = this._dashboardStats.asReadonly();
+  readonly panicAlerts = this._panicAlerts.asReadonly();
+  readonly activity = this._activity.asReadonly();
+  readonly pendingVerifications = this._pendingVerifications.asReadonly();
+
+  // Computed values
+  readonly hasActiveEmergencies = computed(() => {
+    const stats = this._dashboardStats();
+    return stats ? stats.safety.activeEmergencies > 0 : false;
+  });
+
+  readonly hasCriticalAlerts = computed(() => {
+    const alerts = this._panicAlerts();
+    return alerts.some(a => a.level === 'emergency' && a.status === 'active');
+  });
+
+  // Polling subscriptions
+  private alertsPolling$: Subscription | null = null;
+  private statsPolling$: Subscription | null = null;
+  private isPolling = false;
+
   constructor(private http: HttpClient) {}
+
+  ngOnDestroy(): void {
+    this.stopPolling();
+  }
+
+  // ============= DASHBOARD API METHODS =============
+
+  /**
+   * Get consolidated dashboard statistics
+   */
+  getDashboardStats(): Observable<DashboardStats> {
+    return this.http.get<DashboardStats>(`${this.apiUrl}/dashboard/stats`).pipe(
+      tap(stats => this._dashboardStats.set(stats))
+    );
+  }
+
+  /**
+   * Get active panic alerts
+   */
+  getActivePanicAlerts(): Observable<PanicAlert[]> {
+    return this.http.get<PanicAlert[]>(`${this.apiUrl}/dashboard/alerts`).pipe(
+      tap(alerts => this._panicAlerts.set(alerts))
+    );
+  }
+
+  /**
+   * Get recent activity feed
+   */
+  getRecentActivity(limit = 20): Observable<ActivityItem[]> {
+    return this.http.get<ActivityItem[]>(`${this.apiUrl}/dashboard/activity`, {
+      params: { limit: limit.toString() }
+    }).pipe(
+      tap(activity => this._activity.set(activity))
+    );
+  }
+
+  /**
+   * Get pending verifications
+   */
+  getPendingVerificationsList(): Observable<PendingVerification[]> {
+    return this.http.get<PendingVerification[]>(`${this.apiUrl}/dashboard/verifications/pending`).pipe(
+      tap(verifications => this._pendingVerifications.set(verifications))
+    );
+  }
+
+  /**
+   * Get service chart data (last 7 days)
+   */
+  getServiceChartData(): Observable<ServiceChartData[]> {
+    return this.http.get<ServiceChartData[]>(`${this.apiUrl}/dashboard/services/chart`);
+  }
+
+  /**
+   * Get low rated reviews
+   */
+  getLowRatedReviews(): Observable<LowRatedReview[]> {
+    return this.http.get<LowRatedReview[]>(`${this.apiUrl}/dashboard/reviews/low-rated`);
+  }
+
+  /**
+   * Get expiring verifications
+   */
+  getExpiringVerifications(): Observable<ExpiringVerification[]> {
+    return this.http.get<ExpiringVerification[]>(`${this.apiUrl}/dashboard/verifications/expiring`);
+  }
+
+  // ============= POLLING METHODS =============
+
+  /**
+   * Start polling for dashboard data with different intervals
+   * - Alerts: every 10 seconds
+   * - Stats: every 30 seconds
+   */
+  startPolling(): void {
+    if (this.isPolling) return;
+    this.isPolling = true;
+
+    // Poll alerts every 10 seconds
+    this.alertsPolling$ = interval(10000).pipe(
+      switchMap(() => this.getActivePanicAlerts()),
+      catchError(err => {
+        console.error('Error polling alerts:', err);
+        return [];
+      })
+    ).subscribe();
+
+    // Poll stats every 30 seconds
+    this.statsPolling$ = interval(30000).pipe(
+      switchMap(() => this.getDashboardStats()),
+      catchError(err => {
+        console.error('Error polling stats:', err);
+        return [];
+      })
+    ).subscribe();
+  }
+
+  /**
+   * Stop all polling
+   */
+  stopPolling(): void {
+    this.isPolling = false;
+    this.alertsPolling$?.unsubscribe();
+    this.statsPolling$?.unsubscribe();
+    this.alertsPolling$ = null;
+    this.statsPolling$ = null;
+  }
+
+  /**
+   * Load all dashboard data at once
+   */
+  loadDashboardData(): void {
+    this.getDashboardStats().subscribe();
+    this.getActivePanicAlerts().subscribe();
+    this.getRecentActivity().subscribe();
+    this.getPendingVerificationsList().subscribe();
+  }
+
+  // ============= USER MANAGEMENT METHODS =============
 
   /**
    * Get paginated list of users with filters

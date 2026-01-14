@@ -1,7 +1,7 @@
 <section class="content">
   <div class="content-block">
     <div class="block-header">
-      <app-breadcrumb [title]="'Panel de Administración'" [items]="[]" [active_item]="'Dashboard'"></app-breadcrumb>
+      <app-breadcrumb [title]="'Histora Care - Dashboard'" [items]="[]" [active_item]="'Dashboard'"></app-breadcrumb>
     </div>
 
     @if (isLoading) {
@@ -9,25 +9,78 @@
         <mat-progress-spinner color="primary" mode="indeterminate" [diameter]="50"></mat-progress-spinner>
       </div>
     } @else {
+      <!-- Critical Alerts Banner -->
+      @if (panicAlerts.length > 0) {
+        <div class="alerts-banner" [class.has-emergency]="hasEmergencyAlerts()">
+          <div class="alerts-header">
+            <mat-icon>warning</mat-icon>
+            <span class="alerts-title">
+              @if (hasEmergencyAlerts()) {
+                ALERTA CRITICA - Emergencia Activa
+              } @else {
+                Alertas de Seguridad Activas ({{ panicAlerts.length }})
+              }
+            </span>
+          </div>
+          <div class="alerts-list">
+            @for (alert of panicAlerts.slice(0, 3); track alert.id) {
+              <div class="alert-item" [ngClass]="getAlertLevelClass(alert.level)">
+                <div class="alert-info">
+                  <span class="alert-badge">{{ getAlertLevelLabel(alert.level) }}</span>
+                  <span class="alert-nurse">{{ alert.nurseName }}</span>
+                  <span class="alert-time">{{ formatTimeAgo(alert.createdAt) }}</span>
+                  @if (alert.location.address) {
+                    <span class="alert-location">
+                      <mat-icon>location_on</mat-icon>
+                      {{ alert.location.address }}
+                    </span>
+                  }
+                </div>
+                <div class="alert-actions">
+                  <button mat-icon-button matTooltip="Ver ubicacion" (click)="navigateToAlert(alert)">
+                    <mat-icon>map</mat-icon>
+                  </button>
+                  @if (alert.status === 'active') {
+                    <button mat-icon-button color="accent" matTooltip="Reconocer" (click)="acknowledgeAlert(alert)">
+                      <mat-icon>check</mat-icon>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+          @if (panicAlerts.length > 3) {
+            <a routerLink="/admin/safety" class="see-all-alerts">Ver todas las alertas ({{ panicAlerts.length }})</a>
+          }
+        </div>
+      }
+
       <!-- KPI Cards -->
       <div class="row">
         @for (kpi of kpiCards; track kpi.title) {
-          <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-            <div class="card kpi-card" [ngClass]="'kpi-' + kpi.color">
+          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+            <div class="card kpi-card" [ngClass]="'kpi-' + kpi.color" [routerLink]="kpi.route" [class.clickable]="kpi.route">
               <div class="card-body">
                 <div class="kpi-content">
-                  <div class="kpi-info">
-                    <span class="kpi-title">{{ kpi.title }}</span>
-                    <h3 class="kpi-value">{{ kpi.value }}</h3>
-                    @if (kpi.change) {
-                      <span class="kpi-change">
-                        <mat-icon class="change-icon">trending_up</mat-icon>
-                        +{{ kpi.change }}% {{ kpi.changeLabel }}
-                      </span>
+                  <div class="kpi-icon-wrapper">
+                    <mat-icon>{{ kpi.icon }}</mat-icon>
+                    @if (kpi.badge) {
+                      <span class="kpi-badge" [class.badge-warn]="kpi.badgeColor === 'warn'">{{ kpi.badge }}</span>
                     }
                   </div>
-                  <div class="kpi-icon">
-                    <mat-icon>{{ kpi.icon }}</mat-icon>
+                  <div class="kpi-info">
+                    <h3 class="kpi-value">{{ kpi.value }}</h3>
+                    <span class="kpi-title">{{ kpi.title }}</span>
+                    @if (kpi.subtitle) {
+                      <span class="kpi-subtitle">{{ kpi.subtitle }}</span>
+                    }
+                    @if (kpi.progress !== undefined && kpi.progressMax) {
+                      <mat-progress-bar
+                        mode="determinate"
+                        [value]="(kpi.progress / kpi.progressMax) * 100"
+                        [color]="getProgressColor(kpi.progress, kpi.progressMax)"
+                      ></mat-progress-bar>
+                    }
                   </div>
                 </div>
               </div>
@@ -36,124 +89,215 @@
         }
       </div>
 
-      <!-- Charts Row -->
+      <!-- Main Content Row -->
       <div class="row">
-        <!-- Revenue Chart -->
+        <!-- Left Column: Verifications & Chart -->
         <div class="col-xl-8 col-lg-12">
-          <div class="card">
-            <div class="header">
-              <h2>Ingresos y Suscripciones</h2>
-            </div>
-            <div class="body">
-              <apx-chart
-                [series]="revenueChartOptions.series"
-                [chart]="revenueChartOptions.chart"
-                [xaxis]="revenueChartOptions.xaxis"
-                [stroke]="revenueChartOptions.stroke"
-                [dataLabels]="revenueChartOptions.dataLabels"
-                [yaxis]="revenueChartOptions.yaxis"
-                [legend]="revenueChartOptions.legend"
-                [fill]="revenueChartOptions.fill"
-                [tooltip]="revenueChartOptions.tooltip"
-                [colors]="revenueChartOptions.colors"
-              ></apx-chart>
-            </div>
-          </div>
-        </div>
-
-        <!-- Clinics by Plan Chart -->
-        <div class="col-xl-4 col-lg-12">
-          <div class="card">
-            <div class="header">
-              <h2>Clínicas por Plan</h2>
-            </div>
-            <div class="body">
-              <apx-chart
-                [series]="clinicsChartOptions.series"
-                [chart]="clinicsChartOptions.chart"
-                [labels]="clinicsChartOptions.labels"
-                [colors]="clinicsChartOptions.colors"
-                [legend]="clinicsChartOptions.legend"
-                [plotOptions]="clinicsChartOptions.plotOptions"
-                [dataLabels]="clinicsChartOptions.dataLabels"
-              ></apx-chart>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Clinics Table -->
-      <div class="row">
-        <div class="col-12">
+          <!-- Pending Verifications Table -->
           <div class="card">
             <div class="header d-flex justify-content-between align-items-center">
-              <h2>Clínicas Recientes</h2>
-              <button mat-flat-button color="primary" routerLink="/admin/clinics">
+              <h2>
+                <mat-icon class="header-icon">verified_user</mat-icon>
+                Verificaciones Pendientes
+              </h2>
+              <button mat-flat-button color="primary" routerLink="/admin/verifications">
                 <mat-icon>visibility</mat-icon>
                 Ver Todas
               </button>
             </div>
             <div class="body">
-              <div class="table-responsive">
-                <table mat-table [dataSource]="recentClinics" class="mat-cell advance-table">
-                  <!-- Name Column -->
-                  <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>Clínica</th>
-                    <td mat-cell *matCellDef="let row">
-                      <div class="clinic-name">
-                        <mat-icon class="clinic-icon">business</mat-icon>
-                        {{ row.name }}
+              @if (pendingVerifications.length === 0) {
+                <div class="empty-state">
+                  <mat-icon>check_circle</mat-icon>
+                  <p>No hay verificaciones pendientes</p>
+                </div>
+              } @else {
+                <div class="table-responsive">
+                  <table mat-table [dataSource]="pendingVerifications" class="mat-cell advance-table">
+                    <!-- Nurse Column -->
+                    <ng-container matColumnDef="nurse">
+                      <th mat-header-cell *matHeaderCellDef>Enfermera</th>
+                      <td mat-cell *matCellDef="let row">
+                        <div class="nurse-cell">
+                          <img [src]="row.nurseAvatar || row.cepPhotoUrl || 'assets/images/user/usrbig1.jpg'" alt="" class="nurse-avatar">
+                          <span>{{ row.nurseName }}</span>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- CEP Column -->
+                    <ng-container matColumnDef="cep">
+                      <th mat-header-cell *matHeaderCellDef>CEP</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="cep-number">{{ row.cepNumber }}</span>
+                        @if (row.hasCepValidation) {
+                          <mat-icon class="cep-verified" matTooltip="CEP verificado">verified</mat-icon>
+                        }
+                      </td>
+                    </ng-container>
+
+                    <!-- Waiting Days Column -->
+                    <ng-container matColumnDef="waitingDays">
+                      <th mat-header-cell *matHeaderCellDef>Esperando</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span [class.waiting-urgent]="row.waitingDays > 2">
+                          {{ row.waitingDays }} dia{{ row.waitingDays !== 1 ? 's' : '' }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Status Column -->
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef>Estado</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="badge" [ngClass]="getVerificationStatusClass(row.status)">
+                          {{ getVerificationStatusLabel(row.status) }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Actions Column -->
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                      <td mat-cell *matCellDef="let row">
+                        <button mat-flat-button color="primary" (click)="reviewVerification(row)">
+                          <mat-icon>rate_review</mat-icon>
+                          Revisar
+                        </button>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="verificationColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: verificationColumns;"></tr>
+                  </table>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Services Chart -->
+          <div class="card">
+            <div class="header">
+              <h2>
+                <mat-icon class="header-icon">trending_up</mat-icon>
+                Servicios - Ultimos 7 dias
+              </h2>
+            </div>
+            <div class="body">
+              @if (serviceChartData.length > 0) {
+                <apx-chart
+                  [series]="servicesChartOptions.series"
+                  [chart]="servicesChartOptions.chart"
+                  [xaxis]="servicesChartOptions.xaxis"
+                  [stroke]="servicesChartOptions.stroke"
+                  [dataLabels]="servicesChartOptions.dataLabels"
+                  [yaxis]="servicesChartOptions.yaxis"
+                  [legend]="servicesChartOptions.legend"
+                  [fill]="servicesChartOptions.fill"
+                  [tooltip]="servicesChartOptions.tooltip"
+                  [colors]="servicesChartOptions.colors"
+                ></apx-chart>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>show_chart</mat-icon>
+                  <p>No hay datos de servicios</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Activity & Warnings -->
+        <div class="col-xl-4 col-lg-12">
+          <!-- Recent Activity Timeline -->
+          <div class="card activity-card">
+            <div class="header">
+              <h2>
+                <mat-icon class="header-icon">history</mat-icon>
+                Actividad Reciente
+              </h2>
+            </div>
+            <div class="body">
+              @if (recentActivity.length === 0) {
+                <div class="empty-state">
+                  <mat-icon>inbox</mat-icon>
+                  <p>Sin actividad reciente</p>
+                </div>
+              } @else {
+                <div class="activity-timeline">
+                  @for (item of recentActivity.slice(0, 10); track item.id) {
+                    <div class="activity-item" [ngClass]="getSeverityClass(item.severity)">
+                      <div class="activity-icon">
+                        <mat-icon [color]="getActivityColor(item.severity)">{{ getActivityIcon(item.type) }}</mat-icon>
                       </div>
-                    </td>
-                  </ng-container>
+                      <div class="activity-content">
+                        <span class="activity-title">{{ item.title }}</span>
+                        <span class="activity-description">{{ item.description }}</span>
+                        <span class="activity-time">{{ formatTimeAgo(item.timestamp) }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
 
-                  <!-- Owner Column -->
-                  <ng-container matColumnDef="owner">
-                    <th mat-header-cell *matHeaderCellDef>Propietario</th>
-                    <td mat-cell *matCellDef="let row">{{ row.owner }}</td>
-                  </ng-container>
+          <!-- Warnings Card -->
+          <div class="card warnings-card">
+            <div class="header">
+              <h2>
+                <mat-icon class="header-icon">report_problem</mat-icon>
+                Atencion Requerida
+              </h2>
+            </div>
+            <div class="body">
+              <!-- Low Rated Reviews -->
+              @if (lowRatedReviews.length > 0) {
+                <div class="warning-section">
+                  <h4 class="warning-title">
+                    <mat-icon>star_border</mat-icon>
+                    Resenas Negativas ({{ lowRatedReviews.length }})
+                  </h4>
+                  @for (review of lowRatedReviews.slice(0, 3); track review.id) {
+                    <div class="warning-item">
+                      <div class="warning-rating">
+                        @for (star of [1,2,3,4,5]; track star) {
+                          <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
+                        }
+                      </div>
+                      <span class="warning-detail">{{ review.patientName }} -> {{ review.nurseName }}</span>
+                    </div>
+                  }
+                </div>
+              }
 
-                  <!-- Plan Column -->
-                  <ng-container matColumnDef="plan">
-                    <th mat-header-cell *matHeaderCellDef>Plan</th>
-                    <td mat-cell *matCellDef="let row">
-                      <span class="badge badge-outline-primary">{{ row.plan }}</span>
-                    </td>
-                  </ng-container>
-
-                  <!-- Status Column -->
-                  <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef>Estado</th>
-                    <td mat-cell *matCellDef="let row">
-                      <span class="badge" [ngClass]="getStatusClass(row.status)">
-                        {{ getStatusLabel(row.status) }}
+              <!-- Expiring Verifications -->
+              @if (expiringVerifications.length > 0) {
+                <div class="warning-section">
+                  <h4 class="warning-title">
+                    <mat-icon>schedule</mat-icon>
+                    Verificaciones por Vencer ({{ expiringVerifications.length }})
+                  </h4>
+                  @for (exp of expiringVerifications.slice(0, 3); track exp.nurseId) {
+                    <div class="warning-item" [class.has-active]="exp.hasActiveServices">
+                      <span class="warning-nurse">{{ exp.nurseName }}</span>
+                      <span class="warning-days">
+                        {{ exp.daysUntilExpiry }} dias
+                        @if (exp.hasActiveServices) {
+                          <mat-icon matTooltip="Tiene servicios activos" class="active-indicator">local_hospital</mat-icon>
+                        }
                       </span>
-                    </td>
-                  </ng-container>
+                    </div>
+                  }
+                </div>
+              }
 
-                  <!-- Created At Column -->
-                  <ng-container matColumnDef="createdAt">
-                    <th mat-header-cell *matHeaderCellDef>Registrado</th>
-                    <td mat-cell *matCellDef="let row">{{ row.createdAt | date: 'dd/MM/yyyy' }}</td>
-                  </ng-container>
-
-                  <!-- Actions Column -->
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                    <td mat-cell *matCellDef="let row">
-                      <button mat-icon-button color="primary" matTooltip="Ver detalles">
-                        <mat-icon>visibility</mat-icon>
-                      </button>
-                      <button mat-icon-button color="accent" matTooltip="Editar">
-                        <mat-icon>edit</mat-icon>
-                      </button>
-                    </td>
-                  </ng-container>
-
-                  <tr mat-header-row *matHeaderRowDef="recentClinicsColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: recentClinicsColumns;"></tr>
-                </table>
-              </div>
+              @if (lowRatedReviews.length === 0 && expiringVerifications.length === 0) {
+                <div class="empty-state">
+                  <mat-icon>check_circle</mat-icon>
+                  <p>Todo en orden</p>
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -161,31 +305,47 @@
 
       <!-- Quick Actions -->
       <div class="row">
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-          <div class="card quick-action-card" routerLink="/admin/clinics">
+        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+          <div class="card quick-action-card" routerLink="/admin/nurses">
             <div class="card-body">
-              <mat-icon class="action-icon">add_business</mat-icon>
-              <span class="action-text">Gestionar Clínicas</span>
+              <mat-icon class="action-icon">medical_services</mat-icon>
+              <span class="action-text">Enfermeras</span>
             </div>
           </div>
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+          <div class="card quick-action-card" routerLink="/admin/verifications">
+            <div class="card-body">
+              <mat-icon class="action-icon">verified_user</mat-icon>
+              <span class="action-text">Verificaciones</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+          <div class="card quick-action-card" routerLink="/admin/services">
+            <div class="card-body">
+              <mat-icon class="action-icon">local_hospital</mat-icon>
+              <span class="action-text">Servicios</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
           <div class="card quick-action-card" routerLink="/admin/users">
             <div class="card-body">
               <mat-icon class="action-icon">group</mat-icon>
-              <span class="action-text">Gestionar Usuarios</span>
+              <span class="action-text">Usuarios</span>
             </div>
           </div>
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-          <div class="card quick-action-card" routerLink="/admin/subscriptions">
+        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+          <div class="card quick-action-card" routerLink="/admin/safety">
             <div class="card-body">
-              <mat-icon class="action-icon">card_membership</mat-icon>
-              <span class="action-text">Suscripciones</span>
+              <mat-icon class="action-icon">security</mat-icon>
+              <span class="action-text">Seguridad</span>
             </div>
           </div>
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
           <div class="card quick-action-card" routerLink="/admin/reports">
             <div class="card-body">
               <mat-icon class="action-icon">assessment</mat-icon>

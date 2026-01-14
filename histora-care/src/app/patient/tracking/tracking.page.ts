@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService } from '../../core/services';

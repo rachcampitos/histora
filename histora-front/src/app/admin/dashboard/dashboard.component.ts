@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatChipsModule } from '@angular/material/chips';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import {
   NgApexchartsModule,
   ApexChart,
-  ApexNonAxisChartSeries,
   ApexAxisChartSeries,
   ApexXAxis,
   ApexDataLabels,
@@ -20,24 +23,30 @@ import {
   ApexLegend,
   ApexFill,
   ApexTooltip,
-  ApexPlotOptions,
 } from 'ng-apexcharts';
+import {
+  AdminService,
+  DashboardStats,
+  PanicAlert,
+  ActivityItem,
+  PendingVerification,
+  ServiceChartData,
+  LowRatedReview,
+  ExpiringVerification,
+} from '@core/service/admin.service';
+import { forkJoin } from 'rxjs';
 
 interface KpiCard {
   title: string;
   value: number | string;
   icon: string;
   color: string;
-  change?: number;
-  changeLabel?: string;
-}
-
-interface RecentClinic {
-  name: string;
-  owner: string;
-  plan: string;
-  status: string;
-  createdAt: Date;
+  subtitle?: string;
+  badge?: number;
+  badgeColor?: string;
+  progress?: number;
+  progressMax?: number;
+  route?: string;
 }
 
 @Component({
@@ -53,19 +62,35 @@ interface RecentClinic {
     MatButtonModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatTooltipModule,
+    MatBadgeModule,
+    MatChipsModule,
     RouterLink,
     NgApexchartsModule,
     TranslateModule,
   ],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   isLoading = true;
+  stats: DashboardStats | null = null;
 
   // KPI Cards
   kpiCards: KpiCard[] = [];
 
+  // Dashboard Data
+  panicAlerts: PanicAlert[] = [];
+  recentActivity: ActivityItem[] = [];
+  pendingVerifications: PendingVerification[] = [];
+  serviceChartData: ServiceChartData[] = [];
+  lowRatedReviews: LowRatedReview[] = [];
+  expiringVerifications: ExpiringVerification[] = [];
+
+  // Table columns
+  verificationColumns = ['nurse', 'cep', 'waitingDays', 'status', 'actions'];
+
   // Charts
-  revenueChartOptions: {
+  servicesChartOptions: {
     series: ApexAxisChartSeries;
     chart: ApexChart;
     xaxis: ApexXAxis;
@@ -78,136 +103,143 @@ export class DashboardComponent implements OnInit {
     colors: string[];
   };
 
-  clinicsChartOptions: {
-    series: ApexNonAxisChartSeries;
-    chart: ApexChart;
-    labels: string[];
-    colors: string[];
-    legend: ApexLegend;
-    plotOptions: ApexPlotOptions;
-    dataLabels: ApexDataLabels;
-  };
-
-  // Recent clinics table
-  recentClinicsColumns = ['name', 'owner', 'plan', 'status', 'createdAt', 'actions'];
-  recentClinics: RecentClinic[] = [];
-
-  constructor() {
-    this.revenueChartOptions = this.getRevenueChartOptions();
-    this.clinicsChartOptions = this.getClinicsChartOptions();
+  constructor(private adminService: AdminService) {
+    this.servicesChartOptions = this.getServicesChartOptions([]);
   }
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.adminService.startPolling();
+  }
+
+  ngOnDestroy(): void {
+    this.adminService.stopPolling();
   }
 
   loadDashboardData(): void {
-    // Simulated data - replace with API calls
-    setTimeout(() => {
-      this.kpiCards = [
-        {
-          title: 'Total Clínicas',
-          value: 48,
-          icon: 'business',
-          color: 'primary',
-          change: 12,
-          changeLabel: 'este mes',
-        },
-        {
-          title: 'Doctores Activos',
-          value: 156,
-          icon: 'medical_services',
-          color: 'success',
-          change: 8,
-          changeLabel: 'esta semana',
-        },
-        {
-          title: 'Pacientes Registrados',
-          value: '2,847',
-          icon: 'people',
-          color: 'info',
-          change: 23,
-          changeLabel: 'este mes',
-        },
-        {
-          title: 'Ingresos Mensuales',
-          value: '$45,680',
-          icon: 'payments',
-          color: 'warning',
-          change: 15,
-          changeLabel: 'vs mes anterior',
-        },
-      ];
+    this.isLoading = true;
 
-      this.recentClinics = [
-        {
-          name: 'Clínica San Rafael',
-          owner: 'Dr. Carlos Méndez',
-          plan: 'Premium',
-          status: 'active',
-          createdAt: new Date('2024-01-15'),
-        },
-        {
-          name: 'Centro Médico Aurora',
-          owner: 'Dra. María López',
-          plan: 'Professional',
-          status: 'active',
-          createdAt: new Date('2024-01-10'),
-        },
-        {
-          name: 'Hospital del Valle',
-          owner: 'Dr. Juan Hernández',
-          plan: 'Enterprise',
-          status: 'pending',
-          createdAt: new Date('2024-01-08'),
-        },
-        {
-          name: 'Clínica Familiar',
-          owner: 'Dra. Ana García',
-          plan: 'Basic',
-          status: 'active',
-          createdAt: new Date('2024-01-05'),
-        },
-        {
-          name: 'Centro Dental Plus',
-          owner: 'Dr. Roberto Sánchez',
-          plan: 'Professional',
-          status: 'trial',
-          createdAt: new Date('2024-01-02'),
-        },
-      ];
+    forkJoin({
+      stats: this.adminService.getDashboardStats(),
+      alerts: this.adminService.getActivePanicAlerts(),
+      activity: this.adminService.getRecentActivity(15),
+      verifications: this.adminService.getPendingVerificationsList(),
+      chartData: this.adminService.getServiceChartData(),
+      lowRated: this.adminService.getLowRatedReviews(),
+      expiring: this.adminService.getExpiringVerifications(),
+    }).subscribe({
+      next: (data) => {
+        this.stats = data.stats;
+        this.panicAlerts = data.alerts;
+        this.recentActivity = data.activity;
+        this.pendingVerifications = data.verifications;
+        this.serviceChartData = data.chartData;
+        this.lowRatedReviews = data.lowRated;
+        this.expiringVerifications = data.expiring;
 
-      this.isLoading = false;
-    }, 500);
+        this.buildKpiCards();
+        this.servicesChartOptions = this.getServicesChartOptions(data.chartData);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading dashboard data:', err);
+        this.isLoading = false;
+      },
+    });
   }
 
-  getRevenueChartOptions() {
+  buildKpiCards(): void {
+    if (!this.stats) return;
+
+    this.kpiCards = [
+      {
+        title: 'Enfermeras Activas',
+        value: this.stats.nurses.available,
+        icon: 'medical_services',
+        color: 'success',
+        subtitle: `${this.stats.nurses.verified} verificadas de ${this.stats.nurses.total}`,
+        route: '/admin/nurses',
+      },
+      {
+        title: 'Servicios en Progreso',
+        value: this.stats.services.inProgress + this.stats.services.accepted,
+        icon: 'local_hospital',
+        color: 'primary',
+        subtitle: `${this.stats.services.completedToday} completados hoy`,
+        route: '/admin/services',
+      },
+      {
+        title: 'Verificaciones Pendientes',
+        value: this.stats.nurses.pendingVerification,
+        icon: 'verified_user',
+        color: this.stats.nurses.pendingVerification > 0 ? 'warning' : 'info',
+        badge: this.stats.nurses.pendingVerification > 5 ? this.stats.nurses.pendingVerification : undefined,
+        badgeColor: 'warn',
+        route: '/admin/verifications',
+      },
+      {
+        title: 'Alertas de Seguridad',
+        value: this.stats.safety.activePanicAlerts,
+        icon: 'warning',
+        color: this.stats.safety.activeEmergencies > 0 ? 'danger' : 'info',
+        badge: this.stats.safety.activeEmergencies > 0 ? this.stats.safety.activeEmergencies : undefined,
+        badgeColor: 'warn',
+        subtitle: this.stats.safety.activeEmergencies > 0
+          ? `${this.stats.safety.activeEmergencies} emergencia(s) activa(s)`
+          : 'Sin emergencias activas',
+        route: '/admin/safety',
+      },
+      {
+        title: 'Calificacion Promedio',
+        value: this.stats.ratings.averageRating.toFixed(1),
+        icon: 'star',
+        color: this.stats.ratings.averageRating >= 4 ? 'success' : 'warning',
+        subtitle: `${this.stats.ratings.totalReviews} resenas totales`,
+      },
+      {
+        title: 'API RENIEC',
+        value: `${this.stats.reniec.used}/${this.stats.reniec.limit}`,
+        icon: 'api',
+        color: this.stats.reniec.remaining < 20 ? 'warning' : 'info',
+        subtitle: `${this.stats.reniec.remaining} consultas restantes`,
+        progress: this.stats.reniec.used,
+        progressMax: this.stats.reniec.limit,
+      },
+    ];
+  }
+
+  getServicesChartOptions(data: ServiceChartData[]) {
+    const dates = data.map(d => {
+      const date = new Date(d.date);
+      return date.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' });
+    });
+
     return {
       series: [
         {
-          name: 'Ingresos',
-          data: [31000, 40000, 28000, 51000, 42000, 45680],
+          name: 'Completados',
+          data: data.map(d => d.completed),
         },
         {
-          name: 'Nuevas Suscripciones',
-          data: [11000, 32000, 45000, 32000, 34000, 38000],
+          name: 'Cancelados',
+          data: data.map(d => d.cancelled),
         },
       ],
       chart: {
-        height: 300,
+        height: 280,
         type: 'area' as const,
         toolbar: { show: false },
         foreColor: '#9aa0ac',
       },
-      colors: ['#7c4dff', '#00c853'],
+      colors: ['#00c853', '#ff5252'],
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth' as const, width: 2 },
       xaxis: {
-        categories: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
+        categories: dates,
       },
       yaxis: {
         labels: {
-          formatter: (val: number) => '$' + val.toLocaleString(),
+          formatter: (val: number) => Math.round(val).toString(),
         },
       },
       legend: { position: 'top' as const, horizontalAlign: 'right' as const },
@@ -221,62 +253,109 @@ export class DashboardComponent implements OnInit {
       },
       tooltip: {
         y: {
-          formatter: (val: number) => '$' + val.toLocaleString(),
+          formatter: (val: number) => val + ' servicios',
         },
       },
     };
   }
 
-  getClinicsChartOptions() {
-    return {
-      series: [25, 15, 6, 2],
-      chart: {
-        height: 280,
-        type: 'donut' as const,
-      },
-      labels: ['Basic', 'Professional', 'Premium', 'Enterprise'],
-      colors: ['#42a5f5', '#66bb6a', '#ffca28', '#7c4dff'],
-      legend: {
-        position: 'bottom' as const,
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '60%',
-            labels: {
-              show: true,
-              total: {
-                show: true,
-                label: 'Total',
-                formatter: () => '48',
-              },
-            },
-          },
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
+  getActivityIcon(type: string): string {
+    const icons: Record<string, string> = {
+      'service_completed': 'check_circle',
+      'service_cancelled': 'cancel',
+      'new_service_request': 'add_circle',
+      'verification_approved': 'verified',
+      'verification_rejected': 'gpp_bad',
+      'new_verification': 'pending',
+      'panic_alert': 'warning',
+      'low_review': 'star_border',
     };
+    return icons[type] || 'info';
   }
 
-  getStatusClass(status: string): string {
+  getActivityColor(severity?: string): string {
+    const colors: Record<string, string> = {
+      'info': 'primary',
+      'warning': 'accent',
+      'critical': 'warn',
+    };
+    return colors[severity || 'info'] || 'primary';
+  }
+
+  getSeverityClass(severity?: string): string {
     const classes: Record<string, string> = {
-      active: 'badge-solid-green',
-      pending: 'badge-solid-orange',
-      trial: 'badge-solid-blue',
-      suspended: 'badge-solid-red',
+      'info': 'activity-info',
+      'warning': 'activity-warning',
+      'critical': 'activity-critical',
+    };
+    return classes[severity || 'info'] || 'activity-info';
+  }
+
+  getVerificationStatusClass(status: string): string {
+    const classes: Record<string, string> = {
+      'pending': 'badge-solid-orange',
+      'under_review': 'badge-solid-blue',
+      'approved': 'badge-solid-green',
+      'rejected': 'badge-solid-red',
     };
     return classes[status] || 'badge-solid-gray';
   }
 
-  getStatusLabel(status: string): string {
+  getVerificationStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      active: 'Activo',
-      pending: 'Pendiente',
-      trial: 'Prueba',
-      suspended: 'Suspendido',
+      'pending': 'Pendiente',
+      'under_review': 'En revision',
+      'approved': 'Aprobada',
+      'rejected': 'Rechazada',
     };
     return labels[status] || status;
+  }
+
+  getAlertLevelClass(level: string): string {
+    return level === 'emergency' ? 'alert-emergency' : 'alert-help';
+  }
+
+  getAlertLevelLabel(level: string): string {
+    return level === 'emergency' ? 'EMERGENCIA' : 'Ayuda';
+  }
+
+  formatTimeAgo(date: Date): string {
+    const now = new Date();
+    const then = new Date(date);
+    const diffMs = now.getTime() - then.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins < 60) return `Hace ${diffMins}m`;
+    if (diffHours < 24) return `Hace ${diffHours}h`;
+    return `Hace ${diffDays}d`;
+  }
+
+  getProgressColor(used: number, max: number): string {
+    const percentage = (used / max) * 100;
+    if (percentage >= 85) return 'warn';
+    if (percentage >= 60) return 'accent';
+    return 'primary';
+  }
+
+  navigateToAlert(alert: PanicAlert): void {
+    // TODO: Navigate to alert detail or open map
+    console.log('Navigate to alert:', alert.id);
+  }
+
+  acknowledgeAlert(alert: PanicAlert): void {
+    // TODO: Call API to acknowledge
+    console.log('Acknowledge alert:', alert.id);
+  }
+
+  reviewVerification(verification: PendingVerification): void {
+    // TODO: Navigate to verification review
+    console.log('Review verification:', verification.id);
+  }
+
+  hasEmergencyAlerts(): boolean {
+    return this.panicAlerts.some(a => a.level === 'emergency');
   }
 }
