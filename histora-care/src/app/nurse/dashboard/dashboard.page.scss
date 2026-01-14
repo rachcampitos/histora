@@ -83,9 +83,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 16px;
+  padding: 20px 16px 28px; // Extra bottom padding for overlap effect
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  position: relative;
+  z-index: 1;
 
   .welcome-text {
     h1 {
@@ -113,14 +115,16 @@
 
 // Stats Section - remove overlap when broadcasting indicator is visible
 .broadcasting-indicator + .stats-section {
-  margin-top: 0;
+  margin-top: 12px;
 }
 
 .stats-section {
   display: flex;
   justify-content: space-between;
   padding: 16px;
-  margin-top: -20px;
+  margin-top: -12px;
+  position: relative;
+  z-index: 2;
 
   .stat-card {
     flex: 1;

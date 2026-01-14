@@ -6,3 +6,4 @@ export * from './nurse.service';
 export * from './service-request.service';
 export * from './mapbox.service';
 export * from './websocket.service';
+export * from './theme.service';
