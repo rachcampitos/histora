@@ -63,6 +63,13 @@ export class UsersService {
       .exec();
   }
 
+  async findByDni(dni: string): Promise<UserDocument | null> {
+    const cleanDni = dni.replace(/\D/g, '');
+    return this.userModel
+      .findOne({ dni: cleanDni, isDeleted: false })
+      .exec();
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
     const updatedUser = await this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })

@@ -22,6 +22,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 import { NurseVerificationService } from './nurse-verification.service';
+import { CepRevalidationScheduler } from './cep-revalidation.scheduler';
 import {
   SubmitVerificationDto,
   ReviewVerificationDto,
@@ -38,7 +39,10 @@ interface RequestWithUser extends Request {
 @ApiBearerAuth()
 @Controller('nurses')
 export class NurseVerificationController {
-  constructor(private readonly verificationService: NurseVerificationService) {}
+  constructor(
+    private readonly verificationService: NurseVerificationService,
+    private readonly cepRevalidationScheduler: CepRevalidationScheduler,
+  ) {}
 
   // ============= NURSE ENDPOINTS =============
 
@@ -83,6 +87,116 @@ export class NurseVerificationController {
     }
 
     return this.mapToResponse(verification);
+  }
+
+  // ============= CEP VALIDATION ENDPOINTS =============
+
+  @Post(':nurseId/verification/pre-validate-cep')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.NURSE)
+  @ApiOperation({
+    summary: 'Pre-validate CEP credentials with official registry',
+    description: 'Step 1: Validates DNI and CEP number with the official CEP registry. Returns official photo for identity confirmation.',
+  })
+  @ApiParam({ name: 'nurseId', description: 'Nurse ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'CEP validation result with official photo URL',
+    schema: {
+      properties: {
+        isValid: { type: 'boolean' },
+        cepValidation: {
+          type: 'object',
+          properties: {
+            cepNumber: { type: 'string' },
+            fullName: { type: 'string' },
+            dni: { type: 'string' },
+            photoUrl: { type: 'string' },
+            isPhotoVerified: { type: 'boolean' },
+          },
+        },
+        message: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Invalid CEP data or validation failed' })
+  async preValidateCep(
+    @Param('nurseId') nurseId: string,
+    @Body() dto: { dniNumber: string; cepNumber: string; fullName?: string },
+    @Request() req: RequestWithUser,
+  ): Promise<{
+    isValid: boolean;
+    cepValidation: {
+      cepNumber?: string;
+      fullName?: string;
+      dni?: string;
+      photoUrl?: string;
+      isPhotoVerified?: boolean;
+      isNameVerified?: boolean;
+    };
+    message: string;
+  }> {
+    return this.verificationService.preValidateCep(req.user.userId, nurseId, dto);
+  }
+
+  @Post(':nurseId/verification/confirm-identity')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.NURSE)
+  @ApiOperation({
+    summary: 'Confirm CEP identity after pre-validation',
+    description: 'Step 2: User confirms "Yes, this is me" after seeing their CEP photo. Creates verification record with CEP data.',
+  })
+  @ApiParam({ name: 'nurseId', description: 'Nurse ID' })
+  @ApiResponse({ status: 201, description: 'Identity confirmed, verification record created' })
+  @ApiResponse({ status: 400, description: 'Identity not confirmed or invalid data' })
+  async confirmCepIdentity(
+    @Param('nurseId') nurseId: string,
+    @Body()
+    dto: {
+      dniNumber: string;
+      cepNumber: string;
+      fullName: string;
+      cepValidation: {
+        isValid: boolean;
+        cepNumber?: string;
+        fullName?: string;
+        dni?: string;
+        photoUrl?: string;
+        isPhotoVerified?: boolean;
+        isNameVerified?: boolean;
+        validatedAt?: Date;
+      };
+      confirmed: boolean;
+    },
+    @Request() req: RequestWithUser,
+  ): Promise<VerificationResponseDto> {
+    const verification = await this.verificationService.confirmCepIdentity(
+      req.user.userId,
+      nurseId,
+      dto,
+    );
+
+    return this.mapToResponse(verification);
+  }
+
+  @Get(':nurseId/cep-photo')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get official CEP photo URL for a nurse' })
+  @ApiParam({ name: 'nurseId', description: 'Nurse ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns CEP photo URL and verification status',
+    schema: {
+      properties: {
+        photoUrl: { type: 'string', nullable: true },
+        isVerified: { type: 'boolean' },
+      },
+    },
+  })
+  async getCepPhoto(
+    @Param('nurseId') nurseId: string,
+  ): Promise<{ photoUrl: string | null; isVerified: boolean }> {
+    return this.verificationService.getCepPhotoUrl(nurseId);
   }
 
   // ============= ADMIN ENDPOINTS =============
@@ -177,17 +291,89 @@ export class NurseVerificationController {
     return this.mapToResponse(verification);
   }
 
+  // ============= CEP REVALIDATION ENDPOINTS =============
+
+  @Post('admin/revalidate-all-cep')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: '[Admin] Trigger manual CEP revalidation for all verified nurses',
+    description: 'Manually triggers the monthly CEP revalidation job. Use with caution as it checks all verified nurses.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Revalidation results',
+    schema: {
+      properties: {
+        processed: { type: 'number' },
+        valid: { type: 'number' },
+        invalid: { type: 'number' },
+        errors: { type: 'array', items: { type: 'string' } },
+      },
+    },
+  })
+  async triggerManualRevalidation(): Promise<{
+    processed: number;
+    valid: number;
+    invalid: number;
+    errors: string[];
+  }> {
+    return this.cepRevalidationScheduler.triggerManualRevalidation();
+  }
+
+  @Post('admin/revalidate-cep/:nurseId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiOperation({
+    summary: '[Admin] Revalidate CEP for a single nurse',
+    description: 'Checks a specific nurse\'s CEP status with the official registry.',
+  })
+  @ApiParam({ name: 'nurseId', description: 'Nurse ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Revalidation result',
+    schema: {
+      properties: {
+        nurseId: { type: 'string' },
+        cepNumber: { type: 'string' },
+        isValid: { type: 'boolean' },
+        error: { type: 'string' },
+      },
+    },
+  })
+  async revalidateSingleNurse(
+    @Param('nurseId') nurseId: string,
+  ): Promise<{
+    nurseId: string;
+    cepNumber: string;
+    isValid: boolean;
+    error?: string;
+  }> {
+    return this.cepRevalidationScheduler.revalidateSingleNurse(nurseId);
+  }
+
   // Helper to map verification to response DTO
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToResponse(verification: any): VerificationResponseDto {
     const v = verification as {
       _id: { toString(): string };
-      nurseId: { toString(): string; cepNumber?: string; specialties?: string[]; userId?: { firstName?: string; lastName?: string; email?: string; avatar?: string } } | string;
+      nurseId: {
+        toString(): string;
+        cepNumber?: string;
+        specialties?: string[];
+        officialCepPhotoUrl?: string;
+        selfieUrl?: string;
+        cepRegisteredName?: string;
+        userId?: { firstName?: string; lastName?: string; email?: string; phone?: string; avatar?: string };
+      } | string;
       userId: { toString(): string } | string;
       status: VerificationStatus;
       dniNumber?: string;
       fullNameOnDni?: string;
       documents: Array<{ url: string; type: string; uploadedAt: Date }>;
+      officialCepPhotoUrl?: string;
+      cepIdentityConfirmed?: boolean;
+      cepIdentityConfirmedAt?: Date;
       reviewedAt?: Date;
       reviewNotes?: string;
       rejectionReason?: string;
@@ -207,6 +393,9 @@ export class NurseVerificationController {
         type: d.type,
         uploadedAt: d.uploadedAt,
       })),
+      officialCepPhotoUrl: v.officialCepPhotoUrl,
+      cepIdentityConfirmed: v.cepIdentityConfirmed,
+      cepIdentityConfirmedAt: v.cepIdentityConfirmedAt,
       reviewedAt: v.reviewedAt,
       reviewNotes: v.reviewNotes,
       rejectionReason: v.rejectionReason,
@@ -217,11 +406,15 @@ export class NurseVerificationController {
         ? {
             cepNumber: v.nurseId.cepNumber || '',
             specialties: v.nurseId.specialties || [],
+            officialCepPhotoUrl: v.nurseId.officialCepPhotoUrl,
+            selfieUrl: v.nurseId.selfieUrl,
+            cepRegisteredName: v.nurseId.cepRegisteredName,
             user: v.nurseId.userId && typeof v.nurseId.userId === 'object'
               ? {
                   firstName: v.nurseId.userId.firstName || '',
                   lastName: v.nurseId.userId.lastName || '',
                   email: v.nurseId.userId.email || '',
+                  phone: v.nurseId.userId.phone,
                   avatar: v.nurseId.userId.avatar,
                 }
               : undefined,

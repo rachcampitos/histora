@@ -81,6 +81,22 @@ export class Nurse extends Document {
   @Prop()
   cepVerifiedAt?: Date;
 
+  // Official CEP photo from the registry (used as verified avatar)
+  @Prop()
+  officialCepPhotoUrl?: string;
+
+  // Full name as registered in CEP
+  @Prop()
+  cepRegisteredName?: string;
+
+  // Selfie URL uploaded during registration (for identity verification)
+  @Prop()
+  selfieUrl?: string;
+
+  // Selfie public ID for Cloudinary deletion
+  @Prop()
+  selfiePublicId?: string;
+
   // Verification status for the nurse profile
   @Prop({
     type: String,

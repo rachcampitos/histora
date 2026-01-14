@@ -33,6 +33,10 @@ export class CreateUserDto {
   @IsOptional()
   phone?: string;
 
+  @IsString()
+  @IsOptional()
+  dni?: string; // Documento Nacional de Identidad (Peru)
+
   @IsEnum(UserRole)
   @IsOptional()
   role?: UserRole;

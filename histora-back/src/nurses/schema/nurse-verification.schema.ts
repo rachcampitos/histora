@@ -8,6 +8,39 @@ export enum VerificationStatus {
   REJECTED = 'rejected',
 }
 
+// Sub-schema for CEP validation result
+@Schema({ _id: false })
+export class CepValidationResult {
+  @Prop({ required: true })
+  isValid: boolean;
+
+  @Prop()
+  cepNumber?: string;
+
+  @Prop()
+  fullName?: string;
+
+  @Prop()
+  dni?: string;
+
+  @Prop()
+  photoUrl?: string;
+
+  @Prop()
+  isPhotoVerified?: boolean;
+
+  @Prop()
+  isNameVerified?: boolean;
+
+  @Prop()
+  validatedAt?: Date;
+
+  @Prop()
+  error?: string;
+}
+
+export const CepValidationResultSchema = SchemaFactory.createForClass(CepValidationResult);
+
 // Sub-schema for verification documents
 @Schema({ _id: false })
 export class VerificationDocument {
@@ -52,6 +85,21 @@ export class NurseVerification extends Document {
 
   @Prop()
   fullNameOnDni?: string;
+
+  // CEP Validation from official registry
+  @Prop({ type: CepValidationResultSchema })
+  cepValidation?: CepValidationResult;
+
+  // Official CEP photo URL (to be used as avatar)
+  @Prop()
+  officialCepPhotoUrl?: string;
+
+  // Whether user confirmed "Sí, soy yo" for the CEP data
+  @Prop()
+  cepIdentityConfirmed?: boolean;
+
+  @Prop()
+  cepIdentityConfirmedAt?: Date;
 
   // Admin review information
   @Prop({ type: Types.ObjectId, ref: 'User' })

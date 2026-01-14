@@ -142,4 +142,33 @@ export class CreateNurseDto {
   @Min(1)
   @Max(50)
   serviceRadius?: number;
+
+  // CEP Verification fields (set during registration)
+  @ApiPropertyOptional({ description: 'Whether CEP has been verified with official registry' })
+  @IsOptional()
+  @IsBoolean()
+  cepVerified?: boolean;
+
+  @ApiPropertyOptional({ description: 'Official photo URL from CEP registry' })
+  @IsOptional()
+  @IsString()
+  officialCepPhotoUrl?: string;
+
+  @ApiPropertyOptional({ description: 'Full name as registered in CEP' })
+  @IsOptional()
+  @IsString()
+  cepRegisteredName?: string;
+
+  @ApiPropertyOptional({ description: 'Selfie URL uploaded during registration' })
+  @IsOptional()
+  @IsString()
+  selfieUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'Verification status',
+    enum: ['pending', 'selfie_required', 'under_review', 'approved', 'rejected'],
+  })
+  @IsOptional()
+  @IsString()
+  verificationStatus?: string;
 }

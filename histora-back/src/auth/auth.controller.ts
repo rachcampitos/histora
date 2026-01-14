@@ -10,7 +10,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { AuthService, AuthResponse } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto, RegisterPatientDto, RegisterNurseDto, CompleteGoogleRegistrationDto } from './dto/register.dto';
+import { RegisterDto, RegisterPatientDto, RegisterNurseDto, CompleteGoogleRegistrationDto, ValidateNurseCepDto, CompleteNurseRegistrationDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -56,12 +56,58 @@ export class AuthController {
 
   @Public()
   @Post('register/nurse')
-  @ApiOperation({ summary: 'Registrar nueva enfermera (Histora Care)' })
+  @ApiOperation({ summary: 'Registrar nueva enfermera (Histora Care) - Método tradicional' })
   @ApiResponse({ status: 201, description: 'Enfermera registrada exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email o CEP ya registrado' })
   registerNurse(@Body() registerDto: RegisterNurseDto): Promise<AuthResponse> {
     return this.authService.registerNurse(registerDto);
+  }
+
+  // ============= SIMPLIFIED NURSE REGISTRATION (2-Step Flow) =============
+
+  @Public()
+  @Post('register/nurse/validate-cep')
+  @ApiOperation({
+    summary: 'Paso 1: Validar credenciales de enfermera con CEP',
+    description: 'Valida DNI y CEP con el registro oficial del Colegio de Enfermeros del Perú. Retorna nombre y foto oficial para confirmación.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Validación exitosa, retorna datos del CEP',
+    schema: {
+      properties: {
+        isValid: { type: 'boolean' },
+        data: {
+          type: 'object',
+          properties: {
+            cepNumber: { type: 'string' },
+            fullName: { type: 'string' },
+            dni: { type: 'string' },
+            photoUrl: { type: 'string' },
+            isPhotoVerified: { type: 'boolean' },
+          },
+        },
+        error: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'DNI o CEP inválido' })
+  validateNurseCep(@Body() dto: ValidateNurseCepDto) {
+    return this.authService.validateNurseCep(dto);
+  }
+
+  @Public()
+  @Post('register/nurse/complete')
+  @ApiOperation({
+    summary: 'Paso 2: Completar registro de enfermera',
+    description: 'Después de validar con CEP y confirmar identidad, completa el registro con email, contraseña y selfie opcional.',
+  })
+  @ApiResponse({ status: 201, description: 'Enfermera registrada exitosamente' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos o no confirmó identidad' })
+  @ApiResponse({ status: 409, description: 'Email, DNI o CEP ya registrado' })
+  completeNurseRegistration(@Body() dto: CompleteNurseRegistrationDto) {
+    return this.authService.completeNurseRegistration(dto);
   }
 
   @Public()

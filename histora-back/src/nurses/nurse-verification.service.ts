@@ -6,9 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { NurseVerification, VerificationStatus } from './schema/nurse-verification.schema';
+import { NurseVerification, VerificationStatus, CepValidationResult } from './schema/nurse-verification.schema';
 import { Nurse } from './schema/nurse.schema';
+import { User } from '../users/schema/user.schema';
 import { CloudinaryProvider } from '../uploads/providers/cloudinary.provider';
+import { CepValidationService } from './cep-validation.service';
 import {
   SubmitVerificationDto,
   ReviewVerificationDto,
@@ -25,7 +27,9 @@ export class NurseVerificationService {
   constructor(
     @InjectModel(NurseVerification.name) private verificationModel: Model<NurseVerification>,
     @InjectModel(Nurse.name) private nurseModel: Model<Nurse>,
+    @InjectModel(User.name) private userModel: Model<User>,
     private cloudinaryProvider: CloudinaryProvider,
+    private cepValidationService: CepValidationService,
   ) {}
 
   /**
@@ -187,10 +191,10 @@ export class NurseVerificationService {
         .find(filter)
         .populate({
           path: 'nurseId',
-          select: 'cepNumber specialties',
+          select: 'cepNumber specialties officialCepPhotoUrl selfieUrl cepRegisteredName',
           populate: {
             path: 'userId',
-            select: 'firstName lastName email avatar',
+            select: 'firstName lastName email phone avatar',
           },
         })
         .sort({ createdAt: 1 }) // Oldest first
@@ -216,7 +220,7 @@ export class NurseVerificationService {
       .findById(verificationId)
       .populate({
         path: 'nurseId',
-        select: 'cepNumber specialties bio yearsOfExperience',
+        select: 'cepNumber specialties bio yearsOfExperience officialCepPhotoUrl selfieUrl cepRegisteredName',
         populate: {
           path: 'userId',
           select: 'firstName lastName email phone avatar',
@@ -332,6 +336,210 @@ export class NurseVerificationService {
       approved,
       rejected,
       total: pending + underReview + approved + rejected,
+    };
+  }
+
+  // =====================
+  // CEP VALIDATION METHODS
+  // =====================
+
+  /**
+   * Pre-validate CEP credentials before starting the verification process
+   * This is the first step: validates DNI and CEP with the official registry
+   * Returns the official CEP photo for user confirmation
+   */
+  async preValidateCep(
+    userId: string,
+    nurseId: string,
+    dto: { dniNumber: string; cepNumber: string; fullName?: string },
+  ): Promise<{
+    isValid: boolean;
+    cepValidation: CepValidationResult;
+    message: string;
+  }> {
+    // Verify nurse belongs to user
+    const nurse = await this.nurseModel.findOne({
+      _id: new Types.ObjectId(nurseId),
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!nurse) {
+      throw new NotFoundException('Nurse profile not found');
+    }
+
+    // Validate CEP number matches
+    if (nurse.cepNumber !== dto.cepNumber) {
+      throw new BadRequestException(
+        `CEP number does not match. Expected: ${nurse.cepNumber}, Received: ${dto.cepNumber}`,
+      );
+    }
+
+    this.logger.log(`Pre-validating CEP for nurse ${nurseId}: DNI=${dto.dniNumber}, CEP=${dto.cepNumber}`);
+
+    // Validate with official CEP registry
+    const validation = await this.cepValidationService.validateNurse({
+      cepNumber: dto.cepNumber,
+      dni: dto.dniNumber,
+      fullName: dto.fullName,
+    });
+
+    const cepValidation: CepValidationResult = {
+      isValid: validation.isValid,
+      cepNumber: validation.data?.cepNumber,
+      fullName: validation.data?.fullName,
+      dni: validation.data?.dni,
+      photoUrl: validation.data?.photoUrl,
+      isPhotoVerified: validation.data?.isPhotoVerified,
+      isNameVerified: validation.data?.isNameVerified,
+      validatedAt: new Date(),
+      error: validation.error,
+    };
+
+    if (!validation.isValid) {
+      return {
+        isValid: false,
+        cepValidation,
+        message: validation.error || 'No se pudo validar el registro CEP',
+      };
+    }
+
+    return {
+      isValid: true,
+      cepValidation,
+      message: validation.data?.photoUrl
+        ? 'CEP validado exitosamente. Por favor confirma que la foto corresponde a tu identidad.'
+        : 'CEP validado por nombre. No se encontró foto en el registro.',
+    };
+  }
+
+  /**
+   * Confirm identity after CEP pre-validation
+   * User confirms "Sí, soy yo" after seeing their CEP photo
+   * This creates or updates the verification record with CEP data
+   */
+  async confirmCepIdentity(
+    userId: string,
+    nurseId: string,
+    dto: {
+      dniNumber: string;
+      cepNumber: string;
+      fullName: string;
+      cepValidation: CepValidationResult;
+      confirmed: boolean;
+    },
+  ): Promise<NurseVerification> {
+    // Verify nurse belongs to user
+    const nurse = await this.nurseModel.findOne({
+      _id: new Types.ObjectId(nurseId),
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!nurse) {
+      throw new NotFoundException('Nurse profile not found');
+    }
+
+    if (!dto.confirmed) {
+      throw new BadRequestException(
+        'Debes confirmar tu identidad para continuar con la verificación',
+      );
+    }
+
+    // Check for existing verification
+    let verification = await this.verificationModel.findOne({
+      nurseId: new Types.ObjectId(nurseId),
+      status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
+    });
+
+    if (verification && verification.status === VerificationStatus.APPROVED) {
+      throw new BadRequestException('Esta enfermera ya está verificada');
+    }
+
+    // Get attempt number from previous rejected verifications
+    const previousAttempts = await this.verificationModel.countDocuments({
+      nurseId: new Types.ObjectId(nurseId),
+      status: VerificationStatus.REJECTED,
+    });
+
+    if (!verification) {
+      // Create new verification record
+      verification = new this.verificationModel({
+        nurseId: new Types.ObjectId(nurseId),
+        userId: new Types.ObjectId(userId),
+        dniNumber: dto.dniNumber,
+        fullNameOnDni: dto.fullName,
+        cepValidation: dto.cepValidation,
+        officialCepPhotoUrl: dto.cepValidation.photoUrl,
+        cepIdentityConfirmed: true,
+        cepIdentityConfirmedAt: new Date(),
+        status: VerificationStatus.PENDING,
+        attemptNumber: previousAttempts + 1,
+      });
+    } else {
+      // Update existing verification
+      verification.dniNumber = dto.dniNumber;
+      verification.fullNameOnDni = dto.fullName;
+      verification.cepValidation = dto.cepValidation;
+      verification.officialCepPhotoUrl = dto.cepValidation.photoUrl;
+      verification.cepIdentityConfirmed = true;
+      verification.cepIdentityConfirmedAt = new Date();
+    }
+
+    await verification.save();
+
+    // Update nurse with CEP photo URL
+    if (dto.cepValidation.photoUrl) {
+      await this.nurseModel.findByIdAndUpdate(nurseId, {
+        officialCepPhotoUrl: dto.cepValidation.photoUrl,
+        cepRegisteredName: dto.cepValidation.fullName,
+      });
+    }
+
+    this.logger.log(`CEP identity confirmed for nurse ${nurseId}`);
+
+    return verification;
+  }
+
+  /**
+   * Override reviewVerification to also update user avatar with CEP photo
+   */
+  async approveAndSetCepAvatar(
+    verificationId: string,
+    adminUserId: string,
+    dto: ReviewVerificationDto,
+  ): Promise<NurseVerification> {
+    // First, do the normal review
+    const verification = await this.reviewVerification(verificationId, adminUserId, dto);
+
+    // If approved and has CEP photo, update user avatar
+    if (dto.status === VerificationStatus.APPROVED && verification.officialCepPhotoUrl) {
+      const nurse = await this.nurseModel.findById(verification.nurseId);
+      if (nurse) {
+        // Update user's avatar with the official CEP photo
+        await this.userModel.findByIdAndUpdate(nurse.userId, {
+          avatar: verification.officialCepPhotoUrl,
+        });
+
+        this.logger.log(
+          `Updated user ${nurse.userId} avatar with official CEP photo: ${verification.officialCepPhotoUrl}`,
+        );
+      }
+    }
+
+    return verification;
+  }
+
+  /**
+   * Get the official CEP photo URL for a nurse
+   */
+  async getCepPhotoUrl(nurseId: string): Promise<{ photoUrl: string | null; isVerified: boolean }> {
+    const nurse = await this.nurseModel.findById(nurseId);
+    if (!nurse) {
+      throw new NotFoundException('Nurse not found');
+    }
+
+    return {
+      photoUrl: nurse.officialCepPhotoUrl || null,
+      isVerified: nurse.cepVerified,
     };
   }
 

@@ -25,6 +25,14 @@ export class UpdateUserDto extends PartialType(
   @IsOptional()
   nurseProfileId?: Types.ObjectId;
 
+  @IsString()
+  @IsOptional()
+  avatar?: string;
+
+  @IsString()
+  @IsOptional()
+  avatarPublicId?: string;
+
   // Terms and conditions acceptance (for updates)
   @IsBoolean()
   @IsOptional()

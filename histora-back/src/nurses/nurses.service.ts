@@ -34,9 +34,28 @@ export class NursesService {
       throw new ConflictException('CEP number is already registered');
     }
 
+    // Map verificationStatus string to enum if provided
+    let verificationStatus = createNurseDto.verificationStatus;
+    if (verificationStatus && !Object.values(['pending', 'selfie_required', 'under_review', 'approved', 'rejected']).includes(verificationStatus)) {
+      verificationStatus = 'pending';
+    }
+
     const nurse = new this.nurseModel({
       userId: new Types.ObjectId(userId),
-      ...createNurseDto,
+      cepNumber: createNurseDto.cepNumber,
+      specialties: createNurseDto.specialties || [],
+      bio: createNurseDto.bio,
+      yearsOfExperience: createNurseDto.yearsOfExperience,
+      services: createNurseDto.services || [],
+      location: createNurseDto.location,
+      serviceRadius: createNurseDto.serviceRadius,
+      // CEP Verification fields
+      cepVerified: createNurseDto.cepVerified || false,
+      cepVerifiedAt: createNurseDto.cepVerified ? new Date() : undefined,
+      officialCepPhotoUrl: createNurseDto.officialCepPhotoUrl,
+      cepRegisteredName: createNurseDto.cepRegisteredName,
+      selfieUrl: createNurseDto.selfieUrl,
+      verificationStatus: verificationStatus || 'pending',
     });
 
     return nurse.save();
@@ -57,10 +76,58 @@ export class NursesService {
     const nurseObj = nurse as Record<string, unknown>;
     const populatedUser = nurseObj.userId as Record<string, unknown> | null;
 
+    // Build verification badge info
+    const verificationBadge = this.buildVerificationBadge(nurseObj);
+
     return {
       ...nurseObj,
       userId: populatedUser?._id?.toString() || String(nurseObj.userId),
       user: populatedUser,
+      verificationBadge,
+    };
+  }
+
+  /**
+   * Builds verification badge information for nurse profile
+   */
+  private buildVerificationBadge(nurse: Record<string, unknown>): {
+    isVerified: boolean;
+    isCepVerified: boolean;
+    hasOfficialPhoto: boolean;
+    officialPhotoUrl: string | null;
+    verificationStatus: string;
+    badgeLabel: string;
+    badgeColor: string;
+  } {
+    const cepVerified = nurse.cepVerified as boolean || false;
+    const verificationStatus = nurse.verificationStatus as string || 'pending';
+    const officialCepPhotoUrl = nurse.officialCepPhotoUrl as string || null;
+
+    const isVerified = verificationStatus === 'approved' && cepVerified;
+    const hasOfficialPhoto = !!officialCepPhotoUrl;
+
+    let badgeLabel = 'Pendiente';
+    let badgeColor = 'warning';
+
+    if (isVerified) {
+      badgeLabel = 'Verificado CEP';
+      badgeColor = 'success';
+    } else if (verificationStatus === 'under_review') {
+      badgeLabel = 'En revisión';
+      badgeColor = 'info';
+    } else if (verificationStatus === 'rejected') {
+      badgeLabel = 'Rechazado';
+      badgeColor = 'danger';
+    }
+
+    return {
+      isVerified,
+      isCepVerified: cepVerified,
+      hasOfficialPhoto,
+      officialPhotoUrl: officialCepPhotoUrl,
+      verificationStatus,
+      badgeLabel,
+      badgeColor,
     };
   }
 
@@ -79,10 +146,14 @@ export class NursesService {
     const nurseObj = nurse as Record<string, unknown>;
     const populatedUser = nurseObj.userId as Record<string, unknown> | null;
 
+    // Build verification badge info
+    const verificationBadge = this.buildVerificationBadge(nurseObj);
+
     return {
       ...nurseObj,
       userId: populatedUser?._id?.toString() || String(nurseObj.userId),
       user: populatedUser,
+      verificationBadge,
     };
   }
 
@@ -323,5 +394,41 @@ export class NursesService {
       net: 0,
       servicesCount: 0,
     };
+  }
+
+  /**
+   * Get selfie public ID for a nurse (for deletion)
+   */
+  async getSelfiePublicId(nurseId: string): Promise<string | null> {
+    const nurse = await this.nurseModel.findById(nurseId).select('selfiePublicId').exec();
+    return nurse?.selfiePublicId || null;
+  }
+
+  /**
+   * Update nurse selfie URL and public ID
+   * Also updates verification status to 'pending' if selfie is provided
+   */
+  async updateSelfie(nurseId: string, selfieUrl: string, selfiePublicId: string): Promise<Nurse> {
+    const updateData: Record<string, unknown> = {
+      selfieUrl,
+      selfiePublicId,
+    };
+
+    // If selfie is provided, update status to pending (ready for admin review)
+    if (selfieUrl) {
+      updateData.verificationStatus = 'pending';
+    }
+
+    const nurse = await this.nurseModel.findByIdAndUpdate(
+      nurseId,
+      { $set: updateData },
+      { new: true },
+    );
+
+    if (!nurse) {
+      throw new NotFoundException('Nurse profile not found');
+    }
+
+    return nurse;
   }
 }

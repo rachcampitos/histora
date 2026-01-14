@@ -160,3 +160,78 @@ export class CompleteGoogleRegistrationDto {
   @IsOptional()
   professionalDisclaimerAccepted?: boolean;
 }
+
+/**
+ * Step 1: Validate nurse credentials with CEP registry
+ * Only DNI + CEP required - name is fetched automatically
+ */
+export class ValidateNurseCepDto {
+  @IsString()
+  @IsNotEmpty({ message: 'El DNI es requerido' })
+  dni: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'El número de CEP es requerido' })
+  cepNumber: string;
+}
+
+/**
+ * Step 2: Complete nurse registration after CEP validation
+ */
+export class CompleteNurseRegistrationDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  password: string;
+
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
+  // DNI and CEP (validated in step 1)
+  @IsString()
+  @IsNotEmpty()
+  dni: string;
+
+  @IsString()
+  @IsNotEmpty()
+  cepNumber: string;
+
+  // Name from CEP registry (confirmed by user)
+  @IsString()
+  @IsNotEmpty()
+  fullNameFromCep: string;
+
+  // Photo URL from CEP registry
+  @IsString()
+  @IsOptional()
+  cepPhotoUrl?: string;
+
+  // User confirmed "Yes, this is me"
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe confirmar su identidad' })
+  identityConfirmed: boolean;
+
+  // Selfie URL (uploaded to Cloudinary)
+  @IsString()
+  @IsOptional()
+  selfieUrl?: string;
+
+  // Specialties (optional on registration)
+  @IsOptional()
+  @IsString({ each: true })
+  specialties?: string[];
+
+  // Terms acceptance
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar los términos y condiciones' })
+  termsAccepted: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty({ message: 'Debe aceptar la exención de responsabilidad profesional' })
+  professionalDisclaimerAccepted: boolean;
+}
