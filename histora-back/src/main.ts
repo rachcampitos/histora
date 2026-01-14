@@ -40,6 +40,8 @@ async function bootstrap() {
     'http://localhost:4200',
     'http://localhost:8100',
     'http://localhost:8101',
+    'http://localhost:8102',
+    'http://localhost:8103',
     'https://app.historahealth.com',
     'https://historahealth.com',
     'https://care.historahealth.com',
