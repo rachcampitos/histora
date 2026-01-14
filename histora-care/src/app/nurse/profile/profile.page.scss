@@ -32,6 +32,11 @@
     margin-bottom: 16px;
     display: flex;
     justify-content: center;
+    cursor: pointer;
+
+    &:active {
+      transform: scale(0.95);
+    }
 
     ion-avatar {
       width: 100px;
@@ -58,10 +63,29 @@
       }
     }
 
+    .avatar-edit-badge {
+      position: absolute;
+      bottom: 4px;
+      right: calc(50% - 50px); // Offset from center
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+
+      ion-icon {
+        font-size: 14px;
+        color: white;
+      }
+    }
+
     .verified-badge {
       position: absolute;
       bottom: 0;
-      right: 0;
+      right: calc(50% - 50px - 30px); // Offset from edit badge
       background: #4caf50;
       border-radius: 50%;
       padding: 4px;
@@ -71,6 +95,25 @@
         font-size: 20px;
         color: white;
         display: block;
+      }
+    }
+
+    .avatar-loading {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-spinner {
+        width: 32px;
+        height: 32px;
       }
     }
   }

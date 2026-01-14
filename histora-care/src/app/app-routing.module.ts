@@ -1,19 +1,76 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { authGuard, noAuthGuard, nurseGuard, patientGuard, adminGuard } from './core/guards';
+import {
+  authGuard,
+  noAuthGuard,
+  nurseGuard,
+  patientGuard,
+  adminGuard,
+  landingGuard,
+  landingAccessGuard,
+  postAuthOnboardingGuard,
+  tutorialAccessGuard
+} from './core/guards';
+
+/**
+ * ============================================================
+ * APPLICATION ROUTES - HYBRID ONBOARDING FLOW
+ * ============================================================
+ *
+ * ROUTE FLOW:
+ * 1. First visit → /onboarding/landing (pre-auth, 1 slide)
+ * 2. Click CTA → /auth/register or /auth/login
+ * 3. After registration → /onboarding/tutorial (post-auth, 5 slides)
+ * 4. Complete tutorial → /nurse/dashboard or /patient/tabs (based on role)
+ *
+ * RETURNING USERS:
+ * - Already seen landing → Skip to /auth/login
+ * - Already logged in → Skip to dashboard
+ * - Already completed tutorial → Skip to dashboard
+ */
 
 const routes: Routes = [
-  // Default redirect
+  // ============================================================
+  // DEFAULT REDIRECT
+  // ============================================================
   {
     path: '',
     redirectTo: 'auth/login',
     pathMatch: 'full',
   },
 
-  // Auth routes (no auth required)
+  // ============================================================
+  // ONBOARDING ROUTES
+  // ============================================================
+  {
+    path: 'onboarding',
+    children: [
+      // Pre-auth landing (1 slide)
+      {
+        path: 'landing',
+        canActivate: [landingAccessGuard],
+        loadChildren: () => import('./onboarding/landing/landing.module').then(m => m.LandingPageModule),
+      },
+      // Post-auth tutorial (5 slides)
+      {
+        path: 'tutorial',
+        canActivate: [tutorialAccessGuard],
+        loadChildren: () => import('./onboarding/tutorial/tutorial.module').then(m => m.TutorialPageModule),
+      },
+      {
+        path: '',
+        redirectTo: 'landing',
+        pathMatch: 'full',
+      },
+    ],
+  },
+
+  // ============================================================
+  // AUTH ROUTES (requires landing to be seen)
+  // ============================================================
   {
     path: 'auth',
-    canActivate: [noAuthGuard],
+    canActivate: [landingGuard, noAuthGuard],
     children: [
       {
         path: 'login',
@@ -44,10 +101,12 @@ const routes: Routes = [
     loadChildren: () => import('./auth/complete-registration/complete-registration.module').then(m => m.CompleteRegistrationPageModule),
   },
 
-  // Nurse routes
+  // ============================================================
+  // NURSE ROUTES (requires auth + tutorial + nurse role)
+  // ============================================================
   {
     path: 'nurse',
-    canActivate: [authGuard, nurseGuard],
+    canActivate: [authGuard, postAuthOnboardingGuard, nurseGuard],
     children: [
       {
         path: 'dashboard',
@@ -81,10 +140,12 @@ const routes: Routes = [
     ],
   },
 
-  // Admin routes
+  // ============================================================
+  // ADMIN ROUTES (requires auth + tutorial + admin role)
+  // ============================================================
   {
     path: 'admin',
-    canActivate: [authGuard, adminGuard],
+    canActivate: [authGuard, postAuthOnboardingGuard, adminGuard],
     children: [
       {
         path: 'verifications',
@@ -98,10 +159,12 @@ const routes: Routes = [
     ],
   },
 
-  // Patient routes with tabs
+  // ============================================================
+  // PATIENT ROUTES (requires auth + tutorial + patient role)
+  // ============================================================
   {
     path: 'patient',
-    canActivate: [authGuard, patientGuard],
+    canActivate: [authGuard, postAuthOnboardingGuard, patientGuard],
     children: [
       // Tabs layout (main navigation)
       {
@@ -151,7 +214,9 @@ const routes: Routes = [
     ],
   },
 
-  // Fallback
+  // ============================================================
+  // FALLBACK
+  // ============================================================
   {
     path: '**',
     redirectTo: 'auth/login',

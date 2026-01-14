@@ -155,16 +155,23 @@
               </div>
 
               <div class="card-actions">
-                <!-- Rating display for rated services -->
+                <!-- Rating display with "Ver mi reseña" button for rated services -->
                 @if (request.rating) {
-                  <div class="rating-display">
-                    @for (star of [1, 2, 3, 4, 5]; track star) {
-                      <ion-icon
-                        [name]="star <= request.rating! ? 'star' : 'star-outline'"
-                        [class.filled]="star <= request.rating!">
-                      </ion-icon>
-                    }
-                  </div>
+                  <ion-button
+                    fill="clear"
+                    size="small"
+                    class="view-review-button"
+                    (click)="viewReview(request, $event)">
+                    <div class="rating-stars">
+                      @for (star of [1, 2, 3, 4, 5]; track star) {
+                        <ion-icon
+                          [name]="star <= request.rating! ? 'star' : 'star-outline'"
+                          [class.filled]="star <= request.rating!">
+                        </ion-icon>
+                      }
+                    </div>
+                    <span class="view-review-text">Ver mi reseña</span>
+                  </ion-button>
                 }
 
                 <!-- Rate button for completed services without rating -->
@@ -175,7 +182,7 @@
                     color="warning"
                     (click)="rateService(request, $event)">
                     <ion-icon name="star-outline" slot="start"></ion-icon>
-                    Dejar resena
+                    Dejar Reseña
                   </ion-button>
                 }
 

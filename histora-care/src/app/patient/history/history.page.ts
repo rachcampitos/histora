@@ -167,9 +167,10 @@ export class HistoryPage implements OnInit {
         serviceRequestId: request._id,
         nurseName
       },
-      breakpoints: [0, 0.65, 0.9],
-      initialBreakpoint: 0.65,
-      handle: true
+      breakpoints: [0, 0.75, 1],
+      initialBreakpoint: 0.75,
+      handle: true,
+      cssClass: 'review-modal'
     });
 
     await modal.present();
@@ -334,6 +335,22 @@ export class HistoryPage implements OnInit {
       return (first + last).toUpperCase();
     }
     return 'E';
+  }
+
+  /**
+   * View existing review
+   */
+  async viewReview(request: ServiceRequest, event: Event) {
+    event.stopPropagation();
+
+    const alert = await this.alertController.create({
+      header: 'Tu Reseña',
+      subHeader: `${request.rating} de 5 estrellas`,
+      message: request.review || 'Sin comentario',
+      buttons: ['Cerrar'],
+      cssClass: 'view-review-alert'
+    });
+    await alert.present();
   }
 
   /**

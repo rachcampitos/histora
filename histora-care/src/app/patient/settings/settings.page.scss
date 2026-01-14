@@ -8,11 +8,16 @@
   background: var(--histora-surface, #ffffff);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-  &:active {
-    transform: scale(0.98);
+  .profile-avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+
+    &:active {
+      transform: scale(0.95);
+    }
   }
 
   .profile-avatar {
@@ -24,7 +29,6 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    flex-shrink: 0;
 
     img {
       width: 100%;
@@ -38,8 +42,46 @@
     }
   }
 
+  .avatar-edit-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--ion-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--histora-surface, #ffffff);
+
+    ion-icon {
+      font-size: 12px;
+      color: white;
+    }
+  }
+
+  .avatar-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-spinner {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
   .profile-info {
     flex: 1;
+    cursor: pointer;
 
     h2 {
       margin: 0 0 4px 0;
@@ -58,6 +100,7 @@
   > ion-icon {
     font-size: 20px;
     color: var(--ion-color-medium);
+    cursor: pointer;
   }
 }
 
@@ -127,6 +170,10 @@ ion-list {
       ion-icon {
         color: #a1a1aa;
       }
+    }
+
+    .avatar-edit-badge {
+      border-color: #1e293b;
     }
 
     .profile-info {

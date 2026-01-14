@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-tabs',
@@ -8,6 +7,6 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./tabs.page.scss'],
 })
 export class TabsPage {
-  // Disable AI assistant in production for now
-  showAIAssistant = !environment.production;
+  // AI assistant disabled until ready for release
+  showAIAssistant = false;
 }

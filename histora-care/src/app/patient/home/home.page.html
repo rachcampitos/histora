@@ -27,7 +27,7 @@
   </div>
 
   <!-- Main Action Card -->
-  <ion-card class="main-action-card" button (click)="goToMap()">
+  <ion-card id="tour-main-action" class="main-action-card" button (click)="goToMap()">
     <ion-card-content>
       <div class="action-icon">
         <ion-icon name="map"></ion-icon>
@@ -41,7 +41,7 @@
   </ion-card>
 
   <!-- Quick Actions -->
-  <div class="quick-actions">
+  <div id="tour-quick-actions" class="quick-actions">
     <div class="quick-action-card" (click)="goToHistory()">
       <div class="quick-icon history">
         <ion-icon name="time"></ion-icon>

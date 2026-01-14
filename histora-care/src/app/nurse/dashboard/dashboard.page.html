@@ -204,4 +204,15 @@
       <span>Perfil</span>
     </div>
   </div>
+
+  <!-- Panic Button Section -->
+  <div class="section panic-section">
+    <div class="section-header">
+      <h2>Seguridad</h2>
+    </div>
+    <app-panic-button
+      [serviceRequestId]="activeRequests().length > 0 ? activeRequests()[0]._id : undefined"
+      [patientId]="activeRequests().length > 0 && activeRequests()[0].patient ? $any(activeRequests()[0].patient)._id : undefined">
+    </app-panic-button>
+  </div>
 </ion-content>

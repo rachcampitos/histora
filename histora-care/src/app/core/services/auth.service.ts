@@ -288,4 +288,16 @@ export class AuthService {
     await this.storage.set(USER_KEY, user);
     this.userSignal.set(user);
   }
+
+  /**
+   * Update user avatar locally after upload
+   */
+  async updateUserAvatar(avatarUrl: string): Promise<void> {
+    const currentUser = this.userSignal();
+    if (currentUser) {
+      const updatedUser = { ...currentUser, avatar: avatarUrl };
+      await this.storage.set(USER_KEY, updatedUser);
+      this.userSignal.set(updatedUser);
+    }
+  }
 }

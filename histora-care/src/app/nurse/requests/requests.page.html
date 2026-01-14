@@ -62,9 +62,12 @@
                 <ion-avatar *ngIf="request.patient?.avatar">
                   <img [src]="request.patient?.avatar" alt="Patient">
                 </ion-avatar>
-                <ion-icon *ngIf="!request.patient?.avatar" name="person-circle" class="avatar-placeholder"></ion-icon>
+                <div *ngIf="!request.patient?.avatar" class="avatar-placeholder-circle">
+                  <span>{{ getPatientInitials(request) }}</span>
+                </div>
                 <div class="patient-details">
-                  <h3>{{ request.patient?.firstName || 'Paciente' }} {{ request.patient?.lastName || '' }}</h3>
+                  <h3>{{ getPatientFullName(request) }}</h3>
+                  <span class="role-badge">Paciente</span>
                   <p class="service-type">{{ request.service.name }}</p>
                 </div>
               </div>
@@ -144,9 +147,12 @@
               <ion-avatar *ngIf="request.patient?.avatar">
                 <img [src]="request.patient?.avatar" alt="Patient">
               </ion-avatar>
-              <ion-icon *ngIf="!request.patient?.avatar" name="person-circle" class="avatar-placeholder"></ion-icon>
+              <div *ngIf="!request.patient?.avatar" class="avatar-placeholder-circle">
+                <span>{{ getPatientInitials(request) }}</span>
+              </div>
               <div class="patient-details">
-                <h3>{{ request.patient?.firstName || 'Paciente' }} {{ request.patient?.lastName || '' }}</h3>
+                <h3>{{ getPatientFullName(request) }}</h3>
+                <span class="role-badge">Paciente</span>
                 <p class="service-type">{{ request.service.name }}</p>
               </div>
             </div>
@@ -215,9 +221,15 @@
           <!-- Header -->
           <div class="card-header">
             <div class="patient-info">
-              <ion-icon name="person-circle" class="avatar-placeholder small"></ion-icon>
+              <ion-avatar *ngIf="request.patient?.avatar" class="small">
+                <img [src]="request.patient?.avatar" alt="Patient">
+              </ion-avatar>
+              <div *ngIf="!request.patient?.avatar" class="avatar-placeholder-circle small">
+                <span>{{ getPatientInitials(request) }}</span>
+              </div>
               <div class="patient-details">
-                <h3>{{ request.patient?.firstName || 'Paciente' }} {{ request.patient?.lastName || '' }}</h3>
+                <h3>{{ getPatientFullName(request) }}</h3>
+                <span class="role-badge small">Paciente</span>
                 <p class="service-type">{{ request.service.name }}</p>
               </div>
             </div>
