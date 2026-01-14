@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.historahealth.care',
-  appName: 'Histora Care',
+  appId: 'com.historahealth.nurselite',
+  appName: 'NurseLite',
   webDir: 'www',
   server: {
     androidScheme: 'https'
@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
-      backgroundColor: '#667eea',
+      backgroundColor: '#1e3a5f',
       showSpinner: true,
       spinnerColor: '#ffffff'
     },
@@ -23,9 +23,9 @@ const config: CapacitorConfig = {
     }
   },
   // Deep link configuration for OAuth callback
-  // This enables historacare:// URL scheme
+  // This enables nurselite:// URL scheme
   ios: {
-    scheme: 'historacare'
+    scheme: 'nurselite'
   },
   android: {
     // Android uses intent filters in AndroidManifest.xml

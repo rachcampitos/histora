@@ -88,7 +88,7 @@ $primary-gradient: var(--histora-gradient);
 
     // Gradient styles
     &.gradient-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
     }
 
     &.gradient-success {
@@ -96,7 +96,7 @@ $primary-gradient: var(--histora-gradient);
     }
 
     &.gradient-info {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
     }
 
     &.gradient-warning {
@@ -322,7 +322,7 @@ $primary-gradient: var(--histora-gradient);
     }
 
     &.gradient-info {
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
     }
 
     &.gradient-warning {

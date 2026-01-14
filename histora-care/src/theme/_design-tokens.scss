@@ -1,19 +1,20 @@
 // =============================================================================
-// HISTORA CARE - DESIGN TOKENS
-// Sistema unificado de tokens compartido con histora-front
+// NURSELITE - DESIGN TOKENS
+// Sistema de diseño para la app de enfermería a domicilio
+// by Histora Health
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// COLOR TOKENS (Unified with main frontend)
+// COLOR TOKENS - NurseLite Brand
 // -----------------------------------------------------------------------------
 
-// Brand Colors - Same as histora-front
-$color-brand-primary: #0891b2;      // Cyan-600 - Color principal de marca
-$color-brand-secondary: #667eea;    // Indigo - Gradiente secundario
-$color-brand-accent: #764ba2;       // Purple - Acento de gradiente
+// Brand Colors - NurseLite Navy Theme (Nurse + Light)
+$color-brand-primary: #1e3a5f;      // Navy Blue - Color principal NurseLite
+$color-brand-secondary: #2d5f8a;    // Medium Blue - Gradiente secundario
+$color-brand-accent: #4a9d9a;       // Teal - Acento (lámpara)
 
 // Semantic Colors
-$color-primary: #0891b2;
+$color-primary: #1e3a5f;
 $color-secondary: #64748b;
 $color-success: #16a34a;
 $color-error: #dc2626;
@@ -59,29 +60,29 @@ $text-dark-tertiary: #94a3b8;
 
 // Map to Ionic CSS variables
 :root {
-  // Primary
+  // Primary - NurseLite Navy Blue
   --ion-color-primary: #{$color-brand-primary};
-  --ion-color-primary-rgb: 8, 145, 178;
+  --ion-color-primary-rgb: 30, 58, 95;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #077d9b;
-  --ion-color-primary-tint: #1f9cbe;
+  --ion-color-primary-shade: #1a3354;
+  --ion-color-primary-tint: #354d6f;
 
-  // Secondary
+  // Secondary - Medium Blue
   --ion-color-secondary: #{$color-brand-secondary};
-  --ion-color-secondary-rgb: 102, 126, 234;
+  --ion-color-secondary-rgb: 45, 95, 138;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #5a6fce;
-  --ion-color-secondary-tint: #758bed;
+  --ion-color-secondary-shade: #285479;
+  --ion-color-secondary-tint: #426f96;
 
-  // Tertiary (accent)
+  // Tertiary (accent) - Teal (lámpara)
   --ion-color-tertiary: #{$color-brand-accent};
-  --ion-color-tertiary-rgb: 118, 75, 162;
+  --ion-color-tertiary-rgb: 74, 157, 154;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #68428f;
-  --ion-color-tertiary-tint: #845dab;
+  --ion-color-tertiary-shade: #418a88;
+  --ion-color-tertiary-tint: #5ca7a4;
 
   // Success
   --ion-color-success: #{$color-success};
@@ -131,8 +132,9 @@ $text-dark-tertiary: #94a3b8;
   --ion-color-light-shade: #d4d8db;
   --ion-color-light-tint: #f3f6fa;
 
-  // Brand gradient
-  --histora-gradient: linear-gradient(135deg, #{$color-brand-secondary} 0%, #{$color-brand-accent} 100%);
+  // Brand gradient - NurseLite Blue
+  --nurselite-gradient: linear-gradient(135deg, #{$color-brand-primary} 0%, #{$color-brand-accent} 100%);
+  --histora-gradient: var(--nurselite-gradient); // Legacy alias
 
   // Surfaces
   --surface-primary: #{$surface-primary};

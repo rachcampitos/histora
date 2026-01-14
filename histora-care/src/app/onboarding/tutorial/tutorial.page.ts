@@ -44,9 +44,9 @@ export class TutorialPage {
   slides: OnboardingSlide[] = [
     {
       id: 1,
-      icon: 'heart-circle',
+      icon: 'flash',
       gradient: 'gradient-primary',
-      title: 'Bienvenido a Histora Care',
+      title: 'Bienvenido a NurseLite',
       description:
         'Tu cuenta ha sido creada exitosamente. Conoce como protegemos tu seguridad y la de tu familia.',
     },
@@ -91,11 +91,11 @@ export class TutorialPage {
     },
     {
       id: 5,
-      icon: 'heart',
+      icon: 'bulb',
       gradient: 'gradient-danger',
       title: 'Listo para comenzar',
       description:
-        'Ya formas parte de la comunidad Histora Care. Explora enfermeras verificadas y agenda tu primer servicio.',
+        'Ya formas parte de la comunidad NurseLite. Explora enfermeras verificadas y agenda tu primer servicio.',
     },
   ];
 
