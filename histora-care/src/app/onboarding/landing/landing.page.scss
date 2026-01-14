@@ -254,9 +254,9 @@ $border-radius: tokens.$radius-lg;
   }
 
   .secondary-btn {
-    --border-color: #667eea;
-    --color: #667eea;
-    --color-hover: #667eea;
+    --border-color: #1e3a5f;
+    --color: #1e3a5f;
+    --color-hover: #1e3a5f;
     --color-activated: #5a6fce;
     --background: transparent;
     --background-hover: rgba(102, 126, 234, 0.1);
@@ -272,7 +272,7 @@ $border-radius: tokens.$radius-lg;
     ion-icon {
       font-size: 20px;
       margin-right: tokens.$spacing-2;
-      color: #667eea;
+      color: #1e3a5f;
     }
   }
 

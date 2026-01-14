@@ -25,7 +25,7 @@ const ONBOARDING_KEY = 'histora_care_onboarding_status';
 const CURRENT_VERSION = '1.0';
 
 /**
- * OnboardingService manages the hybrid onboarding flow for Histora Care:
+ * OnboardingService manages the hybrid onboarding flow for NurseLite:
  *
  * 1. PRE-AUTH LANDING (1 slide):
  *    - Shown on first app open before authentication
