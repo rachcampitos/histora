@@ -65,6 +65,18 @@ export class UploadCvDto {
   mimeType: string;
 }
 
+export class UploadSelfieDto {
+  @ApiProperty({ description: 'Base64 encoded selfie image data' })
+  @IsString()
+  @MaxLength(5 * 1024 * 1024) // ~5MB base64
+  imageData: string;
+
+  @ApiPropertyOptional({ description: 'Image MIME type (image/jpeg, image/png)' })
+  @IsOptional()
+  @IsString()
+  mimeType?: string;
+}
+
 export class DeleteFileDto {
   @ApiProperty({ description: 'Public ID of the file to delete' })
   @IsString()

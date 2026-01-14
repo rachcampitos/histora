@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SafetyIncident, SafetyIncidentDocument, IncidentType, IncidentSeverity, IncidentStatus } from './schema/safety-incident.schema';
+import { PanicAlert, PanicAlertDocument, PanicAlertLevel, PanicAlertStatus } from './schema/panic-alert.schema';
+import { NotificationsService } from '../notifications/notifications.service';
 
 export interface ReportIncidentDto {
   serviceRequestId?: string;
@@ -28,11 +30,39 @@ export interface UpdateIncidentDto {
   followUpNotes?: string;
 }
 
+export interface TriggerPanicDto {
+  level: PanicAlertLevel;
+  serviceRequestId?: string;
+  patientId?: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    accuracy?: number;
+    address?: string;
+  };
+  message?: string;
+  deviceInfo?: {
+    platform: string;
+    deviceId?: string;
+    batteryLevel?: number;
+  };
+}
+
+export interface UpdatePanicAlertDto {
+  status?: PanicAlertStatus;
+  resolution?: string;
+  policeContacted?: boolean;
+  policeIncidentNumber?: string;
+}
+
 @Injectable()
 export class SafetyService {
   constructor(
     @InjectModel(SafetyIncident.name)
     private incidentModel: Model<SafetyIncidentDocument>,
+    @InjectModel(PanicAlert.name)
+    private panicAlertModel: Model<PanicAlertDocument>,
+    private notificationsService: NotificationsService,
   ) {}
 
   async reportIncident(reporterId: string, dto: ReportIncidentDto): Promise<SafetyIncident> {
@@ -133,5 +163,171 @@ export class SafetyService {
       red: incidents.filter(i => i.severity === IncidentSeverity.RED_FLAG).length,
       total: incidents.length,
     };
+  }
+
+  // ==================== PANIC ALERT METHODS ====================
+
+  /**
+   * Trigger a panic alert - high priority endpoint
+   */
+  async triggerPanicAlert(nurseId: string, dto: TriggerPanicDto): Promise<PanicAlert> {
+    const alert = new this.panicAlertModel({
+      nurseId: new Types.ObjectId(nurseId),
+      serviceRequestId: dto.serviceRequestId ? new Types.ObjectId(dto.serviceRequestId) : undefined,
+      patientId: dto.patientId ? new Types.ObjectId(dto.patientId) : undefined,
+      level: dto.level,
+      status: PanicAlertStatus.ACTIVE,
+      location: dto.location,
+      message: dto.message,
+      deviceInfo: dto.deviceInfo,
+      timeline: [{
+        action: dto.level === PanicAlertLevel.EMERGENCY
+          ? 'EMERGENCY panic button activated'
+          : 'Help needed alert triggered',
+        timestamp: new Date(),
+      }],
+    });
+
+    const savedAlert = await alert.save();
+
+    // Notify platform admins immediately
+    await this.notifyAdminsOfPanicAlert(savedAlert);
+
+    // TODO: Send SMS to emergency contacts
+    // TODO: Send push notification to emergency contacts
+
+    return savedAlert;
+  }
+
+  /**
+   * Get active panic alert for a nurse (if any)
+   */
+  async getActivePanicAlert(nurseId: string): Promise<PanicAlert | null> {
+    return this.panicAlertModel.findOne({
+      nurseId: new Types.ObjectId(nurseId),
+      status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED, PanicAlertStatus.RESPONDING] },
+    }).sort({ createdAt: -1 });
+  }
+
+  /**
+   * Cancel a panic alert (false alarm)
+   */
+  async cancelPanicAlert(alertId: string, nurseId: string): Promise<PanicAlert> {
+    const alert = await this.panicAlertModel.findOne({
+      _id: alertId,
+      nurseId: new Types.ObjectId(nurseId),
+      status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED] },
+    });
+
+    if (!alert) {
+      throw new NotFoundException('Alerta no encontrada o ya resuelta');
+    }
+
+    alert.status = PanicAlertStatus.FALSE_ALARM;
+    alert.resolvedAt = new Date();
+    alert.resolution = 'Cancelada por la enfermera (falsa alarma)';
+    alert.timeline.push({
+      action: 'Alert cancelled by nurse',
+      performedBy: new Types.ObjectId(nurseId),
+      timestamp: new Date(),
+      notes: 'False alarm',
+    });
+
+    return alert.save();
+  }
+
+  /**
+   * Acknowledge a panic alert (admin action)
+   */
+  async acknowledgePanicAlert(alertId: string, adminId: string): Promise<PanicAlert> {
+    const alert = await this.panicAlertModel.findById(alertId);
+
+    if (!alert) {
+      throw new NotFoundException('Alerta no encontrada');
+    }
+
+    alert.status = PanicAlertStatus.ACKNOWLEDGED;
+    alert.acknowledgedAt = new Date();
+    alert.acknowledgedBy = new Types.ObjectId(adminId);
+    alert.timeline.push({
+      action: 'Alert acknowledged by admin',
+      performedBy: new Types.ObjectId(adminId),
+      timestamp: new Date(),
+    });
+
+    return alert.save();
+  }
+
+  /**
+   * Update panic alert status (admin action)
+   */
+  async updatePanicAlert(alertId: string, adminId: string, dto: UpdatePanicAlertDto): Promise<PanicAlert> {
+    const alert = await this.panicAlertModel.findById(alertId);
+
+    if (!alert) {
+      throw new NotFoundException('Alerta no encontrada');
+    }
+
+    if (dto.status) {
+      alert.status = dto.status;
+      if (dto.status === PanicAlertStatus.RESOLVED) {
+        alert.resolvedAt = new Date();
+        alert.resolvedBy = new Types.ObjectId(adminId);
+      }
+    }
+
+    if (dto.resolution) alert.resolution = dto.resolution;
+    if (dto.policeContacted !== undefined) alert.policeContacted = dto.policeContacted;
+    if (dto.policeIncidentNumber) alert.policeIncidentNumber = dto.policeIncidentNumber;
+
+    alert.timeline.push({
+      action: `Alert updated: ${dto.status || 'status unchanged'}`,
+      performedBy: new Types.ObjectId(adminId),
+      timestamp: new Date(),
+      notes: dto.resolution || '',
+    });
+
+    return alert.save();
+  }
+
+  /**
+   * Get all active panic alerts (for admin dashboard)
+   */
+  async getActivePanicAlerts(): Promise<PanicAlert[]> {
+    return this.panicAlertModel.find({
+      status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED, PanicAlertStatus.RESPONDING] },
+    })
+      .sort({ level: -1, createdAt: 1 }) // Emergencies first, then by time
+      .populate('nurseId', 'firstName lastName phone avatar')
+      .populate('patientId', 'firstName lastName phone');
+  }
+
+  /**
+   * Get panic alert history for a nurse
+   */
+  async getPanicAlertHistory(nurseId: string): Promise<PanicAlert[]> {
+    return this.panicAlertModel.find({
+      nurseId: new Types.ObjectId(nurseId),
+    }).sort({ createdAt: -1 }).limit(20);
+  }
+
+  /**
+   * Notify admins of a panic alert
+   */
+  private async notifyAdminsOfPanicAlert(alert: PanicAlert): Promise<void> {
+    try {
+      const levelText = alert.level === PanicAlertLevel.EMERGENCY
+        ? 'EMERGENCIA'
+        : 'Ayuda necesaria';
+
+      // Use the notifications service to notify all platform admins
+      // This would be implemented based on existing notification patterns
+      console.log(`[PANIC ALERT] ${levelText} triggered by nurse ${alert.nurseId}`);
+
+      // TODO: Implement admin notification through NotificationsService
+      // await this.notificationsService.notifyAdminsPanicAlert(alert);
+    } catch (error) {
+      console.error('Error notifying admins of panic alert:', error);
+    }
   }
 }

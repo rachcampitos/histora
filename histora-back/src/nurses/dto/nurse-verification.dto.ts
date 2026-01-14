@@ -121,15 +121,30 @@ export class VerificationResponseDto {
   @ApiProperty()
   createdAt: Date;
 
+  // Official CEP photo from registry
+  @ApiPropertyOptional()
+  officialCepPhotoUrl?: string;
+
+  // CEP identity confirmation
+  @ApiPropertyOptional()
+  cepIdentityConfirmed?: boolean;
+
+  @ApiPropertyOptional()
+  cepIdentityConfirmedAt?: Date;
+
   // Include nurse info for admin view
   @ApiPropertyOptional()
   nurse?: {
     cepNumber: string;
     specialties: string[];
+    officialCepPhotoUrl?: string;
+    selfieUrl?: string;
+    cepRegisteredName?: string;
     user?: {
       firstName: string;
       lastName: string;
       email: string;
+      phone?: string;
       avatar?: string;
     };
   };

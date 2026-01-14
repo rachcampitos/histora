@@ -453,6 +453,30 @@ export class ServiceRequestsService {
         request.nurseId.toString(),
         rateDto.rating,
       );
+
+      // Send notification to nurse about the new review
+      try {
+        const nurse = await this.nurseModel
+          .findById(request.nurseId)
+          .populate('userId', '_id');
+        const patient = await this.userModel.findById(patientId);
+
+        if (nurse && patient) {
+          const nurseUserId = (nurse.userId as unknown as { _id: Types.ObjectId })._id.toString();
+          const patientName = `${patient.firstName} ${patient.lastName}`;
+
+          await this.notificationsService.notifyNurseNewReview({
+            requestId: id,
+            nurseUserId,
+            patientName,
+            rating: rateDto.rating,
+            comment: rateDto.review,
+            serviceName: request.service.name,
+          });
+        }
+      } catch (error) {
+        this.logger.error(`Failed to send review notification to nurse: ${error.message}`);
+      }
     }
 
     return request;

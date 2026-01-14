@@ -36,6 +36,9 @@ export class User {
   @Prop({ trim: true })
   phone?: string;
 
+  @Prop({ sparse: true, index: true, trim: true })
+  dni?: string; // Documento Nacional de Identidad (Peru)
+
   @Prop({
     type: String,
     enum: UserRole,

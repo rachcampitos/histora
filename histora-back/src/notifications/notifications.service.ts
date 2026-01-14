@@ -695,4 +695,24 @@ export class NotificationsService {
       channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
     });
   }
+
+  // Notify nurse when patient leaves a review
+  async notifyNurseNewReview(review: {
+    requestId: string;
+    nurseUserId: string;
+    patientName: string;
+    rating: number;
+    comment?: string;
+    serviceName: string;
+  }): Promise<void> {
+    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    await this.send({
+      userId: review.nurseUserId,
+      type: NotificationType.NEW_NURSE_REVIEW,
+      title: 'Nueva Reseña de Paciente',
+      message: `${review.patientName} te ha dejado una reseña por el servicio de ${review.serviceName}: ${stars}${review.comment ? ` - "${review.comment}"` : ''}`,
+      data: { requestId: review.requestId, rating: review.rating },
+      channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
 }

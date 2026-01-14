@@ -13,8 +13,10 @@ import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { DoctorsService } from '../doctors/doctors.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto, RegisterPatientDto, RegisterNurseDto } from './dto/register.dto';
+import { RegisterDto, RegisterPatientDto, RegisterNurseDto, ValidateNurseCepDto, CompleteNurseRegistrationDto } from './dto/register.dto';
 import { NursesService } from '../nurses/nurses.service';
+import { CepValidationService } from '../nurses/cep-validation.service';
+import { ReniecValidationService } from '../nurses/reniec-validation.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UserRole } from '../users/schema/user.schema';
 import { JwtPayload } from './strategies/jwt.strategy';
@@ -57,6 +59,8 @@ export class AuthService {
     private subscriptionsService: SubscriptionsService,
     private doctorsService: DoctorsService,
     private nursesService: NursesService,
+    private cepValidationService: CepValidationService,
+    private reniecValidationService: ReniecValidationService,
     private emailProvider: EmailProvider,
     private notificationsService: NotificationsService,
   ) {}
@@ -785,5 +789,265 @@ export class AuthService {
         },
       };
     }
+  }
+
+  /**
+   * Step 1: Validate nurse credentials with CEP registry
+   * Returns official name and photo for user confirmation
+   */
+  async validateNurseCep(dto: ValidateNurseCepDto): Promise<{
+    isValid: boolean;
+    data?: {
+      cepNumber: string;
+      fullName?: string;
+      dni: string;
+      photoUrl?: string;
+      isPhotoVerified: boolean;
+    };
+    error?: string;
+  }> {
+    this.logger.log(`Validating nurse CEP: DNI=${dto.dni}, CEP=${dto.cepNumber}`);
+
+    // Clean inputs
+    const cleanDni = dto.dni.replace(/\D/g, '');
+    const cleanCep = dto.cepNumber.replace(/\D/g, '');
+
+    // Validate DNI format
+    if (!/^\d{8}$/.test(cleanDni)) {
+      return {
+        isValid: false,
+        error: 'El DNI debe tener 8 dígitos',
+      };
+    }
+
+    // Validate CEP format
+    if (!/^\d{4,6}$/.test(cleanCep)) {
+      return {
+        isValid: false,
+        error: 'El número de CEP debe tener entre 4 y 6 dígitos',
+      };
+    }
+
+    // Check if DNI is already registered
+    const existingUserByDni = await this.usersService.findByDni(cleanDni);
+    if (existingUserByDni) {
+      return {
+        isValid: false,
+        error: 'Este DNI ya está registrado en el sistema',
+      };
+    }
+
+    // Check if CEP is already registered
+    const existingNurse = await this.nursesService.findByCepNumber(cleanCep);
+    if (existingNurse) {
+      return {
+        isValid: false,
+        error: 'Este número de CEP ya está registrado',
+      };
+    }
+
+    // Validate with CEP registry
+    // First, check if photo exists (primary validation)
+    const photoCheck = await this.cepValidationService.checkPhotoByDni(cleanDni);
+
+    if (!photoCheck.exists) {
+      return {
+        isValid: false,
+        error: 'No se encontró registro de enfermera(o) con este DNI en el CEP',
+      };
+    }
+
+    // Search by CEP number to get the name
+    const cepSearch = await this.cepValidationService.validateByCep(cleanCep);
+
+    let fullName: string | undefined;
+    if (cepSearch.isValid && cepSearch.data?.fullName) {
+      fullName = cepSearch.data.fullName;
+    }
+
+    // If we couldn't find name by CEP, try to search by the CEP number itself
+    if (!fullName) {
+      const searchResults = await this.cepValidationService.searchByName(cleanCep);
+      const exactMatch = searchResults.find(r => r.cep === cleanCep);
+      if (exactMatch) {
+        fullName = exactMatch.nombre;
+      }
+    }
+
+    // If still no name, try RENIEC API to get name from DNI
+    if (!fullName && this.reniecValidationService.isConfigured()) {
+      this.logger.log(`CEP name not found, trying RENIEC lookup for DNI: ${cleanDni}`);
+      const reniecResult = await this.reniecValidationService.validateDni(cleanDni);
+      if (reniecResult.success && reniecResult.data) {
+        // RENIEC returns: APELLIDO_PATERNO APELLIDO_MATERNO NOMBRES
+        fullName = reniecResult.data.nombreCompleto;
+        this.logger.log(`RENIEC lookup successful: ${fullName}`);
+      } else {
+        this.logger.warn(`RENIEC lookup failed: ${reniecResult.error}`);
+      }
+    }
+
+    this.logger.log(`CEP validation successful: DNI=${cleanDni}, CEP=${cleanCep}, Name=${fullName || 'Not found'}`);
+
+    return {
+      isValid: true,
+      data: {
+        cepNumber: cleanCep,
+        dni: cleanDni,
+        fullName,
+        photoUrl: photoCheck.url,
+        isPhotoVerified: true,
+      },
+    };
+  }
+
+  /**
+   * Step 2: Complete nurse registration after CEP validation
+   * Creates user account and nurse profile
+   */
+  async completeNurseRegistration(dto: CompleteNurseRegistrationDto): Promise<AuthResponse & { nurseId: string; verificationStatus: string }> {
+    this.logger.log(`Completing nurse registration: Email=${dto.email}, CEP=${dto.cepNumber}`);
+
+    // Validate terms acceptance
+    if (!dto.termsAccepted) {
+      throw new UnauthorizedException('Debe aceptar los términos y condiciones');
+    }
+    if (!dto.professionalDisclaimerAccepted) {
+      throw new UnauthorizedException('Debe aceptar la exención de responsabilidad profesional');
+    }
+
+    // Validate identity confirmation
+    if (!dto.identityConfirmed) {
+      throw new UnauthorizedException('Debe confirmar su identidad');
+    }
+
+    // Clean inputs
+    const cleanDni = dto.dni.replace(/\D/g, '');
+    const cleanCep = dto.cepNumber.replace(/\D/g, '');
+
+    // Check if email already exists
+    const existingUser = await this.usersService.findByEmail(dto.email);
+    if (existingUser) {
+      throw new ConflictException('Este email ya está registrado');
+    }
+
+    // Check if DNI is already registered
+    const existingUserByDni = await this.usersService.findByDni(cleanDni);
+    if (existingUserByDni) {
+      throw new ConflictException('Este DNI ya está registrado en el sistema');
+    }
+
+    // Check if CEP is already registered
+    const existingNurse = await this.nursesService.findByCepNumber(cleanCep);
+    if (existingNurse) {
+      throw new ConflictException('Este número de CEP ya está registrado');
+    }
+
+    // Re-validate with CEP registry to ensure data hasn't changed
+    const photoCheck = await this.cepValidationService.checkPhotoByDni(cleanDni);
+    if (!photoCheck.exists) {
+      throw new UnauthorizedException('No se pudo verificar las credenciales con el CEP');
+    }
+
+    // Parse name from CEP registry
+    const nameParts = this.parseFullName(dto.fullNameFromCep);
+
+    // Create user with nurse role
+    const user = await this.usersService.create({
+      email: dto.email,
+      password: dto.password,
+      firstName: nameParts.firstName,
+      lastName: nameParts.lastName,
+      phone: dto.phone,
+      dni: cleanDni,
+      role: UserRole.NURSE,
+      termsAccepted: true,
+      termsAcceptedAt: new Date(),
+      termsVersion: '1.0',
+      professionalDisclaimerAccepted: true,
+      professionalDisclaimerAcceptedAt: new Date(),
+    });
+
+    // Determine verification status based on selfie
+    // If selfie provided, mark as pending verification (admin will review)
+    // If no selfie, mark as requiring selfie
+    const verificationStatus = dto.selfieUrl ? 'pending' : 'selfie_required';
+
+    // Create nurse profile with CEP data
+    const nurseProfile = await this.nursesService.create(user['_id'].toString(), {
+      cepNumber: cleanCep,
+      specialties: dto.specialties || [],
+      cepVerified: true, // Photo was verified with CEP
+      officialCepPhotoUrl: dto.cepPhotoUrl,
+      cepRegisteredName: dto.fullNameFromCep,
+      selfieUrl: dto.selfieUrl,
+      verificationStatus,
+    });
+
+    const nurseProfileId = (nurseProfile as any)._id;
+
+    // Update user with nurseProfileId and avatar (use CEP photo as initial avatar)
+    await this.usersService.update(user['_id'].toString(), {
+      nurseProfileId,
+      avatar: dto.cepPhotoUrl, // Use official CEP photo as avatar
+    });
+
+    // Generate JWT token
+    const payload: JwtPayload = {
+      sub: user['_id'].toString(),
+      email: user.email,
+      role: user.role,
+      nurseId: nurseProfileId.toString(),
+    };
+
+    // Generate and save refresh token
+    const refreshToken = this.generateRefreshToken();
+    await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+
+    this.logger.log(`Nurse registered: ${user.email} with CEP: ${cleanCep}, Status: ${verificationStatus}`);
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: refreshToken,
+      user: {
+        id: user['_id'].toString(),
+        email: user.email,
+        firstName: nameParts.firstName,
+        lastName: nameParts.lastName,
+        role: user.role,
+        avatar: dto.cepPhotoUrl,
+      },
+      nurseId: nurseProfileId.toString(),
+      verificationStatus,
+    };
+  }
+
+  /**
+   * Parse a full name (usually "LASTNAME LASTNAME FIRSTNAME MIDDLENAME")
+   * into firstName and lastName
+   */
+  private parseFullName(fullName: string): { firstName: string; lastName: string } {
+    if (!fullName) {
+      return { firstName: '', lastName: '' };
+    }
+
+    const parts = fullName.trim().split(/\s+/);
+
+    if (parts.length === 1) {
+      return { firstName: parts[0], lastName: '' };
+    }
+
+    if (parts.length === 2) {
+      // Could be "LASTNAME FIRSTNAME" or "FIRSTNAME LASTNAME"
+      // In Peru, CEP usually has "LASTNAME FIRSTNAME" format
+      return { firstName: parts[1], lastName: parts[0] };
+    }
+
+    // For 3+ parts, assume first 2 are last names, rest are first names
+    // e.g., "GARCIA LOPEZ MARIA ELENA" -> firstName: "MARIA ELENA", lastName: "GARCIA LOPEZ"
+    const lastName = parts.slice(0, 2).join(' ');
+    const firstName = parts.slice(2).join(' ');
+
+    return { firstName, lastName };
   }
 }

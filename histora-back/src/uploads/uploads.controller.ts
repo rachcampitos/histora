@@ -21,8 +21,10 @@ import {
   UploadProfilePhotoDto,
   UploadDocumentDto,
   UploadCvDto,
+  UploadSelfieDto,
   FileResponseDto,
 } from './dto/upload-file.dto';
+import { NursesService } from '../nurses/nurses.service';
 
 @ApiTags('Uploads')
 @ApiBearerAuth('JWT-auth')
@@ -33,6 +35,7 @@ export class UploadsController {
     private readonly uploadsService: UploadsService,
     private readonly usersService: UsersService,
     private readonly doctorsService: DoctorsService,
+    private readonly nursesService: NursesService,
   ) {}
 
   private requireClinicId(user: CurrentUserData): string {
@@ -128,6 +131,69 @@ export class UploadsController {
     if (publicId) {
       await this.uploadsService.deleteFile(publicId);
       await this.doctorsService.updateCv(doctorId, '', '', '');
+    }
+
+    return { success: true };
+  }
+
+  // ============= NURSE UPLOADS =============
+
+  @Post('nurse/selfie')
+  @Roles(UserRole.NURSE)
+  @ApiOperation({ summary: 'Upload selfie for identity verification' })
+  async uploadNurseSelfie(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: UploadSelfieDto,
+  ): Promise<FileResponseDto> {
+    // Get nurse profile
+    const nurse = await this.nursesService.findByUserId(user.userId);
+    if (!nurse) {
+      throw new ForbiddenException('Nurse profile not found');
+    }
+
+    const nurseId = (nurse as any)._id.toString();
+
+    // Delete old selfie if exists
+    const oldPublicId = await this.nursesService.getSelfiePublicId(nurseId);
+    if (oldPublicId) {
+      await this.uploadsService.deleteFile(oldPublicId).catch(() => {});
+    }
+
+    const result = await this.uploadsService.uploadNurseSelfie(
+      dto.imageData,
+      dto.mimeType || 'image/jpeg',
+      nurseId,
+      user.userId
+    );
+
+    // Save selfie URL to nurse profile and update status to pending
+    await this.nursesService.updateSelfie(nurseId, result.url, result.publicId);
+
+    return {
+      success: true,
+      url: result.url,
+      thumbnailUrl: result.thumbnailUrl,
+      publicId: result.publicId,
+    };
+  }
+
+  @Delete('nurse/selfie')
+  @Roles(UserRole.NURSE)
+  @ApiOperation({ summary: 'Delete own selfie' })
+  async deleteNurseSelfie(
+    @CurrentUser() user: CurrentUserData,
+  ): Promise<{ success: boolean }> {
+    const nurse = await this.nursesService.findByUserId(user.userId);
+    if (!nurse) {
+      throw new ForbiddenException('Nurse profile not found');
+    }
+
+    const nurseId = (nurse as any)._id.toString();
+    const publicId = await this.nursesService.getSelfiePublicId(nurseId);
+
+    if (publicId) {
+      await this.uploadsService.deleteFile(publicId);
+      await this.nursesService.updateSelfie(nurseId, '', '');
     }
 
     return { success: true };

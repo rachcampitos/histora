@@ -21,6 +21,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 import { NursesService } from './nurses.service';
+import { CepValidationService } from './cep-validation.service';
 import {
   CreateNurseDto,
   UpdateNurseDto,
@@ -34,7 +35,10 @@ import {
 @ApiTags('Nurses')
 @Controller('nurses')
 export class NursesController {
-  constructor(private readonly nursesService: NursesService) {}
+  constructor(
+    private readonly nursesService: NursesService,
+    private readonly cepValidationService: CepValidationService,
+  ) {}
 
   // Public endpoint: Search nurses nearby
   @Get('search')
@@ -42,6 +46,40 @@ export class NursesController {
   @ApiResponse({ status: 200, description: 'List of nurses with distance' })
   async searchNearby(@Query() searchDto: SearchNurseDto) {
     return this.nursesService.searchNearby(searchDto);
+  }
+
+  // Public endpoint: Validate CEP number by searching
+  @Get('validate-cep/:cepNumber')
+  @ApiOperation({ summary: 'Validate CEP number by searching in registry' })
+  @ApiResponse({ status: 200, description: 'Validation result with nurse name if found' })
+  async validateCep(@Param('cepNumber') cepNumber: string) {
+    return this.cepValidationService.validateByCep(cepNumber);
+  }
+
+  // Public endpoint: Validate by DNI (check photo exists)
+  @Get('validate-dni/:dni')
+  @ApiOperation({ summary: 'Validate nurse by DNI (checks if photo exists)' })
+  @ApiResponse({ status: 200, description: 'Validation result with photo URL if found' })
+  async validateDni(@Param('dni') dni: string) {
+    return this.cepValidationService.validateByDni(dni);
+  }
+
+  // Public endpoint: Full validation with CEP, DNI and name
+  @Post('validate')
+  @ApiOperation({ summary: 'Full nurse validation with CEP, DNI and optional name' })
+  @ApiResponse({ status: 200, description: 'Complete validation result' })
+  async validateNurse(
+    @Body() body: { cepNumber: string; dni: string; fullName?: string },
+  ) {
+    return this.cepValidationService.validateNurse(body);
+  }
+
+  // Public endpoint: Search nurses by name
+  @Get('search-by-name')
+  @ApiOperation({ summary: 'Search nurses by name in CEP registry' })
+  @ApiResponse({ status: 200, description: 'List of matching nurses with CEP numbers' })
+  async searchByName(@Query('query') query: string) {
+    return this.cepValidationService.searchByName(query);
   }
 
   // Protected: Get my nurse profile (MUST be before :id route)
