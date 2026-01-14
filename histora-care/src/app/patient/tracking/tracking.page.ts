@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, Platform } from '@ionic/angular';
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService } from '../../core/services';
@@ -24,7 +24,7 @@ interface NurseInfo {
   standalone: false,
   styleUrls: ['./tracking.page.scss'],
 })
-export class TrackingPage implements OnInit, OnDestroy {
+export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   // Request data
   requestId = signal<string>('');
   request = signal<ServiceRequest | null>(null);
@@ -120,6 +120,15 @@ export class TrackingPage implements OnInit, OnDestroy {
     await this.initializeTracking();
   }
 
+  ngAfterViewInit() {
+    // Initialize map after view is ready and data is loaded
+    setTimeout(() => {
+      if (!this.isLoading() && !this.loadError() && !this.mapInitialized) {
+        this.initMap();
+      }
+    }, 500);
+  }
+
   ngOnDestroy() {
     this.wsService.leaveTrackingRoom(this.requestId());
     this.wsService.disconnect();
@@ -187,6 +196,9 @@ export class TrackingPage implements OnInit, OnDestroy {
       }
 
       this.isLoading.set(false);
+
+      // Initialize map after data is loaded
+      setTimeout(() => this.initMap(), 300);
     } catch (error) {
       console.error('Error loading request:', error);
       this.loadError.set('No se pudo cargar la información del servicio. Por favor, intenta de nuevo.');
@@ -245,27 +257,14 @@ export class TrackingPage implements OnInit, OnDestroy {
       this.wsService.joinTrackingRoom(this.requestId());
     }
 
-    // Only simulate nurse location in development mode and when no real location is available
-    if (this.isDevelopment && !this.hasRealNurseLocation) {
-      // Wait a bit to see if we get real location from WebSocket
-      setTimeout(() => {
-        if (!this.hasRealNurseLocation) {
-          console.log('[DEV] No real nurse location received, starting simulation');
-          this.simulateNurseLocation();
-        }
-      }, 2000);
-    }
-  }
-
-  /**
-   * Initialize map after view is ready
-   */
-  onMapContainerReady() {
-    if (this.mapInitialized) return;
-
+    // Simulate nurse location when no real location is available (WebSocket disabled in production)
+    // Wait a bit to see if we get real location from WebSocket
     setTimeout(() => {
-      this.initMap();
-    }, 100);
+      if (!this.hasRealNurseLocation && this.currentStatus() === 'on_the_way') {
+        console.log('No real nurse location received, starting simulation for demo');
+        this.simulateNurseLocation();
+      }
+    }, 2000);
   }
 
   /**

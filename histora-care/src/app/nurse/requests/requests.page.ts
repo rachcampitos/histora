@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   RefresherCustomEvent,
   ToastController,
@@ -28,6 +28,7 @@ export class RequestsPage implements OnInit, OnDestroy {
   private geoService = inject(GeolocationService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
   private loadingCtrl = inject(LoadingController);
@@ -71,6 +72,16 @@ export class RequestsPage implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
+    // Read query params for tab selection
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) {
+        const tab = params['tab'] as TabType;
+        if (['pending', 'active', 'history'].includes(tab)) {
+          this.currentTab.set(tab);
+        }
+      }
+    });
+
     this.initLocation();
     this.loadAllData();
   }
@@ -424,9 +435,11 @@ export class RequestsPage implements OnInit, OnDestroy {
     return icons[nextStatus] || 'arrow-forward';
   }
 
-  // Navigate to request detail
-  viewRequest(request: ServiceRequest) {
-    this.router.navigate(['/nurse/requests', request._id]);
+  // View request details - details are already shown in the cards
+  // This is kept as a no-op since clicking the card shows all info
+  viewRequest(_request: ServiceRequest) {
+    // Details are already visible in the card
+    // No navigation needed
   }
 
   // Open maps with directions

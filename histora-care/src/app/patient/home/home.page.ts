@@ -141,6 +141,8 @@ export class HomePage implements OnInit {
     const labels: Record<string, string> = {
       'pending': 'Pendiente',
       'accepted': 'Aceptada',
+      'on_the_way': 'En camino',
+      'arrived': 'Ha llegado',
       'in_progress': 'En progreso',
       'completed': 'Completada',
       'cancelled': 'Cancelada',
@@ -153,6 +155,8 @@ export class HomePage implements OnInit {
     const colors: Record<string, string> = {
       'pending': 'warning',
       'accepted': 'primary',
+      'on_the_way': 'tertiary',
+      'arrived': 'success',
       'in_progress': 'success',
       'completed': 'medium',
       'cancelled': 'danger',

@@ -572,3 +572,189 @@
     padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 }
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .tracking-content {
+    --background: #0f172a;
+  }
+
+  // Loading Container
+  .loading-container {
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  // Error Container
+  .error-container {
+    h3 {
+      color: #f1f5f9;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  // Control Buttons
+  .control-btn {
+    --background: #1e293b;
+
+    ion-icon {
+      color: #f1f5f9;
+    }
+  }
+
+  // ETA Badge
+  .eta-badge {
+    background: #1e293b;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+
+    .eta-time {
+      color: #f1f5f9;
+    }
+
+    .eta-label {
+      color: #94a3b8;
+    }
+  }
+
+  // Bottom Sheet
+  .bottom-sheet {
+    background: #1e293b;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+
+    &::before {
+      background: #475569;
+    }
+  }
+
+  // Progress Steps
+  .progress-step {
+    .step-dot {
+      background: #334155;
+
+      ion-icon {
+        color: #64748b;
+      }
+    }
+
+    .step-label {
+      color: #64748b;
+    }
+
+    &.active {
+      .step-label {
+        color: var(--ion-color-primary);
+      }
+    }
+
+    &.completed {
+      .step-label {
+        color: #10b981;
+      }
+    }
+  }
+
+  .progress-line {
+    background: #334155;
+  }
+
+  // Nurse Card
+  .nurse-card {
+    background: #0f172a;
+  }
+
+  .nurse-info {
+    .nurse-avatar {
+      .avatar-placeholder {
+        color: #475569;
+      }
+    }
+
+    .nurse-details {
+      h3 {
+        color: #f1f5f9;
+      }
+
+      .nurse-meta {
+        .rating {
+          color: #f1f5f9;
+        }
+
+        .reviews {
+          color: #94a3b8;
+        }
+      }
+    }
+  }
+
+  // Service Info
+  .service-info {
+    border-top-color: #334155;
+    border-bottom-color: #334155;
+
+    .service-name {
+      color: #f1f5f9;
+    }
+  }
+
+  // Route Info
+  .route-info {
+    .info-item {
+      .info-content {
+        .info-value {
+          color: #f1f5f9;
+        }
+
+        .info-label {
+          color: #64748b;
+        }
+      }
+    }
+
+    .info-divider {
+      background: #334155;
+    }
+  }
+
+  // Status Message Dark Mode
+  .status-message {
+    &.status-accepted {
+      background: rgba(14, 165, 233, 0.15);
+      color: #38bdf8;
+    }
+
+    &.status-on_the_way {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+    }
+
+    &.status-arrived {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    &.status-in_progress {
+      background: rgba(139, 92, 246, 0.15);
+      color: #a78bfa;
+    }
+
+    &.status-completed {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+  }
+
+  // Completed Actions
+  .completed-actions {
+    .review-submitted {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+  }
+}

@@ -111,7 +111,11 @@
   }
 }
 
-// Stats Section
+// Stats Section - remove overlap when broadcasting indicator is visible
+.broadcasting-indicator + .stats-section {
+  margin-top: 0;
+}
+
 .stats-section {
   display: flex;
   justify-content: space-between;
