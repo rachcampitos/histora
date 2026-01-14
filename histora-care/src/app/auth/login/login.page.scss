@@ -164,6 +164,9 @@ $border-radius: 12px;
   --background: #{$primary-gradient};
   --background-hover: #{$primary-gradient};
   --background-activated: #{$primary-gradient};
+  --color: #ffffff;
+  --color-hover: #ffffff;
+  --color-activated: #ffffff;
   --border-radius: #{$border-radius};
   --box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
   height: 52px;
@@ -175,12 +178,18 @@ $border-radius: 12px;
   ion-icon {
     font-size: 20px;
     margin-right: 8px;
+    color: #ffffff;
   }
 
   &[disabled] {
     --background: #cbd5e0;
+    --color: #{$text-dark};
     --box-shadow: none;
     opacity: 1;
+
+    ion-icon {
+      color: #{$text-dark};
+    }
   }
 }
 

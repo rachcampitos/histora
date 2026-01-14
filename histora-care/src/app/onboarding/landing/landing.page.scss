@@ -169,6 +169,9 @@ $border-radius: tokens.$radius-lg;
   justify-content: center;
   gap: tokens.$spacing-3;
   margin-bottom: tokens.$spacing-5;
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
 
   .badge {
     display: flex;

@@ -1,16 +1,17 @@
 <ion-content class="map-content" [fullscreen]="true">
   <!-- Map Container -->
-  <div id="map" class="map-container"></div>
+  <div id="map" class="map-container" role="application" aria-label="Mapa de enfermeras cercanas"></div>
 
   <!-- Search Bar Overlay -->
-  <div class="search-overlay">
+  <div class="search-overlay" role="search" aria-label="Filtros de busqueda">
     <div class="search-bar">
       <ion-item lines="none" class="category-select">
         <ion-select
           [(ngModel)]="selectedCategory"
           (ionChange)="onCategoryChange()"
           interface="action-sheet"
-          placeholder="Tipo de servicio">
+          placeholder="Tipo de servicio"
+          aria-label="Seleccionar tipo de servicio">
           <ion-select-option *ngFor="let cat of categories" [value]="cat.value">
             {{ cat.label }}
           </ion-select-option>
@@ -21,7 +22,8 @@
         <ion-select
           [(ngModel)]="searchRadius"
           (ionChange)="onRadiusChange()"
-          interface="popover">
+          interface="popover"
+          aria-label="Seleccionar radio de busqueda">
           <ion-select-option [value]="5">5 km</ion-select-option>
           <ion-select-option [value]="10">10 km</ion-select-option>
           <ion-select-option [value]="15">15 km</ion-select-option>
@@ -33,31 +35,31 @@
 
   <!-- Map Controls -->
   <div class="map-controls" [class.card-open]="selectedNurse" role="group" aria-label="Controles del mapa">
-    <ion-button fill="clear" class="control-btn" (click)="centerOnUser()" aria-label="Centrar mapa en mi ubicación">
-      <ion-icon name="locate" slot="icon-only"></ion-icon>
+    <ion-button fill="clear" class="control-btn" (click)="centerOnUser()" aria-label="Centrar mapa en mi ubicacion">
+      <ion-icon name="locate" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
-    <ion-button fill="clear" class="control-btn" (click)="refreshLocation()" aria-label="Actualizar ubicación">
-      <ion-icon name="refresh" slot="icon-only"></ion-icon>
+    <ion-button fill="clear" class="control-btn" (click)="refreshLocation()" aria-label="Actualizar ubicacion">
+      <ion-icon name="refresh" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
   </div>
 
   <!-- Results Count Badge -->
-  <div class="results-badge" *ngIf="nearbyNurses.length > 0">
+  <div class="results-badge" *ngIf="nearbyNurses.length > 0" role="status" aria-live="polite">
     <ion-badge color="primary">
       {{ nearbyNurses.length }} {{ nearbyNurses.length === 1 ? 'enfermera' : 'enfermeras' }} cerca
     </ion-badge>
   </div>
 
   <!-- Loading Overlay -->
-  <div class="loading-overlay" *ngIf="isSearching">
-    <ion-spinner name="crescent"></ion-spinner>
+  <div class="loading-overlay" *ngIf="isSearching" role="status" aria-live="polite" aria-label="Buscando enfermeras">
+    <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
     <p>Buscando enfermeras...</p>
   </div>
 
   <!-- Selected Nurse Card -->
   <div class="nurse-card" *ngIf="selectedNurse" [@slideUp] role="dialog" aria-labelledby="nurse-card-title">
     <ion-button fill="clear" class="close-btn" (click)="closeNurseCard()" aria-label="Cerrar tarjeta de enfermera">
-      <ion-icon name="close" slot="icon-only"></ion-icon>
+      <ion-icon name="close" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <div class="nurse-header">
@@ -76,11 +78,11 @@
         </div>
         <div class="nurse-meta">
           <span class="distance">
-            <ion-icon name="location-outline"></ion-icon>
+            <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
             {{ selectedNurse.distance.toFixed(1) }} km
           </span>
           <span class="rating" *ngIf="selectedNurse.nurse.averageRating > 0">
-            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star" aria-hidden="true"></ion-icon>
             {{ selectedNurse.nurse.averageRating.toFixed(1) }}
             ({{ selectedNurse.nurse.totalReviews }})
           </span>
@@ -88,32 +90,33 @@
       </div>
     </div>
 
-    <div class="nurse-specialties" *ngIf="selectedNurse.nurse.specialties?.length">
-      <ion-chip *ngFor="let specialty of selectedNurse.nurse.specialties.slice(0, 3)">
+    <div class="nurse-specialties" *ngIf="selectedNurse.nurse.specialties?.length" role="list" aria-label="Especialidades">
+      <ion-chip *ngFor="let specialty of selectedNurse.nurse.specialties.slice(0, 3)" role="listitem">
         {{ specialty }}
       </ion-chip>
     </div>
 
     <div class="nurse-services" *ngIf="selectedNurse.nurse.services?.length">
-      <h4>Servicios destacados</h4>
-      <div class="service-list">
-        <div class="service-item" *ngFor="let service of selectedNurse.nurse.services.slice(0, 2)">
+      <h4 id="services-title">Servicios destacados</h4>
+      <div class="service-list" role="list" aria-labelledby="services-title">
+        <div class="service-item" *ngFor="let service of selectedNurse.nurse.services.slice(0, 2)" role="listitem">
           <span class="service-name">{{ service.name }}</span>
           <span class="service-price">S/ {{ service.price }}</span>
         </div>
       </div>
     </div>
 
-    <div class="nurse-actions">
-      <ion-button fill="outline" (click)="viewNurseProfile(selectedNurse.nurse._id)">
-        <ion-icon name="person-outline" slot="start"></ion-icon>
+    <div class="nurse-actions" role="group" aria-label="Acciones disponibles">
+      <ion-button fill="outline" (click)="viewNurseProfile(selectedNurse.nurse._id)" aria-label="Ver perfil de la enfermera">
+        <ion-icon name="person-outline" slot="start" aria-hidden="true"></ion-icon>
         Ver Perfil
       </ion-button>
       <ion-button
         color="primary"
         [disabled]="!selectedNurse.nurse.isAvailable"
-        (click)="requestService(selectedNurse.nurse._id)">
-        <ion-icon name="medkit-outline" slot="start"></ion-icon>
+        (click)="requestService(selectedNurse.nurse._id)"
+        aria-label="Solicitar servicio de enfermeria">
+        <ion-icon name="medkit-outline" slot="start" aria-hidden="true"></ion-icon>
         Solicitar Servicio
       </ion-button>
     </div>
@@ -123,9 +126,9 @@
   <div class="bottom-list" *ngIf="nearbyNurses.length > 0 && !selectedNurse">
     <div class="list-header">
       <span>{{ nearbyNurses.length }} enfermeras cerca de ti</span>
-      <ion-button fill="clear" size="small" (click)="viewNurseList()">
+      <ion-button fill="clear" size="small" (click)="viewNurseList()" aria-label="Ver lista completa de enfermeras">
         Ver lista
-        <ion-icon name="chevron-forward" slot="end"></ion-icon>
+        <ion-icon name="chevron-forward" slot="end" aria-hidden="true"></ion-icon>
       </ion-button>
     </div>
     <div class="nurse-thumbnails" role="list" aria-label="Enfermeras cercanas">

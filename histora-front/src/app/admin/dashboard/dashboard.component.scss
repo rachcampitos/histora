@@ -14,12 +14,157 @@
   }
 }
 
-// KPI Cards
+// ==================== ALERTS BANNER ====================
+.alerts-banner {
+  background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 25px;
+  color: white;
+  animation: pulse-soft 2s infinite;
+
+  &.has-emergency {
+    background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+    animation: pulse-urgent 1s infinite;
+  }
+
+  .alerts-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+      animation: shake 0.5s ease-in-out infinite;
+    }
+
+    .alerts-title {
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+
+  .alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .alert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 12px 16px;
+
+    &.alert-emergency {
+      background: rgba(255, 255, 255, 0.25);
+      border-left: 4px solid white;
+    }
+
+    &.alert-help {
+      border-left: 4px solid rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .alert-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .alert-badge {
+    background: white;
+    color: #c62828;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .alert-nurse {
+    font-weight: 600;
+  }
+
+  .alert-time {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  .alert-location {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    opacity: 0.9;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+      animation: none;
+    }
+  }
+
+  .alert-actions {
+    display: flex;
+    gap: 8px;
+
+    button {
+      color: white;
+    }
+  }
+
+  .see-all-alerts {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    color: white;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes pulse-urgent {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+  50% { box-shadow: 0 0 20px 5px rgba(244, 67, 54, 0.4); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+// ==================== KPI CARDS ====================
 .kpi-card {
   margin-bottom: 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 140px;
+
+  &.clickable {
+    cursor: pointer;
+  }
 
   &:hover {
     transform: translateY(-5px);
@@ -27,98 +172,133 @@
   }
 
   .card-body {
-    padding: 20px;
+    padding: 16px;
   }
 
   .kpi-content {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .kpi-icon-wrapper {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: white;
+    }
+
+    .kpi-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #f44336;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      min-width: 20px;
+      text-align: center;
+
+      &.badge-warn {
+        background: #ff9800;
+      }
+    }
   }
 
   .kpi-info {
     flex: 1;
   }
 
-  .kpi-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
   .kpi-value {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
-    margin: 8px 0;
+    margin: 0 0 4px 0;
     color: #2c3e50;
   }
 
-  .kpi-change {
-    display: flex;
-    align-items: center;
+  .kpi-title {
     font-size: 12px;
-    color: #28a745;
-    font-weight: 500;
-
-    .change-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      margin-right: 4px;
-    }
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 4px;
   }
 
-  .kpi-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    mat-icon {
-      font-size: 30px;
-      width: 30px;
-      height: 30px;
-      color: white;
-    }
+  .kpi-subtitle {
+    font-size: 12px;
+    color: #9ca3af;
+    display: block;
   }
 
-  &.kpi-primary .kpi-icon {
+  mat-progress-bar {
+    margin-top: 8px;
+    border-radius: 4px;
+    height: 6px;
+  }
+
+  // Color variants
+  &.kpi-primary .kpi-icon-wrapper {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   }
 
-  &.kpi-success .kpi-icon {
+  &.kpi-success .kpi-icon-wrapper {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   }
 
-  &.kpi-info .kpi-icon {
+  &.kpi-info .kpi-icon-wrapper {
     background: linear-gradient(135deg, #2196f3 0%, #21cbf3 100%);
   }
 
-  &.kpi-warning .kpi-icon {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  &.kpi-warning .kpi-icon-wrapper {
+    background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+  }
+
+  &.kpi-danger .kpi-icon-wrapper {
+    background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+    animation: pulse-urgent 1s infinite;
   }
 }
 
-// Cards
+// ==================== CARDS ====================
 .card {
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   margin-bottom: 20px;
 
   .header {
-    padding: 20px;
+    padding: 16px 20px;
     border-bottom: 1px solid #eee;
 
     h2 {
       margin: 0;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #2c3e50;
+      display: flex;
+      align-items: center;
+
+      .header-icon {
+        margin-right: 10px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #667eea;
+      }
     }
   }
 
@@ -127,7 +307,7 @@
   }
 }
 
-// Table styles
+// ==================== TABLE ====================
 .table-responsive {
   overflow-x: auto;
 }
@@ -138,7 +318,7 @@
   th {
     font-weight: 600;
     color: #6c757d;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -149,22 +329,44 @@
   }
 }
 
-.clinic-name {
+.nurse-cell {
   display: flex;
   align-items: center;
   font-weight: 500;
 
-  .clinic-icon {
+  .nurse-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     margin-right: 10px;
-    color: #667eea;
+    object-fit: cover;
   }
 }
 
-// Badges
+.cep-number {
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.cep-verified {
+  color: #4caf50;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.waiting-urgent {
+  color: #f44336;
+  font-weight: 600;
+}
+
+// ==================== BADGES ====================
 .badge {
   padding: 5px 12px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -201,7 +403,213 @@
   }
 }
 
-// Quick Action Cards
+// ==================== ACTIVITY TIMELINE ====================
+.activity-card {
+  .body {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+}
+
+.activity-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+
+  &.activity-warning {
+    background: #fff8e1;
+
+    &:hover {
+      background: #ffecb3;
+    }
+  }
+
+  &.activity-critical {
+    background: #ffebee;
+
+    &:hover {
+      background: #ffcdd2;
+    }
+  }
+
+  .activity-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .activity-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .activity-title {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #2c3e50;
+    margin-bottom: 2px;
+  }
+
+  .activity-description {
+    display: block;
+    font-size: 12px;
+    color: #6c757d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .activity-time {
+    display: block;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 4px;
+  }
+}
+
+// ==================== WARNINGS CARD ====================
+.warnings-card {
+  .body {
+    max-height: 350px;
+    overflow-y: auto;
+  }
+}
+
+.warning-section {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .warning-title {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6c757d;
+    margin: 0 0 12px 0;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      color: #ff9800;
+    }
+  }
+}
+
+.warning-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: #fff8e1;
+  border-radius: 8px;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.has-active {
+    background: #ffebee;
+    border-left: 3px solid #f44336;
+  }
+
+  .warning-rating {
+    display: flex;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #e0e0e0;
+
+      &.filled {
+        color: #ff9800;
+      }
+    }
+  }
+
+  .warning-detail {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  .warning-nurse {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2c3e50;
+  }
+
+  .warning-days {
+    font-size: 12px;
+    color: #f44336;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+
+    .active-indicator {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-left: 6px;
+      color: #f44336;
+    }
+  }
+}
+
+// ==================== EMPTY STATE ====================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// ==================== QUICK ACTION CARDS ====================
 .quick-action-card {
   cursor: pointer;
   transition: all 0.3s ease;
@@ -222,56 +630,81 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 30px 20px;
+    padding: 24px 16px;
     text-align: center;
   }
 
   .action-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
     color: #6c757d;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     transition: all 0.3s ease;
   }
 
   .action-text {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: #2c3e50;
   }
 }
 
-// Responsive
-@media (max-width: 768px) {
+// ==================== RESPONSIVE ====================
+@media (max-width: 1200px) {
   .kpi-card {
     .kpi-value {
-      font-size: 24px;
+      font-size: 22px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .alerts-banner {
+    .alert-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
     }
 
-    .kpi-icon {
-      width: 50px;
-      height: 50px;
+    .alert-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+
+  .kpi-card {
+    .kpi-value {
+      font-size: 20px;
+    }
+
+    .kpi-icon-wrapper {
+      width: 40px;
+      height: 40px;
 
       mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
       }
     }
   }
 
   .quick-action-card {
     .action-icon {
-      font-size: 36px;
-      width: 36px;
-      height: 36px;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
     }
   }
 }
 
-// Dark Mode Styles
+// ==================== DARK MODE ====================
 :host-context(body.dark) {
+  .alerts-banner {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
   .kpi-card {
     background: #1a202e;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -284,8 +717,8 @@
       color: #ffffff;
     }
 
-    .kpi-change {
-      color: #4ade80;
+    .kpi-subtitle {
+      color: #6b7280;
     }
 
     &:hover {
@@ -302,6 +735,10 @@
 
       h2 {
         color: #ffffff;
+
+        .header-icon {
+          color: #818cf8;
+        }
       }
     }
   }
@@ -317,12 +754,87 @@
     }
   }
 
-  .clinic-name {
+  .nurse-cell {
     color: #ffffff;
+  }
 
-    .clinic-icon {
-      color: #818cf8;
+  .cep-verified {
+    color: #4ade80;
+  }
+
+  // Activity timeline dark
+  .activity-item {
+    &:hover {
+      background: #2a3040;
     }
+
+    &.activity-warning {
+      background: rgba(249, 115, 22, 0.15);
+
+      &:hover {
+        background: rgba(249, 115, 22, 0.25);
+      }
+    }
+
+    &.activity-critical {
+      background: rgba(239, 68, 68, 0.15);
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.25);
+      }
+    }
+
+    .activity-icon {
+      background: #2a3040;
+    }
+
+    .activity-title {
+      color: #ffffff;
+    }
+
+    .activity-description {
+      color: #9ca3af;
+    }
+  }
+
+  // Warnings dark
+  .warning-section {
+    .warning-title {
+      color: #b8c5d6;
+
+      mat-icon {
+        color: #fb923c;
+      }
+    }
+  }
+
+  .warning-item {
+    background: rgba(249, 115, 22, 0.15);
+
+    &.has-active {
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    .warning-detail {
+      color: #9ca3af;
+    }
+
+    .warning-nurse {
+      color: #ffffff;
+    }
+
+    .warning-days {
+      color: #f87171;
+
+      .active-indicator {
+        color: #f87171;
+      }
+    }
+  }
+
+  // Empty state dark
+  .empty-state {
+    color: #6b7280;
   }
 
   // Badges dark mode

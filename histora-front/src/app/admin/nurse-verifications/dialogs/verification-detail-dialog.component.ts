@@ -25,6 +25,9 @@ interface NurseVerificationDetail {
   dniNumber?: string;
   fullNameOnDni?: string;
   documents: Array<{ url: string; type: string; uploadedAt: Date }>;
+  officialCepPhotoUrl?: string;
+  cepIdentityConfirmed?: boolean;
+  cepIdentityConfirmedAt?: Date;
   reviewedAt?: Date;
   reviewNotes?: string;
   rejectionReason?: string;
@@ -33,6 +36,9 @@ interface NurseVerificationDetail {
   nurse?: {
     cepNumber: string;
     specialties: string[];
+    officialCepPhotoUrl?: string;
+    selfieUrl?: string;
+    cepRegisteredName?: string;
     bio?: string;
     yearsOfExperience?: number;
     user?: {
@@ -109,12 +115,93 @@ interface NurseVerificationDetail {
               <span class="value">{{ verification.dniNumber || '-' }}</span>
             </div>
             <div class="info-card">
-              <span class="label">Nombre en DNI</span>
-              <span class="value">{{ verification.fullNameOnDni || '-' }}</span>
+              <span class="label">Nombre en CEP</span>
+              <span class="value">{{ verification.nurse?.cepRegisteredName || verification.fullNameOnDni || '-' }}</span>
             </div>
             <div class="info-card">
               <span class="label">Intento #</span>
               <span class="value">{{ verification.attemptNumber }}</span>
+            </div>
+          </div>
+
+          <!-- Identity Confirmation Badge -->
+          @if (verification.cepIdentityConfirmed) {
+            <div class="identity-confirmed-badge">
+              <mat-icon>verified_user</mat-icon>
+              <span>Identidad confirmada por el usuario</span>
+              @if (verification.cepIdentityConfirmedAt) {
+                <small>{{ verification.cepIdentityConfirmedAt | date:'dd/MM/yyyy HH:mm' }}</small>
+              }
+            </div>
+          }
+
+          <!-- Photo Comparison Section -->
+          <div class="photo-comparison-section">
+            <h4>
+              <mat-icon>compare</mat-icon>
+              Comparacion de Fotos
+            </h4>
+            <p class="comparison-hint">Compare las fotos para verificar la identidad de la enfermera</p>
+
+            <div class="photo-grid">
+              <!-- Official CEP Photo -->
+              <div class="photo-card">
+                <div class="photo-label">
+                  <mat-icon>badge</mat-icon>
+                  Foto Oficial CEP
+                </div>
+                @if (getCepPhotoUrl()) {
+                  <img [src]="getCepPhotoUrl()" alt="Foto oficial CEP" class="verification-photo">
+                  <div class="photo-badge verified">
+                    <mat-icon>verified</mat-icon>
+                    Registro Oficial
+                  </div>
+                } @else {
+                  <div class="no-photo">
+                    <mat-icon>photo_camera</mat-icon>
+                    <span>Sin foto en CEP</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Selfie Photo -->
+              <div class="photo-card">
+                <div class="photo-label">
+                  <mat-icon>selfie</mat-icon>
+                  Selfie de Verificacion
+                </div>
+                @if (verification.nurse?.selfieUrl) {
+                  <img [src]="verification.nurse?.selfieUrl" alt="Selfie de verificacion" class="verification-photo">
+                  <div class="photo-badge selfie">
+                    <mat-icon>camera_alt</mat-icon>
+                    Tomada por Usuario
+                  </div>
+                } @else {
+                  <div class="no-photo">
+                    <mat-icon>no_photography</mat-icon>
+                    <span>Sin selfie</span>
+                  </div>
+                }
+              </div>
+
+              <!-- Profile Avatar -->
+              <div class="photo-card">
+                <div class="photo-label">
+                  <mat-icon>account_circle</mat-icon>
+                  Avatar de Perfil
+                </div>
+                @if (verification.nurse?.user?.avatar) {
+                  <img [src]="verification.nurse?.user?.avatar" alt="Avatar de perfil" class="verification-photo">
+                  <div class="photo-badge avatar">
+                    <mat-icon>person</mat-icon>
+                    Foto de Perfil
+                  </div>
+                } @else {
+                  <div class="no-photo initials">
+                    {{ getInitials(verification.nurse?.user?.firstName, verification.nurse?.user?.lastName) }}
+                  </div>
+                }
+              </div>
             </div>
           </div>
 
@@ -130,20 +217,22 @@ interface NurseVerificationDetail {
             </div>
           }
 
-          <!-- Documents Tabs -->
-          <mat-tab-group class="documents-tabs">
-            @for (doc of verification.documents; track doc.type) {
-              <mat-tab [label]="getDocumentLabel(doc.type)">
-                <div class="document-viewer">
-                  <img [src]="doc.url" [alt]="getDocumentLabel(doc.type)">
-                  <a [href]="doc.url" target="_blank" class="open-link">
-                    <i-feather name="external-link"></i-feather>
-                    Abrir en nueva pestana
-                  </a>
-                </div>
-              </mat-tab>
-            }
-          </mat-tab-group>
+          <!-- Documents Tabs (for legacy document uploads) -->
+          @if (verification.documents?.length) {
+            <mat-tab-group class="documents-tabs">
+              @for (doc of verification.documents; track doc.type) {
+                <mat-tab [label]="getDocumentLabel(doc.type)">
+                  <div class="document-viewer">
+                    <img [src]="doc.url" [alt]="getDocumentLabel(doc.type)">
+                    <a [href]="doc.url" target="_blank" class="open-link">
+                      <i-feather name="external-link"></i-feather>
+                      Abrir en nueva pestana
+                    </a>
+                  </div>
+                </mat-tab>
+              }
+            </mat-tab-group>
+          }
 
           <!-- Review Section -->
           @if (verification.status === 'pending' || verification.status === 'under_review') {
@@ -364,6 +453,167 @@ interface NurseVerificationDetail {
         }
       }
 
+      .identity-confirmed-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-radius: 8px;
+        margin-bottom: 24px;
+        color: #065f46;
+        font-weight: 500;
+
+        mat-icon {
+          color: #059669;
+        }
+
+        small {
+          margin-left: auto;
+          font-size: 12px;
+          color: #047857;
+        }
+      }
+
+      .photo-comparison-section {
+        background: #f7fafc;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+
+        h4 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 0 0 8px;
+          font-size: 16px;
+          font-weight: 600;
+          color: #2d3748;
+
+          mat-icon {
+            color: #667eea;
+          }
+        }
+
+        .comparison-hint {
+          margin: 0 0 20px;
+          font-size: 13px;
+          color: #718096;
+        }
+      }
+
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+
+        @media (max-width: 600px) {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .photo-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border: 2px solid transparent;
+        transition: border-color 0.2s ease;
+
+        &:hover {
+          border-color: #667eea;
+        }
+
+        .photo-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          margin-bottom: 12px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #4a5568;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        .verification-photo {
+          width: 140px;
+          height: 140px;
+          object-fit: cover;
+          border-radius: 50%;
+          border: 3px solid #e2e8f0;
+          margin-bottom: 12px;
+        }
+
+        .no-photo {
+          width: 140px;
+          height: 140px;
+          border-radius: 50%;
+          background: #e2e8f0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 12px;
+          color: #a0aec0;
+
+          mat-icon {
+            font-size: 48px;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 8px;
+          }
+
+          span {
+            font-size: 12px;
+          }
+
+          &.initials {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 48px;
+            font-weight: 600;
+          }
+        }
+
+        .photo-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 12px;
+          border-radius: 16px;
+          font-size: 12px;
+          font-weight: 500;
+
+          mat-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+          }
+
+          &.verified {
+            background: #d1fae5;
+            color: #065f46;
+          }
+
+          &.selfie {
+            background: #dbeafe;
+            color: #1e40af;
+          }
+
+          &.avatar {
+            background: #fef3c7;
+            color: #92400e;
+          }
+        }
+      }
+
       .documents-tabs {
         margin-bottom: 24px;
 
@@ -494,6 +744,48 @@ interface NurseVerificationDetail {
             color: white;
           }
         }
+
+        .identity-confirmed-badge {
+          background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+          color: #d1fae5;
+
+          mat-icon {
+            color: #34d399;
+          }
+
+          small {
+            color: #a7f3d0;
+          }
+        }
+
+        .photo-comparison-section {
+          background: #2d3748;
+
+          h4 {
+            color: white;
+          }
+
+          .comparison-hint {
+            color: #a0aec0;
+          }
+        }
+
+        .photo-card {
+          background: #1a202e;
+
+          .photo-label {
+            color: #e2e8f0;
+          }
+
+          .verification-photo {
+            border-color: #4a5568;
+          }
+
+          .no-photo {
+            background: #4a5568;
+            color: #a0aec0;
+          }
+        }
       }
     `,
   ],
@@ -568,6 +860,13 @@ export class VerificationDetailDialogComponent implements OnInit {
       selfie_with_dni: 'Selfie con DNI',
     };
     return labels[type] || type;
+  }
+
+  getCepPhotoUrl(): string | null {
+    // First check verification record, then nurse record
+    return this.verification?.officialCepPhotoUrl
+      || this.verification?.nurse?.officialCepPhotoUrl
+      || null;
   }
 
   toggleRejectionReason(): void {

@@ -179,12 +179,101 @@ export class LoginService {
     );
   }
 
+  // ============= NURSE REGISTRATION (2-Step Flow) =============
+
+  /**
+   * Step 1: Validate nurse credentials with CEP registry
+   */
+  validateNurseCep(dni: string, cepNumber: string): Observable<{
+    isValid: boolean;
+    data?: {
+      cepNumber: string;
+      fullName?: string;
+      dni: string;
+      photoUrl?: string;
+      isPhotoVerified: boolean;
+    };
+    error?: string;
+  }> {
+    return this.http.post<{
+      isValid: boolean;
+      data?: {
+        cepNumber: string;
+        fullName?: string;
+        dni: string;
+        photoUrl?: string;
+        isPhotoVerified: boolean;
+      };
+      error?: string;
+    }>(`${this.apiUrl}/auth/register/nurse/validate-cep`, { dni, cepNumber }).pipe(
+      catchError((error) => {
+        console.error('CEP validation error:', error);
+        return of({
+          isValid: false,
+          error: error.error?.error || error.error?.message || 'Error al validar credenciales con el CEP',
+        });
+      })
+    );
+  }
+
+  /**
+   * Step 2: Complete nurse registration after CEP validation
+   */
+  completeNurseRegistration(data: {
+    email: string;
+    password: string;
+    phone?: string;
+    dni: string;
+    cepNumber: string;
+    fullNameFromCep: string;
+    cepPhotoUrl?: string;
+    identityConfirmed: boolean;
+    selfieUrl?: string;
+    specialties?: string[];
+    termsAccepted: boolean;
+    professionalDisclaimerAccepted: boolean;
+  }): Observable<AuthResponse & { nurseId: string; verificationStatus: string } | { status: number; error?: string }> {
+    return this.http.post<AuthResponse & { nurseId: string; verificationStatus: string }>(
+      `${this.apiUrl}/auth/register/nurse/complete`,
+      data
+    ).pipe(
+      map((response) => {
+        const user = response.user;
+        return {
+          ...response,
+          user: {
+            ...user,
+            name: `${user.firstName} ${user.lastName}`,
+            roles: [
+              {
+                name: 'NURSE',
+                priority: 2,
+              },
+            ],
+            permissions: ['canAdd', 'canEdit', 'canRead'],
+            avatar: user.avatar || data.cepPhotoUrl || 'nurse.jpg',
+          },
+          token: response.access_token,
+          status: 201,
+        };
+      }),
+      catchError((error) => {
+        console.error('Nurse registration error:', error);
+        return of({
+          status: error.status || 400,
+          error: error.error?.message || 'Error al completar el registro',
+        });
+      })
+    );
+  }
+
   private mapRoleToClinica(role: string): string {
     const roleMap: Record<string, string> = {
       platform_admin: 'PLATFORM_ADMIN',
       clinic_owner: 'ADMIN',
       clinic_doctor: 'DOCTOR',
       clinic_staff: 'DOCTOR',
+      nurse: 'NURSE',
       patient: 'PATIENT',
     };
     return roleMap[role] || 'PATIENT';
@@ -196,6 +285,7 @@ export class LoginService {
       clinic_owner: 1,
       clinic_doctor: 2,
       clinic_staff: 2,
+      nurse: 2,
       patient: 3,
     };
     return priorityMap[role] ?? 3;
@@ -207,6 +297,7 @@ export class LoginService {
       clinic_owner: ['canAdd', 'canDelete', 'canEdit', 'canRead'],
       clinic_doctor: ['canAdd', 'canEdit', 'canRead'],
       clinic_staff: ['canAdd', 'canEdit', 'canRead'],
+      nurse: ['canAdd', 'canEdit', 'canRead'],
       patient: ['canRead'],
     };
     return permissionMap[role] || ['canRead'];
@@ -218,6 +309,7 @@ export class LoginService {
       clinic_owner: 'doctor.jpg',
       clinic_doctor: 'doctor.jpg',
       clinic_staff: 'doctor.jpg',
+      nurse: 'nurse.jpg',
       patient: 'patient.jpg',
     };
     return avatarMap[role] || 'patient.jpg';

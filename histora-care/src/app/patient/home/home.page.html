@@ -12,68 +12,91 @@
   </ion-header>
 
   <!-- Greeting Section -->
-  <div class="greeting-section">
+  <header class="greeting-section" role="banner">
     <div class="greeting-avatar">
       @if (user()?.avatar) {
-        <img [src]="user()!.avatar" alt="Avatar" />
+        <img [src]="user()!.avatar" [alt]="'Foto de perfil de ' + (user()?.firstName || 'usuario')" />
       } @else {
-        <ion-icon name="person"></ion-icon>
+        <ion-icon name="person" aria-hidden="true"></ion-icon>
       }
     </div>
     <div class="greeting-text">
       <span class="greeting-hello">Hola, {{ user()?.firstName || 'Usuario' }}</span>
       <span class="greeting-question">¿Qué necesitas hoy?</span>
     </div>
-  </div>
+  </header>
 
   <!-- Main Action Card -->
-  <ion-card id="tour-main-action" class="main-action-card" button (click)="goToMap()">
+  <ion-card
+    id="tour-main-action"
+    class="main-action-card"
+    button
+    (click)="goToMap()"
+    role="button"
+    aria-label="Buscar enfermera disponible cerca de ti">
     <ion-card-content>
-      <div class="action-icon">
+      <div class="action-icon" aria-hidden="true">
         <ion-icon name="map"></ion-icon>
       </div>
       <div class="action-content">
         <h2>Buscar Enfermera</h2>
         <p>Encuentra profesionales de enfermería cerca de ti</p>
       </div>
-      <ion-icon name="chevron-forward" class="action-arrow"></ion-icon>
+      <ion-icon name="chevron-forward" class="action-arrow" aria-hidden="true"></ion-icon>
     </ion-card-content>
   </ion-card>
 
   <!-- Quick Actions -->
-  <div id="tour-quick-actions" class="quick-actions">
-    <div class="quick-action-card" (click)="goToHistory()">
-      <div class="quick-icon history">
+  <nav id="tour-quick-actions" class="quick-actions" aria-label="Acciones rápidas">
+    <button
+      class="quick-action-card"
+      (click)="goToHistory()"
+      aria-label="Ver historial de servicios de enfermería">
+      <div class="quick-icon history" aria-hidden="true">
         <ion-icon name="time"></ion-icon>
       </div>
       <span>Historial</span>
-    </div>
-    <div class="quick-action-card" (click)="goToFavorites()">
-      <div class="quick-icon favorites">
+    </button>
+    <button
+      class="quick-action-card"
+      (click)="goToFavorites()"
+      aria-label="Ver enfermeras favoritas">
+      <div class="quick-icon favorites" aria-hidden="true">
         <ion-icon name="heart"></ion-icon>
       </div>
       <span>Favoritas</span>
-    </div>
-  </div>
+    </button>
+  </nav>
 
   <!-- Active Request Section -->
-  @if (activeRequest()) {
-    <div class="section">
-      <h3 class="section-title">
-        <ion-icon name="pulse-outline"></ion-icon>
-        Solicitud Activa
-      </h3>
-      <ion-card class="active-request-card" button (click)="viewActiveRequest()">
+  <section class="section" aria-labelledby="active-request-title">
+    <h3 id="active-request-title" class="section-title">
+      <ion-icon name="pulse-outline" aria-hidden="true"></ion-icon>
+      Solicitud Activa
+    </h3>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>Cargando solicitudes...</p>
+      </div>
+    } @else if (activeRequest()) {
+      <ion-card
+        class="active-request-card"
+        button
+        (click)="viewActiveRequest()"
+        role="button"
+        aria-label="Ver seguimiento de solicitud activa">
         <ion-card-content>
           <div class="request-header">
             <div class="nurse-info">
               @if (activeRequest()!.nurse?.avatar) {
                 <ion-avatar>
-                  <img [src]="activeRequest()!.nurse!.avatar" alt="Enfermera" />
+                  <img [src]="activeRequest()!.nurse!.avatar" [alt]="(activeRequest()!.nurse?.firstName || 'Enfermera') + ' ' + (activeRequest()!.nurse?.lastName || '')" />
                 </ion-avatar>
               } @else {
                 <ion-avatar class="avatar-placeholder">
-                  <ion-icon name="person"></ion-icon>
+                  <ion-icon name="person" aria-hidden="true"></ion-icon>
                 </ion-avatar>
               }
               <div class="nurse-details">
@@ -91,49 +114,59 @@
           <div class="request-footer">
             <span class="view-details">
               Ver seguimiento
-              <ion-icon name="chevron-forward"></ion-icon>
+              <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
             </span>
           </div>
         </ion-card-content>
       </ion-card>
-    </div>
-  }
+    } @else {
+      <div class="empty-state">
+        <ion-icon name="medical-outline" aria-hidden="true"></ion-icon>
+        <h4>Sin solicitudes activas</h4>
+        <p>No tienes servicios en progreso actualmente</p>
+      </div>
+    }
+  </section>
 
   <!-- Recent Nurses Section -->
   @if (recentNurses().length > 0) {
-    <div class="section">
-      <h3 class="section-title">
-        <ion-icon name="time-outline"></ion-icon>
+    <section class="section" aria-labelledby="recent-nurses-title">
+      <h3 id="recent-nurses-title" class="section-title">
+        <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
         Enfermeras Recientes
       </h3>
-      <div class="recent-nurses">
+      <div class="recent-nurses" role="list">
         @for (nurse of recentNurses(); track nurse.nurseId) {
-          <div class="recent-nurse" (click)="selectRecentNurse(nurse)">
+          <button
+            class="recent-nurse"
+            role="listitem"
+            (click)="selectRecentNurse(nurse)"
+            [attr.aria-label]="'Solicitar servicio de ' + (nurse.firstName || 'enfermera') + ' ' + (nurse.lastName || '')">
             @if (nurse.avatar) {
               <ion-avatar>
-                <img [src]="nurse.avatar" [alt]="nurse.firstName || 'Enfermera'" />
+                <img [src]="nurse.avatar" [alt]="(nurse.firstName || 'Enfermera') + ' ' + (nurse.lastName || '')" />
               </ion-avatar>
             } @else {
               <ion-avatar class="avatar-placeholder">
-                <ion-icon name="person"></ion-icon>
+                <ion-icon name="person" aria-hidden="true"></ion-icon>
               </ion-avatar>
             }
             <span class="nurse-name">{{ nurse.firstName || 'Enfermera' }}</span>
-          </div>
+          </button>
         }
       </div>
-    </div>
+    </section>
   }
 
   <!-- Health Tip Section -->
-  <div class="section">
-    <h3 class="section-title">
-      <ion-icon name="bulb-outline"></ion-icon>
+  <section class="section" aria-labelledby="health-tip-title">
+    <h3 id="health-tip-title" class="section-title">
+      <ion-icon name="bulb-outline" aria-hidden="true"></ion-icon>
       Tip de Salud
     </h3>
     <ion-card class="tip-card">
       <ion-card-content>
-        <div class="tip-icon">
+        <div class="tip-icon" aria-hidden="true">
           <ion-icon [name]="currentTip().icon"></ion-icon>
         </div>
         <div class="tip-content">
@@ -142,7 +175,7 @@
         </div>
       </ion-card-content>
     </ion-card>
-  </div>
+  </section>
 
   <!-- Bottom padding for tab bar -->
   <div class="bottom-spacer"></div>

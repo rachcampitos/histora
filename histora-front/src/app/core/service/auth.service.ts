@@ -148,6 +148,7 @@ export class AuthService {
       clinic_owner: { name: 'ADMIN', priority: 1 },
       clinic_doctor: { name: 'DOCTOR', priority: 2 },
       clinic_staff: { name: 'DOCTOR', priority: 2 },
+      nurse: { name: 'NURSE', priority: 2 },
       patient: { name: 'PATIENT', priority: 3 },
     };
     return [roleMap[role] || { name: 'PATIENT', priority: 3 }];
@@ -159,6 +160,7 @@ export class AuthService {
       clinic_owner: ['canAdd', 'canDelete', 'canEdit', 'canRead'],
       clinic_doctor: ['canAdd', 'canEdit', 'canRead'],
       clinic_staff: ['canAdd', 'canEdit', 'canRead'],
+      nurse: ['canAdd', 'canEdit', 'canRead'],
       patient: ['canRead'],
     };
     return permissionMap[role] || ['canRead'];
@@ -171,6 +173,8 @@ export class AuthService {
       case 'clinic_owner':
       case 'clinic_doctor':
         return '/doctor/dashboard';
+      case 'nurse':
+        return '/nurse/dashboard';
       case 'patient':
         return '/patient/dashboard';
       default:

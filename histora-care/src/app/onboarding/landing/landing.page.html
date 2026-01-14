@@ -1,17 +1,17 @@
 <ion-content class="landing-content" [fullscreen]="true">
-  <div class="landing-container">
+  <main class="landing-container" role="main">
     <!-- Main Content -->
     <div class="landing-main">
       <!-- Logo -->
-      <div class="logo-section">
-        <div class="logo-wrapper">
+      <header class="logo-section" role="banner">
+        <div class="logo-wrapper" aria-hidden="true">
           <ion-icon name="heart-circle" class="logo-icon"></ion-icon>
         </div>
         <h1 class="app-name">Histora Care</h1>
-      </div>
+      </header>
 
       <!-- Hero Illustration -->
-      <div class="hero-section">
+      <div class="hero-section" aria-hidden="true">
         <div class="hero-circle">
           <ion-icon name="medkit" class="hero-icon"></ion-icon>
         </div>
@@ -27,57 +27,70 @@
       </div>
 
       <!-- Value Proposition -->
-      <div class="value-section">
-        <h2 class="headline">Enfermeras profesionales certificadas en tu hogar</h2>
+      <section class="value-section" aria-labelledby="headline-title">
+        <h2 id="headline-title" class="headline">Enfermeras profesionales certificadas en tu hogar</h2>
         <p class="subheadline">
           Atencion de calidad con profesionales verificados por el Colegio de Enfermeros del Peru
         </p>
-      </div>
+      </section>
 
       <!-- Trust Badges -->
-      <div class="trust-badges">
-        <div class="badge">
-          <ion-icon name="ribbon"></ion-icon>
+      <ul class="trust-badges" aria-label="Certificaciones y validaciones">
+        <li class="badge">
+          <ion-icon name="ribbon" aria-hidden="true"></ion-icon>
           <span>CEP Validado</span>
-        </div>
-        <div class="badge">
-          <ion-icon name="finger-print"></ion-icon>
+        </li>
+        <li class="badge">
+          <ion-icon name="finger-print" aria-hidden="true"></ion-icon>
           <span>RENIEC Verificado</span>
-        </div>
-        <div class="badge">
-          <ion-icon name="scan"></ion-icon>
+        </li>
+        <li class="badge">
+          <ion-icon name="scan" aria-hidden="true"></ion-icon>
           <span>Biometria IA</span>
-        </div>
-      </div>
+        </li>
+      </ul>
 
       <!-- Social Proof -->
-      <div class="social-proof">
-        <div class="stars">
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star"></ion-icon>
-          <ion-icon name="star-half"></ion-icon>
+      <div class="social-proof" aria-label="Calificación de usuarios">
+        <div class="stars" role="img" aria-label="4.5 de 5 estrellas">
+          <ion-icon name="star" aria-hidden="true"></ion-icon>
+          <ion-icon name="star" aria-hidden="true"></ion-icon>
+          <ion-icon name="star" aria-hidden="true"></ion-icon>
+          <ion-icon name="star" aria-hidden="true"></ion-icon>
+          <ion-icon name="star-half" aria-hidden="true"></ion-icon>
         </div>
         <span class="proof-text">Mas de 500 enfermeras verificadas</span>
       </div>
     </div>
 
     <!-- CTA Section -->
-    <div class="cta-section">
-      <ion-button expand="block" class="primary-btn" (click)="navigateToRegister()">
-        <ion-icon name="person-add" slot="start"></ion-icon>
+    <nav class="cta-section" aria-label="Acciones principales">
+      <ion-button
+        expand="block"
+        class="primary-btn"
+        (click)="navigateToRegister()"
+        aria-label="Crear una cuenta nueva en Histora Care">
+        <ion-icon name="person-add" slot="start" aria-hidden="true"></ion-icon>
         Comenzar
       </ion-button>
 
-      <ion-button expand="block" fill="outline" class="secondary-btn" (click)="navigateToLogin()">
-        <ion-icon name="log-in" slot="start"></ion-icon>
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="secondary-btn"
+        (click)="navigateToLogin()"
+        aria-label="Iniciar sesión con cuenta existente">
+        <ion-icon name="log-in" slot="start" aria-hidden="true"></ion-icon>
         Ya tengo cuenta
       </ion-button>
 
-      <ion-button fill="clear" class="skip-btn" (click)="skip()">
+      <ion-button
+        fill="clear"
+        class="skip-btn"
+        (click)="skip()"
+        aria-label="Saltar introducción e ir directamente a la aplicación">
         Saltar
       </ion-button>
-    </div>
-  </div>
+    </nav>
+  </main>
 </ion-content>

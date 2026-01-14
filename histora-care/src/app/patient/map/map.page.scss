@@ -1,8 +1,7 @@
-// Variables - Warm Healthcare Palette
-$primary-color: #667eea;
-$nurse-color: #10b981;
-$text-dark: #1a1a1a;        // Negro cálido
-$text-muted: #a1a1aa;       // Gris cálido
+@use '../../../theme/design-tokens' as tokens;
+
+// Variables using design tokens
+$primary-gradient: var(--histora-gradient);
 
 .map-content {
   --background: transparent;
@@ -21,24 +20,24 @@ $text-muted: #a1a1aa;       // Gris cálido
 // Search Overlay
 .search-overlay {
   position: absolute;
-  top: calc(var(--ion-safe-area-top, 0) + 12px);
-  left: 12px;
-  right: 12px;
+  top: calc(var(--ion-safe-area-top, 0) + #{tokens.$spacing-3});
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
   z-index: 1000;
 
   .search-bar {
     display: flex;
-    gap: 8px;
+    gap: tokens.$spacing-2;
     background: white;
-    border-radius: 12px;
-    padding: 4px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    border-radius: tokens.$radius-lg;
+    padding: tokens.$spacing-1;
+    box-shadow: tokens.$shadow-md;
 
     ion-item {
-      --background: #f8fafc;
-      --border-radius: 8px;
+      --background: #{tokens.$surface-secondary};
+      --border-radius: #{tokens.$radius-md};
       --min-height: 40px;
-      font-size: 14px;
+      font-size: tokens.$font-size-sm;
 
       &.category-select {
         flex: 1;
@@ -54,13 +53,13 @@ $text-muted: #a1a1aa;       // Gris cálido
 // Map Controls
 .map-controls {
   position: absolute;
-  right: 12px;
+  right: tokens.$spacing-3;
   bottom: calc(var(--ion-safe-area-bottom, 0) + 230px); // Default position above bottom-list
   z-index: 1001; // Above nurse-card z-index
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: bottom 0.3s ease;
+  gap: tokens.$spacing-2;
+  transition: bottom tokens.$duration-slow tokens.$easing-standard;
 
   // When nurse card is open, move controls higher
   &.card-open {
@@ -69,11 +68,11 @@ $text-muted: #a1a1aa;       // Gris cálido
 
   .control-btn {
     --background: white;
-    --color: #{$text-dark};
-    --border-radius: 12px;
-    width: 44px;
-    height: 44px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --color: var(--text-primary);
+    --border-radius: #{tokens.$radius-lg};
+    width: tokens.$touch-target-min;
+    height: tokens.$touch-target-min;
+    box-shadow: tokens.$shadow-md;
 
     ion-icon {
       font-size: 22px;
@@ -90,9 +89,9 @@ $text-muted: #a1a1aa;       // Gris cálido
   z-index: 1000;
 
   ion-badge {
-    font-size: 12px;
-    padding: 6px 12px;
-    border-radius: 20px;
+    font-size: tokens.$font-size-xs;
+    padding: 6px tokens.$spacing-3;
+    border-radius: tokens.$spacing-5;
   }
 }
 
@@ -104,19 +103,19 @@ $text-muted: #a1a1aa;       // Gris cálido
   transform: translate(-50%, -50%);
   z-index: 1001;
   background: white;
-  padding: 20px 32px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: tokens.$spacing-5 tokens.$spacing-8;
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-lg;
   text-align: center;
 
   ion-spinner {
-    --color: #{$primary-color};
+    --color: #{tokens.$color-brand-secondary};
   }
 
   p {
-    margin: 12px 0 0;
-    color: $text-muted;
-    font-size: 14px;
+    margin: tokens.$spacing-3 0 0;
+    color: var(--text-secondary);
+    font-size: tokens.$font-size-sm;
   }
 }
 
@@ -124,27 +123,27 @@ $text-muted: #a1a1aa;       // Gris cálido
 .nurse-card {
   position: absolute;
   bottom: calc(var(--ion-safe-area-bottom, 0) + 70px); // Account for tab bar height
-  left: 12px;
-  right: 12px;
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
   z-index: 1000;
   background: white;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: tokens.$radius-xl;
+  padding: tokens.$spacing-4;
+  box-shadow: tokens.$shadow-lg;
   max-height: calc(100vh - 200px); // Prevent card from being too tall
   overflow-y: auto;
 
   .close-btn {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    --color: #{$text-muted};
+    top: tokens.$spacing-2;
+    right: tokens.$spacing-2;
+    --color: var(--text-tertiary);
   }
 
   .nurse-header {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: tokens.$spacing-3;
 
     .nurse-avatar {
       width: 56px;
@@ -159,7 +158,7 @@ $text-muted: #a1a1aa;       // Gris cálido
       .info-row {
         display: flex;
         align-items: center;
-        gap: 8px; // Space between name and badge
+        gap: tokens.$spacing-2; // Space between name and badge
         margin-bottom: 6px;
         flex-wrap: wrap; // Allow wrapping on small screens
       }
@@ -167,19 +166,19 @@ $text-muted: #a1a1aa;       // Gris cálido
       h3 {
         margin: 0;
         font-size: 17px;
-        font-weight: 600;
-        color: $text-dark;
+        font-weight: tokens.$font-weight-semibold;
+        color: var(--text-primary);
         flex-shrink: 1;
         min-width: 0; // Allow text truncation if needed
       }
 
       .availability-badge {
-        font-size: 11px;
-        font-weight: 600;
+        font-size: tokens.$font-size-xs;
+        font-weight: tokens.$font-weight-semibold;
         padding: 6px 10px;
-        border-radius: 12px;
+        border-radius: tokens.$radius-lg;
         background: #fee2e2;
-        color: #dc2626; // Better contrast (WCAG AA)
+        color: tokens.$color-error; // Better contrast (WCAG AA)
         white-space: nowrap;
         flex-shrink: 0;
 
@@ -191,12 +190,12 @@ $text-muted: #a1a1aa;       // Gris cálido
 
       .nurse-meta {
         display: flex;
-        gap: 12px;
+        gap: tokens.$spacing-3;
         font-size: 13px;
-        color: $text-muted;
+        color: var(--text-tertiary);
 
         ion-icon {
-          font-size: 14px;
+          font-size: tokens.$font-size-sm;
           margin-right: 2px;
           vertical-align: middle;
         }
@@ -209,26 +208,26 @@ $text-muted: #a1a1aa;       // Gris cálido
   }
 
   .nurse-specialties {
-    margin-top: 12px;
+    margin-top: tokens.$spacing-3;
     display: flex;
-    gap: 8px; // Increased from 6px
+    gap: tokens.$spacing-2; // Increased from 6px
     flex-wrap: wrap;
 
     ion-chip {
       height: 28px; // Slightly larger for better touch target
-      font-size: 12px;
+      font-size: tokens.$font-size-xs;
       margin: 0; // Remove default chip margin
     }
   }
 
   .nurse-services {
-    margin-top: 12px;
+    margin-top: tokens.$spacing-3;
 
     h4 {
-      margin: 0 0 8px;
+      margin: 0 0 tokens.$spacing-2;
       font-size: 13px;
-      font-weight: 600;
-      color: $text-muted;
+      font-weight: tokens.$font-weight-semibold;
+      color: var(--text-tertiary);
     }
 
     .service-list {
@@ -240,33 +239,33 @@ $text-muted: #a1a1aa;       // Gris cálido
     .service-item {
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
+      font-size: tokens.$font-size-sm;
 
       .service-name {
-        color: $text-dark;
+        color: var(--text-primary);
       }
 
       .service-price {
-        color: $nurse-color;
-        font-weight: 600;
+        color: tokens.$color-success;
+        font-weight: tokens.$font-weight-semibold;
       }
     }
   }
 
   .nurse-actions {
-    margin-top: 16px;
+    margin-top: tokens.$spacing-4;
     display: flex;
-    gap: 12px;
+    gap: tokens.$spacing-3;
 
     ion-button {
       flex: 1;
       --border-radius: 10px;
       height: 42px;
-      font-size: 14px;
+      font-size: tokens.$font-size-sm;
       text-transform: none;
 
       ion-icon {
-        font-size: 18px;
+        font-size: tokens.$font-size-lg;
       }
     }
   }
@@ -276,28 +275,28 @@ $text-muted: #a1a1aa;       // Gris cálido
 .bottom-list {
   position: absolute;
   bottom: calc(var(--ion-safe-area-bottom, 0) + 70px); // Account for tab bar
-  left: 12px;
-  right: 12px;
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
   z-index: 1000;
   background: white;
-  border-radius: 16px;
-  padding: 12px 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: tokens.$radius-xl;
+  padding: tokens.$spacing-3 tokens.$spacing-4;
+  box-shadow: tokens.$shadow-lg;
 
   .list-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: tokens.$spacing-3;
 
     span {
-      font-size: 14px;
-      font-weight: 600;
-      color: $text-dark;
+      font-size: tokens.$font-size-sm;
+      font-weight: tokens.$font-weight-semibold;
+      color: var(--text-primary);
     }
 
     ion-button {
-      --color: #{$primary-color};
+      --color: #{tokens.$color-brand-secondary};
       font-size: 13px;
       text-transform: none;
     }
@@ -305,9 +304,9 @@ $text-muted: #a1a1aa;       // Gris cálido
 
   .nurse-thumbnails {
     display: flex;
-    gap: 12px;
+    gap: tokens.$spacing-3;
     overflow-x: auto;
-    padding-bottom: 4px;
+    padding-bottom: tokens.$spacing-1;
 
     &::-webkit-scrollbar {
       display: none;
@@ -317,18 +316,18 @@ $text-muted: #a1a1aa;       // Gris cálido
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: tokens.$spacing-1;
       cursor: pointer;
 
       ion-avatar {
-        width: 48px;
-        height: 48px;
-        border: 2px solid $nurse-color;
+        width: tokens.$touch-target-comfortable;
+        height: tokens.$touch-target-comfortable;
+        border: 2px solid tokens.$color-success;
       }
 
       .distance {
-        font-size: 11px;
-        color: $text-muted;
+        font-size: tokens.$font-size-xs;
+        color: var(--text-tertiary);
       }
     }
   }
@@ -356,9 +355,9 @@ $text-muted: #a1a1aa;       // Gris cálido
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, $primary-color 0%, #764ba2 100%);
+      width: tokens.$spacing-8;
+      height: tokens.$spacing-8;
+      background: $primary-gradient;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -367,7 +366,7 @@ $text-muted: #a1a1aa;       // Gris cálido
       border: 3px solid white;
 
       ion-icon {
-        font-size: 16px;
+        font-size: tokens.$font-size-base;
         color: white;
       }
     }
@@ -379,12 +378,12 @@ $text-muted: #a1a1aa;       // Gris cálido
 
     .nurse-marker-avatar {
       position: relative;
-      width: 44px;
-      height: 44px;
+      width: tokens.$touch-target-min;
+      height: tokens.$touch-target-min;
       border-radius: 50%;
-      border: 3px solid #9ca3af;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      border: 3px solid tokens.$color-neutral-400;
+      box-shadow: tokens.$shadow-md;
+      transition: transform tokens.$duration-normal tokens.$easing-standard, box-shadow tokens.$duration-normal tokens.$easing-standard, border-color tokens.$duration-normal tokens.$easing-standard;
       background: white;
 
       img {
@@ -401,7 +400,7 @@ $text-muted: #a1a1aa;       // Gris cálido
         right: -2px;
         width: 14px;
         height: 14px;
-        background: $nurse-color;
+        background: tokens.$color-success;
         border: 2px solid white;
         border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -409,7 +408,7 @@ $text-muted: #a1a1aa;       // Gris cálido
       }
 
       &.available {
-        border-color: $nurse-color;
+        border-color: tokens.$color-success;
         box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
       }
 
@@ -424,22 +423,22 @@ $text-muted: #a1a1aa;       // Gris cálido
   .nurse-marker-icon {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    background: linear-gradient(135deg, tokens.$color-neutral-400 0%, tokens.$color-neutral-500 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: tokens.$shadow-md;
     border: 2px solid white;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform tokens.$duration-normal tokens.$easing-standard, box-shadow tokens.$duration-normal tokens.$easing-standard;
 
     ion-icon {
-      font-size: 18px;
+      font-size: tokens.$font-size-lg;
       color: white;
     }
 
     &.available {
-      background: linear-gradient(135deg, $nurse-color 0%, #059669 100%);
+      background: linear-gradient(135deg, tokens.$color-success 0%, #059669 100%);
       box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
     }
 
@@ -452,33 +451,33 @@ $text-muted: #a1a1aa;       // Gris cálido
   // Mapbox popup customization
   .mapboxgl-popup-content {
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-    padding: 10px 12px;
+    box-shadow: tokens.$shadow-md;
+    padding: 10px tokens.$spacing-3;
     font-size: 13px;
     line-height: 1.4;
   }
 
   .mapboxgl-popup-close-button {
-    font-size: 18px;
-    padding: 4px 8px;
-    color: $text-muted;
+    font-size: tokens.$font-size-lg;
+    padding: tokens.$spacing-1 tokens.$spacing-2;
+    color: var(--text-tertiary);
 
     &:hover {
       background: transparent;
-      color: $text-dark;
+      color: var(--text-primary);
     }
   }
 
   .nurse-popup {
     strong {
-      color: $text-dark;
-      font-size: 14px;
+      color: var(--text-primary);
+      font-size: tokens.$font-size-sm;
     }
 
     p {
-      margin: 4px 0 0;
-      color: $text-muted;
-      font-size: 12px;
+      margin: tokens.$spacing-1 0 0;
+      color: var(--text-tertiary);
+      font-size: tokens.$font-size-xs;
     }
   }
 
@@ -488,7 +487,7 @@ $text-muted: #a1a1aa;       // Gris cálido
   }
 
   .mapboxgl-ctrl-attrib {
-    font-size: 10px;
+    font-size: tokens.$font-size-xs;
     opacity: 0.7;
   }
 }
@@ -507,22 +506,22 @@ $text-muted: #a1a1aa;       // Gris cálido
 // Dark mode mixin for reusability
 @mixin map-dark-mode {
   .search-overlay .search-bar {
-    background: #1e293b;
+    background: tokens.$surface-dark-secondary;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 
     ion-item {
-      --background: #0f172a;
-      --color: #f1f5f9;
+      --background: #{tokens.$surface-dark-primary};
+      --color: #{tokens.$text-dark-primary};
 
       ion-select {
-        color: #f1f5f9;
+        color: tokens.$text-dark-primary;
       }
     }
   }
 
   .map-controls .control-btn {
-    --background: #1e293b;
-    --color: #f1f5f9;
+    --background: #{tokens.$surface-dark-secondary};
+    --color: #{tokens.$text-dark-primary};
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   }
 
@@ -533,40 +532,40 @@ $text-muted: #a1a1aa;       // Gris cálido
   }
 
   .loading-overlay {
-    background: #1e293b;
+    background: tokens.$surface-dark-secondary;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 
     p {
-      color: #cbd5e1;
+      color: tokens.$text-dark-secondary;
     }
   }
 
   // Nurse card - Full specificity overrides
   .nurse-card {
-    background: #1e293b;
+    background: tokens.$surface-dark-secondary;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
     .close-btn {
-      --color: #cbd5e1;
+      --color: #{tokens.$text-dark-secondary};
     }
 
     .nurse-header {
       .nurse-info {
         .info-row {
           h3 {
-            color: #f1f5f9 !important;
+            color: tokens.$text-dark-primary !important;
           }
         }
 
         h3 {
-          color: #f1f5f9 !important;
+          color: tokens.$text-dark-primary !important;
         }
 
         .nurse-meta {
-          color: #94a3b8;
+          color: tokens.$text-dark-tertiary;
 
           span {
-            color: #94a3b8;
+            color: tokens.$text-dark-tertiary;
           }
         }
       }
@@ -574,24 +573,24 @@ $text-muted: #a1a1aa;       // Gris cálido
 
     .nurse-specialties {
       ion-chip {
-        --background: #334155;
-        --color: #e2e8f0;
+        --background: #{tokens.$surface-dark-tertiary};
+        --color: #{tokens.$text-dark-secondary};
       }
     }
 
     .nurse-services {
       h4 {
-        color: #94a3b8;
+        color: tokens.$text-dark-tertiary;
       }
 
       .service-list {
         .service-item {
           .service-name {
-            color: #f1f5f9;
+            color: tokens.$text-dark-primary;
           }
 
           .service-price {
-            color: #10b981;
+            color: tokens.$color-success;
           }
         }
       }
@@ -599,11 +598,11 @@ $text-muted: #a1a1aa;       // Gris cálido
 
     .nurse-actions {
       ion-button[fill="outline"] {
-        --border-color: #475569;
-        --color: #e2e8f0;
+        --border-color: #{tokens.$color-neutral-600};
+        --color: #{tokens.$text-dark-secondary};
 
         &:hover {
-          --background: #334155;
+          --background: #{tokens.$surface-dark-tertiary};
         }
       }
     }
@@ -624,12 +623,12 @@ $text-muted: #a1a1aa;       // Gris cálido
 
   // Bottom list - Full specificity overrides
   .bottom-list {
-    background: #1e293b;
+    background: tokens.$surface-dark-secondary;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
     .list-header {
       span {
-        color: #f1f5f9;
+        color: tokens.$text-dark-primary;
       }
 
       ion-button {
@@ -640,11 +639,11 @@ $text-muted: #a1a1aa;       // Gris cálido
     .nurse-thumbnails {
       .thumbnail {
         ion-avatar {
-          border-color: #10b981;
+          border-color: tokens.$color-success;
         }
 
         .distance {
-          color: #94a3b8;
+          color: tokens.$text-dark-tertiary;
         }
       }
     }
@@ -653,56 +652,56 @@ $text-muted: #a1a1aa;       // Gris cálido
   // Mapbox popup dark mode
   :host ::ng-deep {
     .mapboxgl-popup-content {
-      background: #1e293b;
-      color: #f1f5f9;
+      background: tokens.$surface-dark-secondary;
+      color: tokens.$text-dark-primary;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
     }
 
     .mapboxgl-popup-close-button {
-      color: #cbd5e1;
+      color: tokens.$text-dark-secondary;
 
       &:hover {
-        color: #f1f5f9;
+        color: tokens.$text-dark-primary;
       }
     }
 
     .nurse-popup {
       strong {
-        color: #f1f5f9;
+        color: tokens.$text-dark-primary;
       }
 
       p {
-        color: #94a3b8;
+        color: tokens.$text-dark-tertiary;
       }
     }
 
     // Dark mode for nurse markers with avatar
     .nurse-map-marker {
       .nurse-marker-avatar {
-        border-color: #64748b;
-        background: #1e293b;
+        border-color: tokens.$color-neutral-500;
+        background: tokens.$surface-dark-secondary;
         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
 
         .availability-dot {
-          border-color: #1e293b;
+          border-color: tokens.$surface-dark-secondary;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
         &.available {
-          border-color: #10b981;
+          border-color: tokens.$color-success;
           box-shadow: 0 3px 10px rgba(16, 185, 129, 0.5);
         }
       }
 
       .nurse-marker-icon {
-        border-color: #1e293b;
+        border-color: tokens.$surface-dark-secondary;
 
         &.available {
           box-shadow: 0 3px 8px rgba(16, 185, 129, 0.6);
         }
 
         &:not(.available) {
-          background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+          background: linear-gradient(135deg, tokens.$color-neutral-500 0%, tokens.$color-neutral-600 100%);
           box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
         }
       }
@@ -715,14 +714,14 @@ $text-muted: #a1a1aa;       // Gris cálido
       }
 
       .user-marker-icon {
-        border-color: #1e293b;
+        border-color: tokens.$surface-dark-secondary;
       }
     }
 
     // Mapbox controls
     .mapboxgl-ctrl-attrib {
       background-color: rgba(30, 41, 59, 0.9);
-      color: #94a3b8;
+      color: tokens.$text-dark-tertiary;
     }
   }
 }

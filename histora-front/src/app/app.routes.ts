@@ -7,6 +7,7 @@ import { Role } from '@core';
 import { roleRedirectGuard } from '@core/guard/role-redirect.guard';
 
 export const APP_ROUTE: Route[] = [
+  // Main application (requires auth)
   {
     path: '',
     component: MainLayoutComponent,
@@ -16,7 +17,6 @@ export const APP_ROUTE: Route[] = [
         path: '',
         pathMatch: 'full',
         canActivate: [roleRedirectGuard],
-        // Empty component - guard handles redirect
         children: [],
       },
       {
@@ -48,6 +48,8 @@ export const APP_ROUTE: Route[] = [
       },
     ],
   },
+
+  // Google Auth Callbacks
   {
     path: 'auth/google/callback',
     loadComponent: () =>
@@ -62,11 +64,15 @@ export const APP_ROUTE: Route[] = [
         (m) => m.GoogleSelectTypeComponent
       ),
   },
+
+  // Authentication
   {
     path: 'authentication',
     component: AuthLayoutComponent,
     loadChildren: () =>
       import('./authentication/auth.routes').then((m) => m.AUTH_ROUTE),
   },
+
+  // Fallback
   { path: '**', component: Page404Component },
 ];

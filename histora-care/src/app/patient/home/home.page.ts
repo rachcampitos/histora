@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
@@ -79,6 +79,7 @@ export class HomePage implements OnInit {
   }
 
   async loadActiveRequest() {
+    this.isLoading.set(true);
     try {
       // Get all requests and filter for active ones
       const requests = await this.serviceRequestService.getMyRequests().toPromise();
@@ -94,6 +95,8 @@ export class HomePage implements OnInit {
     } catch (error) {
       console.error('Error loading active request:', error);
       this.activeRequest.set(null);
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
