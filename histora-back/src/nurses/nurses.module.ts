@@ -4,6 +4,7 @@ import { NursesController } from './nurses.controller';
 import { NursesService } from './nurses.service';
 import { Nurse, NurseSchema } from './schema/nurse.schema';
 import { NurseVerification, NurseVerificationSchema } from './schema/nurse-verification.schema';
+import { ReniecUsage, ReniecUsageSchema } from './schema/reniec-usage.schema';
 import { User, UserSchema } from '../users/schema/user.schema';
 import { NurseVerificationController } from './nurse-verification.controller';
 import { NurseVerificationService } from './nurse-verification.service';
@@ -17,6 +18,7 @@ import { UploadsModule } from '../uploads/uploads.module';
     MongooseModule.forFeature([
       { name: Nurse.name, schema: NurseSchema },
       { name: NurseVerification.name, schema: NurseVerificationSchema },
+      { name: ReniecUsage.name, schema: ReniecUsageSchema },
       { name: User.name, schema: UserSchema },
     ]),
     UploadsModule,

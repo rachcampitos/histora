@@ -22,6 +22,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 import { NursesService } from './nurses.service';
 import { CepValidationService } from './cep-validation.service';
+import { ReniecValidationService } from './reniec-validation.service';
 import {
   CreateNurseDto,
   UpdateNurseDto,
@@ -38,6 +39,7 @@ export class NursesController {
   constructor(
     private readonly nursesService: NursesService,
     private readonly cepValidationService: CepValidationService,
+    private readonly reniecValidationService: ReniecValidationService,
   ) {}
 
   // Public endpoint: Search nurses nearby
@@ -204,5 +206,45 @@ export class NursesController {
       new Date(startDate),
       new Date(endDate),
     );
+  }
+
+  // Admin: Get RENIEC API usage statistics
+  @Get('admin/reniec-usage')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Admin] Get RENIEC API usage statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'RENIEC usage stats',
+    schema: {
+      properties: {
+        year: { type: 'number' },
+        month: { type: 'number' },
+        used: { type: 'number' },
+        limit: { type: 'number' },
+        remaining: { type: 'number' },
+        provider: { type: 'string' },
+        recentQueries: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              dni: { type: 'string' },
+              timestamp: { type: 'string' },
+              success: { type: 'boolean' },
+            },
+          },
+        },
+      },
+    },
+  })
+  async getReniecUsage() {
+    const stats = await this.reniecValidationService.getUsageStats();
+    return {
+      ...stats,
+      provider: this.reniecValidationService.getProvider(),
+      configured: this.reniecValidationService.isConfigured(),
+    };
   }
 }
