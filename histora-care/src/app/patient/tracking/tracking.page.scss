@@ -304,6 +304,12 @@
         font-size: 12px;
         color: #666;
       }
+
+      .new-nurse {
+        font-size: 12px;
+        color: #10b981;
+        font-weight: 500;
+      }
     }
   }
 
@@ -644,24 +650,46 @@
     }
 
     .step-label {
-      color: #64748b;
+      color: #94a3b8;
     }
 
     &.active {
+      .step-dot {
+        background: var(--ion-color-primary);
+        box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.3);
+
+        ion-icon {
+          color: white;
+        }
+      }
+
       .step-label {
-        color: var(--ion-color-primary);
+        color: var(--ion-color-primary-tint);
+        font-weight: 600;
       }
     }
 
     &.completed {
+      .step-dot {
+        background: #10b981;
+
+        ion-icon {
+          color: white;
+        }
+      }
+
       .step-label {
-        color: #10b981;
+        color: #34d399;
       }
     }
   }
 
   .progress-line {
     background: #334155;
+
+    &.completed {
+      background: #10b981;
+    }
   }
 
   // Nurse Card
@@ -688,6 +716,10 @@
 
         .reviews {
           color: #94a3b8;
+        }
+
+        .new-nurse {
+          color: #34d399;
         }
       }
     }

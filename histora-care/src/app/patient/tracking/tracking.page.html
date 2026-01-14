@@ -92,11 +92,15 @@
         <div class="nurse-details">
           <h3>{{ nurse()?.firstName }} {{ nurse()?.lastName }}</h3>
           <div class="nurse-meta">
+            @if (nurse()?.rating && nurse()!.rating > 0) {
             <span class="rating">
               <ion-icon name="star" color="warning"></ion-icon>
               {{ nurse()?.rating?.toFixed(1) }}
             </span>
-            <span class="reviews">({{ nurse()?.totalReviews }} reseñas)</span>
+            <span class="reviews">({{ nurse()?.totalReviews || 0 }} reseñas)</span>
+            } @else {
+            <span class="new-nurse">Enfermera verificada</span>
+            }
           </div>
         </div>
         <div class="nurse-actions" role="group" aria-label="Acciones de contacto">

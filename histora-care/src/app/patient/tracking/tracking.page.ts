@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, Platform } from '@ionic/angular';
-import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService } from '../../core/services';
+import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService } from '../../core/services';
 import { ServiceRequest } from '../../core/models';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
@@ -81,7 +81,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     private requestService: ServiceRequestService,
     private authService: AuthService,
     private nurseApiService: NurseApiService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private themeService: ThemeService
   ) {
     // React to WebSocket location updates
     effect(() => {
@@ -275,11 +276,16 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     if (!patientLoc) return;
 
     try {
+      // Use dark map style when dark mode is enabled
+      const mapStyle = this.themeService.isDarkMode()
+        ? 'mapbox://styles/mapbox/dark-v11'
+        : 'mapbox://styles/mapbox/streets-v12';
+
       this.mapboxService.initMap({
         container: 'tracking-map',
         center: patientLoc,
         zoom: 15,
-        style: 'mapbox://styles/mapbox/streets-v12'
+        style: mapStyle
       });
 
       // Add patient marker

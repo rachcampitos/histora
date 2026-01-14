@@ -2,13 +2,28 @@
   --background: #f5f7fa;
 }
 
-// Header & Segment - Light mode only for segment
-// Note: ion-header/ion-toolbar dark mode handled by global.scss
+// Header & Segment
 ion-header {
   ion-toolbar:last-child {
     --padding-start: 8px;
     --padding-end: 8px;
     --padding-bottom: 8px;
+  }
+}
+
+// Segment badge styling
+ion-segment-button {
+  ion-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    ion-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      min-width: 18px;
+      border-radius: 10px;
+    }
   }
 }
 
@@ -145,17 +160,24 @@ ion-header {
       border-radius: 12px;
       padding: 8px 12px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 65px;
+      flex-shrink: 0;
 
       .currency {
         font-size: 11px;
         color: rgba(255, 255, 255, 0.8);
-        display: block;
+        line-height: 1;
       }
 
       .amount {
         font-size: 18px;
         font-weight: 700;
         color: white;
+        line-height: 1.2;
       }
     }
   }
@@ -234,9 +256,9 @@ ion-header {
     display: flex;
     justify-content: flex-end;
     gap: 4px;
-    padding-top: 8px;
-    border-top: 1px solid #f1f5f9;
+    padding-top: 12px;
     margin-top: 12px;
+    border-top: 1px solid #f1f5f9;
 
     ion-button {
       --padding-start: 12px;
@@ -247,6 +269,13 @@ ion-header {
         font-size: 22px;
       }
     }
+  }
+
+  // When quick-actions is followed by card-actions, remove double border
+  .quick-actions + .card-actions {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 8px;
   }
 }
 
@@ -406,11 +435,18 @@ ion-item-options {
 }
 
 // Dark mode support
-// Note: ion-header/ion-toolbar/ion-segment dark mode handled by global.scss
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
   .requests-content {
     --background: #0f172a;
+  }
+
+  // Segment badge styling in dark mode
+  ion-segment-button {
+    ion-badge {
+      --background: var(--ion-color-base);
+      --color: var(--ion-color-contrast);
+    }
   }
 
   .request-card {
