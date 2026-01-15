@@ -3,7 +3,7 @@
   "outputDirectory": "www",
   "installCommand": "npm install",
   "framework": null,
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- .",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- ./histora-care",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
