@@ -287,16 +287,31 @@ $border-radius: 12px;
   ion-checkbox {
     --size: 18px;
     --checkbox-background-checked: #{$primary-color};
+    width: 100%;
+    align-items: flex-start;
+
+    &::part(container) {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    &::part(label) {
+      white-space: normal;
+      text-overflow: unset;
+      overflow: visible;
+    }
   }
 
   .terms-text {
     font-size: 12px;
     color: $text-muted;
     line-height: 1.5;
+    display: inline;
 
     a {
       color: $primary-color;
       text-decoration: none;
+      font-weight: 500;
     }
   }
 
