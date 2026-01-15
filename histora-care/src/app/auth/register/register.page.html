@@ -173,3 +173,80 @@
     </div>
   </div>
 </ion-content>
+
+<!-- CEP Validation Loading Overlay -->
+<div class="cep-loading-overlay" *ngIf="showCepLoading()">
+  <div class="cep-loading-card">
+    <div class="cep-logo-container">
+      <img src="assets/icon/cep-logo.png" alt="CEP" class="cep-logo" onerror="this.style.display='none'">
+      <div class="cep-logo-pulse"></div>
+    </div>
+
+    <h3 class="cep-loading-title">Validando tu colegiatura</h3>
+
+    <div class="cep-progress-bar">
+      <div class="cep-progress-fill"></div>
+    </div>
+
+    <p class="cep-loading-message">{{ cepLoadingMessage() }}</p>
+    <p class="cep-loading-subtext">{{ cepLoadingSubtext() }}</p>
+
+    <p class="cep-loading-time">
+      <ion-icon name="time-outline"></ion-icon>
+      Este proceso puede tomar 5-10 segundos
+    </p>
+  </div>
+</div>
+
+<!-- Success Transition Screen -->
+<div class="success-transition-overlay" *ngIf="showSuccessTransition()">
+  <div class="success-transition-card">
+    <div class="success-icon-container">
+      <ion-icon name="checkmark-circle" class="success-icon"></ion-icon>
+    </div>
+
+    <h2 class="success-title">¡Perfecto, {{ registeredUserName() }}!</h2>
+    <p class="success-subtitle">Tu cuenta ha sido creada exitosamente</p>
+
+    <div class="progress-checklist">
+      <div class="checklist-item completed">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span>Datos personales</span>
+      </div>
+      <div class="checklist-item completed">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span>CEP verificado</span>
+      </div>
+      <div class="checklist-item pending">
+        <ion-icon name="ellipse-outline"></ion-icon>
+        <span>Verificación de identidad</span>
+      </div>
+      <div class="checklist-item pending">
+        <ion-icon name="ellipse-outline"></ion-icon>
+        <span>Aprobación final</span>
+      </div>
+    </div>
+
+    <div class="next-step-info">
+      <ion-icon name="camera-outline" class="next-step-icon"></ion-icon>
+      <div class="next-step-text">
+        <h4>Siguiente paso: Verifica tu identidad</h4>
+        <p>Sube tu DNI y tómale una selfie para confirmar que eres tú</p>
+      </div>
+    </div>
+
+    <p class="time-estimate">
+      <ion-icon name="time-outline"></ion-icon>
+      Solo toma 2 minutos
+    </p>
+
+    <ion-button expand="block" class="continue-btn" (click)="continueToVerification()">
+      <ion-icon name="arrow-forward" slot="end"></ion-icon>
+      Continuar
+    </ion-button>
+
+    <ion-button fill="clear" class="skip-btn" (click)="skipVerificationForNow()">
+      Lo haré después
+    </ion-button>
+  </div>
+</div>
