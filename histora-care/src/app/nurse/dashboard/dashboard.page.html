@@ -1,6 +1,11 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>Dashboard</ion-title>
+    <ion-buttons slot="start">
+      <ion-button class="logo-btn" (click)="goToProfile()">
+        <img src="assets/icon/nurselite.png" alt="NurseLite" class="header-logo">
+      </ion-button>
+    </ion-buttons>
+    <ion-title>NurseLite</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="goToProfile()">
         <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
