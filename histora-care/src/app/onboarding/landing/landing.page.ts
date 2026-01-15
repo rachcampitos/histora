@@ -23,9 +23,4 @@ export class LandingPage {
     await this.onboardingService.markLandingSeen();
     this.router.navigate(['/auth/login']);
   }
-
-  async skip(): Promise<void> {
-    await this.onboardingService.markLandingSeen();
-    this.router.navigate(['/auth/login']);
-  }
 }

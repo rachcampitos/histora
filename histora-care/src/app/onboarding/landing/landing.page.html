@@ -36,21 +36,11 @@
         </p>
       </section>
 
-      <!-- Trust Badges -->
-      <ul class="trust-badges" aria-label="Certificaciones y validaciones">
-        <li class="badge">
-          <ion-icon name="shield-checkmark" aria-hidden="true"></ion-icon>
-          <span>Verificado CEP</span>
-        </li>
-        <li class="badge">
-          <ion-icon name="lock-closed" aria-hidden="true"></ion-icon>
-          <span>Ley 29733</span>
-        </li>
-        <li class="badge">
-          <ion-icon name="card" aria-hidden="true"></ion-icon>
-          <span>Pagos Seguros</span>
-        </li>
-      </ul>
+      <!-- Trust Line (simplified) -->
+      <p class="trust-line" aria-label="Certificación">
+        <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
+        <span>Verificadas por el Colegio de Enfermeros del Perú</span>
+      </p>
 
       <!-- Social Proof -->
       <div class="social-proof" aria-label="Calificación de usuarios">
@@ -61,7 +51,7 @@
           <ion-icon name="star" aria-hidden="true"></ion-icon>
           <ion-icon name="star-half" aria-hidden="true"></ion-icon>
         </div>
-        <span class="proof-text">Mas de 500 enfermeras verificadas</span>
+        <span class="proof-text">500+ enfermeras verificadas</span>
       </div>
     </div>
 
@@ -71,28 +61,17 @@
         expand="block"
         class="primary-btn"
         (click)="navigateToRegister()"
-        aria-label="Crear una cuenta nueva en NurseLite">
-        <ion-icon name="person-add" slot="start" aria-hidden="true"></ion-icon>
-        Comenzar
+        aria-label="Solicitar una enfermera profesional">
+        Solicitar enfermera ahora
       </ion-button>
 
-      <ion-button
-        expand="block"
-        fill="outline"
-        class="secondary-btn"
+      <button
+        type="button"
+        class="login-link"
         (click)="navigateToLogin()"
         aria-label="Iniciar sesión con cuenta existente">
-        <ion-icon name="log-in" slot="start" aria-hidden="true"></ion-icon>
-        Ya tengo cuenta
-      </ion-button>
-
-      <ion-button
-        fill="clear"
-        class="skip-btn"
-        (click)="skip()"
-        aria-label="Saltar introducción e ir directamente a la aplicación">
-        Saltar
-      </ion-button>
+        ¿Ya tienes cuenta? <span class="link-text">Ingresar</span>
+      </button>
     </nav>
   </main>
 </ion-content>
