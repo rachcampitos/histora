@@ -132,6 +132,18 @@ export class VerificationResponseDto {
   @ApiPropertyOptional()
   cepIdentityConfirmedAt?: Date;
 
+  // CEP validation result from official registry
+  @ApiPropertyOptional({
+    description: 'CEP validation result from official CEP registry',
+  })
+  cepValidation?: {
+    isValid?: boolean;
+    region?: string;
+    isHabil?: boolean;
+    status?: string;
+    validatedAt?: Date;
+  };
+
   // Include nurse info for admin view
   @ApiPropertyOptional()
   nurse?: {

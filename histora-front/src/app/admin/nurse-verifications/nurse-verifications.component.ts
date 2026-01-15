@@ -112,11 +112,11 @@ export class NurseVerificationsComponent implements OnInit {
   };
 
   statusOptions = [
-    { value: '', label: 'Todos' },
-    { value: 'pending', label: 'Pendientes' },
-    { value: 'under_review', label: 'En Revision' },
-    { value: 'approved', label: 'Aprobados' },
-    { value: 'rejected', label: 'Rechazados' },
+    { value: '', label: 'Todas las verificaciones' },
+    { value: 'pending', label: 'Pendientes de revisión' },
+    { value: 'under_review', label: 'En Revisión' },
+    { value: 'approved', label: 'Aprobadas' },
+    { value: 'rejected', label: 'Requieren corrección' },
   ];
 
   ngOnInit(): void {
@@ -147,9 +147,12 @@ export class NurseVerificationsComponent implements OnInit {
       this.totalItems = response.total;
     } catch (error) {
       console.error('Error loading verifications:', error);
-      this.snackBar.open('Error al cargar verificaciones', 'Cerrar', {
-        duration: 3000,
-      });
+      const snackBarRef = this.snackBar.open(
+        'No pudimos cargar las verificaciones. Revisa tu conexión',
+        'Reintentar',
+        { duration: 5000 }
+      );
+      snackBarRef.onAction().subscribe(() => this.loadVerifications());
     } finally {
       this.isLoading = false;
     }
@@ -168,7 +171,8 @@ export class NurseVerificationsComponent implements OnInit {
 
   openDetail(verification: NurseVerification): void {
     const dialogRef = this.dialog.open(VerificationDetailDialogComponent, {
-      width: '800px',
+      width: '90vw',
+      maxWidth: '800px',
       maxHeight: '90vh',
       data: { verificationId: verification.id },
     });
@@ -186,14 +190,17 @@ export class NurseVerificationsComponent implements OnInit {
       await this.adminService
         .markNurseVerificationUnderReview(verification.id)
         .toPromise();
-      this.snackBar.open('Estado actualizado', 'Cerrar', { duration: 2000 });
+      this.snackBar.open('Marcada como en revisión', 'Cerrar', { duration: 2000 });
       this.loadStats();
       this.loadVerifications();
     } catch (error) {
       console.error('Error:', error);
-      this.snackBar.open('Error al actualizar estado', 'Cerrar', {
-        duration: 3000,
-      });
+      const snackBarRef = this.snackBar.open(
+        'No se pudo actualizar el estado. Intenta nuevamente',
+        'Reintentar',
+        { duration: 5000 }
+      );
+      snackBarRef.onAction().subscribe(() => this.markUnderReview(verification));
     }
   }
 
@@ -210,9 +217,9 @@ export class NurseVerificationsComponent implements OnInit {
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
       pending: 'Pendiente',
-      under_review: 'En Revision',
-      approved: 'Aprobado',
-      rejected: 'Rechazado',
+      under_review: 'En Revisión',
+      approved: 'Aprobada',
+      rejected: 'Requiere corrección',
     };
     return labels[status] || status;
   }
