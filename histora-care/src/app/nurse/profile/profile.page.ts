@@ -5,6 +5,7 @@ import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService, ThemeMode } from '../../core/services/theme.service';
 import { UploadsService } from '../../core/services/uploads.service';
+import { ProductTourService } from '../../core/services/product-tour.service';
 import { Nurse } from '../../core/models';
 
 interface DayOption {
@@ -27,6 +28,7 @@ export class ProfilePage implements OnInit {
   private alertCtrl = inject(AlertController);
   private actionSheetCtrl = inject(ActionSheetController);
   private uploadsService = inject(UploadsService);
+  private productTour = inject(ProductTourService);
   themeService = inject(ThemeService);
 
   // State signals
@@ -102,6 +104,8 @@ export class ProfilePage implements OnInit {
         this.availableTo.set(nurse.availableTo || '18:00');
         this.availableDays.set([...(nurse.availableDays || [1, 2, 3, 4, 5])]);
         this.isLoading.set(false);
+        // Start profile tour for first-time users
+        this.productTour.startTour('nurse_profile');
       },
       error: (err) => {
         console.error('Error loading profile:', err);

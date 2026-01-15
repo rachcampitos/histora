@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { driver, DriveStep, Config } from 'driver.js';
 
-export type TourType = 'patient_home' | 'nurse_dashboard' | 'admin_verifications';
+export type TourType = 'patient_home' | 'nurse_dashboard' | 'nurse_profile' | 'admin_verifications';
 
 interface TourConfig {
   steps: DriveStep[];
@@ -59,6 +59,7 @@ export class ProductTourService {
     const tourTypes: TourType[] = [
       'patient_home',
       'nurse_dashboard',
+      'nurse_profile',
       'admin_verifications',
     ];
     for (const type of tourTypes) {
@@ -223,6 +224,80 @@ export class ProductTourService {
                 'Ve tus ganancias, retiros y facturacion en detalle.',
               side: 'top',
               align: 'start',
+            },
+          },
+        ],
+      },
+      nurse_profile: {
+        steps: [
+          {
+            element: '#tour-profile-avatar',
+            popover: {
+              title: 'Tu foto de perfil',
+              description:
+                'Sube una foto profesional. Los pacientes confian mas en perfiles con foto real.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-cep-section',
+            popover: {
+              title: 'Numero CEP verificado',
+              description:
+                'Tu registro del Colegio de Enfermeros del Peru. Este sello genera confianza en los pacientes.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-bio-section',
+            popover: {
+              title: 'Acerca de ti',
+              description:
+                'Describe tu experiencia, enfoque y lo que te hace unica. Los pacientes leen esto antes de solicitar.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-specialties-section',
+            popover: {
+              title: 'Especialidades',
+              description:
+                'Agrega tus areas de experiencia para aparecer en busquedas especificas.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-radius-section',
+            popover: {
+              title: 'Radio de servicio',
+              description:
+                'Define hasta que distancia puedes desplazarte. Un radio mayor = mas solicitudes.',
+              side: 'top',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-schedule-section',
+            popover: {
+              title: 'Disponibilidad',
+              description:
+                'Configura tus dias y horarios. Solo recibiras solicitudes en estos horarios.',
+              side: 'top',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-save-button',
+            popover: {
+              title: 'Guardar cambios',
+              description:
+                'No olvides guardar! Los cambios se sincronizan al instante.',
+              side: 'top',
+              align: 'center',
             },
           },
         ],

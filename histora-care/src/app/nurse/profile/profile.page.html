@@ -23,7 +23,7 @@
 
   <ng-container *ngIf="!isLoading()">
     <!-- Profile Header -->
-    <div class="profile-header">
+    <div class="profile-header" id="tour-profile-avatar">
       <div class="avatar-container" (click)="changeAvatar()">
         <ion-avatar>
           <img *ngIf="avatar()" [src]="avatar()" alt="Avatar">
@@ -44,7 +44,7 @@
     </div>
 
     <!-- CEP Number Section (Display Only) -->
-    <div class="section cep-section">
+    <div class="section cep-section" id="tour-cep-section">
       <div class="section-header">
         <ion-icon name="ribbon-outline"></ion-icon>
         <h2>Número CEP</h2>
@@ -60,7 +60,7 @@
     </div>
 
     <!-- Bio Section -->
-    <div class="section">
+    <div class="section" id="tour-bio-section">
       <div class="section-header">
         <ion-icon name="document-text-outline"></ion-icon>
         <h2>Acerca de mi</h2>
@@ -78,7 +78,7 @@
     </div>
 
     <!-- Specialties Section -->
-    <div class="section">
+    <div class="section" id="tour-specialties-section">
       <div class="section-header">
         <ion-icon name="medical-outline"></ion-icon>
         <h2>Especialidades</h2>
@@ -144,7 +144,7 @@
     </div>
 
     <!-- Service Radius Section -->
-    <div class="section">
+    <div class="section" id="tour-radius-section">
       <div class="section-header">
         <ion-icon name="locate-outline"></ion-icon>
         <h2>Radio de Servicio</h2>
@@ -170,7 +170,7 @@
     </div>
 
     <!-- Availability Schedule Section -->
-    <div class="section">
+    <div class="section" id="tour-schedule-section">
       <div class="section-header">
         <ion-icon name="calendar-outline"></ion-icon>
         <h2>Horario de Disponibilidad</h2>
@@ -231,7 +231,7 @@
     </div>
 
     <!-- Save Button -->
-    <div class="save-section">
+    <div class="save-section" id="tour-save-button">
       <ion-button
         expand="block"
         (click)="saveProfile()"
