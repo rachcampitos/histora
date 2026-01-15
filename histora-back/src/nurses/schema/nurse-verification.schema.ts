@@ -32,6 +32,16 @@ export class CepValidationResult {
   @Prop()
   isNameVerified?: boolean;
 
+  // New fields from view.php endpoint
+  @Prop()
+  region?: string;
+
+  @Prop()
+  isHabil?: boolean;
+
+  @Prop({ enum: ['HABIL', 'INHABILITADO', 'UNKNOWN'] })
+  status?: string;
+
   @Prop()
   validatedAt?: Date;
 

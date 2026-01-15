@@ -11,6 +11,10 @@ export interface CepValidationResult {
     photoUrl?: string;
     isPhotoVerified?: boolean;
     isNameVerified?: boolean;
+    // New fields from view.php endpoint
+    region?: string;
+    isHabil?: boolean;
+    status?: 'HABIL' | 'INHABILITADO' | 'UNKNOWN';
   };
   error?: string;
 }
@@ -265,5 +269,184 @@ export class CepValidationService {
         isNameVerified: true,
       },
     };
+  }
+
+  /**
+   * Complete CEP validation using the official view.php endpoint
+   * This is the most reliable method as it returns:
+   * - Full name from official registry
+   * - Photo URL
+   * - DNI (extracted from photo URL)
+   * - Regional council
+   * - HABIL/INHABILITADO status
+   *
+   * @see docs/CEP-API.md for documentation
+   */
+  async validateCepComplete(cepNumber: string): Promise<CepValidationResult> {
+    const cleanCep = cepNumber.replace(/\D/g, '');
+
+    if (!cleanCep || cleanCep.length < 4 || cleanCep.length > 6) {
+      return {
+        isValid: false,
+        error: 'Número de CEP inválido (debe tener 4-6 dígitos)',
+      };
+    }
+
+    try {
+      this.logger.log(`Validating CEP complete: ${cleanCep}`);
+
+      // Step 1: Get session token from main page
+      const pageResponse = await axios.get(`${this.BASE_URL}/validar/`, {
+        httpsAgent: this.httpsAgent,
+        timeout: 10000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        },
+      });
+
+      const tokenMatch = pageResponse.data.match(/name="token" value="([^"]+)"/);
+      const token = tokenMatch ? tokenMatch[1] : '';
+
+      if (!token) {
+        this.logger.warn('Could not extract token from CEP page');
+        // Fall back to simple validation
+        return this.validateByCep(cleanCep);
+      }
+
+      // Step 2: Call view.php with CEP and token
+      const response = await axios.post(
+        `${this.BASE_URL}/validar/pagina/view.php`,
+        `cep=${cleanCep}&token=${encodeURIComponent(token)}`,
+        {
+          httpsAgent: this.httpsAgent,
+          timeout: 10000,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Referer': `${this.BASE_URL}/validar/`,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
+        },
+      );
+
+      const html = response.data;
+
+      // Check for error response
+      if (html.includes('Error 504') || (html.includes('alert-danger') && !html.includes('fotos/'))) {
+        return {
+          isValid: false,
+          error: 'No se encontró enfermera(o) con este número de CEP',
+        };
+      }
+
+      // Step 3: Parse HTML response
+      const photoMatch = html.match(/src="(https:\/\/www\.cep\.org\.pe\/fotos\/(\d+)\.jpg)"/);
+      const nameMatch = html.match(/<h4 class="card-title[^"]*"><strong>([^<]+)<\/strong>/);
+      const regionMatch = html.match(/<h6 class="card-subtitle">([^<]+)<\/h6>/);
+
+      // Check HABIL status - look for success alert with HABIL text
+      const isHabil = html.includes('alert-success') && html.includes('HABIL');
+      const isInhabilitado = html.includes('alert-danger') && html.includes('INHABILITADO');
+
+      if (!photoMatch && !nameMatch) {
+        return {
+          isValid: false,
+          error: 'No se encontraron datos para este número de CEP',
+        };
+      }
+
+      const dni = photoMatch?.[2];
+      const fullName = nameMatch?.[1]?.trim().replace(/\s+/g, ' ');
+      const region = regionMatch?.[1]?.trim();
+      const photoUrl = photoMatch?.[1];
+
+      // Determine status
+      let status: 'HABIL' | 'INHABILITADO' | 'UNKNOWN' = 'UNKNOWN';
+      if (isHabil) status = 'HABIL';
+      else if (isInhabilitado) status = 'INHABILITADO';
+
+      this.logger.log(
+        `CEP ${cleanCep} validation: Name=${fullName}, DNI=${dni}, Status=${status}`,
+      );
+
+      return {
+        isValid: true,
+        data: {
+          cepNumber: cleanCep,
+          fullName,
+          dni,
+          photoUrl,
+          isPhotoVerified: !!photoUrl,
+          isNameVerified: !!fullName,
+          region,
+          isHabil,
+          status,
+        },
+      };
+    } catch (error) {
+      this.logger.error(`CEP complete validation error: ${error.message}`);
+
+      // Fall back to simple validation
+      try {
+        return this.validateByCep(cleanCep);
+      } catch {
+        return {
+          isValid: false,
+          error: `Error al validar CEP: ${error.message}`,
+        };
+      }
+    }
+  }
+
+  /**
+   * Full validation combining CEP lookup and DNI verification
+   * Use this when you have both CEP and DNI to cross-reference
+   */
+  async validateWithDni(cepNumber: string, dni: string): Promise<CepValidationResult> {
+    const cleanCep = cepNumber.replace(/\D/g, '');
+    const cleanDni = dni.replace(/\D/g, '');
+
+    if (!/^\d{8}$/.test(cleanDni)) {
+      return {
+        isValid: false,
+        error: 'DNI debe tener 8 dígitos',
+      };
+    }
+
+    // First, get complete CEP data
+    const cepResult = await this.validateCepComplete(cleanCep);
+
+    if (!cepResult.isValid) {
+      return cepResult;
+    }
+
+    // Cross-reference: DNI from CEP photo should match provided DNI
+    if (cepResult.data?.dni && cepResult.data.dni !== cleanDni) {
+      return {
+        isValid: false,
+        error: `El DNI no coincide con el registro CEP. DNI en registro: ${cepResult.data.dni}`,
+        data: cepResult.data,
+      };
+    }
+
+    // If CEP didn't return DNI, verify photo exists for the provided DNI
+    if (!cepResult.data?.dni) {
+      const photoCheck = await this.checkPhotoByDni(cleanDni);
+      if (photoCheck.exists) {
+        cepResult.data!.dni = cleanDni;
+        cepResult.data!.photoUrl = photoCheck.url;
+        cepResult.data!.isPhotoVerified = true;
+      }
+    }
+
+    // Check if nurse is HABIL
+    if (cepResult.data?.status === 'INHABILITADO') {
+      return {
+        isValid: false,
+        error: 'La enfermera(o) se encuentra INHABILITADA para ejercer',
+        data: cepResult.data,
+      };
+    }
+
+    return cepResult;
   }
 }
