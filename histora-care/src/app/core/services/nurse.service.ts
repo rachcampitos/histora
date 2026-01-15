@@ -9,7 +9,8 @@ import {
   NurseReview,
   NurseVerification,
   VerificationStatus,
-  VerificationDocumentType
+  VerificationDocumentType,
+  CepValidationResult
 } from '../models';
 
 @Injectable({
@@ -105,7 +106,31 @@ export class NurseApiService {
 
   // ============= Verification Methods =============
 
-  // Submit verification documents
+  // Pre-validate CEP with official registry (Step 1)
+  preValidateCep(nurseId: string, data: {
+    dniNumber: string;
+    cepNumber: string;
+    fullName?: string;
+  }): Observable<{
+    isValid: boolean;
+    cepValidation: CepValidationResult;
+    message: string;
+  }> {
+    return this.api.post(`/nurses/${nurseId}/verification/pre-validate-cep`, data);
+  }
+
+  // Confirm identity after CEP pre-validation (Step 2)
+  confirmCepIdentity(nurseId: string, data: {
+    dniNumber: string;
+    cepNumber: string;
+    fullName: string;
+    cepValidation: CepValidationResult;
+    confirmed: boolean;
+  }): Observable<NurseVerification> {
+    return this.api.post(`/nurses/${nurseId}/verification/confirm-identity`, data);
+  }
+
+  // Submit verification documents (Step 3)
   submitVerification(nurseId: string, data: {
     dniNumber: string;
     fullNameOnDni: string;
@@ -121,5 +146,10 @@ export class NurseApiService {
   // Get verification status
   getVerificationStatus(nurseId: string): Observable<NurseVerification | null> {
     return this.api.get(`/nurses/${nurseId}/verification/status`);
+  }
+
+  // Get official CEP photo URL
+  getCepPhoto(nurseId: string): Observable<{ photoUrl: string | null; isVerified: boolean }> {
+    return this.api.get(`/nurses/${nurseId}/cep-photo`);
   }
 }

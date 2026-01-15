@@ -1,10 +1,12 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController, AlertController, ActionSheetController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Nurse, NurseVerification, VerificationDocumentType, VerificationStatus } from '../../core/models';
+import { Nurse, NurseVerification, VerificationDocumentType, VerificationStatus, CepValidationResult } from '../../core/models';
+
+type VerificationStep = 'validate_cep' | 'confirm_identity' | 'upload_documents';
 
 interface DocumentUpload {
   type: VerificationDocumentType;
@@ -35,6 +37,14 @@ export class VerificationPage implements OnInit {
   verification = signal<NurseVerification | null>(null);
   isLoading = signal(true);
   isSubmitting = signal(false);
+  isValidatingCep = signal(false);
+
+  // Step management
+  currentStep = signal<VerificationStep>('validate_cep');
+
+  // CEP Validation state
+  cepValidation = signal<CepValidationResult | null>(null);
+  cepValidationMessage = signal('');
 
   // Form fields
   dniNumber = signal('');
@@ -91,18 +101,24 @@ export class VerificationPage implements OnInit {
     return u ? `${u.firstName} ${u.lastName}` : 'Enfermera';
   });
 
+  cepNumber = computed(() => this.nurse()?.cepNumber || '');
   verificationStatus = computed(() => this.verification()?.status || this.nurse()?.verificationStatus || 'pending');
   isApproved = computed(() => this.verificationStatus() === 'approved');
   isPending = computed(() => this.verificationStatus() === 'pending');
   isUnderReview = computed(() => this.verificationStatus() === 'under_review');
   isRejected = computed(() => this.verificationStatus() === 'rejected');
 
-  canSubmit = computed(() => {
+  // CEP photo from validation
+  cepPhotoUrl = computed(() => this.cepValidation()?.photoUrl || null);
+
+  canValidateCep = computed(() => {
+    return this.dniNumber().length === 8 && !this.isValidatingCep();
+  });
+
+  canSubmitDocuments = computed(() => {
     const docs = this.documents();
     const allDocsUploaded = docs.every(d => d.imageData !== null);
-    const hasDniNumber = this.dniNumber().length === 8;
-    const hasFullName = this.fullNameOnDni().trim().length > 0;
-    return allDocsUploaded && hasDniNumber && hasFullName && !this.isSubmitting();
+    return allDocsUploaded && !this.isSubmitting();
   });
 
   uploadProgress = computed(() => {
@@ -123,6 +139,12 @@ export class VerificationPage implements OnInit {
       if (nurse) {
         this.nurse.set(nurse);
 
+        // Pre-fill full name from user
+        const u = this.user();
+        if (u) {
+          this.fullNameOnDni.set(`${u.lastName} ${u.firstName}`.toUpperCase());
+        }
+
         // Load verification status if exists
         try {
           const verification = await this.nurseApi.getVerificationStatus(nurse._id).toPromise();
@@ -134,6 +156,10 @@ export class VerificationPage implements OnInit {
             }
             if (verification.fullNameOnDni) {
               this.fullNameOnDni.set(verification.fullNameOnDni);
+            }
+            // If CEP was already validated and confirmed, skip to documents
+            if (verification.cepIdentityConfirmed) {
+              this.currentStep.set('upload_documents');
             }
           }
         } catch {
@@ -156,6 +182,90 @@ export class VerificationPage implements OnInit {
   onFullNameChange(event: CustomEvent) {
     this.fullNameOnDni.set(event.detail.value || '');
   }
+
+  // ============= STEP 1: Validate CEP =============
+
+  async validateCep() {
+    const nurse = this.nurse();
+    if (!nurse || !this.canValidateCep()) return;
+
+    this.isValidatingCep.set(true);
+    this.cepValidationMessage.set('');
+
+    try {
+      const result = await this.nurseApi.preValidateCep(nurse._id, {
+        dniNumber: this.dniNumber(),
+        cepNumber: nurse.cepNumber,
+        fullName: this.fullNameOnDni()
+      }).toPromise();
+
+      if (result) {
+        this.cepValidation.set(result.cepValidation);
+        this.cepValidationMessage.set(result.message);
+
+        if (result.isValid) {
+          // Update fullName from CEP if available
+          if (result.cepValidation.fullName) {
+            this.fullNameOnDni.set(result.cepValidation.fullName);
+          }
+          // Move to identity confirmation step
+          this.currentStep.set('confirm_identity');
+          this.showToast('CEP validado correctamente', 'success');
+        } else {
+          this.showToast(result.message || 'No se pudo validar el CEP', 'warning');
+        }
+      }
+    } catch (error: unknown) {
+      console.error('Error validating CEP:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error al validar CEP';
+      const httpError = error as { error?: { message?: string } };
+      this.showToast(httpError?.error?.message || errorMessage, 'danger');
+    } finally {
+      this.isValidatingCep.set(false);
+    }
+  }
+
+  // ============= STEP 2: Confirm Identity =============
+
+  async confirmIdentity() {
+    const nurse = this.nurse();
+    const validation = this.cepValidation();
+    if (!nurse || !validation) return;
+
+    this.isSubmitting.set(true);
+
+    try {
+      const verification = await this.nurseApi.confirmCepIdentity(nurse._id, {
+        dniNumber: this.dniNumber(),
+        cepNumber: nurse.cepNumber,
+        fullName: this.fullNameOnDni(),
+        cepValidation: validation,
+        confirmed: true
+      }).toPromise();
+
+      if (verification) {
+        this.verification.set(verification);
+        this.currentStep.set('upload_documents');
+        this.showToast('Identidad confirmada. Ahora sube tus documentos.', 'success');
+      }
+    } catch (error: unknown) {
+      console.error('Error confirming identity:', error);
+      const httpError = error as { error?: { message?: string } };
+      this.showToast(httpError?.error?.message || 'Error al confirmar identidad', 'danger');
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
+
+  rejectIdentity() {
+    // Reset and go back to step 1
+    this.cepValidation.set(null);
+    this.cepValidationMessage.set('');
+    this.currentStep.set('validate_cep');
+    this.showToast('Por favor verifica tu numero de DNI', 'warning');
+  }
+
+  // ============= STEP 3: Upload Documents =============
 
   async selectImage(docType: VerificationDocumentType) {
     const actionSheet = await this.actionSheetCtrl.create({
@@ -228,12 +338,8 @@ export class VerificationPage implements OnInit {
     }
   }
 
-  getDocumentByType(type: VerificationDocumentType): DocumentUpload {
-    return this.documents().find(d => d.type === type) || this.documents()[0];
-  }
-
   async submitVerification() {
-    if (!this.canSubmit() || !this.nurse()) return;
+    if (!this.canSubmitDocuments() || !this.nurse()) return;
 
     const alert = await this.alertCtrl.create({
       header: 'Confirmar envio',
@@ -284,13 +390,14 @@ export class VerificationPage implements OnInit {
 
       await loading.dismiss();
       this.showToast('Documentos enviados correctamente', 'success');
-    } catch (error: any) {
+    } catch (error: unknown) {
       await loading.dismiss();
       console.error('Error submitting verification:', error);
 
       let message = 'Error al enviar documentos';
-      if (error.status === 400) {
-        message = error.error?.message || 'Documentos invalidos o ya verificado';
+      const httpError = error as { status?: number; error?: { message?: string } };
+      if (httpError.status === 400) {
+        message = httpError?.error?.message || 'Documentos invalidos o ya verificado';
       }
       this.showToast(message, 'danger');
     } finally {
@@ -298,8 +405,16 @@ export class VerificationPage implements OnInit {
     }
   }
 
+  // ============= Navigation =============
+
   goBack() {
-    this.router.navigate(['/nurse/dashboard']);
+    if (this.currentStep() === 'confirm_identity') {
+      this.currentStep.set('validate_cep');
+    } else if (this.currentStep() === 'upload_documents' && !this.verification()?.cepIdentityConfirmed) {
+      this.currentStep.set('confirm_identity');
+    } else {
+      this.router.navigate(['/nurse/dashboard']);
+    }
   }
 
   goToProfile() {
