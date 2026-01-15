@@ -62,6 +62,10 @@ export interface CepValidationResult {
   photoUrl?: string;
   isPhotoVerified?: boolean;
   isNameVerified?: boolean;
+  // New fields from view.php endpoint
+  region?: string;
+  isHabil?: boolean;
+  status?: 'HABIL' | 'INHABILITADO' | 'UNKNOWN';
   validatedAt?: Date;
   error?: string;
 }

@@ -142,7 +142,7 @@
       <div class="step-content" *ngIf="currentStep() === 'confirm_identity'">
         <div class="info-header">
           <h1>Confirma tu Identidad</h1>
-          <p>Hemos encontrado tu registro en el CEP. Por favor confirma que esta foto corresponde a tu identidad.</p>
+          <p>Hemos encontrado tu registro en el CEP. Por favor confirma que esta informacion corresponde a tu identidad.</p>
         </div>
 
         <!-- CEP Photo Display -->
@@ -160,10 +160,22 @@
             <p>No se encontro foto en el registro CEP</p>
           </div>
 
+          <!-- HABIL Status Badge -->
+          <div class="status-badge-container">
+            <div class="habil-badge" *ngIf="cepIsHabil()" [class.habil]="cepIsHabil()">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <span>HABIL</span>
+            </div>
+            <div class="habil-badge inhabilitado" *ngIf="cepStatus() === 'INHABILITADO'">
+              <ion-icon name="close-circle"></ion-icon>
+              <span>INHABILITADO</span>
+            </div>
+          </div>
+
           <div class="identity-info">
             <div class="info-row">
-              <span class="label">Nombre registrado:</span>
-              <span class="value">{{ fullNameOnDni() }}</span>
+              <span class="label">Nombre oficial CEP:</span>
+              <span class="value">{{ cepOfficialName() || fullNameOnDni() }}</span>
             </div>
             <div class="info-row">
               <span class="label">DNI:</span>
@@ -172,6 +184,10 @@
             <div class="info-row">
               <span class="label">CEP:</span>
               <span class="value">{{ cepNumber() }}</span>
+            </div>
+            <div class="info-row" *ngIf="cepRegion()">
+              <span class="label">Region:</span>
+              <span class="value">{{ cepRegion() }}</span>
             </div>
           </div>
         </div>
