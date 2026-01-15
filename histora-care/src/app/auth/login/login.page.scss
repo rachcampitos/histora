@@ -357,6 +357,10 @@ $border-radius: 12px;
     ion-checkbox {
       color: #a0aec0;
     }
+
+    .forgot-btn {
+      --color: #6bb5b3;
+    }
   }
 
   .divider {
@@ -373,6 +377,15 @@ $border-radius: 12px;
   .register-section {
     p {
       color: #a0aec0;
+    }
+
+    .register-btn {
+      --border-color: #6bb5b3;
+      --color: #6bb5b3;
+
+      &:hover {
+        --background: rgba(107, 181, 179, 0.1);
+      }
     }
   }
 
