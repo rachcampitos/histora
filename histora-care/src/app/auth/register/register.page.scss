@@ -352,8 +352,24 @@ $border-radius: 12px;
   }
 
   .brand-section {
+    .app-name {
+      color: #f1f5f9;
+    }
+
     .app-tagline {
-      color: #a0aec0;
+      color: #6bb5b3;
+    }
+  }
+
+  .trust-badge-section {
+    background: rgba(107, 181, 179, 0.15);
+
+    ion-icon {
+      color: #6bb5b3;
+    }
+
+    span {
+      color: #e2e8f0;
     }
   }
 

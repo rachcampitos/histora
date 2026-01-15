@@ -540,9 +540,9 @@ ion-modal {
     }
   }
 
-  // Profile Header - keep gradient but adjust opacity
+  // Profile Header - NurseLite navy gradient for dark mode
   .profile-header {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
   }
 
   // Common Section Styles
@@ -631,7 +631,7 @@ ion-modal {
 
   ion-range {
     --bar-background: #{tokens.$surface-dark-tertiary};
-    --bar-background-active: linear-gradient(135deg, #6bb5b3 0%, #a78bfa 100%);
+    --bar-background-active: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
     --knob-background: #6bb5b3;
     --knob-box-shadow: 0 2px 8px rgba(107, 181, 179, 0.4);
     --pin-background: #6bb5b3;
@@ -653,7 +653,7 @@ ion-modal {
         color: tokens.$text-dark-tertiary;
 
         &.selected {
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
           color: white;
         }
       }
@@ -684,8 +684,8 @@ ion-modal {
   // Save Section
   .save-section {
     .save-button {
-      --background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      --box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+      --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+      --box-shadow: 0 4px 15px rgba(45, 95, 138, 0.4);
     }
   }
 

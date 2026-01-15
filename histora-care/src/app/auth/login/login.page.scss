@@ -311,9 +311,17 @@ $border-radius: 12px;
   }
 
   .brand-section {
-    .app-tagline {
-      color: #a0aec0;
+    .app-name {
+      color: #f1f5f9;
     }
+
+    .app-tagline {
+      color: #6bb5b3;
+    }
+  }
+
+  .footer-section .footer-link {
+    color: #94a3b8;
   }
 
   .form-section {
