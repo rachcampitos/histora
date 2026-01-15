@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
@@ -6,13 +6,21 @@ import { AuthService } from '../../core/services/auth.service';
 
 type UserType = 'nurse' | 'patient' | null;
 
+// CEP validation loading messages (rotate every 2 seconds)
+const CEP_LOADING_MESSAGES = [
+  { message: 'Conectando con CEP...', subtext: 'Verificamos tu colegiatura con el Colegio de Enfermeros del Perú' },
+  { message: 'Verificando tu número de colegiatura...', subtext: 'Este proceso protege tu reputación profesional' },
+  { message: 'Confirmando que tu colegiatura está vigente...', subtext: 'Pacientes verificados te esperan' },
+  { message: 'Casi listo, obteniendo los últimos detalles...', subtext: 'Estás a un paso de empezar' },
+];
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   standalone: false,
   styleUrls: ['./register.page.scss'],
 })
-export class RegisterPage implements OnInit {
+export class RegisterPage implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -24,6 +32,17 @@ export class RegisterPage implements OnInit {
   registerForm: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
+
+  // CEP Validation Loading State
+  showCepLoading = signal(false);
+  cepLoadingMessage = signal(CEP_LOADING_MESSAGES[0].message);
+  cepLoadingSubtext = signal(CEP_LOADING_MESSAGES[0].subtext);
+  private cepLoadingInterval: ReturnType<typeof setInterval> | null = null;
+  private cepMessageIndex = 0;
+
+  // Success Transition State
+  showSuccessTransition = signal(false);
+  registeredUserName = signal('');
 
   // CEP specialties options
   specialtiesOptions = [
@@ -71,6 +90,32 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.stopCepLoadingMessages();
+  }
+
+  // CEP Loading Message Rotation
+  private startCepLoadingMessages() {
+    this.cepMessageIndex = 0;
+    this.cepLoadingMessage.set(CEP_LOADING_MESSAGES[0].message);
+    this.cepLoadingSubtext.set(CEP_LOADING_MESSAGES[0].subtext);
+    this.showCepLoading.set(true);
+
+    this.cepLoadingInterval = setInterval(() => {
+      this.cepMessageIndex = (this.cepMessageIndex + 1) % CEP_LOADING_MESSAGES.length;
+      this.cepLoadingMessage.set(CEP_LOADING_MESSAGES[this.cepMessageIndex].message);
+      this.cepLoadingSubtext.set(CEP_LOADING_MESSAGES[this.cepMessageIndex].subtext);
+    }, 2000);
+  }
+
+  private stopCepLoadingMessages() {
+    if (this.cepLoadingInterval) {
+      clearInterval(this.cepLoadingInterval);
+      this.cepLoadingInterval = null;
+    }
+    this.showCepLoading.set(false);
+  }
+
   selectUserType(type: UserType) {
     this.selectedUserType = type;
 
@@ -116,15 +161,13 @@ export class RegisterPage implements OnInit {
       return;
     }
 
-    const loading = await this.loadingCtrl.create({
-      message: 'Creando cuenta...',
-      spinner: 'crescent'
-    });
-    await loading.present();
-
     const { firstName, lastName, email, phone, password, cepNumber, specialties, acceptTerms, acceptProfessionalDisclaimer } = this.registerForm.value;
 
     if (this.selectedUserType === 'nurse') {
+      // Use custom CEP loading overlay for nurses
+      this.startCepLoadingMessages();
+      this.registeredUserName.set(firstName);
+
       this.authService.registerNurse({
         firstName,
         lastName,
@@ -137,24 +180,23 @@ export class RegisterPage implements OnInit {
         professionalDisclaimerAccepted: acceptProfessionalDisclaimer
       }).subscribe({
         next: async () => {
-          await loading.dismiss();
-          const toast = await this.toastCtrl.create({
-            message: 'Cuenta creada. Ahora verifica tu identidad.',
-            duration: 3000,
-            position: 'bottom',
-            color: 'success',
-            icon: 'checkmark-circle-outline'
-          });
-          await toast.present();
-          // Redirect to verification page for nurses
-          this.router.navigate(['/nurse/verification']);
+          this.stopCepLoadingMessages();
+          // Show success transition screen
+          this.showSuccessTransition.set(true);
         },
         error: async (error) => {
-          await loading.dismiss();
+          this.stopCepLoadingMessages();
           await this.showError(error);
         }
       });
     } else {
+      // Use standard loading for patients
+      const loading = await this.loadingCtrl.create({
+        message: 'Creando cuenta...',
+        spinner: 'crescent'
+      });
+      await loading.present();
+
       this.authService.registerPatient({
         firstName,
         lastName,
@@ -180,6 +222,18 @@ export class RegisterPage implements OnInit {
         }
       });
     }
+  }
+
+  // Navigate to verification after success transition
+  continueToVerification() {
+    this.showSuccessTransition.set(false);
+    this.router.navigate(['/nurse/verification']);
+  }
+
+  // Skip verification for now (navigate to dashboard with limited access)
+  skipVerificationForNow() {
+    this.showSuccessTransition.set(false);
+    this.router.navigate(['/nurse/dashboard']);
   }
 
   private async showError(error: any) {
