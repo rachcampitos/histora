@@ -96,7 +96,7 @@ export class MapboxService {
     if (options?.element) {
       marker = new Marker({ element: options.element, anchor: options?.anchor || 'bottom' });
     } else {
-      marker = new Marker({ color: options?.color || '#667eea', anchor: options?.anchor || 'bottom' });
+      marker = new Marker({ color: options?.color || '#1e3a5f', anchor: options?.anchor || 'bottom' });
     }
 
     marker.setLngLat(coordinates);
@@ -208,7 +208,7 @@ export class MapboxService {
   /**
    * Draw a route line on the map
    */
-  drawRoute(coordinates: [number, number][], color = '#667eea'): void {
+  drawRoute(coordinates: [number, number][], color = '#1e3a5f'): void {
     if (!this.map) return;
 
     // Remove existing route

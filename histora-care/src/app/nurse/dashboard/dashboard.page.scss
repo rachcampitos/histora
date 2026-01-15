@@ -597,7 +597,7 @@ $primary-gradient: var(--histora-gradient);
           }
 
           &.time {
-            color: #818cf8;
+            color: #6bb5b3;
           }
         }
       }
@@ -616,7 +616,7 @@ $primary-gradient: var(--histora-gradient);
         }
 
         .patient-phone {
-          color: #818cf8;
+          color: #6bb5b3;
         }
       }
     }
@@ -639,13 +639,13 @@ $primary-gradient: var(--histora-gradient);
           color: tokens.$text-dark-tertiary;
 
           &.time {
-            color: #818cf8;
+            color: #6bb5b3;
           }
         }
       }
 
       .distance-badge {
-        color: #818cf8;
+        color: #6bb5b3;
       }
     }
   }
@@ -675,10 +675,10 @@ $primary-gradient: var(--histora-gradient);
 
     .menu-item {
       .menu-icon {
-        background: linear-gradient(135deg, rgba(129, 140, 248, 0.2) 0%, rgba(167, 139, 250, 0.2) 100%);
+        background: linear-gradient(135deg, rgba(107, 181, 179, 0.2) 0%, rgba(167, 139, 250, 0.2) 100%);
 
         ion-icon {
-          color: #818cf8;
+          color: #6bb5b3;
         }
       }
 

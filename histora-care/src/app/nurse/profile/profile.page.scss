@@ -552,7 +552,7 @@ ion-modal {
 
     .section-header {
       ion-icon {
-        color: #818cf8;
+        color: #6bb5b3;
       }
 
       h2 {
@@ -625,16 +625,16 @@ ion-modal {
   // Service Radius Section
   .radius-display {
     .radius-value {
-      color: #818cf8;
+      color: #6bb5b3;
     }
   }
 
   ion-range {
     --bar-background: #{tokens.$surface-dark-tertiary};
-    --bar-background-active: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
-    --knob-background: #818cf8;
-    --knob-box-shadow: 0 2px 8px rgba(129, 140, 248, 0.4);
-    --pin-background: #818cf8;
+    --bar-background-active: linear-gradient(135deg, #6bb5b3 0%, #a78bfa 100%);
+    --knob-background: #6bb5b3;
+    --knob-box-shadow: 0 2px 8px rgba(107, 181, 179, 0.4);
+    --pin-background: #6bb5b3;
   }
 
   .helper-text {
@@ -697,7 +697,7 @@ ion-modal {
         --color: #{tokens.$text-dark-primary};
 
         .setting-icon {
-          color: #818cf8;
+          color: #6bb5b3;
         }
 
         ion-label {
