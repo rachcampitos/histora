@@ -8,8 +8,13 @@
           class="slide"
           [class.active]="i === currentSlide">
           <div class="slide-content">
-            <!-- Icon/Illustration -->
-            <div class="slide-illustration">
+            <!-- Logo (only on slides 1 and 5) -->
+            <div class="slide-logo" *ngIf="slide.id === 1 || slide.id === 5">
+              <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
+            </div>
+
+            <!-- Icon/Illustration (only on slides 2-4) -->
+            <div class="slide-illustration" *ngIf="slide.id !== 1 && slide.id !== 5">
               <div class="icon-wrapper" [ngClass]="slide.gradient">
                 <ion-icon [name]="slide.icon"></ion-icon>
               </div>

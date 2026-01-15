@@ -1,29 +1,134 @@
 @use '../../theme/design-tokens' as tokens;
 
-#container {
-  text-align: center;
+// Splash Screen Styles
+.splash-content {
+  --background: linear-gradient(180deg, #1e3a5f 0%, #2d5f8a 100%);
+}
 
+.splash-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: tokens.$spacing-6;
+  text-align: center;
+}
+
+// Brand Section with Animation
+.brand-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: tokens.$spacing-3;
+
+  &.animated {
+    animation: splash-appear 600ms ease-out forwards;
+  }
+
+  .logo-wrapper {
+    width: 96px;
+    height: 96px;
+    border-radius: tokens.$radius-xl;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    background: white;
+
+    .logo-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .logo-icon {
+      font-size: 56px;
+      color: white;
+    }
+  }
+
+  .app-name {
+    font-size: 32px;
+    font-weight: tokens.$font-weight-bold;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .app-tagline {
+    font-size: tokens.$font-size-lg;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    font-weight: tokens.$font-weight-medium;
+  }
+}
+
+// Loading Section
+.loading-section {
+  margin-top: tokens.$spacing-10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: tokens.$spacing-3;
+  animation: fade-in 800ms ease-out 400ms forwards;
+  opacity: 0;
+
+  ion-spinner {
+    --color: white;
+    width: 32px;
+    height: 32px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: tokens.$font-size-sm;
+    margin: 0;
+  }
+}
+
+// Footer
+.splash-footer {
   position: absolute;
+  bottom: calc(var(--ion-safe-area-bottom, 0) + #{tokens.$spacing-6});
   left: 0;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  text-align: center;
+  animation: fade-in 800ms ease-out 600ms forwards;
+  opacity: 0;
+
+  .powered-by {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+  }
 }
 
-#container strong {
-  font-size: tokens.$font-size-xl;
-  line-height: 26px;
+// Animations
+@keyframes splash-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
-#container p {
-  font-size: tokens.$font-size-base;
-  line-height: 22px;
-
-  color: var(--text-secondary);
-
-  margin: 0;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-#container a {
-  text-decoration: none;
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .brand-section.animated,
+  .loading-section,
+  .splash-footer {
+    animation: none;
+    opacity: 1;
+  }
 }

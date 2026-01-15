@@ -67,6 +67,18 @@ $primary-gradient: var(--histora-gradient);
   }
 }
 
+// Logo (for slides 1 and 5)
+.slide-logo {
+  margin-bottom: tokens.$spacing-6;
+
+  .logo-image {
+    width: 80px;
+    height: 80px;
+    border-radius: tokens.$radius-lg;
+    box-shadow: 0 8px 24px rgba(30, 58, 95, 0.25);
+  }
+}
+
 // Illustration
 .slide-illustration {
   margin-bottom: tokens.$spacing-8;

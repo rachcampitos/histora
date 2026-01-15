@@ -1,9 +1,9 @@
 <ion-content [fullscreen]="true" class="splash-content">
   <div class="splash-container">
-    <!-- Logo and Brand -->
-    <div class="brand-section">
+    <!-- Logo and Brand with Animation -->
+    <div class="brand-section animated">
       <div class="logo-wrapper">
-        <ion-icon name="flash" class="logo-icon"></ion-icon>
+        <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
       </div>
       <h1 class="app-name">NurseLite</h1>
       <p class="app-tagline">Tu enfermera a un toque</p>
@@ -12,7 +12,11 @@
     <!-- Loading Indicator -->
     <div class="loading-section">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p>Cargando...</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="splash-footer">
+      <span class="powered-by">Powered by Histora Health</span>
     </div>
   </div>
 </ion-content>
