@@ -1,12 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
-import { driver, DriveStep, Config } from 'driver.js';
+import { driver, DriveStep, Config, Driver } from 'driver.js';
 
-export type TourType = 'patient_home' | 'nurse_dashboard' | 'nurse_profile' | 'admin_verifications';
+export type TourType =
+  | 'patient_home'
+  | 'patient_map'
+  | 'patient_settings'
+  | 'nurse_dashboard'
+  | 'nurse_profile'
+  | 'nurse_requests'
+  | 'nurse_services'
+  | 'nurse_earnings'
+  | 'admin_verifications';
 
 interface TourConfig {
   steps: DriveStep[];
   config?: Partial<Config>;
+  nextTour?: TourType; // Chain to another tour after this one
 }
 
 /**
@@ -15,13 +25,24 @@ interface TourConfig {
  * Implements guided tours using Driver.js to highlight UI elements
  * and explain features to new users after completing onboarding.
  *
- * Tours are shown once per user per section and can be replayed from settings.
+ * Features:
+ * - Multi-page tour support with navigation prompts
+ * - Tours are shown once per user per section
+ * - Can be replayed from settings
+ * - Chained tours for comprehensive onboarding
  */
 @Injectable({
   providedIn: 'root',
 })
 export class ProductTourService {
-  private readonly STORAGE_KEY_PREFIX = 'histora-tour-completed-';
+  private readonly STORAGE_KEY_PREFIX = 'nurselite-tour-completed-';
+  private readonly PENDING_TOUR_KEY = 'nurselite-pending-tour';
+
+  // Active driver instance
+  private driverInstance: Driver | null = null;
+
+  // Signal to track if a tour is currently active
+  isTourActive = signal(false);
 
   /**
    * Check if a specific tour has been completed
@@ -53,19 +74,75 @@ export class ProductTourService {
   }
 
   /**
+   * Reset all tours for a specific role
+   */
+  async resetToursByRole(role: 'patient' | 'nurse' | 'admin'): Promise<void> {
+    const tourTypes: Record<string, TourType[]> = {
+      patient: ['patient_home', 'patient_map', 'patient_settings'],
+      nurse: ['nurse_dashboard', 'nurse_profile', 'nurse_requests', 'nurse_services', 'nurse_earnings'],
+      admin: ['admin_verifications'],
+    };
+
+    for (const type of tourTypes[role] || []) {
+      await Preferences.remove({
+        key: this.STORAGE_KEY_PREFIX + type,
+      });
+    }
+  }
+
+  /**
    * Reset all tours
    */
   async resetAllTours(): Promise<void> {
     const tourTypes: TourType[] = [
       'patient_home',
+      'patient_map',
+      'patient_settings',
       'nurse_dashboard',
       'nurse_profile',
+      'nurse_requests',
+      'nurse_services',
+      'nurse_earnings',
       'admin_verifications',
     ];
     for (const type of tourTypes) {
       await Preferences.remove({
         key: this.STORAGE_KEY_PREFIX + type,
       });
+    }
+  }
+
+  /**
+   * Set a pending tour to be shown on next page visit
+   */
+  async setPendingTour(tourType: TourType): Promise<void> {
+    await Preferences.set({
+      key: this.PENDING_TOUR_KEY,
+      value: tourType,
+    });
+  }
+
+  /**
+   * Get and clear pending tour
+   */
+  async getPendingTour(): Promise<TourType | null> {
+    const { value } = await Preferences.get({
+      key: this.PENDING_TOUR_KEY,
+    });
+    if (value) {
+      await Preferences.remove({ key: this.PENDING_TOUR_KEY });
+      return value as TourType;
+    }
+    return null;
+  }
+
+  /**
+   * Check if there's a pending tour and start it
+   */
+  async checkAndStartPendingTour(): Promise<void> {
+    const pendingTour = await this.getPendingTour();
+    if (pendingTour) {
+      await this.startTour(pendingTour, true);
     }
   }
 
@@ -88,32 +165,51 @@ export class ProductTourService {
     }
 
     // Wait for DOM to be ready
-    await this.waitForElements(tourConfig.steps);
+    const elementsReady = await this.waitForElements(tourConfig.steps, 3000);
+    if (!elementsReady) {
+      console.warn(`Tour ${tourType}: Some elements not found, skipping tour`);
+      return;
+    }
 
-    const driverInstance = driver({
+    this.isTourActive.set(true);
+
+    this.driverInstance = driver({
       showProgress: true,
       showButtons: ['next', 'previous', 'close'],
       nextBtnText: 'Siguiente',
       prevBtnText: 'Anterior',
       doneBtnText: 'Entendido',
       progressText: '{{current}} de {{total}}',
-      popoverClass: 'histora-tour-popover',
-      overlayColor: 'rgba(0, 0, 0, 0.7)',
-      stagePadding: 8,
-      stageRadius: 12,
+      popoverClass: 'nurselite-tour-popover',
+      overlayColor: 'rgba(30, 58, 95, 0.85)',
+      stagePadding: 10,
+      stageRadius: 16,
       animate: true,
       smoothScroll: true,
       allowClose: true,
       disableActiveInteraction: false,
       onDestroyStarted: async () => {
         await this.markTourCompleted(tourType);
-        driverInstance.destroy();
+        this.isTourActive.set(false);
+        this.driverInstance?.destroy();
+        this.driverInstance = null;
       },
       ...tourConfig.config,
       steps: tourConfig.steps,
     });
 
-    driverInstance.drive();
+    this.driverInstance.drive();
+  }
+
+  /**
+   * Stop current tour
+   */
+  stopTour(): void {
+    if (this.driverInstance) {
+      this.driverInstance.destroy();
+      this.driverInstance = null;
+      this.isTourActive.set(false);
+    }
   }
 
   /**
@@ -121,14 +217,26 @@ export class ProductTourService {
    */
   private getTourConfig(tourType: TourType): TourConfig | null {
     const configs: Record<TourType, TourConfig> = {
+      // ============================================================
+      // PATIENT TOURS
+      // ============================================================
       patient_home: {
         steps: [
           {
+            popover: {
+              title: '¡Bienvenido a NurseLite!',
+              description:
+                'Te mostraremos cómo usar la app para solicitar enfermeras certificadas a domicilio.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
             element: '#tour-main-action',
             popover: {
-              title: 'Buscar Enfermera',
+              title: 'Solicitar Enfermera',
               description:
-                'Toca aqui para ver el mapa con enfermeras verificadas cerca de ti.',
+                'Este es el botón principal. Tócalo para ver el mapa y encontrar enfermeras verificadas cerca de ti.',
               side: 'bottom',
               align: 'center',
             },
@@ -136,19 +244,19 @@ export class ProductTourService {
           {
             element: '#tour-quick-actions',
             popover: {
-              title: 'Acciones rapidas',
+              title: 'Acciones Rápidas',
               description:
-                'Accede rapidamente a tu historial de servicios y enfermeras favoritas.',
-              side: 'bottom',
+                'Accede a tu historial de servicios, enfermeras favoritas y configuración desde aquí.',
+              side: 'top',
               align: 'center',
             },
           },
           {
             element: '#tour-tab-map',
             popover: {
-              title: 'Mapa de enfermeras',
+              title: 'Mapa de Enfermeras',
               description:
-                'Explora el mapa para ver todas las enfermeras disponibles en tu zona.',
+                'Explora el mapa para ver todas las enfermeras disponibles en tiempo real.',
               side: 'top',
               align: 'center',
             },
@@ -156,23 +264,116 @@ export class ProductTourService {
           {
             element: '#tour-tab-settings',
             popover: {
-              title: 'Configuracion',
+              title: 'Tu Perfil y Ajustes',
               description:
-                'Gestiona tu perfil, direcciones guardadas, notificaciones y preferencias.',
+                'Gestiona tu cuenta, notificaciones y métodos de pago aquí.',
               side: 'top',
               align: 'start',
             },
           },
         ],
       },
+
+      patient_map: {
+        steps: [
+          {
+            element: '#tour-map-container',
+            popover: {
+              title: 'Mapa Interactivo',
+              description:
+                'Aquí verás enfermeras disponibles cerca de ti. Los marcadores muestran su ubicación en tiempo real.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-search-filters',
+            popover: {
+              title: 'Filtros de Búsqueda',
+              description:
+                'Filtra por especialidad, calificación o distancia para encontrar la enfermera perfecta.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-nurse-list',
+            popover: {
+              title: 'Lista de Enfermeras',
+              description:
+                'Desliza hacia arriba para ver el perfil de cada enfermera, sus calificaciones y servicios.',
+              side: 'top',
+              align: 'center',
+            },
+          },
+        ],
+      },
+
+      patient_settings: {
+        steps: [
+          {
+            element: '#tour-profile-section',
+            popover: {
+              title: 'Tu Perfil',
+              description:
+                'Toca aquí para editar tu información personal y foto de perfil.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-theme-setting',
+            popover: {
+              title: 'Tema de la App',
+              description:
+                'Cambia entre modo claro, oscuro o automático según tus preferencias.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-replay-tutorial',
+            popover: {
+              title: 'Ver Tutorial',
+              description:
+                'Si necesitas recordar cómo usar la app, puedes repetir este tutorial desde aquí.',
+              side: 'top',
+              align: 'center',
+            },
+          },
+        ],
+      },
+
+      // ============================================================
+      // NURSE TOURS
+      // ============================================================
       nurse_dashboard: {
         steps: [
           {
+            popover: {
+              title: '¡Bienvenida a NurseLite!',
+              description:
+                'Te mostraremos cómo usar la app para recibir y gestionar solicitudes de pacientes.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-availability-toggle',
+            popover: {
+              title: 'Tu Disponibilidad',
+              description:
+                'Activa este interruptor cuando estés lista para recibir solicitudes. Los pacientes solo te verán cuando esté activo.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
             element: '#tour-nurse-stats',
             popover: {
-              title: 'Tus estadisticas',
+              title: 'Tus Estadísticas',
               description:
-                'Ve un resumen de tus servicios, ganancias y calificacion.',
+                'Ve tu calificación, total de servicios y reseñas de un vistazo.',
               side: 'bottom',
               align: 'center',
             },
@@ -180,62 +381,54 @@ export class ProductTourService {
           {
             element: '#tour-active-requests',
             popover: {
-              title: 'Solicitudes activas',
+              title: 'Servicios Activos',
               description:
-                'Las solicitudes de pacientes cerca de ti apareceran aqui.',
+                'Los servicios que has aceptado aparecerán aquí. Podrás actualizar el estado y contactar al paciente.',
               side: 'bottom',
               align: 'center',
             },
           },
           {
-            element: '#tour-nurse-schedule',
+            element: '#tour-pending-requests',
             popover: {
-              title: 'Tu disponibilidad',
+              title: 'Solicitudes Cercanas',
               description:
-                'Configura tus horarios y zonas de servicio para recibir solicitudes.',
+                'Nuevas solicitudes de pacientes cerca de ti. Actúa rápido, otros enfermeras también las ven.',
               side: 'top',
               align: 'center',
             },
           },
           {
-            element: '#tour-tab-requests',
+            element: '#tour-quick-menu',
             popover: {
-              title: 'Solicitudes',
+              title: 'Menú Rápido',
               description:
-                'Nuevas solicitudes de pacientes esperando tu aceptacion.',
+                'Accede a solicitudes, servicios completados, ganancias y tu perfil desde aquí.',
               side: 'top',
               align: 'center',
             },
           },
           {
-            element: '#tour-tab-services',
+            element: '#tour-panic-button',
             popover: {
-              title: 'Mis servicios',
-              description: 'Historial de todos los servicios que has realizado.',
+              title: 'Botón de Seguridad',
+              description:
+                'En caso de emergencia durante un servicio, usa este botón para alertar y pedir ayuda inmediata.',
               side: 'top',
               align: 'center',
-            },
-          },
-          {
-            element: '#tour-tab-earnings',
-            popover: {
-              title: 'Ganancias',
-              description:
-                'Ve tus ganancias, retiros y facturacion en detalle.',
-              side: 'top',
-              align: 'start',
             },
           },
         ],
       },
+
       nurse_profile: {
         steps: [
           {
             element: '#tour-profile-avatar',
             popover: {
-              title: 'Tu foto de perfil',
+              title: 'Tu Foto de Perfil',
               description:
-                'Sube una foto profesional. Los pacientes confian mas en perfiles con foto real.',
+                'Sube una foto profesional. Los pacientes confían más en perfiles con foto real.',
               side: 'bottom',
               align: 'center',
             },
@@ -243,9 +436,9 @@ export class ProductTourService {
           {
             element: '#tour-cep-section',
             popover: {
-              title: 'Numero CEP verificado',
+              title: 'Número CEP Verificado',
               description:
-                'Tu registro del Colegio de Enfermeros del Peru. Este sello genera confianza en los pacientes.',
+                'Tu registro del Colegio de Enfermeros del Perú. Este sello genera confianza.',
               side: 'bottom',
               align: 'center',
             },
@@ -253,9 +446,9 @@ export class ProductTourService {
           {
             element: '#tour-bio-section',
             popover: {
-              title: 'Acerca de ti',
+              title: 'Acerca de Ti',
               description:
-                'Describe tu experiencia, enfoque y lo que te hace unica. Los pacientes leen esto antes de solicitar.',
+                'Describe tu experiencia y enfoque. Los pacientes leen esto antes de solicitar.',
               side: 'bottom',
               align: 'center',
             },
@@ -265,7 +458,7 @@ export class ProductTourService {
             popover: {
               title: 'Especialidades',
               description:
-                'Agrega tus areas de experiencia para aparecer en busquedas especificas.',
+                'Agrega tus áreas de experiencia para aparecer en búsquedas específicas.',
               side: 'bottom',
               align: 'center',
             },
@@ -273,9 +466,9 @@ export class ProductTourService {
           {
             element: '#tour-radius-section',
             popover: {
-              title: 'Radio de servicio',
+              title: 'Radio de Servicio',
               description:
-                'Define hasta que distancia puedes desplazarte. Un radio mayor = mas solicitudes.',
+                'Define hasta qué distancia puedes desplazarte. Más radio = más solicitudes.',
               side: 'top',
               align: 'center',
             },
@@ -283,9 +476,9 @@ export class ProductTourService {
           {
             element: '#tour-schedule-section',
             popover: {
-              title: 'Disponibilidad',
+              title: 'Horario de Disponibilidad',
               description:
-                'Configura tus dias y horarios. Solo recibiras solicitudes en estos horarios.',
+                'Configura tus días y horarios. Solo recibirás solicitudes en estos horarios.',
               side: 'top',
               align: 'center',
             },
@@ -293,23 +486,122 @@ export class ProductTourService {
           {
             element: '#tour-save-button',
             popover: {
-              title: 'Guardar cambios',
+              title: 'Guardar Cambios',
               description:
-                'No olvides guardar! Los cambios se sincronizan al instante.',
+                '¡No olvides guardar! Los cambios se sincronizan al instante.',
               side: 'top',
               align: 'center',
             },
           },
         ],
       },
+
+      nurse_requests: {
+        steps: [
+          {
+            element: '#tour-requests-tabs',
+            popover: {
+              title: 'Tipos de Solicitudes',
+              description:
+                'Navega entre solicitudes pendientes, aceptadas y completadas.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-request-card',
+            popover: {
+              title: 'Tarjeta de Solicitud',
+              description:
+                'Cada solicitud muestra el servicio, ubicación, precio y datos del paciente.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-accept-button',
+            popover: {
+              title: 'Aceptar Solicitud',
+              description:
+                'Al aceptar, te comprometes a llegar. El paciente recibirá una notificación.',
+              side: 'top',
+              align: 'center',
+            },
+          },
+        ],
+      },
+
+      nurse_services: {
+        steps: [
+          {
+            element: '#tour-services-filter',
+            popover: {
+              title: 'Filtrar Servicios',
+              description:
+                'Filtra por fecha, estado o tipo de servicio para encontrar lo que buscas.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-service-history',
+            popover: {
+              title: 'Historial de Servicios',
+              description:
+                'Aquí verás todos los servicios que has completado con detalles y calificaciones.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+        ],
+      },
+
+      nurse_earnings: {
+        steps: [
+          {
+            element: '#tour-earnings-summary',
+            popover: {
+              title: 'Resumen de Ganancias',
+              description:
+                'Ve cuánto has ganado esta semana, mes y en total.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-earnings-chart',
+            popover: {
+              title: 'Gráfico de Ingresos',
+              description:
+                'Visualiza la tendencia de tus ganancias a lo largo del tiempo.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+          {
+            element: '#tour-transactions',
+            popover: {
+              title: 'Transacciones',
+              description:
+                'Lista detallada de cada pago recibido por servicio.',
+              side: 'top',
+              align: 'center',
+            },
+          },
+        ],
+      },
+
+      // ============================================================
+      // ADMIN TOURS
+      // ============================================================
       admin_verifications: {
         steps: [
           {
             element: '#tour-verification-stats',
             popover: {
-              title: 'Estado de verificaciones',
+              title: 'Estado de Verificaciones',
               description:
-                'Ve cuantas verificaciones estan pendientes, aprobadas y rechazadas.',
+                'Ve cuántas verificaciones están pendientes, aprobadas y rechazadas.',
               side: 'bottom',
               align: 'center',
             },
@@ -317,9 +609,9 @@ export class ProductTourService {
           {
             element: '#tour-pending-list',
             popover: {
-              title: 'Verificaciones pendientes',
+              title: 'Verificaciones Pendientes',
               description:
-                'Lista de enfermeras esperando revision. Haz clic para ver detalles.',
+                'Lista de enfermeras esperando revisión. Haz clic para ver detalles.',
               side: 'bottom',
               align: 'center',
             },
@@ -329,7 +621,7 @@ export class ProductTourService {
             popover: {
               title: 'Filtros',
               description:
-                'Filtra por estado, fecha o tipo de documento para encontrar rapidamente.',
+                'Filtra por estado, fecha o tipo de documento para encontrar rápidamente.',
               side: 'bottom',
               align: 'center',
             },
@@ -343,20 +635,35 @@ export class ProductTourService {
 
   /**
    * Wait for all tour elements to be present in DOM
+   * @returns true if all elements found, false if timeout
    */
-  private waitForElements(steps: DriveStep[]): Promise<void> {
+  private waitForElements(steps: DriveStep[], timeout = 3000): Promise<boolean> {
     return new Promise((resolve) => {
+      const startTime = Date.now();
+
       const checkElements = () => {
-        const allPresent = steps.every((step) => {
-          if (typeof step.element === 'string') {
-            return document.querySelector(step.element) !== null;
-          }
-          return true;
+        // Filter steps that have element selectors
+        const stepsWithElements = steps.filter(
+          (step) => typeof step.element === 'string' && step.element
+        );
+
+        // If no elements to check, resolve immediately
+        if (stepsWithElements.length === 0) {
+          setTimeout(() => resolve(true), 300);
+          return;
+        }
+
+        const allPresent = stepsWithElements.every((step) => {
+          const element = document.querySelector(step.element as string);
+          return element !== null;
         });
 
         if (allPresent) {
           // Small delay to ensure elements are fully rendered
-          setTimeout(resolve, 300);
+          setTimeout(() => resolve(true), 300);
+        } else if (Date.now() - startTime > timeout) {
+          // Timeout reached
+          resolve(false);
         } else {
           // Retry after 100ms
           setTimeout(checkElements, 100);
@@ -364,7 +671,7 @@ export class ProductTourService {
       };
 
       // Start checking after initial delay
-      setTimeout(checkElements, 500);
+      setTimeout(checkElements, 300);
     });
   }
 }

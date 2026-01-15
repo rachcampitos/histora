@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, effect, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { RefresherCustomEvent, ToastController, AlertController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
@@ -6,6 +6,7 @@ import { ServiceRequestService } from '../../core/services/service-request.servi
 import { AuthService } from '../../core/services/auth.service';
 import { GeolocationService } from '../../core/services/geolocation.service';
 import { WebSocketService } from '../../core/services/websocket.service';
+import { ProductTourService } from '../../core/services/product-tour.service';
 import { Nurse, ServiceRequest } from '../../core/models';
 
 @Component({
@@ -20,6 +21,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private geoService = inject(GeolocationService);
   private wsService = inject(WebSocketService);
+  private productTour = inject(ProductTourService);
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
@@ -71,6 +73,13 @@ export class DashboardPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeWebSocket();
     this.loadData();
+  }
+
+  ionViewDidEnter() {
+    // Start tour after page is fully visible
+    setTimeout(() => {
+      this.productTour.startTour('nurse_dashboard');
+    }, 500);
   }
 
   ngOnDestroy() {

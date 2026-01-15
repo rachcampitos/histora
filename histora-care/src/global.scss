@@ -951,6 +951,7 @@ body.dark ion-alert.logout-alert {
 @import "driver.js/dist/driver.css";
 
 /* Custom styling for NurseLite tour */
+.nurselite-tour-popover,
 .histora-tour-popover {
   --background: #ffffff;
   --color: #1a1a1a;
@@ -1073,7 +1074,9 @@ body.dark ion-alert.logout-alert {
 }
 
 /* Dark mode tour styles */
+body.ion-palette-dark .nurselite-tour-popover,
 body.ion-palette-dark .histora-tour-popover,
+body.dark .nurselite-tour-popover,
 body.dark .histora-tour-popover {
   --background: #1e293b;
   --color: #f1f5f9;

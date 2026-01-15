@@ -12,7 +12,7 @@
   </ion-header>
 
   <!-- Profile Section -->
-  <div class="profile-section">
+  <div class="profile-section" id="tour-profile-section">
     <div class="profile-avatar-wrapper" (click)="changeAvatar($event)">
       <div class="profile-avatar">
         @if (user()?.avatar) {
@@ -43,7 +43,7 @@
       <ion-label>Preferencias</ion-label>
     </ion-list-header>
 
-    <ion-item button detail="false" (click)="openThemeSelector()">
+    <ion-item button detail="false" (click)="openThemeSelector()" id="tour-theme-setting">
       <ion-icon [name]="themeService.getThemeIcon(themeService.currentTheme())" slot="start" color="primary"></ion-icon>
       <ion-label>
         <h3>Tema</h3>
@@ -70,7 +70,7 @@
       <ion-label>Información</ion-label>
     </ion-list-header>
 
-    <ion-item button detail="false" (click)="replayTour()">
+    <ion-item button detail="false" (click)="replayTour()" id="tour-replay-tutorial">
       <ion-icon name="school-outline" slot="start" color="primary"></ion-icon>
       <ion-label>Ver tutorial de la app</ion-label>
       <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>

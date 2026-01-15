@@ -258,6 +258,13 @@
             <p>{{ themeService.getThemeLabel(themeService.currentTheme()) }}</p>
           </ion-label>
         </ion-item>
+        <ion-item button (click)="replayTour()" detail="true">
+          <ion-icon name="school-outline" slot="start" class="setting-icon"></ion-icon>
+          <ion-label>
+            <h3>Ver tutorial</h3>
+            <p>Repetir el tutorial de la app</p>
+          </ion-label>
+        </ion-item>
       </ion-list>
     </div>
 
