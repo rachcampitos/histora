@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -15,6 +15,7 @@ type UserType = 'nurse' | 'patient' | null;
 export class RegisterPage implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
   private authService = inject(AuthService);
@@ -56,7 +57,16 @@ export class RegisterPage implements OnInit {
     }, { validators: this.passwordMatchValidator });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Check URL parameter for pre-selection from landing page
+    this.route.queryParams.subscribe(params => {
+      if (params['type'] === 'nurse') {
+        this.selectUserType('nurse');
+      } else if (params['type'] === 'patient') {
+        this.selectUserType('patient');
+      }
+    });
+  }
 
   selectUserType(type: UserType) {
     this.selectedUserType = type;

@@ -54,6 +54,18 @@ export interface VerificationDocument {
   uploadedAt: Date;
 }
 
+export interface CepValidationResult {
+  isValid: boolean;
+  cepNumber?: string;
+  fullName?: string;
+  dni?: string;
+  photoUrl?: string;
+  isPhotoVerified?: boolean;
+  isNameVerified?: boolean;
+  validatedAt?: Date;
+  error?: string;
+}
+
 export interface NurseVerification {
   id: string;
   nurseId: string;
@@ -62,6 +74,12 @@ export interface NurseVerification {
   status: VerificationStatus;
   dniNumber?: string;
   fullNameOnDni?: string;
+  // CEP validation fields
+  cepValidation?: CepValidationResult;
+  officialCepPhotoUrl?: string;
+  cepIdentityConfirmed?: boolean;
+  cepIdentityConfirmedAt?: Date;
+  // Review fields
   reviewedAt?: Date;
   reviewNotes?: string;
   rejectionReason?: string;
@@ -70,6 +88,8 @@ export interface NurseVerification {
   nurse?: {
     cepNumber: string;
     specialties: string[];
+    officialCepPhotoUrl?: string;
+    cepRegisteredName?: string;
     user?: {
       firstName: string;
       lastName: string;
