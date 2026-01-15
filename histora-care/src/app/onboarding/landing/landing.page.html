@@ -1,5 +1,5 @@
 <ion-content class="landing-content" [fullscreen]="true">
-  <main class="landing-container" role="main">
+  <main class="landing-container" role="main" [class.nurse-mode]="activeTab() === 'nurse'">
     <!-- Main Content -->
     <div class="landing-main">
       <!-- Logo + Tagline -->
@@ -8,35 +8,62 @@
           <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
         </div>
         <h1 class="app-name">NurseLite</h1>
-        <p class="app-tagline">Enfermeras certificadas cuando las necesitas</p>
       </header>
+
+      <!-- Tab Selector -->
+      <div class="tab-selector" role="tablist" aria-label="Tipo de usuario">
+        <button
+          type="button"
+          role="tab"
+          class="tab-btn"
+          [class.active]="activeTab() === 'patient'"
+          [attr.aria-selected]="activeTab() === 'patient'"
+          (click)="setTab('patient')">
+          <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+          <span>Busco Enfermera</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="tab-btn"
+          [class.active]="activeTab() === 'nurse'"
+          [attr.aria-selected]="activeTab() === 'nurse'"
+          (click)="setTab('nurse')">
+          <ion-icon name="medkit-outline" aria-hidden="true"></ion-icon>
+          <span>Soy Enfermera</span>
+        </button>
+      </div>
 
       <!-- Hero Illustration -->
       <div class="hero-section" aria-hidden="true">
         <div class="hero-circle">
-          <ion-icon name="heart" class="hero-icon"></ion-icon>
+          <ion-icon [name]="activeTab() === 'patient' ? 'heart' : 'briefcase'" class="hero-icon"></ion-icon>
         </div>
         <div class="floating-badge badge-1">
-          <ion-icon name="shield-checkmark"></ion-icon>
+          <ion-icon [name]="activeTab() === 'patient' ? 'shield-checkmark' : 'cash'"></ion-icon>
         </div>
         <div class="floating-badge badge-2">
-          <ion-icon name="time"></ion-icon>
+          <ion-icon [name]="activeTab() === 'patient' ? 'time' : 'calendar'"></ion-icon>
         </div>
       </div>
 
-      <!-- Value Proposition -->
+      <!-- Value Proposition (Dynamic) -->
       <section class="value-section" aria-labelledby="headline-title">
-        <h2 id="headline-title" class="headline">Cuida a quien mas quieres,<br>aunque no puedas estar ahi</h2>
-        <p class="subheadline">
-          Enfermeras verificadas llegan a tu domicilio en menos de 2 horas
-        </p>
+        <h2 id="headline-title" class="headline">
+          {{ currentContent.headline }}<br>{{ currentContent.headlineSecond }}
+        </h2>
+        <p class="subheadline">{{ currentContent.subheadline }}</p>
       </section>
 
-      <!-- Trust Line (simplified) -->
-      <p class="trust-line" aria-label="Certificación">
-        <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
-        <span>Verificadas CEP + RENIEC</span>
-      </p>
+      <!-- Features (Dynamic) -->
+      <div class="features-list">
+        @for (feature of currentContent.features; track feature.text) {
+          <div class="feature-item">
+            <ion-icon [name]="feature.icon" aria-hidden="true"></ion-icon>
+            <span>{{ feature.text }}</span>
+          </div>
+        }
+      </div>
 
       <!-- Social Proof -->
       <div class="social-proof" aria-label="Calificación de usuarios">
@@ -47,7 +74,9 @@
           <ion-icon name="star" aria-hidden="true"></ion-icon>
           <ion-icon name="star-half" aria-hidden="true"></ion-icon>
         </div>
-        <span class="proof-text">500+ enfermeras verificadas</span>
+        <span class="proof-text">
+          {{ activeTab() === 'patient' ? '500+ enfermeras verificadas' : '500+ profesionales confian en nosotros' }}
+        </span>
       </div>
     </div>
 
@@ -55,10 +84,10 @@
     <nav class="cta-section" aria-label="Acciones principales">
       <ion-button
         expand="block"
-        class="primary-btn"
+        [class]="activeTab() === 'patient' ? 'primary-btn' : 'nurse-btn'"
         (click)="navigateToRegister()"
-        aria-label="Solicitar una enfermera profesional">
-        Solicitar enfermera ahora
+        [attr.aria-label]="currentContent.ctaText">
+        {{ currentContent.ctaText }}
       </ion-button>
 
       <button

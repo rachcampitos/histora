@@ -2,6 +2,7 @@
 
 // Variables using design tokens
 $primary-gradient: var(--histora-gradient);
+$nurse-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
 $border-radius: tokens.$radius-lg;
 
 .landing-content {
@@ -12,9 +13,9 @@ $border-radius: tokens.$radius-lg;
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: tokens.$spacing-6 tokens.$spacing-5;
-  padding-top: calc(var(--ion-safe-area-top, 0) + #{tokens.$spacing-6});
-  padding-bottom: calc(var(--ion-safe-area-bottom, 0) + #{tokens.$spacing-6});
+  padding: tokens.$spacing-4 tokens.$spacing-5;
+  padding-top: calc(var(--ion-safe-area-top, 0) + #{tokens.$spacing-4});
+  padding-bottom: calc(var(--ion-safe-area-bottom, 0) + #{tokens.$spacing-4});
 }
 
 // Main Content
@@ -32,12 +33,12 @@ $border-radius: tokens.$radius-lg;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: tokens.$spacing-2;
-  margin-bottom: tokens.$spacing-6;
+  gap: tokens.$spacing-1;
+  margin-bottom: tokens.$spacing-4;
 
   .logo-wrapper {
-    width: 72px;
-    height: 72px;
+    width: 56px;
+    height: 56px;
     border-radius: tokens.$radius-lg;
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(30, 58, 95, 0.3);
@@ -47,41 +48,67 @@ $border-radius: tokens.$radius-lg;
       height: 100%;
       object-fit: cover;
     }
-
-    .logo-icon {
-      font-size: 28px;
-      color: white;
-    }
   }
 
   .app-name {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: tokens.$font-weight-bold;
     margin: 0;
     color: #1e3a5f;
   }
+}
 
-  .app-tagline {
-    font-size: tokens.$font-size-base;
-    color: #4a9d9a;
-    margin: 0;
+// Tab Selector
+.tab-selector {
+  display: flex;
+  gap: tokens.$spacing-2;
+  padding: tokens.$spacing-1;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: tokens.$radius-full;
+  margin-bottom: tokens.$spacing-5;
+
+  .tab-btn {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-2;
+    padding: tokens.$spacing-2 tokens.$spacing-4;
+    border: none;
+    border-radius: tokens.$radius-full;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: tokens.$font-size-sm;
     font-weight: tokens.$font-weight-medium;
-  }
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: tokens.$touch-target-min;
 
-  .app-endorsement {
-    font-size: tokens.$font-size-xs;
-    color: var(--text-tertiary);
-    opacity: 0.7;
-    margin-top: tokens.$spacing-1;
+    ion-icon {
+      font-size: 18px;
+    }
+
+    &.active {
+      background: white;
+      color: #1e3a5f;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &:not(.active):active {
+      background: rgba(0, 0, 0, 0.05);
+    }
   }
+}
+
+// Nurse mode tab active color
+.nurse-mode .tab-selector .tab-btn.active {
+  color: #059669;
 }
 
 // Hero Section
 .hero-section {
   position: relative;
-  width: 180px;
-  height: 180px;
-  margin-bottom: tokens.$spacing-8;
+  width: 140px;
+  height: 140px;
+  margin-bottom: tokens.$spacing-5;
 
   .hero-circle {
     width: 100%;
@@ -93,17 +120,18 @@ $border-radius: tokens.$radius-lg;
     justify-content: center;
     box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
     animation: pulse 3s ease-in-out infinite;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 
     .hero-icon {
-      font-size: 72px;
+      font-size: 56px;
       color: white;
     }
   }
 
   .floating-badge {
     position: absolute;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: white;
     display: flex;
@@ -113,7 +141,7 @@ $border-radius: tokens.$radius-lg;
     animation: float 3s ease-in-out infinite;
 
     ion-icon {
-      font-size: 22px;
+      font-size: 20px;
       color: var(--ion-color-secondary);
     }
 
@@ -124,17 +152,21 @@ $border-radius: tokens.$radius-lg;
     }
 
     &.badge-2 {
-      bottom: 16px;
+      bottom: 8px;
       left: -12px;
       animation-delay: 0.5s;
     }
-
-    &.badge-3 {
-      bottom: -4px;
-      right: 16px;
-      animation-delay: 1s;
-    }
   }
+}
+
+// Nurse mode hero
+.nurse-mode .hero-section .hero-circle {
+  background: $nurse-gradient;
+  box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);
+}
+
+.nurse-mode .hero-section .floating-badge ion-icon {
+  color: #10b981;
 }
 
 @keyframes pulse {
@@ -157,48 +189,63 @@ $border-radius: tokens.$radius-lg;
 
 // Value Section
 .value-section {
-  margin-bottom: tokens.$spacing-6;
-  max-width: 340px;
+  margin-bottom: tokens.$spacing-4;
+  max-width: 320px;
 
   .headline {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: tokens.$font-weight-bold;
     line-height: 1.3;
     color: var(--text-primary);
-    margin: 0 0 tokens.$spacing-3;
+    margin: 0 0 tokens.$spacing-2;
     letter-spacing: -0.02em;
   }
 
   .subheadline {
-    font-size: tokens.$font-size-base;
+    font-size: tokens.$font-size-sm;
     line-height: 1.5;
     color: var(--text-secondary);
     margin: 0;
   }
 }
 
-// Trust Line (simplified)
-.trust-line {
+// Features List
+.features-list {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   gap: tokens.$spacing-2;
-  margin: 0 0 tokens.$spacing-3; // Closer to social proof (same group)
-  padding: tokens.$spacing-2 tokens.$spacing-4;
-  background: rgba(16, 185, 129, 0.1);
-  border-radius: tokens.$radius-full;
+  margin-bottom: tokens.$spacing-4;
+  width: 100%;
+  max-width: 280px;
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-2;
+    padding: tokens.$spacing-2 tokens.$spacing-3;
+    background: rgba(30, 58, 95, 0.05);
+    border-radius: tokens.$radius-md;
+
+    ion-icon {
+      font-size: 20px;
+      color: #1e3a5f;
+      flex-shrink: 0;
+    }
+
+    span {
+      font-size: tokens.$font-size-sm;
+      font-weight: tokens.$font-weight-medium;
+      color: var(--text-primary);
+    }
+  }
+}
+
+// Nurse mode features
+.nurse-mode .features-list .feature-item {
+  background: rgba(16, 185, 129, 0.08);
 
   ion-icon {
-    font-size: 20px;
-    color: #10b981;
-    flex-shrink: 0;
-  }
-
-  span {
-    font-size: tokens.$font-size-sm;
-    font-weight: tokens.$font-weight-medium;
-    color: var(--text-primary);
-    text-align: center;
+    color: #059669;
   }
 }
 
@@ -208,20 +255,20 @@ $border-radius: tokens.$radius-lg;
   flex-direction: column;
   align-items: center;
   gap: tokens.$spacing-1;
-  margin-bottom: tokens.$spacing-8; // More space before CTA
+  margin-bottom: tokens.$spacing-6;
 
   .stars {
     display: flex;
     gap: 2px;
 
     ion-icon {
-      font-size: 18px;
+      font-size: 16px;
       color: #f59e0b;
     }
   }
 
   .proof-text {
-    font-size: tokens.$font-size-sm;
+    font-size: tokens.$font-size-xs;
     color: var(--text-tertiary);
   }
 }
@@ -249,12 +296,22 @@ $border-radius: tokens.$radius-lg;
     font-weight: tokens.$font-weight-semibold;
     text-transform: none;
     margin: 0;
+  }
 
-    ion-icon {
-      font-size: 20px;
-      margin-right: tokens.$spacing-2;
-      color: #ffffff;
-    }
+  .nurse-btn {
+    --background: #{$nurse-gradient};
+    --background-hover: #{$nurse-gradient};
+    --background-activated: #{$nurse-gradient};
+    --color: #ffffff;
+    --color-hover: #ffffff;
+    --color-activated: #ffffff;
+    --border-radius: 26px;
+    --box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+    height: 52px;
+    font-size: tokens.$font-size-base;
+    font-weight: tokens.$font-weight-semibold;
+    text-transform: none;
+    margin: 0;
   }
 
   .login-link {
@@ -283,6 +340,15 @@ $border-radius: tokens.$radius-lg;
   }
 }
 
+// Nurse mode login link
+.nurse-mode .cta-section .login-link .link-text {
+  color: #059669;
+
+  &:active {
+    color: #047857;
+  }
+}
+
 // Dark mode
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
@@ -298,19 +364,28 @@ $border-radius: tokens.$radius-lg;
     .app-name {
       color: #f1f5f9;
     }
+  }
 
-    .app-tagline {
-      color: #6fc7c3;
-    }
+  .tab-selector {
+    background: rgba(255, 255, 255, 0.05);
 
-    .app-endorsement {
+    .tab-btn {
       color: #94a3b8;
+
+      &.active {
+        background: tokens.$surface-dark-secondary;
+        color: #f1f5f9;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
     }
+  }
+
+  .nurse-mode .tab-selector .tab-btn.active {
+    color: #34d399;
   }
 
   .hero-section {
     .hero-circle {
-      // Slightly muted gradient for dark mode - better visual comfort
       background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
       box-shadow: 0 20px 60px rgba(107, 181, 179, 0.3);
 
@@ -330,6 +405,17 @@ $border-radius: tokens.$radius-lg;
     }
   }
 
+  .nurse-mode .hero-section {
+    .hero-circle {
+      background: linear-gradient(135deg, #047857 0%, #059669 100%);
+      box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+    }
+
+    .floating-badge ion-icon {
+      color: #34d399;
+    }
+  }
+
   .value-section {
     .headline {
       color: #f1f5f9;
@@ -340,16 +426,25 @@ $border-radius: tokens.$radius-lg;
     }
   }
 
-  .trust-line {
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.2);
+  .features-list .feature-item {
+    background: rgba(107, 181, 179, 0.1);
+    border: 1px solid rgba(107, 181, 179, 0.15);
 
     ion-icon {
-      color: #34d399;
+      color: #6bb5b3;
     }
 
     span {
       color: #e2e8f0;
+    }
+  }
+
+  .nurse-mode .features-list .feature-item {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+
+    ion-icon {
+      color: #34d399;
     }
   }
 
@@ -361,11 +456,17 @@ $border-radius: tokens.$radius-lg;
 
   .cta-section {
     .primary-btn {
-      // Slightly adjusted gradient for dark mode
       --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
       --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
       --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
       --box-shadow: 0 8px 24px rgba(107, 181, 179, 0.25);
+    }
+
+    .nurse-btn {
+      --background: linear-gradient(135deg, #047857 0%, #059669 100%);
+      --background-hover: linear-gradient(135deg, #047857 0%, #059669 100%);
+      --background-activated: linear-gradient(135deg, #047857 0%, #059669 100%);
+      --box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
     }
 
     .login-link {
@@ -380,6 +481,10 @@ $border-radius: tokens.$radius-lg;
       }
     }
   }
+
+  .nurse-mode .cta-section .login-link .link-text {
+    color: #34d399;
+  }
 }
 
 // Reduced motion
@@ -392,33 +497,84 @@ $border-radius: tokens.$radius-lg;
   }
 }
 
-// Responsive
+// Responsive - smaller screens
 @media (max-height: 667px) {
+  .landing-container {
+    padding: tokens.$spacing-3 tokens.$spacing-4;
+  }
+
+  .logo-section {
+    margin-bottom: tokens.$spacing-3;
+
+    .logo-wrapper {
+      width: 48px;
+      height: 48px;
+    }
+
+    .app-name {
+      font-size: 20px;
+    }
+  }
+
+  .tab-selector {
+    margin-bottom: tokens.$spacing-3;
+
+    .tab-btn {
+      padding: tokens.$spacing-2 tokens.$spacing-3;
+      font-size: tokens.$font-size-xs;
+    }
+  }
+
   .hero-section {
-    width: 140px;
-    height: 140px;
-    margin-bottom: tokens.$spacing-6;
+    width: 100px;
+    height: 100px;
+    margin-bottom: tokens.$spacing-4;
 
     .hero-icon {
-      font-size: 56px;
+      font-size: 40px;
     }
 
     .floating-badge {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
 
       ion-icon {
-        font-size: 18px;
+        font-size: 16px;
       }
     }
   }
 
-  .value-section .headline {
-    font-size: 20px;
+  .value-section {
+    margin-bottom: tokens.$spacing-3;
+
+    .headline {
+      font-size: 18px;
+    }
+
+    .subheadline {
+      font-size: tokens.$font-size-xs;
+    }
   }
 
-  .logo-section {
-    margin-bottom: tokens.$spacing-6;
+  .features-list {
+    gap: tokens.$spacing-1;
+    margin-bottom: tokens.$spacing-3;
+
+    .feature-item {
+      padding: tokens.$spacing-1 tokens.$spacing-2;
+
+      ion-icon {
+        font-size: 16px;
+      }
+
+      span {
+        font-size: tokens.$font-size-xs;
+      }
+    }
+  }
+
+  .social-proof {
+    margin-bottom: tokens.$spacing-4;
   }
 }
 
