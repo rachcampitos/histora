@@ -320,6 +320,13 @@ export class ProfilePage implements OnInit {
     await actionSheet.present();
   }
 
+  async replayTour() {
+    // Reset all nurse tours and navigate to dashboard
+    await this.productTour.resetToursByRole('nurse');
+    this.router.navigate(['/nurse/dashboard']);
+    this.showToast('El tutorial comenzará en el dashboard', 'primary');
+  }
+
   goBack() {
     this.router.navigate(['/nurse/dashboard']);
   }
