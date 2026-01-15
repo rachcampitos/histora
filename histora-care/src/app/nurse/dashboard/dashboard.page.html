@@ -19,8 +19,8 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <!-- Verification Banner -->
-  <div class="verification-banner" *ngIf="needsVerification()" (click)="goToVerification()">
+  <!-- Verification Banner - only show after nurse data is loaded -->
+  <div class="verification-banner" *ngIf="!isLoading() && nurse() && needsVerification()" (click)="goToVerification()">
     <div class="banner-icon" [ngClass]="verificationStatus()">
       <ion-icon [name]="verificationStatus() === 'under_review' ? 'time' :
                        verificationStatus() === 'rejected' ? 'alert-circle' : 'shield-checkmark'"></ion-icon>
