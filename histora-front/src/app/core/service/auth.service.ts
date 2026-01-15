@@ -4,6 +4,7 @@ import { User, AuthResponse } from '@core/models/interface';
 import { TokenService } from './token.service';
 import { LoginService } from './login.service';
 import { LocalStorageService } from '@shared/services';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -184,10 +185,8 @@ export class AuthService {
 
   loginWithGoogle(): void {
     // Redirect to backend Google OAuth endpoint
-    const backendUrl = window.location.hostname === 'localhost'
-      ? 'http://localhost:3000'
-      : 'https://api.historahealth.com';
-    const redirectUrl = `${backendUrl}/auth/google`;
+    // environment.apiUrl already includes /api prefix
+    const redirectUrl = `${environment.apiUrl}/auth/google`;
     console.log('loginWithGoogle - redirecting to:', redirectUrl);
     // Use document.location for more reliable redirect
     document.location.assign(redirectUrl);
