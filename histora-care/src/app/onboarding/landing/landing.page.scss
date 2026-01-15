@@ -183,8 +183,8 @@ $border-radius: tokens.$radius-lg;
   align-items: center;
   justify-content: center;
   gap: tokens.$spacing-2;
-  margin: 0 0 tokens.$spacing-5;
-  padding: tokens.$spacing-3 tokens.$spacing-4;
+  margin: 0 0 tokens.$spacing-3; // Closer to social proof (same group)
+  padding: tokens.$spacing-2 tokens.$spacing-4;
   background: rgba(16, 185, 129, 0.1);
   border-radius: tokens.$radius-full;
 
@@ -208,6 +208,7 @@ $border-radius: tokens.$radius-lg;
   flex-direction: column;
   align-items: center;
   gap: tokens.$spacing-1;
+  margin-bottom: tokens.$spacing-8; // More space before CTA
 
   .stars {
     display: flex;
