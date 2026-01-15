@@ -140,8 +140,9 @@ export class SettingsPage implements OnInit {
   }
 
   async replayTour() {
-    // Reset the tour and navigate to home to show it
+    // Reset the tour and set it as pending for the home page
     await this.productTourService.resetTour('patient_home');
+    await this.productTourService.setPendingTour('patient_home');
     this.router.navigate(['/patient/tabs/home']);
     this.showToast('El tutorial comenzará en la pantalla de inicio', 'primary');
   }

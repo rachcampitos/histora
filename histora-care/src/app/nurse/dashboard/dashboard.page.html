@@ -87,8 +87,8 @@
   </div>
 
   <!-- Active Requests -->
-  <div class="section" id="tour-active-requests" *ngIf="activeRequests().length > 0">
-    <div class="section-header">
+  <div class="section" id="tour-active-requests">
+    <div class="section-header" *ngIf="activeRequests().length > 0">
       <h2>Servicios Activos</h2>
       <ion-badge color="primary">{{ activeRequests().length }}</ion-badge>
     </div>

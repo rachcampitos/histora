@@ -77,7 +77,10 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   ionViewDidEnter() {
     // Start tour after page is fully visible
-    setTimeout(() => {
+    setTimeout(async () => {
+      // First check if there's a pending tour (from replay)
+      await this.productTour.checkAndStartPendingTour();
+      // Then try to start the regular tour if not already completed
       this.productTour.startTour('nurse_dashboard');
     }, 500);
   }

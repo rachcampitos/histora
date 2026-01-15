@@ -36,7 +36,10 @@ export class HomePage implements OnInit {
 
   ionViewDidEnter() {
     // Start product tour if not completed (after a slight delay for smooth transition)
-    setTimeout(() => {
+    setTimeout(async () => {
+      // First check if there's a pending tour (from replay)
+      await this.productTourService.checkAndStartPendingTour();
+      // Then try to start the regular tour if not already completed
       this.productTourService.startTour('patient_home');
     }, 500);
   }
