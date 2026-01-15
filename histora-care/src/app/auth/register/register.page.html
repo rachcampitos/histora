@@ -5,49 +5,6 @@
       <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
     </ion-button>
 
-    <!-- User Type Selection -->
-    <div class="selection-section" *ngIf="!selectedUserType">
-      <div class="brand-section">
-        <div class="logo-wrapper">
-          <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
-        </div>
-        <h1 class="app-name">NurseLite</h1>
-      </div>
-
-      <div class="type-cards">
-        <div class="type-card nurse-card" (click)="selectUserType('nurse')">
-          <div class="card-icon">
-            <ion-icon name="medkit"></ion-icon>
-          </div>
-          <h3>Soy Enfermera/o</h3>
-          <p>Quiero ofrecer mis servicios profesionales</p>
-          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
-        </div>
-
-        <div class="type-card patient-card" (click)="selectUserType('patient')">
-          <div class="card-icon">
-            <ion-icon name="person"></ion-icon>
-          </div>
-          <h3>Soy Paciente</h3>
-          <p>Busco servicios de enfermería a domicilio</p>
-          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
-        </div>
-      </div>
-
-      <!-- Trust Badge -->
-      <div class="trust-badge-section">
-        <ion-icon name="lock-closed" aria-hidden="true"></ion-icon>
-        <span>Datos protegidos según Ley 29733</span>
-      </div>
-
-      <div class="login-link">
-        <p>¿Ya tienes una cuenta?</p>
-        <ion-button fill="clear" routerLink="/auth/login">
-          Iniciar Sesión
-        </ion-button>
-      </div>
-    </div>
-
     <!-- Registration Form -->
     <div class="form-section" *ngIf="selectedUserType">
       <h2 class="form-title">
