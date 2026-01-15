@@ -20,7 +20,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-value">{{ stats.underReview }}</span>
-          <span class="stat-label">En Revision</span>
+          <span class="stat-label">En Revisión</span>
         </div>
       </mat-card-content>
     </mat-card>
@@ -54,7 +54,7 @@
   <mat-card class="main-card">
     <mat-card-header>
       <mat-card-title>Verificaciones de Enfermeras</mat-card-title>
-      <mat-card-subtitle>Revisa y aprueba las solicitudes de verificacion de Histora Care</mat-card-subtitle>
+      <mat-card-subtitle>Revisa y aprueba las solicitudes de verificación de enfermeras</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
@@ -72,8 +72,9 @@
 
       <!-- Loading Spinner -->
       @if (isLoading) {
-        <div class="loading-container">
-          <mat-spinner diameter="40"></mat-spinner>
+        <div class="loading-container" role="status" aria-live="polite">
+          <mat-spinner diameter="40" aria-label="Cargando verificaciones"></mat-spinner>
+          <span class="visually-hidden">Cargando verificaciones...</span>
         </div>
       }
 
@@ -87,7 +88,7 @@
               <td mat-cell *matCellDef="let row">
                 <div class="nurse-cell">
                   @if (row.nurse?.user?.avatar) {
-                    <img [src]="row.nurse.user.avatar" class="nurse-avatar" alt="Avatar">
+                    <img [src]="row.nurse.user.avatar" class="nurse-avatar" [alt]="'Foto de ' + row.nurse?.user?.firstName + ' ' + row.nurse?.user?.lastName">
                   } @else {
                     <div class="nurse-initials">
                       {{ getInitials(row.nurse?.user?.firstName, row.nurse?.user?.lastName) }}
@@ -160,7 +161,7 @@
                   @if (row.status === 'pending') {
                     <button mat-menu-item (click)="markUnderReview(row)">
                       <mat-icon>rate_review</mat-icon>
-                      <span>Marcar En Revision</span>
+                      <span>Marcar en Revisión</span>
                     </button>
                   }
                 </mat-menu>
@@ -170,7 +171,12 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                 (click)="openDetail(row)"
-                class="clickable-row"></tr>
+                (keydown.enter)="openDetail(row)"
+                (keydown.space)="openDetail(row); $event.preventDefault()"
+                class="clickable-row"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'Ver verificación de ' + row.nurse?.user?.firstName + ' ' + row.nurse?.user?.lastName"></tr>
           </table>
 
           @if (dataSource.data.length === 0) {

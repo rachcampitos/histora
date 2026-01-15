@@ -17,6 +17,14 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FeatherModule } from 'angular-feather';
 import { AdminService } from '@core/service/admin.service';
 
+interface CepValidationResult {
+  isValid?: boolean;
+  region?: string;
+  isHabil?: boolean;
+  status?: string;
+  validatedAt?: Date;
+}
+
 interface NurseVerificationDetail {
   id: string;
   nurseId: string;
@@ -28,6 +36,7 @@ interface NurseVerificationDetail {
   officialCepPhotoUrl?: string;
   cepIdentityConfirmed?: boolean;
   cepIdentityConfirmedAt?: Date;
+  cepValidation?: CepValidationResult;
   reviewedAt?: Date;
   reviewNotes?: string;
   rejectionReason?: string;
@@ -71,7 +80,7 @@ interface NurseVerificationDetail {
   template: `
     <div class="dialog-container">
       <div class="dialog-header">
-        <h2>Verificacion de Enfermera</h2>
+        <h2>Verificación de Enfermera</h2>
         <button mat-icon-button (click)="close()">
           <mat-icon>close</mat-icon>
         </button>
@@ -107,11 +116,11 @@ interface NurseVerificationDetail {
           <!-- Info Cards -->
           <div class="info-cards">
             <div class="info-card">
-              <span class="label">Numero CEP</span>
+              <span class="label">Número CEP</span>
               <span class="value">{{ verification.nurse?.cepNumber || '-' }}</span>
             </div>
             <div class="info-card">
-              <span class="label">Numero DNI</span>
+              <span class="label">Número DNI</span>
               <span class="value">{{ verification.dniNumber || '-' }}</span>
             </div>
             <div class="info-card">
@@ -123,6 +132,33 @@ interface NurseVerificationDetail {
               <span class="value">{{ verification.attemptNumber }}</span>
             </div>
           </div>
+
+          <!-- CEP Validation Status -->
+          @if (verification.cepValidation) {
+            <div class="cep-validation-section">
+              <h4>
+                <mat-icon>verified_user</mat-icon>
+                Validación CEP Oficial
+              </h4>
+              <div class="cep-validation-badges">
+                <div class="cep-badge" [ngClass]="verification.cepValidation.isHabil ? 'habil' : 'inhabilitado'">
+                  <mat-icon>{{ verification.cepValidation.isHabil ? 'check_circle' : 'cancel' }}</mat-icon>
+                  <span>{{ verification.cepValidation.status || (verification.cepValidation.isHabil ? 'HÁBIL' : 'INHABILITADO') }}</span>
+                </div>
+                @if (verification.cepValidation.region) {
+                  <div class="cep-badge region">
+                    <mat-icon>location_on</mat-icon>
+                    <span>{{ verification.cepValidation.region }}</span>
+                  </div>
+                }
+              </div>
+              @if (verification.cepValidation.validatedAt) {
+                <small class="validation-date">
+                  Verificado el {{ verification.cepValidation.validatedAt | date:'dd/MM/yyyy HH:mm' }}
+                </small>
+              }
+            </div>
+          }
 
           <!-- Identity Confirmation Badge -->
           @if (verification.cepIdentityConfirmed) {
@@ -139,9 +175,9 @@ interface NurseVerificationDetail {
           <div class="photo-comparison-section">
             <h4>
               <mat-icon>compare</mat-icon>
-              Comparacion de Fotos
+              Comparación de Fotos
             </h4>
-            <p class="comparison-hint">Compare las fotos para verificar la identidad de la enfermera</p>
+            <p class="comparison-hint">Verifica que la persona en las tres fotos sea la misma antes de aprobar</p>
 
             <div class="photo-grid">
               <!-- Official CEP Photo -->
@@ -168,10 +204,10 @@ interface NurseVerificationDetail {
               <div class="photo-card">
                 <div class="photo-label">
                   <mat-icon>selfie</mat-icon>
-                  Selfie de Verificacion
+                  Selfie de Verificación
                 </div>
                 @if (verification.nurse?.selfieUrl) {
-                  <img [src]="verification.nurse?.selfieUrl" alt="Selfie de verificacion" class="verification-photo">
+                  <img [src]="verification.nurse?.selfieUrl" alt="Selfie de verificación" class="verification-photo">
                   <div class="photo-badge selfie">
                     <mat-icon>camera_alt</mat-icon>
                     Tomada por Usuario
@@ -226,7 +262,7 @@ interface NurseVerificationDetail {
                     <img [src]="doc.url" [alt]="getDocumentLabel(doc.type)">
                     <a [href]="doc.url" target="_blank" class="open-link">
                       <i-feather name="external-link"></i-feather>
-                      Abrir en nueva pestana
+                      Abrir en nueva pestaña
                     </a>
                   </div>
                 </mat-tab>
@@ -237,16 +273,16 @@ interface NurseVerificationDetail {
           <!-- Review Section -->
           @if (verification.status === 'pending' || verification.status === 'under_review') {
             <div class="review-section">
-              <h4>Revision</h4>
+              <h4>Revisión</h4>
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Notas de revision (opcional)</mat-label>
+                <mat-label>Notas internas (opcional)</mat-label>
                 <textarea matInput [(ngModel)]="reviewNotes" rows="3"></textarea>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="full-width" *ngIf="showRejectionReason">
-                <mat-label>Motivo de rechazo</mat-label>
+                <mat-label>Motivo de rechazo (la enfermera verá este mensaje)</mat-label>
                 <textarea matInput [(ngModel)]="rejectionReason" rows="2" required></textarea>
-                <mat-hint>Requerido para rechazar</mat-hint>
+                <mat-hint>Sé específico para ayudarla a corregir su solicitud</mat-hint>
               </mat-form-field>
 
               <div class="action-buttons">
@@ -293,7 +329,7 @@ interface NurseVerificationDetail {
           <!-- Previous Review Info -->
           @if (verification.reviewedAt) {
             <div class="previous-review">
-              <h4>Revision Anterior</h4>
+              <h4>Revisión Anterior</h4>
               <p><strong>Fecha:</strong> {{ verification.reviewedAt | date:'dd/MM/yyyy HH:mm' }}</p>
               @if (verification.reviewNotes) {
                 <p><strong>Notas:</strong> {{ verification.reviewNotes }}</p>
@@ -450,6 +486,87 @@ interface NurseVerificationDetail {
           font-size: 14px;
           font-weight: 600;
           color: #4a5568;
+        }
+      }
+
+      .cep-validation-section {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+
+        h4 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 0 0 12px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #166534;
+
+          mat-icon {
+            color: #22c55e;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .cep-validation-badges {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .cep-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          border-radius: 24px;
+          font-size: 14px;
+          font-weight: 600;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+
+          &.habil {
+            background: #dcfce7;
+            color: #166534;
+
+            mat-icon {
+              color: #22c55e;
+            }
+          }
+
+          &.inhabilitado {
+            background: #fee2e2;
+            color: #991b1b;
+
+            mat-icon {
+              color: #ef4444;
+            }
+          }
+
+          &.region {
+            background: #dbeafe;
+            color: #1e40af;
+
+            mat-icon {
+              color: #3b82f6;
+            }
+          }
+        }
+
+        .validation-date {
+          display: block;
+          margin-top: 12px;
+          font-size: 12px;
+          color: #16a34a;
         }
       }
 
@@ -758,6 +875,52 @@ interface NurseVerificationDetail {
           }
         }
 
+        .cep-validation-section {
+          background: #1e3a2f;
+          border-color: #166534;
+
+          h4 {
+            color: #4ade80;
+
+            mat-icon {
+              color: #4ade80;
+            }
+          }
+
+          .cep-badge {
+            &.habil {
+              background: #166534;
+              color: #bbf7d0;
+
+              mat-icon {
+                color: #4ade80;
+              }
+            }
+
+            &.inhabilitado {
+              background: #991b1b;
+              color: #fecaca;
+
+              mat-icon {
+                color: #f87171;
+              }
+            }
+
+            &.region {
+              background: #1e40af;
+              color: #bfdbfe;
+
+              mat-icon {
+                color: #60a5fa;
+              }
+            }
+          }
+
+          .validation-date {
+            color: #4ade80;
+          }
+        }
+
         .photo-comparison-section {
           background: #2d3748;
 
@@ -817,9 +980,12 @@ export class VerificationDetailDialogComponent implements OnInit {
         .toPromise()) as NurseVerificationDetail;
     } catch (error) {
       console.error('Error loading verification:', error);
-      this.snackBar.open('Error al cargar la verificacion', 'Cerrar', {
-        duration: 3000,
-      });
+      const snackBarRef = this.snackBar.open(
+        'No pudimos cargar los detalles. Revisa tu conexión',
+        'Reintentar',
+        { duration: 5000 }
+      );
+      snackBarRef.onAction().subscribe(() => this.loadVerification());
     } finally {
       this.isLoading = false;
     }
@@ -844,9 +1010,9 @@ export class VerificationDetailDialogComponent implements OnInit {
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
       pending: 'Pendiente',
-      under_review: 'En Revision',
-      approved: 'Aprobado',
-      rejected: 'Rechazado',
+      under_review: 'En Revisión',
+      approved: 'Aprobada',
+      rejected: 'Rechazada',
     };
     return labels[status] || status;
   }
@@ -886,11 +1052,16 @@ export class VerificationDetailDialogComponent implements OnInit {
         })
         .toPromise();
 
-      this.snackBar.open('Verificacion aprobada', 'Cerrar', { duration: 2000 });
+      this.snackBar.open('¡Verificación aprobada! La enfermera ya puede ofrecer servicios', 'Cerrar', { duration: 3000 });
       this.dialogRef.close(true);
     } catch (error) {
       console.error('Error approving:', error);
-      this.snackBar.open('Error al aprobar', 'Cerrar', { duration: 3000 });
+      const snackBarRef = this.snackBar.open(
+        'No se pudo aprobar la verificación. Intenta nuevamente',
+        'Reintentar',
+        { duration: 5000 }
+      );
+      snackBarRef.onAction().subscribe(() => this.approve());
     } finally {
       this.isSubmitting = false;
     }
@@ -914,11 +1085,16 @@ export class VerificationDetailDialogComponent implements OnInit {
         })
         .toPromise();
 
-      this.snackBar.open('Verificacion rechazada', 'Cerrar', { duration: 2000 });
+      this.snackBar.open('Verificación rechazada. Se notificará a la enfermera', 'Cerrar', { duration: 3000 });
       this.dialogRef.close(true);
     } catch (error) {
       console.error('Error rejecting:', error);
-      this.snackBar.open('Error al rechazar', 'Cerrar', { duration: 3000 });
+      const snackBarRef = this.snackBar.open(
+        'No se pudo rechazar la verificación. Intenta nuevamente',
+        'Reintentar',
+        { duration: 5000 }
+      );
+      snackBarRef.onAction().subscribe(() => this.reject());
     } finally {
       this.isSubmitting = false;
     }

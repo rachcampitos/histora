@@ -374,6 +374,13 @@ export class NurseVerificationController {
       officialCepPhotoUrl?: string;
       cepIdentityConfirmed?: boolean;
       cepIdentityConfirmedAt?: Date;
+      cepValidation?: {
+        isValid?: boolean;
+        region?: string;
+        isHabil?: boolean;
+        status?: string;
+        validatedAt?: Date;
+      };
       reviewedAt?: Date;
       reviewNotes?: string;
       rejectionReason?: string;
@@ -396,6 +403,15 @@ export class NurseVerificationController {
       officialCepPhotoUrl: v.officialCepPhotoUrl,
       cepIdentityConfirmed: v.cepIdentityConfirmed,
       cepIdentityConfirmedAt: v.cepIdentityConfirmedAt,
+      cepValidation: v.cepValidation
+        ? {
+            isValid: v.cepValidation.isValid,
+            region: v.cepValidation.region,
+            isHabil: v.cepValidation.isHabil,
+            status: v.cepValidation.status,
+            validatedAt: v.cepValidation.validatedAt,
+          }
+        : undefined,
       reviewedAt: v.reviewedAt,
       reviewNotes: v.reviewNotes,
       rejectionReason: v.rejectionReason,
