@@ -346,7 +346,12 @@ export class NurseVerificationService {
   /**
    * Pre-validate CEP credentials before starting the verification process
    * This is the first step: validates DNI and CEP with the official registry
-   * Returns the official CEP photo for user confirmation
+   * Returns the official CEP photo and HABIL status for user confirmation
+   *
+   * Flow:
+   * 1. Enfermera ingresa solo CEP + DNI
+   * 2. Sistema valida CEP y obtiene: nombre, foto, estado HABIL
+   * 3. Sistema retorna datos para confirmacion
    */
   async preValidateCep(
     userId: string,
@@ -376,12 +381,12 @@ export class NurseVerificationService {
 
     this.logger.log(`Pre-validating CEP for nurse ${nurseId}: DNI=${dto.dniNumber}, CEP=${dto.cepNumber}`);
 
-    // Validate with official CEP registry
-    const validation = await this.cepValidationService.validateNurse({
-      cepNumber: dto.cepNumber,
-      dni: dto.dniNumber,
-      fullName: dto.fullName,
-    });
+    // Validate with official CEP registry using the complete validation method
+    // This uses view.php to get: full name, photo, DNI, region, HABIL status
+    const validation = await this.cepValidationService.validateWithDni(
+      dto.cepNumber,
+      dto.dniNumber,
+    );
 
     const cepValidation: CepValidationResult = {
       isValid: validation.isValid,
@@ -391,6 +396,9 @@ export class NurseVerificationService {
       photoUrl: validation.data?.photoUrl,
       isPhotoVerified: validation.data?.isPhotoVerified,
       isNameVerified: validation.data?.isNameVerified,
+      region: validation.data?.region,
+      isHabil: validation.data?.isHabil,
+      status: validation.data?.status,
       validatedAt: new Date(),
       error: validation.error,
     };
@@ -403,12 +411,28 @@ export class NurseVerificationService {
       };
     }
 
+    // Check if nurse is HABIL
+    if (validation.data?.status === 'INHABILITADO') {
+      return {
+        isValid: false,
+        cepValidation,
+        message: 'La enfermera(o) se encuentra INHABILITADA para ejercer según el CEP',
+      };
+    }
+
+    // Build success message
+    let message = 'CEP validado exitosamente.';
+    if (validation.data?.photoUrl) {
+      message += ' Por favor confirma que la foto corresponde a tu identidad.';
+    }
+    if (validation.data?.isHabil) {
+      message += ' Estado: HABIL ✓';
+    }
+
     return {
       isValid: true,
       cepValidation,
-      message: validation.data?.photoUrl
-        ? 'CEP validado exitosamente. Por favor confirma que la foto corresponde a tu identidad.'
-        : 'CEP validado por nombre. No se encontró foto en el registro.',
+      message,
     };
   }
 
