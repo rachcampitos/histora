@@ -321,8 +321,9 @@ export class ProfilePage implements OnInit {
   }
 
   async replayTour() {
-    // Reset all nurse tours and navigate to dashboard
+    // Reset all nurse tours and set dashboard tour as pending
     await this.productTour.resetToursByRole('nurse');
+    await this.productTour.setPendingTour('nurse_dashboard');
     this.router.navigate(['/nurse/dashboard']);
     this.showToast('El tutorial comenzará en el dashboard', 'primary');
   }
