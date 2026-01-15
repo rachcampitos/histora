@@ -81,7 +81,7 @@ export class LandingPage implements OnInit {
       this.router.navigate(['/auth/register'], { queryParams: { type: 'nurse' } });
     } else {
       // Navigate to patient registration
-      this.router.navigate(['/auth/register']);
+      this.router.navigate(['/auth/register'], { queryParams: { type: 'patient' } });
     }
   }
 
