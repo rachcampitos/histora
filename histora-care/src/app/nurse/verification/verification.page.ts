@@ -108,8 +108,12 @@ export class VerificationPage implements OnInit {
   isUnderReview = computed(() => this.verificationStatus() === 'under_review');
   isRejected = computed(() => this.verificationStatus() === 'rejected');
 
-  // CEP photo from validation
+  // CEP data from validation
   cepPhotoUrl = computed(() => this.cepValidation()?.photoUrl || null);
+  cepRegion = computed(() => this.cepValidation()?.region || null);
+  cepIsHabil = computed(() => this.cepValidation()?.isHabil ?? false);
+  cepStatus = computed(() => this.cepValidation()?.status || 'UNKNOWN');
+  cepOfficialName = computed(() => this.cepValidation()?.fullName || null);
 
   canValidateCep = computed(() => {
     return this.dniNumber().length === 8 && !this.isValidatingCep();
