@@ -30,16 +30,106 @@
       </ion-button>
     </div>
 
-    <!-- Under Review State -->
-    <div class="status-card under-review" *ngIf="isUnderReview()">
-      <div class="status-icon">
-        <ion-icon name="time"></ion-icon>
+    <!-- Under Review State - Enhanced Waiting Screen -->
+    <div class="waiting-screen" *ngIf="isUnderReview()">
+      <!-- Header with animation -->
+      <div class="waiting-header">
+        <div class="waiting-icon-container">
+          <div class="waiting-pulse"></div>
+          <ion-icon name="hourglass-outline" class="waiting-icon"></ion-icon>
+        </div>
+        <h1>Tu verificación está en proceso</h1>
+        <p class="waiting-subtitle">Nuestro equipo está revisando tus documentos</p>
       </div>
-      <h2>En Revision</h2>
-      <p>Tus documentos estan siendo revisados por nuestro equipo. Este proceso puede tomar de 24 a 48 horas.</p>
-      <div class="info-box">
-        <ion-icon name="information-circle-outline"></ion-icon>
-        <span>Te notificaremos cuando la revision este completa.</span>
+
+      <!-- Progress Section -->
+      <div class="waiting-progress-section">
+        <div class="progress-header">
+          <span class="progress-label">Tiempo de espera</span>
+          <span class="progress-time">{{ waitingTimeElapsed() }}</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" [style.width.%]="waitingProgressPercent()"></div>
+        </div>
+        <div class="progress-footer">
+          <span>Tiempo estimado: 24-48 horas</span>
+        </div>
+      </div>
+
+      <!-- Status Checklist -->
+      <div class="status-checklist">
+        <div class="checklist-item completed">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <span>Registro completado</span>
+        </div>
+        <div class="checklist-item completed">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <span>CEP validado</span>
+        </div>
+        <div class="checklist-item completed">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <span>Documentos recibidos</span>
+        </div>
+        <div class="checklist-item in-progress">
+          <ion-icon name="sync-circle"></ion-icon>
+          <span>En revisión por el equipo</span>
+        </div>
+        <div class="checklist-item pending">
+          <ion-icon name="ellipse-outline"></ion-icon>
+          <span>Aprobación final</span>
+        </div>
+      </div>
+
+      <!-- Things to do while waiting -->
+      <div class="waiting-tasks-section">
+        <div class="section-header">
+          <h3>Mientras tanto, puedes...</h3>
+          <span class="tasks-progress">{{ completedTasksCount }}/{{ totalTasksCount }}</span>
+        </div>
+
+        <div class="tasks-list">
+          @for (task of waitingTasks(); track task.id) {
+            <div class="task-card" [class.completed]="task.completed" (click)="onTaskClick(task)">
+              <div class="task-icon">
+                <ion-icon [name]="task.completed ? 'checkmark-circle' : task.icon"></ion-icon>
+              </div>
+              <div class="task-content">
+                <h4>{{ task.title }}</h4>
+                <p>{{ task.description }}</p>
+              </div>
+              <ion-icon name="chevron-forward" class="task-arrow" *ngIf="!task.completed"></ion-icon>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Notification Reminder -->
+      <div class="notification-reminder">
+        <ion-icon name="notifications-outline"></ion-icon>
+        <div class="reminder-content">
+          <h4>Te avisaremos al instante</h4>
+          <p>Recibirás una notificación push y un email cuando tu cuenta esté lista</p>
+        </div>
+      </div>
+
+      <!-- Social Proof -->
+      <div class="social-proof">
+        <div class="testimonial">
+          <p class="quote">"Recibí mi primera solicitud 3 horas después de ser aprobada"</p>
+          <div class="author">
+            <ion-icon name="person-circle"></ion-icon>
+            <span>Carmen L., Lic. Enfermería</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Support -->
+      <div class="support-section">
+        <p>¿Tienes alguna duda sobre tu verificación?</p>
+        <ion-button fill="outline" size="small" (click)="contactSupport()">
+          <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+          Contactar Soporte
+        </ion-button>
       </div>
     </div>
 
