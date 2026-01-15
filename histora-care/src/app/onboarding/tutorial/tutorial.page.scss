@@ -326,7 +326,7 @@ $primary-gradient: var(--histora-gradient);
 
     // Slightly muted gradients for dark mode
     &.gradient-primary {
-      background: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
+      background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
     }
 
     &.gradient-success {
@@ -347,11 +347,11 @@ $primary-gradient: var(--histora-gradient);
   }
 
   .slide-features .feature-item {
-    background: rgba(129, 140, 248, 0.15);
-    border: 1px solid rgba(129, 140, 248, 0.2);
+    background: rgba(107, 181, 179, 0.15);
+    border: 1px solid rgba(107, 181, 179, 0.2);
 
     .feature-icon {
-      color: #818cf8;
+      color: #6bb5b3;
     }
 
     .feature-text {
@@ -367,29 +367,29 @@ $primary-gradient: var(--histora-gradient);
     --color: #{tokens.$text-dark-secondary};
 
     &:hover {
-      --color: #818cf8;
+      --color: #6bb5b3;
     }
   }
 
   .next-btn {
-    --background: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-    --background-hover: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-    --background-activated: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
+    --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
   }
 
   .pagination-dots .dot {
     background: tokens.$color-neutral-600;
 
     &.active {
-      background: #818cf8;
+      background: #6bb5b3;
     }
   }
 
   .cta-container .cta-btn {
-    --background: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-    --background-hover: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-    --background-activated: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-    --box-shadow: 0 8px 20px rgba(129, 140, 248, 0.25);
+    --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --box-shadow: 0 8px 20px rgba(107, 181, 179, 0.25);
   }
 }
 

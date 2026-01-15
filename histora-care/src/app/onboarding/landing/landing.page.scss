@@ -332,8 +332,8 @@ $border-radius: tokens.$radius-lg;
   .hero-section {
     .hero-circle {
       // Slightly muted gradient for dark mode - better visual comfort
-      background: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-      box-shadow: 0 20px 60px rgba(129, 140, 248, 0.3);
+      background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+      box-shadow: 0 20px 60px rgba(107, 181, 179, 0.3);
 
       .hero-icon {
         color: rgba(255, 255, 255, 0.95);
@@ -346,7 +346,7 @@ $border-radius: tokens.$radius-lg;
       border: 1px solid rgba(255, 255, 255, 0.1);
 
       ion-icon {
-        color: #818cf8;
+        color: #6bb5b3;
       }
     }
   }
@@ -362,11 +362,11 @@ $border-radius: tokens.$radius-lg;
   }
 
   .trust-badges .badge {
-    background: rgba(129, 140, 248, 0.15);
-    border: 1px solid rgba(129, 140, 248, 0.2);
+    background: rgba(107, 181, 179, 0.15);
+    border: 1px solid rgba(107, 181, 179, 0.2);
 
     ion-icon {
-      color: #818cf8;
+      color: #6bb5b3;
     }
 
     span {
@@ -383,20 +383,20 @@ $border-radius: tokens.$radius-lg;
   .cta-section {
     .primary-btn {
       // Slightly adjusted gradient for dark mode
-      --background: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-      --background-hover: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-      --background-activated: linear-gradient(135deg, #5a6cce 0%, #6b42a0 100%);
-      --box-shadow: 0 8px 24px rgba(129, 140, 248, 0.25);
+      --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+      --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+      --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+      --box-shadow: 0 8px 24px rgba(107, 181, 179, 0.25);
     }
 
     .secondary-btn {
-      --border-color: #818cf8;
-      --color: #818cf8;
-      --color-hover: #818cf8;
-      --background-hover: rgba(129, 140, 248, 0.1);
+      --border-color: #6bb5b3;
+      --color: #6bb5b3;
+      --color-hover: #6bb5b3;
+      --background-hover: rgba(107, 181, 179, 0.1);
 
       ion-icon {
-        color: #818cf8;
+        color: #6bb5b3;
       }
     }
 
@@ -404,7 +404,7 @@ $border-radius: tokens.$radius-lg;
       --color: #{tokens.$text-dark-tertiary};
 
       &:hover {
-        --color: #818cf8;
+        --color: #6bb5b3;
       }
     }
   }

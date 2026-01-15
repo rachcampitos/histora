@@ -749,7 +749,7 @@ ion-loading {
 body.ion-palette-dark ion-loading,
 body.dark ion-loading {
   --background: rgba(30, 41, 59, 0.95);
-  --spinner-color: #818cf8;
+  --spinner-color: #6bb5b3;
 
   .loading-wrapper {
     background: rgba(30, 41, 59, 0.95) !important;
@@ -761,7 +761,7 @@ body.dark ion-loading {
     }
 
     ion-spinner {
-      --color: #818cf8;
+      --color: #6bb5b3;
     }
   }
 }
