@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController, AlertController, ActionSheetController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -17,13 +17,24 @@ interface DocumentUpload {
   mimeType: string | null;
 }
 
+// Things nurse can do while waiting
+interface WaitingTask {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  route?: string;
+  action?: string;
+  completed: boolean;
+}
+
 @Component({
   selector: 'app-verification',
   templateUrl: './verification.page.html',
   standalone: false,
   styleUrls: ['./verification.page.scss'],
 })
-export class VerificationPage implements OnInit {
+export class VerificationPage implements OnInit, OnDestroy {
   private nurseApi = inject(NurseApiService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -38,6 +49,47 @@ export class VerificationPage implements OnInit {
   isLoading = signal(true);
   isSubmitting = signal(false);
   isValidatingCep = signal(false);
+
+  // Waiting screen state
+  waitingTimeElapsed = signal('');
+  waitingProgressPercent = signal(0);
+  private waitingTimeInterval: ReturnType<typeof setInterval> | null = null;
+
+  // Tasks to complete while waiting
+  waitingTasks = signal<WaitingTask[]>([
+    {
+      id: 'profile',
+      title: 'Completa tu perfil profesional',
+      description: 'Agrega tus especialidades, experiencia y certificaciones',
+      icon: 'person-outline',
+      route: '/nurse/profile',
+      completed: false
+    },
+    {
+      id: 'services',
+      title: 'Configura tus servicios',
+      description: 'Define qué servicios ofreces y tus tarifas',
+      icon: 'medical-outline',
+      route: '/nurse/services',
+      completed: false
+    },
+    {
+      id: 'availability',
+      title: 'Establece tu disponibilidad',
+      description: 'Configura los horarios en que puedes atender',
+      icon: 'calendar-outline',
+      route: '/nurse/profile',
+      completed: false
+    },
+    {
+      id: 'notifications',
+      title: 'Activa las notificaciones',
+      description: 'Para que te avisemos cuando tu cuenta esté lista',
+      icon: 'notifications-outline',
+      action: 'enable_notifications',
+      completed: false
+    }
+  ]);
 
   // Step management
   currentStep = signal<VerificationStep>('validate_cep');
@@ -135,6 +187,101 @@ export class VerificationPage implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy() {
+    this.stopWaitingTimer();
+  }
+
+  // ============= Waiting Screen Methods =============
+
+  private startWaitingTimer() {
+    this.updateWaitingTime();
+    this.waitingTimeInterval = setInterval(() => {
+      this.updateWaitingTime();
+    }, 60000); // Update every minute
+  }
+
+  private stopWaitingTimer() {
+    if (this.waitingTimeInterval) {
+      clearInterval(this.waitingTimeInterval);
+      this.waitingTimeInterval = null;
+    }
+  }
+
+  private updateWaitingTime() {
+    const verification = this.verification();
+    if (!verification?.createdAt) {
+      this.waitingTimeElapsed.set('Hace unos momentos');
+      this.waitingProgressPercent.set(5);
+      return;
+    }
+
+    const submittedAt = new Date(verification.createdAt);
+    const now = new Date();
+    const diffMs = now.getTime() - submittedAt.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    // Format elapsed time
+    if (diffHours < 1) {
+      this.waitingTimeElapsed.set(`Hace ${diffMinutes} minuto${diffMinutes !== 1 ? 's' : ''}`);
+    } else if (diffHours < 24) {
+      this.waitingTimeElapsed.set(`Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`);
+    } else {
+      const diffDays = Math.floor(diffHours / 24);
+      this.waitingTimeElapsed.set(`Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`);
+    }
+
+    // Calculate progress (0-100%, assuming 48 hours max)
+    const maxWaitHours = 48;
+    const progressPercent = Math.min(Math.round((diffHours / maxWaitHours) * 100), 95);
+    this.waitingProgressPercent.set(Math.max(progressPercent, 10)); // At least 10%
+  }
+
+  onTaskClick(task: WaitingTask) {
+    if (task.route) {
+      this.router.navigate([task.route]);
+    } else if (task.action === 'enable_notifications') {
+      this.requestNotificationPermission();
+    }
+  }
+
+  private async requestNotificationPermission() {
+    try {
+      // Request notification permission
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        this.markTaskCompleted('notifications');
+        this.showToast('Notificaciones activadas', 'success');
+      } else {
+        this.showToast('Por favor activa las notificaciones en la configuración de tu dispositivo', 'warning');
+      }
+    } catch {
+      // Fallback for devices without Notification API
+      this.showToast('Recibirás notificaciones por email', 'primary');
+      this.markTaskCompleted('notifications');
+    }
+  }
+
+  private markTaskCompleted(taskId: string) {
+    const tasks = this.waitingTasks().map(t =>
+      t.id === taskId ? { ...t, completed: true } : t
+    );
+    this.waitingTasks.set(tasks);
+  }
+
+  get completedTasksCount(): number {
+    return this.waitingTasks().filter(t => t.completed).length;
+  }
+
+  get totalTasksCount(): number {
+    return this.waitingTasks().length;
+  }
+
+  contactSupport() {
+    // Open WhatsApp or email
+    window.open('https://wa.me/51999999999?text=Hola, tengo una consulta sobre mi verificación en NurseLite', '_blank');
+  }
+
   async loadData() {
     this.isLoading.set(true);
     try {
@@ -164,6 +311,10 @@ export class VerificationPage implements OnInit {
             // If CEP was already validated and confirmed, skip to documents
             if (verification.cepIdentityConfirmed) {
               this.currentStep.set('upload_documents');
+            }
+            // Start waiting timer if under review
+            if (verification.status === 'under_review') {
+              this.startWaitingTimer();
             }
           }
         } catch {

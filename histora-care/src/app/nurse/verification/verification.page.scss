@@ -715,6 +715,405 @@ $border-radius: 12px;
   }
 }
 
+// ============================================
+// Enhanced Waiting Screen (Under Review)
+// ============================================
+.waiting-screen {
+  padding: 8px 0;
+}
+
+.waiting-header {
+  text-align: center;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 8px;
+  }
+
+  .waiting-subtitle {
+    font-size: 14px;
+    color: $text-muted;
+    margin: 0;
+  }
+}
+
+.waiting-icon-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .waiting-icon {
+    font-size: 40px;
+    color: $warning-color;
+    z-index: 2;
+    animation: hourglassRotate 2s ease-in-out infinite;
+  }
+
+  .waiting-pulse {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba($warning-color, 0.15);
+    animation: waitingPulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes hourglassRotate {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes waitingPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.3;
+  }
+}
+
+.waiting-progress-section {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .progress-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: $text-dark;
+    }
+
+    .progress-time {
+      font-size: 14px;
+      font-weight: 600;
+      color: $warning-color;
+    }
+  }
+
+  .progress-bar-container {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, $warning-color, #fbbf24);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+  }
+
+  .progress-footer {
+    margin-top: 8px;
+    text-align: center;
+
+    span {
+      font-size: 12px;
+      color: $text-muted;
+    }
+  }
+}
+
+.status-checklist {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    ion-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &.completed {
+      ion-icon {
+        color: $success-color;
+      }
+      span {
+        color: $text-dark;
+      }
+    }
+
+    &.in-progress {
+      ion-icon {
+        color: $warning-color;
+        animation: spin 2s linear infinite;
+      }
+      span {
+        color: $warning-color;
+        font-weight: 600;
+      }
+    }
+
+    &.pending {
+      ion-icon {
+        color: #d1d5db;
+      }
+      span {
+        color: #9ca3af;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.waiting-tasks-section {
+  margin-bottom: 20px;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 0 4px;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0;
+    }
+
+    .tasks-progress {
+      font-size: 13px;
+      font-weight: 600;
+      color: $nurse-color;
+      background: rgba($nurse-color, 0.1);
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+  }
+
+  .tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .task-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+      background: #f9fafb;
+    }
+
+    &.completed {
+      background: rgba($success-color, 0.05);
+      border: 1px solid rgba($success-color, 0.2);
+
+      .task-icon ion-icon {
+        color: $success-color;
+      }
+
+      h4 {
+        color: $success-color;
+        text-decoration: line-through;
+      }
+    }
+
+    .task-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba($nurse-color, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      ion-icon {
+        font-size: 22px;
+        color: $nurse-color;
+      }
+    }
+
+    .task-content {
+      flex: 1;
+
+      h4 {
+        font-size: 14px;
+        font-weight: 600;
+        color: $text-dark;
+        margin: 0 0 4px;
+      }
+
+      p {
+        font-size: 12px;
+        color: $text-muted;
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+
+    .task-arrow {
+      font-size: 18px;
+      color: #d1d5db;
+    }
+  }
+}
+
+.notification-reminder {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba($primary-color, 0.05);
+  border: 1px solid rgba($primary-color, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 20px;
+
+  > ion-icon {
+    font-size: 28px;
+    color: $primary-color;
+    flex-shrink: 0;
+  }
+
+  .reminder-content {
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0 0 4px;
+    }
+
+    p {
+      font-size: 12px;
+      color: $text-muted;
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+}
+
+.social-proof {
+  margin-bottom: 20px;
+
+  .testimonial {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: relative;
+
+    &::before {
+      content: '"';
+      position: absolute;
+      top: 10px;
+      left: 16px;
+      font-size: 48px;
+      font-family: Georgia, serif;
+      color: rgba($nurse-color, 0.2);
+      line-height: 1;
+    }
+
+    .quote {
+      font-size: 14px;
+      color: $text-dark;
+      font-style: italic;
+      margin: 0 0 12px;
+      padding-left: 20px;
+      line-height: 1.5;
+    }
+
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-left: 20px;
+
+      ion-icon {
+        font-size: 24px;
+        color: $nurse-color;
+      }
+
+      span {
+        font-size: 13px;
+        color: $text-muted;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.support-section {
+  text-align: center;
+  padding: 16px;
+
+  p {
+    font-size: 13px;
+    color: $text-muted;
+    margin: 0 0 12px;
+  }
+
+  ion-button {
+    --border-radius: 10px;
+    --color: #{$nurse-color};
+    --border-color: #{$nurse-color};
+    font-weight: 500;
+    text-transform: none;
+  }
+}
+
 // Dark mode
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
@@ -914,6 +1313,134 @@ $border-radius: 12px;
   .confirmation-section {
     h3 {
       color: white;
+    }
+  }
+
+  // ============================================
+  // Waiting Screen dark mode
+  // ============================================
+  .waiting-header {
+    h1 {
+      color: white;
+    }
+
+    .waiting-subtitle {
+      color: #94a3b8;
+    }
+  }
+
+  .waiting-progress-section {
+    background: #1e293b;
+
+    .progress-header {
+      .progress-label {
+        color: white;
+      }
+    }
+
+    .progress-bar-container {
+      background: #334155;
+    }
+
+    .progress-footer span {
+      color: #94a3b8;
+    }
+  }
+
+  .status-checklist {
+    background: #1e293b;
+
+    .checklist-item {
+      border-bottom-color: #334155;
+
+      &.completed span {
+        color: white;
+      }
+
+      &.pending {
+        ion-icon {
+          color: #4b5563;
+        }
+        span {
+          color: #6b7280;
+        }
+      }
+    }
+  }
+
+  .waiting-tasks-section {
+    .section-header h3 {
+      color: white;
+    }
+
+    .task-card {
+      background: #1e293b;
+
+      &:active {
+        background: #334155;
+      }
+
+      &.completed {
+        background: rgba($success-color, 0.1);
+        border-color: rgba($success-color, 0.3);
+      }
+
+      .task-icon {
+        background: rgba($nurse-color, 0.15);
+      }
+
+      .task-content {
+        h4 {
+          color: white;
+        }
+
+        p {
+          color: #94a3b8;
+        }
+      }
+
+      .task-arrow {
+        color: #4b5563;
+      }
+    }
+  }
+
+  .notification-reminder {
+    background: rgba($primary-color, 0.1);
+    border-color: rgba($primary-color, 0.2);
+
+    .reminder-content {
+      h4 {
+        color: white;
+      }
+
+      p {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  .social-proof {
+    .testimonial {
+      background: #1e293b;
+
+      &::before {
+        color: rgba($nurse-color, 0.3);
+      }
+
+      .quote {
+        color: white;
+      }
+
+      .author span {
+        color: #94a3b8;
+      }
+    }
+  }
+
+  .support-section {
+    p {
+      color: #94a3b8;
     }
   }
 }
