@@ -1,3 +1,5 @@
+@use '../../../theme/design-tokens' as tokens;
+
 // Profile Section
 .profile-section {
   display: flex;
@@ -5,10 +7,11 @@
   gap: 16px;
   padding: 20px 16px;
   margin: 16px;
-  background: var(--histora-surface, #ffffff);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: tokens.$surface-primary;
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-sm;
+  transition: transform tokens.$duration-normal tokens.$easing-standard,
+              box-shadow tokens.$duration-normal tokens.$easing-standard;
 
   .profile-avatar-wrapper {
     position: relative;
@@ -49,11 +52,11 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: var(--ion-color-primary);
+    background: tokens.$color-brand-primary;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid var(--histora-surface, #ffffff);
+    border: 2px solid tokens.$surface-primary;
 
     ion-icon {
       font-size: 12px;
@@ -85,15 +88,15 @@
 
     h2 {
       margin: 0 0 4px 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--histora-text-primary, #1a1a1a);
+      font-size: tokens.$font-size-lg;
+      font-weight: tokens.$font-weight-semibold;
+      color: tokens.$text-primary;
     }
 
     p {
       margin: 0;
-      font-size: 14px;
-      color: var(--histora-text-muted, #a1a1aa);
+      font-size: tokens.$font-size-sm;
+      color: tokens.$text-tertiary;
     }
   }
 
@@ -111,16 +114,16 @@ ion-list {
 
   ion-list-header {
     ion-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--histora-text-muted, #a1a1aa);
+      font-size: tokens.$font-size-xs;
+      font-weight: tokens.$font-weight-semibold;
+      color: tokens.$text-tertiary;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
   }
 
   ion-item {
-    --background: var(--histora-surface, #ffffff);
+    --background: #{tokens.$surface-primary};
     --padding-start: 16px;
     --padding-end: 16px;
     --min-height: 52px;
@@ -135,7 +138,16 @@ ion-list {
     }
 
     ion-label {
-      font-size: 16px;
+      font-size: tokens.$font-size-base;
+      color: tokens.$text-primary;
+
+      h3 {
+        color: tokens.$text-primary;
+      }
+
+      p {
+        color: tokens.$text-tertiary;
+      }
     }
   }
 }
@@ -152,37 +164,45 @@ ion-list {
 
   p {
     margin: 0;
-    font-size: 12px;
-    color: var(--histora-text-muted, #a1a1aa);
+    font-size: tokens.$font-size-xs;
+    color: tokens.$text-tertiary;
+
+    &.powered-by {
+      margin-top: 4px;
+      font-size: 11px;
+    }
   }
 }
 
-// Dark Mode - controlled by ThemeService
+// ============================================================
+// DARK MODE
+// ============================================================
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
   .profile-section {
-    background: #1e293b;
+    background: tokens.$surface-dark-secondary;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
     .profile-avatar {
-      background: #334155;
+      background: tokens.$surface-dark-tertiary;
 
       ion-icon {
-        color: #a1a1aa;
+        color: tokens.$text-dark-tertiary;
       }
     }
 
     .avatar-edit-badge {
-      border-color: #1e293b;
+      border-color: tokens.$surface-dark-secondary;
+      background: tokens.$color-brand-accent;
     }
 
     .profile-info {
       h2 {
-        color: #f1f5f9;
+        color: tokens.$text-dark-primary;
       }
 
       p {
-        color: #a1a1aa;
+        color: tokens.$text-dark-secondary;
       }
     }
   }
@@ -190,17 +210,31 @@ ion-list {
   ion-list {
     ion-list-header {
       ion-label {
-        color: #a1a1aa;
+        color: tokens.$text-dark-tertiary;
       }
     }
 
     ion-item {
-      --background: #1e293b;
-      --color: #e7e5e4;
+      --background: #{tokens.$surface-dark-secondary};
+      --color: #{tokens.$text-dark-primary};
 
       ion-label {
-        color: #e7e5e4;
+        color: tokens.$text-dark-primary;
+
+        h3 {
+          color: tokens.$text-dark-primary;
+        }
+
+        p {
+          color: tokens.$text-dark-secondary;
+        }
       }
+    }
+  }
+
+  .app-version {
+    p {
+      color: tokens.$text-dark-tertiary;
     }
   }
 }

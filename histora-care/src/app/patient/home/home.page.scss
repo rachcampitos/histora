@@ -1,133 +1,272 @@
 @use '../../../theme/design-tokens' as tokens;
 
-// Variables using design tokens
-$primary-gradient: var(--histora-gradient);
+// ============================================================
+// HERO SECTION - Compact with integrated greeting + CTA
+// ============================================================
+.hero-section {
+  padding: tokens.$spacing-4 tokens.$spacing-4 tokens.$spacing-5;
+  background: linear-gradient(135deg, tokens.$color-brand-primary 0%, tokens.$color-brand-accent 100%);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: tokens.$spacing-5;
 
-// Greeting Section
-.greeting-section {
-  display: flex;
-  align-items: center;
-  gap: tokens.$spacing-4;
-  padding: tokens.$spacing-5 tokens.$spacing-4 tokens.$spacing-3;
-
-  .greeting-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: $primary-gradient;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    ion-icon {
-      font-size: 28px;
-      color: white;
-    }
+  // Subtle decorative pattern
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
   }
 
-  .greeting-text {
+  .hero-content {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: tokens.$spacing-1;
-
-    .greeting-hello {
-      font-size: tokens.$font-size-sm;
-      color: var(--text-tertiary);
-    }
-
-    .greeting-question {
-      font-size: 22px;
-      font-weight: tokens.$font-weight-bold;
-      color: var(--text-primary);
-    }
-  }
-}
-
-// Main Action Card
-.main-action-card {
-  margin: tokens.$spacing-2 tokens.$spacing-4 tokens.$spacing-4;
-  border-radius: tokens.$radius-xl;
-  background: $primary-gradient;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35);
-
-  ion-card-content {
-    display: flex;
-    align-items: center;
     gap: tokens.$spacing-4;
-    padding: tokens.$spacing-5;
   }
 
-  .action-icon {
-    width: 56px;
-    height: 56px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 14px;
+  // Inline greeting
+  .greeting-inline {
     display: flex;
     align-items: center;
+    gap: tokens.$spacing-3;
+
+    .hero-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      flex-shrink: 0;
+      object-fit: cover;
+
+      &.hero-avatar-placeholder {
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 20px;
+          color: white;
+        }
+      }
+    }
+
+    .greeting-text {
+      font-size: tokens.$font-size-base;
+      font-weight: tokens.$font-weight-medium;
+      color: white;
+      opacity: 0.95;
+    }
+  }
+
+  // Main CTA Button
+  .hero-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: tokens.$spacing-3;
+    padding: tokens.$spacing-4;
+    background: white;
+    border: none;
+    border-radius: tokens.$radius-lg;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: transform tokens.$duration-normal tokens.$easing-standard,
+                box-shadow tokens.$duration-normal tokens.$easing-standard;
+    min-height: tokens.$touch-target-min;
+    font-family: inherit;
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 2px;
+    }
+
+    .cta-content {
+      display: flex;
+      align-items: center;
+      gap: tokens.$spacing-3;
+
+      .cta-icon {
+        font-size: 24px;
+        color: tokens.$color-brand-primary;
+      }
+
+      .cta-text {
+        font-size: tokens.$font-size-lg;
+        font-weight: tokens.$font-weight-semibold;
+        color: tokens.$text-primary;
+      }
+    }
+
+    .cta-arrow {
+      font-size: 20px;
+      color: tokens.$color-neutral-400;
+    }
+  }
+
+  // Trust Badges
+  .trust-badges {
+    display: flex;
     justify-content: center;
-    flex-shrink: 0;
+    gap: tokens.$spacing-4;
+    flex-wrap: wrap;
 
-    ion-icon {
-      font-size: 28px;
-      color: white;
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: tokens.$spacing-1;
+      font-size: 12px;
+      font-weight: tokens.$font-weight-medium;
+      color: rgba(255, 255, 255, 0.9);
+
+      ion-icon {
+        font-size: 14px;
+      }
     }
-  }
-
-  .action-content {
-    flex: 1;
-
-    h2 {
-      margin: 0 0 tokens.$spacing-1;
-      font-size: tokens.$font-size-lg;
-      font-weight: tokens.$font-weight-bold;
-      color: white;
-    }
-
-    p {
-      margin: 0;
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.85);
-    }
-  }
-
-  .action-arrow {
-    font-size: tokens.$font-size-2xl;
-    color: rgba(255, 255, 255, 0.7);
   }
 }
 
-// Quick Actions
-.quick-actions {
-  display: flex;
+// ============================================================
+// ACTIVE REQUEST SECTION - Compact, only shown when exists
+// ============================================================
+.active-request-section {
+  padding: 0 tokens.$spacing-4;
+  margin-bottom: tokens.$spacing-5;
+
+  .request-card-compact {
+    margin: 0;
+    border-radius: tokens.$radius-lg;
+    border-left: 4px solid tokens.$color-success;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
+
+    ion-card-content {
+      padding: tokens.$spacing-4;
+      display: flex;
+      flex-direction: column;
+      gap: tokens.$spacing-3;
+    }
+
+    .request-compact-layout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: tokens.$spacing-3;
+    }
+
+    .nurse-compact {
+      display: flex;
+      align-items: center;
+      gap: tokens.$spacing-3;
+      flex: 1;
+      min-width: 0;
+
+      .nurse-avatar-compact {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        object-fit: cover;
+
+        &.nurse-avatar-placeholder {
+          background: var(--ion-color-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          ion-icon {
+            font-size: 20px;
+            color: var(--ion-color-medium);
+          }
+        }
+      }
+
+      .nurse-info-compact {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+
+        .nurse-name-compact {
+          font-size: 15px;
+          font-weight: tokens.$font-weight-semibold;
+          color: var(--text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .service-name-compact {
+          font-size: 13px;
+          color: var(--text-secondary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .status-badge-compact {
+      flex-shrink: 0;
+      font-size: 12px;
+      padding: 4px 10px;
+    }
+
+    .action-link-compact {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: tokens.$spacing-1;
+      font-size: 14px;
+      font-weight: tokens.$font-weight-semibold;
+      color: tokens.$color-brand-secondary;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+// ============================================================
+// QUICK ACCESS HUB - 3 column grid
+// ============================================================
+.quick-access-hub {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: tokens.$spacing-3;
   padding: 0 tokens.$spacing-4;
-  margin-bottom: tokens.$spacing-6;
+  margin-bottom: tokens.$spacing-5;
 
-  .quick-action-card {
-    // Reset button styles
+  .quick-btn {
+    // Reset button
     border: none;
     outline: none;
+    background: var(--surface-primary);
     font-family: inherit;
-    min-height: 88px; // Touch target compliance
-    flex: 1;
+    cursor: pointer;
+
+    // Layout
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: tokens.$spacing-5 tokens.$spacing-4;
-    background: var(--surface-primary);
-    border-radius: 14px;
+    justify-content: center;
+    gap: tokens.$spacing-2;
+    padding: tokens.$spacing-4 tokens.$spacing-2;
+    min-height: tokens.$touch-target-comfortable;
+    border-radius: tokens.$radius-lg;
     box-shadow: tokens.$shadow-sm;
-    cursor: pointer;
-    transition: transform tokens.$duration-normal tokens.$easing-standard, box-shadow tokens.$duration-normal tokens.$easing-standard;
+    transition: transform tokens.$duration-normal tokens.$easing-standard,
+                box-shadow tokens.$duration-normal tokens.$easing-standard;
 
     &:focus-visible {
       outline: 3px solid var(--ion-color-primary);
@@ -135,430 +274,243 @@ $primary-gradient: var(--histora-gradient);
     }
 
     &:active {
-      transform: scale(0.97);
+      transform: translateY(1px);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     .quick-icon {
-      width: tokens.$touch-target-comfortable;
-      height: tokens.$touch-target-comfortable;
-      border-radius: tokens.$radius-lg;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      ion-icon {
-        font-size: tokens.$font-size-2xl;
-        color: white;
-      }
-
-      &.history {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      }
-
-      &.favorites {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      }
+      font-size: 24px;
+      color: tokens.$color-brand-primary;
     }
 
-    span {
-      font-size: tokens.$font-size-sm;
-      font-weight: tokens.$font-weight-semibold;
-      color: var(--text-primary);
+    .quick-label {
+      font-size: tokens.$font-size-xs;
+      font-weight: tokens.$font-weight-medium;
+      color: var(--text-secondary);
+      text-align: center;
     }
   }
 }
 
-// Section
-.section {
+// ============================================================
+// RECENT NURSES SECTION - Compact horizontal scroll
+// ============================================================
+.recent-nurses-section {
   padding: 0 tokens.$spacing-4;
-  margin-bottom: tokens.$spacing-6;
+  margin-bottom: tokens.$spacing-5;
 
-  .section-title {
+  .section-title-compact {
     display: flex;
     align-items: center;
     gap: tokens.$spacing-2;
-    margin: 0 0 tokens.$spacing-3;
-    font-size: tokens.$font-size-base;
+    margin-bottom: tokens.$spacing-3;
+    font-size: 15px;
     font-weight: tokens.$font-weight-semibold;
     color: var(--text-primary);
 
     ion-icon {
-      font-size: tokens.$font-size-xl;
+      font-size: 18px;
       color: tokens.$color-brand-primary;
     }
   }
-}
 
-// Active Request Card
-.active-request-card {
-  margin: 0;
-  border-radius: 14px;
-  border-left: 4px solid tokens.$color-success;
-
-  ion-card-content {
-    padding: tokens.$spacing-4;
-  }
-
-  .request-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: tokens.$spacing-3;
-  }
-
-  .nurse-info {
-    display: flex;
-    align-items: center;
-    gap: tokens.$spacing-3;
-
-    ion-avatar {
-      width: tokens.$touch-target-min;
-      height: tokens.$touch-target-min;
-    }
-
-    .avatar-placeholder {
-      background: var(--ion-color-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      ion-icon {
-        font-size: 22px;
-        color: var(--ion-color-medium);
-      }
-    }
-
-    .nurse-details {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-
-      .nurse-name {
-        font-size: 15px;
-        font-weight: tokens.$font-weight-semibold;
-        color: var(--text-primary);
-      }
-
-      .service-name {
-        font-size: 13px;
-        color: var(--text-secondary);
-      }
-    }
-  }
-
-  .request-footer {
-    display: flex;
-    justify-content: flex-end;
-
-    .view-details {
-      display: flex;
-      align-items: center;
-      gap: tokens.$spacing-1;
-      font-size: 13px;
-      font-weight: tokens.$font-weight-semibold;
-      color: tokens.$color-brand-secondary;
-
-      ion-icon {
-        font-size: tokens.$font-size-base;
-      }
-    }
-  }
-}
-
-// Recent Nurses
-.recent-nurses {
-  display: flex;
-  gap: tokens.$spacing-4;
-  overflow-x: auto;
-  padding: tokens.$spacing-1 0;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  .recent-nurse {
-    // Reset button styles
-    border: none;
-    outline: none;
-    background: transparent;
-    font-family: inherit;
-    padding: tokens.$spacing-1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: tokens.$spacing-2;
-    cursor: pointer;
-
-    &:focus-visible {
-      outline: 3px solid var(--ion-color-primary);
-      outline-offset: 2px;
-      border-radius: tokens.$radius-lg;
-    }
-
-    ion-avatar {
-      width: 56px;
-      height: 56px;
-      border: 2px solid tokens.$color-brand-secondary;
-    }
-
-    .avatar-placeholder {
-      background: var(--ion-color-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      ion-icon {
-        font-size: 28px;
-        color: var(--ion-color-medium);
-      }
-    }
-
-    .nurse-name {
-      font-size: tokens.$font-size-xs;
-      font-weight: tokens.$font-weight-medium;
-      color: var(--text-primary);
-      max-width: 64px;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-}
-
-// Tip Card
-.tip-card {
-  margin: 0;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  border: 1px solid #a7f3d0;
-
-  ion-card-content {
+  .recent-nurses-list {
     display: flex;
     gap: tokens.$spacing-4;
-    padding: tokens.$spacing-4;
-  }
+    overflow-x: auto;
+    padding: tokens.$spacing-2 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
 
-  .tip-icon {
-    width: tokens.$touch-target-min;
-    height: tokens.$touch-target-min;
-    background: tokens.$color-success;
-    border-radius: tokens.$radius-lg;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    ion-icon {
-      font-size: 22px;
-      color: white;
-    }
-  }
-
-  .tip-content {
-    flex: 1;
-
-    h4 {
-      margin: 0 0 tokens.$spacing-1;
-      font-size: 15px;
-      font-weight: tokens.$font-weight-semibold;
-      color: #065f46;
+    &::-webkit-scrollbar {
+      display: none;
     }
 
-    p {
-      margin: 0;
-      font-size: 13px;
-      color: #047857;
-      line-height: 1.4;
+    .recent-nurse-item {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      padding: 0;
+      cursor: pointer;
+      scroll-snap-align: start;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: tokens.$spacing-2;
+      min-width: 64px;
+
+      &:focus-visible {
+        outline: 3px solid var(--ion-color-primary);
+        outline-offset: 2px;
+        border-radius: tokens.$radius-lg;
+      }
+
+      .nurse-avatar-recent {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: 2px solid tokens.$color-brand-accent;
+        transition: transform tokens.$duration-fast tokens.$easing-standard;
+        object-fit: cover;
+
+        &.nurse-avatar-placeholder {
+          background: var(--ion-color-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          ion-icon {
+            font-size: 24px;
+            color: var(--ion-color-medium);
+          }
+        }
+      }
+
+      &:active .nurse-avatar-recent {
+        transform: scale(0.95);
+      }
+
+      .nurse-name-recent {
+        font-size: 12px;
+        font-weight: tokens.$font-weight-medium;
+        color: var(--text-secondary);
+        max-width: 64px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 }
 
-// Loading State
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: tokens.$spacing-10 tokens.$spacing-6;
-  text-align: center;
-
-  ion-spinner {
-    width: 40px;
-    height: 40px;
-    margin-bottom: tokens.$spacing-4;
-  }
-
-  p {
-    margin: 0;
-    font-size: tokens.$font-size-sm;
-    color: var(--text-secondary);
-  }
-}
-
-// Empty State
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: tokens.$spacing-10 tokens.$spacing-6;
-  text-align: center;
-  background: var(--surface-primary);
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
-
-  ion-icon {
-    font-size: 56px;
-    color: var(--ion-color-medium);
-    margin-bottom: tokens.$spacing-4;
-  }
-
-  h4 {
-    margin: 0 0 tokens.$spacing-2;
-    font-size: tokens.$font-size-lg;
-    font-weight: tokens.$font-weight-semibold;
-    color: var(--text-primary);
-  }
-
-  p {
-    margin: 0;
-    font-size: tokens.$font-size-sm;
-    color: var(--text-secondary);
-  }
+// ============================================================
+// UTILITY CLASSES
+// ============================================================
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 // Bottom Spacer
 .bottom-spacer {
-  height: 100px;
+  height: 80px;
 }
 
-// Dark Mode - controlled by ThemeService
+// ============================================================
+// DARK MODE
+// ============================================================
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
-  .greeting-section {
-    .greeting-text {
-      .greeting-hello {
+  .hero-section {
+    background: linear-gradient(135deg, tokens.$color-brand-secondary 0%, tokens.$color-brand-primary 100%);
+
+    .hero-cta {
+      background: tokens.$surface-dark-secondary;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+      .cta-content {
+        .cta-icon {
+          color: var(--ion-color-primary-tint);
+        }
+
+        .cta-text {
+          color: tokens.$text-dark-primary;
+        }
+      }
+
+      .cta-arrow {
         color: tokens.$text-dark-tertiary;
       }
+    }
 
-      .greeting-question {
-        color: tokens.$text-dark-primary;
+    .trust-badges .badge {
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  .active-request-section {
+    .request-card-compact {
+      --background: #{tokens.$surface-dark-secondary};
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+
+      .nurse-compact {
+        .nurse-avatar-placeholder {
+          background: tokens.$surface-dark-tertiary;
+
+          ion-icon {
+            color: tokens.$text-dark-tertiary;
+          }
+        }
+
+        .nurse-info-compact {
+          .nurse-name-compact {
+            color: tokens.$text-dark-primary;
+          }
+
+          .service-name-compact {
+            color: tokens.$text-dark-secondary;
+          }
+        }
+      }
+
+      .action-link-compact {
+        color: var(--ion-color-primary-tint);
       }
     }
   }
 
-  .main-action-card {
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
-  }
-
-  .quick-actions {
-    .quick-action-card {
+  .quick-access-hub {
+    .quick-btn {
       background: tokens.$surface-dark-secondary;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
-      span {
-        color: tokens.$text-dark-primary;
+      .quick-icon {
+        color: var(--ion-color-primary-tint);
+      }
+
+      .quick-label {
+        color: tokens.$text-dark-secondary;
       }
     }
   }
 
-  .section {
-    .section-title {
+  .recent-nurses-section {
+    .section-title-compact {
       color: tokens.$text-dark-primary;
 
       ion-icon {
         color: var(--ion-color-primary-tint);
       }
     }
-  }
 
-  .active-request-card {
-    --background: #{tokens.$surface-dark-secondary};
-    border-left-color: tokens.$color-success;
+    .recent-nurses-list {
+      .recent-nurse-item {
+        .nurse-avatar-recent {
+          border-color: var(--ion-color-primary-tint);
 
-    .nurse-info {
-      .avatar-placeholder {
-        background: tokens.$surface-dark-tertiary;
+          &.nurse-avatar-placeholder {
+            background: tokens.$surface-dark-tertiary;
 
-        ion-icon {
-          color: tokens.$text-dark-tertiary;
-        }
-      }
-
-      .nurse-details {
-        .nurse-name {
-          color: tokens.$text-dark-primary;
+            ion-icon {
+              color: tokens.$text-dark-tertiary;
+            }
+          }
         }
 
-        .service-name {
-          color: tokens.$text-dark-tertiary;
+        .nurse-name-recent {
+          color: tokens.$text-dark-secondary;
         }
       }
-    }
-
-    .view-details {
-      color: var(--ion-color-primary-tint);
-    }
-  }
-
-  .recent-nurses {
-    .recent-nurse {
-      ion-avatar {
-        border-color: var(--ion-color-primary-tint);
-      }
-
-      .avatar-placeholder {
-        background: tokens.$surface-dark-tertiary;
-
-        ion-icon {
-          color: tokens.$text-dark-tertiary;
-        }
-      }
-
-      .nurse-name {
-        color: tokens.$text-dark-secondary;
-      }
-    }
-  }
-
-  .tip-card {
-    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-    border-color: #047857;
-
-    .tip-content {
-      h4 {
-        color: #6ee7b7;
-      }
-
-      p {
-        color: #a7f3d0;
-      }
-    }
-  }
-
-  // Loading State - Dark Mode
-  .loading-state {
-    p {
-      color: tokens.$text-dark-tertiary;
-    }
-  }
-
-  // Empty State - Dark Mode
-  .empty-state {
-    background: tokens.$surface-dark-secondary;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-
-    ion-icon {
-      color: tokens.$text-dark-tertiary;
-    }
-
-    h4 {
-      color: tokens.$text-dark-primary;
-    }
-
-    p {
-      color: tokens.$text-dark-tertiary;
     }
   }
 }

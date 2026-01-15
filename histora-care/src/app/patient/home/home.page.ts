@@ -1,16 +1,10 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
 import { ServiceRequest } from '../../core/models';
-
-interface HealthTip {
-  icon: string;
-  title: string;
-  description: string;
-}
 
 @Component({
   selector: 'app-home',
@@ -30,35 +24,9 @@ export class HomePage implements OnInit {
   recentNurses = signal<{ nurseId: string; firstName: string; lastName: string; avatar?: string }[]>([]);
   isLoading = signal(false);
 
-  healthTips: HealthTip[] = [
-    {
-      icon: 'fitness-outline',
-      title: 'Mantente activo',
-      description: 'Caminar 30 minutos al día mejora tu salud cardiovascular.'
-    },
-    {
-      icon: 'water-outline',
-      title: 'Hidratación',
-      description: 'Bebe al menos 8 vasos de agua al día para mantenerte hidratado.'
-    },
-    {
-      icon: 'medical-outline',
-      title: 'Vacunas al día',
-      description: 'Consulta con tu médico sobre las vacunas que necesitas.'
-    },
-    {
-      icon: 'bed-outline',
-      title: 'Descanso',
-      description: 'Dormir 7-8 horas mejora tu sistema inmunológico.'
-    }
-  ];
-
-  currentTip = signal<HealthTip>(this.healthTips[0]);
-
   ngOnInit() {
     this.loadActiveRequest();
     this.loadRecentNurses();
-    this.setRandomTip();
   }
 
   ionViewWillEnter() {
@@ -71,11 +39,6 @@ export class HomePage implements OnInit {
     setTimeout(() => {
       this.productTourService.startTour('patient_home');
     }, 500);
-  }
-
-  private setRandomTip() {
-    const randomIndex = Math.floor(Math.random() * this.healthTips.length);
-    this.currentTip.set(this.healthTips[randomIndex]);
   }
 
   async loadActiveRequest() {
@@ -136,6 +99,10 @@ export class HomePage implements OnInit {
 
   goToFavorites() {
     this.showComingSoon('Favoritas');
+  }
+
+  goToSettings() {
+    this.router.navigate(['/patient/tabs/profile']);
   }
 
   viewActiveRequest() {
