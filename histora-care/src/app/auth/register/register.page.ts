@@ -21,6 +21,7 @@ export class RegisterPage implements OnInit {
   private authService = inject(AuthService);
 
   selectedUserType: UserType = null;
+  private cameFromLanding = false; // Track if user came with type param
   registerForm: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
@@ -61,8 +62,10 @@ export class RegisterPage implements OnInit {
     // Check URL parameter for pre-selection from landing page
     this.route.queryParams.subscribe(params => {
       if (params['type'] === 'nurse') {
+        this.cameFromLanding = true;
         this.selectUserType('nurse');
       } else if (params['type'] === 'patient') {
+        this.cameFromLanding = true;
         this.selectUserType('patient');
       }
     });
@@ -84,9 +87,14 @@ export class RegisterPage implements OnInit {
   }
 
   goBack() {
-    if (this.selectedUserType) {
+    // If user came from landing with a type, go back to landing
+    if (this.cameFromLanding) {
+      this.router.navigate(['/onboarding/landing']);
+    } else if (this.selectedUserType) {
+      // If user selected type manually, go back to type selection
       this.selectedUserType = null;
     } else {
+      // Otherwise go to login
       this.router.navigate(['/auth/login']);
     }
   }
