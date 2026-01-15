@@ -1,6 +1,11 @@
-<section class="nurse-verifications-section">
-  <!-- Stats Cards -->
-  <div class="stats-grid">
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Verificaciones de Enfermeras'" [items]="['Admin']" [active_item]="'Verificaciones'"></app-breadcrumb>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
     <mat-card class="stat-card pending">
       <mat-card-content>
         <div class="stat-icon">
@@ -197,4 +202,5 @@
       }
     </mat-card-content>
   </mat-card>
+  </div>
 </section>

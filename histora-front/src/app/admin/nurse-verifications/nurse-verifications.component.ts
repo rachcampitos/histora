@@ -19,6 +19,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FeatherModule } from 'angular-feather';
 import { AdminService } from '@core/service/admin.service';
 import { VerificationDetailDialogComponent } from './dialogs/verification-detail-dialog.component';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 
 interface NurseVerification {
   id: string;
@@ -75,6 +76,7 @@ interface VerificationStats {
     MatCardModule,
     MatSnackBarModule,
     FeatherModule,
+    BreadcrumbComponent,
   ],
   templateUrl: './nurse-verifications.component.html',
   styleUrls: ['./nurse-verifications.component.scss'],

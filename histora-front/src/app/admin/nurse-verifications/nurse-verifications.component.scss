@@ -11,10 +11,6 @@
   border: 0;
 }
 
-.nurse-verifications-section {
-  padding: 24px;
-}
-
 // Stats Grid
 .stats-grid {
   display: grid;
@@ -376,10 +372,6 @@ mat-paginator {
 }
 
 @media (max-width: 768px) {
-  .nurse-verifications-section {
-    padding: 16px;
-  }
-
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
