@@ -1,10 +1,15 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build -- --configuration=production",
   "outputDirectory": "www",
   "installCommand": "npm install",
   "framework": null,
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- ./histora-care",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
 }
