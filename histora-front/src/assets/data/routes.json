@@ -49,6 +49,30 @@
       "submenu": []
     },
     {
+      "path": "/admin/nurses",
+      "title": "MENUITEMS.ADMIN.NURSES",
+      "iconType": "material-icons-outlined",
+      "icon": "medical_services",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
+      "path": "/admin/patients",
+      "title": "MENUITEMS.ADMIN.PATIENTS",
+      "iconType": "material-icons-outlined",
+      "icon": "person",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
       "path": "/admin/subscriptions",
       "title": "MENUITEMS.ADMIN.SUBSCRIPTIONS",
       "iconType": "material-icons-outlined",

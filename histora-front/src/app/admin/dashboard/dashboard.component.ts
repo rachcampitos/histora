@@ -166,7 +166,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         icon: 'local_hospital',
         color: 'primary',
         subtitle: `${this.stats.services.completedToday} completados hoy`,
-        route: '/admin/services',
       },
       {
         title: 'Verificaciones Pendientes',
@@ -175,7 +174,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         color: this.stats.nurses.pendingVerification > 0 ? 'warning' : 'info',
         badge: this.stats.nurses.pendingVerification > 5 ? this.stats.nurses.pendingVerification : undefined,
         badgeColor: 'warn',
-        route: '/admin/verifications',
+        route: '/admin/nurse-verifications',
       },
       {
         title: 'Alertas de Seguridad',
@@ -187,7 +186,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         subtitle: this.stats.safety.activeEmergencies > 0
           ? `${this.stats.safety.activeEmergencies} emergencia(s) activa(s)`
           : 'Sin emergencias activas',
-        route: '/admin/safety',
       },
       {
         title: 'Calificacion Promedio',

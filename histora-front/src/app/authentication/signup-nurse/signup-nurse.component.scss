@@ -396,15 +396,20 @@
   }
 }
 
-// Dark mode support
+// Dark mode support - Complete styling
 :host-context(.dark) {
+  .nurse-signup-container {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  }
+
   .signup-card {
     background: #1e1e2d;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   }
 
   .logo-section {
     h1 {
-      color: #fff;
+      color: #ffffff;
     }
 
     .subtitle {
@@ -412,19 +417,111 @@
     }
   }
 
+  // Step indicator in dark mode
+  .step-indicator {
+    .step {
+      .step-number {
+        background: #3a3a4d;
+        color: #b8c5d6;
+      }
+
+      .step-label {
+        color: #b8c5d6;
+      }
+
+      &.active .step-number {
+        background: #667eea;
+        color: #ffffff;
+      }
+
+      &.active .step-label {
+        color: #667eea;
+      }
+
+      &.completed .step-number {
+        background: #4caf50;
+        color: #ffffff;
+      }
+    }
+
+    .step-line {
+      background: #3a3a4d;
+
+      &.completed {
+        background: #4caf50;
+      }
+    }
+  }
+
   .step-header {
     h2 {
-      color: #fff;
+      color: #ffffff;
     }
 
     p {
       color: #b8c5d6;
+    }
+
+    mat-icon {
+      color: #8b9cf4;
+    }
+  }
+
+  // Form fields in dark mode
+  .mat-mdc-form-field {
+    .mdc-text-field--outlined {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #4a4a5d !important;
+      }
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background-color: rgba(102, 126, 234, 0.1);
+    }
+
+    .mdc-text-field--focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #667eea !important;
+      }
+    }
+
+    .mat-mdc-input-element {
+      color: #ffffff !important;
+      caret-color: #667eea;
+    }
+
+    .mat-mdc-floating-label {
+      color: #b8c5d6 !important;
+    }
+
+    .mat-mdc-form-field-icon-suffix mat-icon {
+      color: #b8c5d6;
+    }
+  }
+
+  // Submit button
+  .submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+
+    &:disabled {
+      background: #3a3a4d !important;
+      color: #666 !important;
     }
   }
 
   .identity-card {
     background: linear-gradient(135deg, #2a2a3d 0%, #1e1e2d 100%);
     border-color: #3a3a4d;
+
+    .photo-section .cep-photo {
+      border-color: #8b9cf4;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    }
 
     .info-section .info-item {
       border-color: #3a3a4d;
@@ -434,30 +531,104 @@
       }
 
       .value {
-        color: #fff;
+        color: #ffffff;
       }
     }
   }
 
   .confirmation-question {
-    color: #fff;
+    color: #ffffff;
+
+    mat-icon {
+      color: #8b9cf4;
+    }
+  }
+
+  // Buttons in dark mode
+  .button-group {
+    button.mat-mdc-raised-button {
+      &[color="primary"] {
+        background: #667eea !important;
+        color: #ffffff !important;
+      }
+    }
+
+    button.mat-mdc-outlined-button,
+    button.mat-mdc-stroked-button {
+      border-color: #4a4a5d !important;
+      color: #b8c5d6 !important;
+
+      &:hover {
+        background: rgba(102, 126, 234, 0.1);
+      }
+
+      &[color="warn"] {
+        border-color: #f44336 !important;
+        color: #f44336 !important;
+      }
+    }
+
+    .confirm-btn {
+      background: #4caf50 !important;
+      color: #ffffff !important;
+    }
   }
 
   .selfie-section {
     background: #2a2a3d;
+    border: 1px solid #3a3a4d;
 
     h3 {
-      color: #fff;
+      color: #ffffff;
+
+      mat-icon {
+        color: #8b9cf4;
+      }
     }
 
     .selfie-info {
       color: #b8c5d6;
+    }
+
+    .selfie-preview img {
+      border-color: #8b9cf4;
+    }
+
+    .start-camera-btn {
+      border-color: #667eea !important;
+      color: #667eea !important;
+
+      &:hover {
+        background: rgba(102, 126, 234, 0.1);
+      }
+    }
+  }
+
+  // Terms section
+  .terms-section {
+    mat-checkbox {
+      .mdc-checkbox__background {
+        border-color: #4a4a5d;
+      }
+
+      .mdc-form-field label {
+        color: #b8c5d6;
+      }
+
+      a {
+        color: #8b9cf4;
+      }
     }
   }
 
   .help-text {
     background: #2a2a3d;
     color: #b8c5d6;
+    border: 1px solid #3a3a4d;
+
+    mat-icon {
+      color: #8b9cf4;
+    }
   }
 
   .auth-footer {
@@ -465,6 +636,71 @@
 
     p {
       color: #b8c5d6;
+
+      a {
+        color: #8b9cf4;
+
+        &:hover {
+          color: #667eea;
+        }
+      }
+    }
+  }
+}
+
+// Light mode enhancements for better contrast
+:host-context(:not(.dark)) {
+  .mat-mdc-form-field {
+    .mdc-text-field--outlined {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #c4c4c4 !important;
+      }
+    }
+
+    .mdc-text-field--focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: #667eea !important;
+        border-width: 2px !important;
+      }
+    }
+
+    .mat-mdc-input-element {
+      color: #333333 !important;
+    }
+
+    .mat-mdc-floating-label {
+      color: #666666 !important;
+    }
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    text-transform: none;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      background: #e0e0e0 !important;
+      color: #999 !important;
+      box-shadow: none;
+    }
+  }
+
+  .button-group {
+    .confirm-btn {
+      background: #4caf50 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
     }
   }
 }

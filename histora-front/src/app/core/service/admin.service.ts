@@ -124,6 +124,107 @@ export interface ExpiringVerification {
   hasActiveServices: boolean;
 }
 
+// ============= NURSE MANAGEMENT INTERFACES =============
+
+export interface AdminNurse {
+  id: string;
+  userId: string;
+  cepNumber: string;
+  cepVerified: boolean;
+  cepVerifiedAt?: Date;
+  verificationStatus: string;
+  specialties: string[];
+  bio?: string;
+  yearsOfExperience: number;
+  serviceRadius: number;
+  isAvailable: boolean;
+  isActive: boolean;
+  averageRating: number;
+  totalReviews: number;
+  totalServicesCompleted: number;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    avatar?: string;
+    isActive?: boolean;
+  } | null;
+  location?: {
+    address?: string;
+    district?: string;
+    city?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface NurseListResponse {
+  data: AdminNurse[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface NurseQueryParams {
+  search?: string;
+  verificationStatus?: string;
+  status?: string;
+  availability?: string;
+  district?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface UpdateNurseDto {
+  specialties?: string[];
+  bio?: string;
+  yearsOfExperience?: number;
+  serviceRadius?: number;
+  extraChargePerKm?: number;
+  minimumServiceFee?: number;
+  isActive?: boolean;
+  isAvailable?: boolean;
+}
+
+// ============= PATIENT MANAGEMENT INTERFACES =============
+
+export interface AdminPatient {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  avatar?: string;
+  isActive: boolean;
+  isEmailVerified: boolean;
+  authProvider: string;
+  totalServicesRequested: number;
+  totalServicesCompleted: number;
+  createdAt: Date;
+  lastServiceAt?: Date;
+}
+
+export interface PatientListResponse {
+  data: AdminPatient[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface PatientQueryParams {
+  search?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+}
+
 // ============= USER MANAGEMENT INTERFACES =============
 
 export interface AdminUser {
@@ -498,5 +599,110 @@ export class AdminService implements OnDestroy {
       `${this.nursesApiUrl}/admin/verifications/${verificationId}/review`,
       review
     );
+  }
+
+  // ============= NURSE MANAGEMENT METHODS =============
+
+  /**
+   * Get paginated list of nurses with filters
+   */
+  getNurses(params: NurseQueryParams = {}): Observable<NurseListResponse> {
+    let httpParams = new HttpParams();
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+    if (params.verificationStatus) {
+      httpParams = httpParams.set('verificationStatus', params.verificationStatus);
+    }
+    if (params.status) {
+      httpParams = httpParams.set('status', params.status);
+    }
+    if (params.availability) {
+      httpParams = httpParams.set('availability', params.availability);
+    }
+    if (params.district) {
+      httpParams = httpParams.set('district', params.district);
+    }
+    if (params.page) {
+      httpParams = httpParams.set('page', params.page.toString());
+    }
+    if (params.limit) {
+      httpParams = httpParams.set('limit', params.limit.toString());
+    }
+
+    return this.http.get<NurseListResponse>(`${this.apiUrl}/nurses`, { params: httpParams });
+  }
+
+  /**
+   * Get single nurse by ID
+   */
+  getNurse(id: string): Observable<AdminNurse> {
+    return this.http.get<AdminNurse>(`${this.apiUrl}/nurses/${id}`);
+  }
+
+  /**
+   * Update nurse
+   */
+  updateNurse(id: string, data: UpdateNurseDto): Observable<{ id: string; message: string }> {
+    return this.http.patch<{ id: string; message: string }>(`${this.apiUrl}/nurses/${id}`, data);
+  }
+
+  /**
+   * Delete nurse (soft delete)
+   */
+  deleteNurse(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/nurses/${id}`);
+  }
+
+  /**
+   * Toggle nurse active status
+   */
+  toggleNurseStatus(id: string): Observable<{ id: string; isActive: boolean; isAvailable: boolean; message: string }> {
+    return this.http.patch<{ id: string; isActive: boolean; isAvailable: boolean; message: string }>(
+      `${this.apiUrl}/nurses/${id}/toggle-status`,
+      {}
+    );
+  }
+
+  /**
+   * Toggle nurse availability
+   */
+  toggleNurseAvailability(id: string): Observable<{ id: string; isAvailable: boolean; message: string }> {
+    return this.http.patch<{ id: string; isAvailable: boolean; message: string }>(
+      `${this.apiUrl}/nurses/${id}/toggle-availability`,
+      {}
+    );
+  }
+
+  // ============= PATIENT MANAGEMENT METHODS =============
+
+  /**
+   * Get paginated list of patients with filters
+   */
+  getPatients(params: PatientQueryParams = {}): Observable<PatientListResponse> {
+    let httpParams = new HttpParams();
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+    if (params.status) {
+      httpParams = httpParams.set('status', params.status);
+    }
+    if (params.page) {
+      httpParams = httpParams.set('page', params.page.toString());
+    }
+    if (params.limit) {
+      httpParams = httpParams.set('limit', params.limit.toString());
+    }
+
+    return this.http.get<PatientListResponse>(`${this.apiUrl}/patients`, { params: httpParams });
+  }
+
+  /**
+   * Get single patient by ID
+   */
+  getPatient(id: string): Observable<AdminPatient> {
+    return this.http.get<AdminPatient>(`${this.apiUrl}/patients/${id}`);
   }
 }
