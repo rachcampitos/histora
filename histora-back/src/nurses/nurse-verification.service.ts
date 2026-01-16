@@ -50,18 +50,21 @@ export class NurseVerificationService {
       throw new NotFoundException('Nurse profile not found');
     }
 
-    // Check if there's already a pending or approved verification
-    const existingVerification = await this.verificationModel.findOne({
+    // Check if there's already an approved verification
+    const approvedVerification = await this.verificationModel.findOne({
       nurseId: new Types.ObjectId(nurseId),
-      status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW, VerificationStatus.APPROVED] },
+      status: VerificationStatus.APPROVED,
     });
 
-    if (existingVerification) {
-      if (existingVerification.status === VerificationStatus.APPROVED) {
-        throw new BadRequestException('This nurse is already verified');
-      }
-      throw new BadRequestException('There is already a pending verification request');
+    if (approvedVerification) {
+      throw new BadRequestException('This nurse is already verified');
     }
+
+    // Check if there's a pending verification (from confirmCepIdentity step)
+    const existingVerification = await this.verificationModel.findOne({
+      nurseId: new Types.ObjectId(nurseId),
+      status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
+    });
 
     // Validate required documents
     const requiredTypes = ['cep_front', 'cep_back', 'dni_front', 'dni_back', 'selfie_with_dni'];
@@ -85,20 +88,38 @@ export class NurseVerificationService {
       }),
     );
 
+    // If there's an existing pending verification (from CEP identity confirmation), update it
+    if (existingVerification) {
+      existingVerification.documents = uploadedDocuments;
+      existingVerification.dniNumber = dto.dniNumber;
+      existingVerification.fullNameOnDni = dto.fullNameOnDni;
+      existingVerification.status = VerificationStatus.UNDER_REVIEW; // Move to under_review when documents are submitted
+      await existingVerification.save();
+
+      // Update nurse verification status
+      await this.nurseModel.findByIdAndUpdate(nurseId, {
+        verificationStatus: VerificationStatus.UNDER_REVIEW,
+      });
+
+      this.logger.log(`Verification documents added to existing verification for nurse ${nurseId}`);
+
+      return existingVerification;
+    }
+
     // Get attempt number from previous rejected verifications
     const previousAttempts = await this.verificationModel.countDocuments({
       nurseId: new Types.ObjectId(nurseId),
       status: VerificationStatus.REJECTED,
     });
 
-    // Create verification record
+    // Create new verification record
     const verification = new this.verificationModel({
       nurseId: new Types.ObjectId(nurseId),
       userId: new Types.ObjectId(userId),
       documents: uploadedDocuments,
       dniNumber: dto.dniNumber,
       fullNameOnDni: dto.fullNameOnDni,
-      status: VerificationStatus.PENDING,
+      status: VerificationStatus.UNDER_REVIEW,
       attemptNumber: previousAttempts + 1,
     });
 
@@ -106,7 +127,7 @@ export class NurseVerificationService {
 
     // Update nurse verification status
     await this.nurseModel.findByIdAndUpdate(nurseId, {
-      verificationStatus: VerificationStatus.PENDING,
+      verificationStatus: VerificationStatus.UNDER_REVIEW,
     });
 
     this.logger.log(`Verification submitted for nurse ${nurseId}, attempt #${previousAttempts + 1}`);
