@@ -16,6 +16,11 @@ import { ServiceRequest } from '../service-requests/schema/service-request.schem
 import { PanicAlert, PanicAlertStatus, PanicAlertLevel } from '../safety/schema/panic-alert.schema';
 import { CreateUserDto, UpdateUserDto, UserQueryDto } from './dto/admin-user.dto';
 import {
+  NurseQueryDto,
+  UpdateNurseDto,
+  PatientQueryDto,
+} from './dto/admin-nurse.dto';
+import {
   DashboardStatsDto,
   PanicAlertDto,
   ActivityItemDto,
@@ -24,6 +29,7 @@ import {
   LowRatedReviewDto,
   ExpiringVerificationDto,
 } from './dto/dashboard.dto';
+import { UserRole } from '../users/schema/user.schema';
 
 @Injectable()
 export class AdminService {
@@ -822,5 +828,464 @@ export class AdminService {
         };
       }),
     );
+  }
+
+  // ==================== NURSE MANAGEMENT METHODS ====================
+
+  /**
+   * Get all nurses with filters and pagination
+   */
+  async getNurses(query: NurseQueryDto) {
+    const { search, verificationStatus, status, availability, district, page = 1, limit = 10 } = query;
+    const skip = (page - 1) * limit;
+
+    // Build filter
+    const filter: any = {};
+
+    if (verificationStatus) {
+      filter.verificationStatus = verificationStatus;
+    }
+
+    if (status) {
+      filter.isActive = status === 'active';
+    }
+
+    if (availability) {
+      filter.isAvailable = availability === 'available';
+    }
+
+    if (district) {
+      filter['location.district'] = { $regex: district, $options: 'i' };
+    }
+
+    // Get nurses with user info
+    let nurses = await this.nurseModel
+      .find(filter)
+      .populate('userId', 'firstName lastName email phone avatar isActive')
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Apply search filter on populated fields
+    if (search) {
+      const searchLower = search.toLowerCase();
+      nurses = nurses.filter((nurse) => {
+        const user = nurse.userId as any;
+        const fullName = `${user?.firstName || ''} ${user?.lastName || ''}`.toLowerCase();
+        const email = (user?.email || '').toLowerCase();
+        const cep = nurse.cepNumber.toLowerCase();
+        return fullName.includes(searchLower) || email.includes(searchLower) || cep.includes(searchLower);
+      });
+    }
+
+    // Get total and paginate
+    const total = nurses.length;
+    const paginatedNurses = nurses.slice(skip, skip + limit);
+
+    // Transform data
+    const data = paginatedNurses.map((nurse) => {
+      const user = nurse.userId as any;
+      return {
+        id: (nurse as any)._id.toString(),
+        userId: user?._id?.toString(),
+        cepNumber: nurse.cepNumber,
+        cepVerified: nurse.cepVerified,
+        cepVerifiedAt: nurse.cepVerifiedAt,
+        verificationStatus: nurse.verificationStatus,
+        specialties: nurse.specialties,
+        bio: nurse.bio,
+        yearsOfExperience: nurse.yearsOfExperience,
+        serviceRadius: nurse.serviceRadius,
+        isAvailable: nurse.isAvailable,
+        isActive: nurse.isActive,
+        averageRating: nurse.averageRating,
+        totalReviews: nurse.totalReviews,
+        totalServicesCompleted: nurse.totalServicesCompleted,
+        user: user ? {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone,
+          avatar: user.avatar,
+          isActive: user.isActive,
+        } : null,
+        location: nurse.location ? {
+          address: nurse.location.address,
+          district: nurse.location.district,
+          city: nurse.location.city,
+        } : null,
+        createdAt: (nurse as any).createdAt,
+        updatedAt: (nurse as any).updatedAt,
+      };
+    });
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Get single nurse detail
+   */
+  async getNurse(id: string) {
+    const nurse = await this.nurseModel
+      .findById(id)
+      .populate('userId', 'firstName lastName email phone avatar isActive lastLoginAt createdAt')
+      .exec();
+
+    if (!nurse) {
+      throw new NotFoundException('Enfermera no encontrada');
+    }
+
+    // Get verification info
+    const verification = await this.nurseVerificationModel
+      .findOne({ nurseId: id })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Get service stats
+    const [totalServices, completedServices, cancelledServices, activeServices] = await Promise.all([
+      this.serviceRequestModel.countDocuments({ nurseId: id }),
+      this.serviceRequestModel.countDocuments({ nurseId: id, status: 'completed' }),
+      this.serviceRequestModel.countDocuments({ nurseId: id, status: 'cancelled' }),
+      this.serviceRequestModel.countDocuments({
+        nurseId: id,
+        status: { $in: ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress'] },
+      }),
+    ]);
+
+    const user = nurse.userId as any;
+
+    return {
+      id: (nurse as any)._id.toString(),
+      userId: user?._id?.toString(),
+      cepNumber: nurse.cepNumber,
+      cepVerified: nurse.cepVerified,
+      cepVerifiedAt: nurse.cepVerifiedAt,
+      officialCepPhotoUrl: nurse.officialCepPhotoUrl,
+      selfieUrl: nurse.selfieUrl,
+      verificationStatus: nurse.verificationStatus,
+      specialties: nurse.specialties,
+      bio: nurse.bio,
+      yearsOfExperience: nurse.yearsOfExperience,
+      services: nurse.services,
+      serviceRadius: nurse.serviceRadius,
+      extraChargePerKm: nurse.extraChargePerKm,
+      minimumServiceFee: nurse.minimumServiceFee,
+      availableFrom: nurse.availableFrom,
+      availableTo: nurse.availableTo,
+      availableDays: nurse.availableDays,
+      isAvailable: nurse.isAvailable,
+      isActive: nurse.isActive,
+      averageRating: nurse.averageRating,
+      totalReviews: nurse.totalReviews,
+      totalServicesCompleted: nurse.totalServicesCompleted,
+      user: user ? {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        avatar: user.avatar,
+        isActive: user.isActive,
+        lastLoginAt: user.lastLoginAt,
+        createdAt: user.createdAt,
+      } : null,
+      location: nurse.location ? {
+        coordinates: nurse.location.coordinates,
+        address: nurse.location.address,
+        district: nurse.location.district,
+        city: nurse.location.city,
+      } : null,
+      verification: verification ? {
+        id: (verification as any)._id.toString(),
+        status: verification.status,
+        dniNumber: verification.dniNumber,
+        fullNameOnDni: verification.fullNameOnDni,
+        cepValidation: verification.cepValidation,
+        reviewNotes: verification.reviewNotes,
+        rejectionReason: verification.rejectionReason,
+        attemptNumber: verification.attemptNumber,
+        createdAt: (verification as any).createdAt,
+        reviewedAt: verification.reviewedAt,
+      } : null,
+      stats: {
+        totalServices,
+        completedServices,
+        cancelledServices,
+        activeServices,
+        completionRate: totalServices > 0 ? Math.round((completedServices / totalServices) * 100) : 0,
+      },
+      createdAt: (nurse as any).createdAt,
+      updatedAt: (nurse as any).updatedAt,
+    };
+  }
+
+  /**
+   * Update nurse profile (admin)
+   */
+  async updateNurse(id: string, dto: UpdateNurseDto) {
+    const nurse = await this.nurseModel.findById(id);
+
+    if (!nurse) {
+      throw new NotFoundException('Enfermera no encontrada');
+    }
+
+    const updatedNurse = await this.nurseModel
+      .findByIdAndUpdate(id, dto, { new: true })
+      .populate('userId', 'firstName lastName email');
+
+    this.logger.log(`Admin updated nurse: ${updatedNurse?.cepNumber}`);
+
+    const user = updatedNurse?.userId as any;
+
+    return {
+      id: (updatedNurse as any)._id.toString(),
+      cepNumber: updatedNurse?.cepNumber,
+      nurseName: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+      isActive: updatedNurse?.isActive,
+      isAvailable: updatedNurse?.isAvailable,
+      message: 'Enfermera actualizada exitosamente',
+    };
+  }
+
+  /**
+   * Toggle nurse active status
+   */
+  async toggleNurseStatus(id: string) {
+    const nurse = await this.nurseModel.findById(id);
+
+    if (!nurse) {
+      throw new NotFoundException('Enfermera no encontrada');
+    }
+
+    nurse.isActive = !nurse.isActive;
+    if (!nurse.isActive) {
+      nurse.isAvailable = false; // If deactivated, also set unavailable
+    }
+    await nurse.save();
+
+    this.logger.log(`Admin toggled nurse status: ${nurse.cepNumber} -> ${nurse.isActive ? 'active' : 'inactive'}`);
+
+    return {
+      id: (nurse as any)._id.toString(),
+      cepNumber: nurse.cepNumber,
+      isActive: nurse.isActive,
+      isAvailable: nurse.isAvailable,
+      message: `Enfermera ${nurse.isActive ? 'activada' : 'desactivada'} exitosamente`,
+    };
+  }
+
+  /**
+   * Toggle nurse availability
+   */
+  async toggleNurseAvailability(id: string) {
+    const nurse = await this.nurseModel.findById(id);
+
+    if (!nurse) {
+      throw new NotFoundException('Enfermera no encontrada');
+    }
+
+    if (!nurse.isActive) {
+      throw new ConflictException('No se puede cambiar disponibilidad de una enfermera inactiva');
+    }
+
+    nurse.isAvailable = !nurse.isAvailable;
+    await nurse.save();
+
+    this.logger.log(`Admin toggled nurse availability: ${nurse.cepNumber} -> ${nurse.isAvailable ? 'available' : 'unavailable'}`);
+
+    return {
+      id: (nurse as any)._id.toString(),
+      cepNumber: nurse.cepNumber,
+      isAvailable: nurse.isAvailable,
+      message: `Enfermera marcada como ${nurse.isAvailable ? 'disponible' : 'no disponible'}`,
+    };
+  }
+
+  /**
+   * Delete nurse (soft delete - deactivate user and nurse)
+   */
+  async deleteNurse(id: string) {
+    const nurse = await this.nurseModel.findById(id);
+
+    if (!nurse) {
+      throw new NotFoundException('Enfermera no encontrada');
+    }
+
+    // Check for active services
+    const activeServices = await this.serviceRequestModel.countDocuments({
+      nurseId: id,
+      status: { $in: ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress'] },
+    });
+
+    if (activeServices > 0) {
+      throw new ConflictException(`No se puede eliminar: tiene ${activeServices} servicio(s) activo(s)`);
+    }
+
+    // Soft delete: deactivate nurse and user
+    nurse.isActive = false;
+    nurse.isAvailable = false;
+    await nurse.save();
+
+    // Deactivate user
+    await this.userModel.findByIdAndUpdate(nurse.userId, {
+      isActive: false,
+      isDeleted: true,
+    });
+
+    this.logger.log(`Admin deleted nurse: ${nurse.cepNumber}`);
+
+    return {
+      message: 'Enfermera eliminada exitosamente',
+    };
+  }
+
+  // ==================== PATIENT MANAGEMENT METHODS ====================
+
+  /**
+   * Get all patients (users with role PATIENT) with filters and pagination
+   */
+  async getPatients(query: PatientQueryDto) {
+    const { search, status, page = 1, limit = 10 } = query;
+    const skip = (page - 1) * limit;
+
+    // Build filter for patients only
+    const filter: any = {
+      role: UserRole.PATIENT,
+      isDeleted: { $ne: true },
+    };
+
+    if (search) {
+      filter.$or = [
+        { firstName: { $regex: search, $options: 'i' } },
+        { lastName: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    if (status) {
+      filter.isActive = status === 'active';
+    }
+
+    // Get total count
+    const total = await this.userModel.countDocuments(filter);
+
+    // Get patients
+    const patients = await this.userModel
+      .find(filter)
+      .select('-password -refreshToken -passwordResetToken -passwordResetExpires')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    // Get service stats for each patient
+    const data = await Promise.all(
+      patients.map(async (patient) => {
+        const [totalRequested, totalCompleted, lastService] = await Promise.all([
+          this.serviceRequestModel.countDocuments({ patientId: patient._id }),
+          this.serviceRequestModel.countDocuments({ patientId: patient._id, status: 'completed' }),
+          this.serviceRequestModel
+            .findOne({ patientId: patient._id })
+            .sort({ createdAt: -1 })
+            .select('createdAt')
+            .exec(),
+        ]);
+
+        return {
+          id: patient._id.toString(),
+          firstName: patient.firstName,
+          lastName: patient.lastName,
+          email: patient.email,
+          phone: patient.phone,
+          avatar: patient.avatar,
+          isActive: patient.isActive,
+          isEmailVerified: patient.isEmailVerified,
+          authProvider: patient.authProvider || 'local',
+          totalServicesRequested: totalRequested,
+          totalServicesCompleted: totalCompleted,
+          createdAt: (patient as any).createdAt,
+          lastServiceAt: lastService ? (lastService as any).createdAt : null,
+        };
+      }),
+    );
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Get single patient detail
+   */
+  async getPatient(id: string) {
+    const patient = await this.userModel
+      .findOne({ _id: id, role: UserRole.PATIENT, isDeleted: { $ne: true } })
+      .select('-password -refreshToken -passwordResetToken -passwordResetExpires')
+      .exec();
+
+    if (!patient) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+
+    // Get service history
+    const [totalRequested, totalCompleted, totalCancelled, recentServices] = await Promise.all([
+      this.serviceRequestModel.countDocuments({ patientId: id }),
+      this.serviceRequestModel.countDocuments({ patientId: id, status: 'completed' }),
+      this.serviceRequestModel.countDocuments({ patientId: id, status: 'cancelled' }),
+      this.serviceRequestModel
+        .find({ patientId: id })
+        .populate({
+          path: 'nurseId',
+          populate: { path: 'userId', select: 'firstName lastName' },
+        })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .exec(),
+    ]);
+
+    return {
+      id: patient._id.toString(),
+      firstName: patient.firstName,
+      lastName: patient.lastName,
+      email: patient.email,
+      phone: patient.phone,
+      avatar: patient.avatar,
+      isActive: patient.isActive,
+      isEmailVerified: patient.isEmailVerified,
+      authProvider: patient.authProvider || 'local',
+      createdAt: (patient as any).createdAt,
+      updatedAt: (patient as any).updatedAt,
+      lastLoginAt: patient.lastLoginAt,
+      stats: {
+        totalServicesRequested: totalRequested,
+        totalServicesCompleted: totalCompleted,
+        totalServicesCancelled: totalCancelled,
+      },
+      recentServices: recentServices.map((s) => {
+        const nurse = s.nurseId as any;
+        const nurseUser = nurse?.userId as any;
+        return {
+          id: (s as any)._id.toString(),
+          serviceName: s.service.name,
+          status: s.status,
+          nurseName: nurseUser ? `${nurseUser.firstName} ${nurseUser.lastName}` : null,
+          rating: s.rating,
+          createdAt: (s as any).createdAt,
+          completedAt: s.completedAt,
+        };
+      }),
+    };
   }
 }

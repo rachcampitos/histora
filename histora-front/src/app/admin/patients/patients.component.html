@@ -1,0 +1,213 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Pacientes'" [items]="['Admin']" [active_item]="'Pacientes'"></app-breadcrumb>
+    </div>
+
+    <mat-card class="main-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'ADMIN.PATIENTS.CARD_TITLE' | translate }}</mat-card-title>
+        <mat-card-subtitle>{{ 'ADMIN.PATIENTS.CARD_SUBTITLE' | translate }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Filters -->
+        <div class="filters-row" role="search" aria-label="Filtros de pacientes">
+          <mat-form-field appearance="outline" class="filter-field search-field">
+            <mat-label>{{ 'ADMIN.PATIENTS.FILTERS.SEARCH' | translate }}</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              (keyup.enter)="applyFilter()"
+              placeholder="{{ 'ADMIN.PATIENTS.FILTERS.SEARCH_PLACEHOLDER' | translate }}"
+              aria-label="Buscar pacientes"
+            />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>{{ 'ADMIN.PATIENTS.FILTERS.STATUS' | translate }}</mat-label>
+            <mat-select
+              [(ngModel)]="statusFilter"
+              (selectionChange)="applyFilter()"
+              aria-label="Filtrar por estado"
+            >
+              <mat-option value="">{{ 'ADMIN.PATIENTS.FILTERS.ALL' | translate }}</mat-option>
+              @for (option of statusOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <button
+            mat-stroked-button
+            (click)="clearFilters()"
+            [disabled]="!searchTerm && !statusFilter"
+            aria-label="Limpiar filtros"
+          >
+            <mat-icon>filter_alt_off</mat-icon>
+            {{ 'ADMIN.PATIENTS.FILTERS.CLEAR' | translate }}
+          </button>
+        </div>
+
+        <!-- Loading -->
+        @if (isLoading) {
+          <div class="loading-container" role="status" aria-live="polite">
+            <mat-spinner diameter="40"></mat-spinner>
+            <span class="visually-hidden">Cargando pacientes...</span>
+          </div>
+        } @else {
+          <!-- Table -->
+          <div class="table-container" role="region" aria-label="Tabla de pacientes">
+            <table
+              mat-table
+              [dataSource]="dataSource"
+              matSort
+              class="patients-table"
+            >
+              <!-- Patient Column -->
+              <ng-container matColumnDef="patient">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">
+                  {{ 'ADMIN.PATIENTS.TABLE.PATIENT' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let patient">
+                  <div class="patient-cell">
+                    @if (patient.avatar) {
+                      <img
+                        [src]="patient.avatar"
+                        [alt]="patient.firstName + ' ' + patient.lastName"
+                        class="patient-avatar"
+                      />
+                    } @else {
+                      <div class="patient-initials" aria-hidden="true">
+                        {{ getInitials(patient.firstName, patient.lastName) }}
+                      </div>
+                    }
+                    <div class="patient-info">
+                      <span class="patient-name">{{ patient.firstName }} {{ patient.lastName }}</span>
+                      <span class="patient-joined">
+                        {{ 'ADMIN.PATIENTS.TABLE.JOINED' | translate }}: {{ formatDate(patient.createdAt) }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header scope="col">
+                  {{ 'ADMIN.PATIENTS.TABLE.EMAIL' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let patient">
+                  <div class="email-cell">
+                    <span>{{ patient.email }}</span>
+                    @if (patient.authProvider === 'google') {
+                      <mat-icon
+                        class="google-icon"
+                        matTooltip="{{ getAuthProviderTooltip(patient.authProvider) }}"
+                      >
+                        verified
+                      </mat-icon>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Phone Column -->
+              <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef scope="col">
+                  {{ 'ADMIN.PATIENTS.TABLE.PHONE' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let patient">
+                  {{ patient.phone || '-' }}
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef scope="col">
+                  {{ 'ADMIN.PATIENTS.TABLE.STATUS' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let patient">
+                  <span class="badge" [ngClass]="getStatusClass(patient.isActive)">
+                    {{ patient.isActive ? ('ADMIN.PATIENTS.STATUS.ACTIVE' | translate) : ('ADMIN.PATIENTS.STATUS.INACTIVE' | translate) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Services Column -->
+              <ng-container matColumnDef="services">
+                <th mat-header-cell *matHeaderCellDef scope="col">
+                  {{ 'ADMIN.PATIENTS.TABLE.SERVICES' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let patient">
+                  <div class="services-cell">
+                    <span class="services-count">{{ patient.totalServicesCompleted || 0 }}</span>
+                    <span class="services-label">/ {{ patient.totalServicesRequested || 0 }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Last Service Column -->
+              <ng-container matColumnDef="lastService">
+                <th mat-header-cell *matHeaderCellDef scope="col">
+                  {{ 'ADMIN.PATIENTS.TABLE.LAST_SERVICE' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let patient">
+                  <span class="last-service">{{ formatDate(patient.lastServiceAt) }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef scope="col">
+                  {{ 'ADMIN.PATIENTS.TABLE.ACTIONS' | translate }}
+                </th>
+                <td mat-cell *matCellDef="let patient">
+                  <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="actionsMenu"
+                    aria-label="Acciones para {{ patient.firstName }} {{ patient.lastName }}"
+                  >
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #actionsMenu="matMenu">
+                    <button mat-menu-item>
+                      <mat-icon>visibility</mat-icon>
+                      <span>{{ 'ADMIN.PATIENTS.ACTIONS.VIEW' | translate }}</span>
+                    </button>
+                    <button mat-menu-item>
+                      <mat-icon>history</mat-icon>
+                      <span>{{ 'ADMIN.PATIENTS.ACTIONS.SERVICE_HISTORY' | translate }}</span>
+                    </button>
+                  </mat-menu>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+
+            @if (dataSource.data.length === 0) {
+              <div class="empty-state" role="status">
+                <mat-icon class="empty-icon">person_off</mat-icon>
+                <p>{{ 'ADMIN.PATIENTS.EMPTY_STATE' | translate }}</p>
+              </div>
+            }
+          </div>
+
+          <!-- Paginator -->
+          <mat-paginator
+            [length]="totalPatients"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            [pageIndex]="currentPage"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+            aria-label="Paginacion de pacientes"
+          ></mat-paginator>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>

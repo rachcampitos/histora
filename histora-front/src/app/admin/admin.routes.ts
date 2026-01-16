@@ -6,6 +6,8 @@ import { SubscriptionsComponent } from './subscriptions/subscriptions.component'
 import { ReportsComponent } from './reports/reports.component';
 import { SettingsComponent } from './settings/settings.component';
 import { NurseVerificationsComponent } from './nurse-verifications/nurse-verifications.component';
+import { NursesComponent } from './nurses/nurses.component';
+import { PatientsComponent } from './patients/patients.component';
 import { Page404Component } from '../authentication/page404/page404.component';
 
 export const ADMIN_ROUTE: Route[] = [
@@ -20,6 +22,14 @@ export const ADMIN_ROUTE: Route[] = [
   {
     path: 'users',
     component: UsersComponent,
+  },
+  {
+    path: 'nurses',
+    component: NursesComponent,
+  },
+  {
+    path: 'patients',
+    component: PatientsComponent,
   },
   {
     path: 'subscriptions',

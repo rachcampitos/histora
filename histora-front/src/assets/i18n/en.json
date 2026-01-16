@@ -8,6 +8,8 @@
       "DASHBOARD": "Dashboard",
       "CLINICS": "Clinics",
       "USERS": "Users",
+      "NURSES": "Nurses",
+      "PATIENTS": "Patients",
       "SUBSCRIPTIONS": "Subscriptions",
       "REPORTS": "Reports",
       "NURSE_VERIFICATIONS": "Nurse Verifications",
@@ -765,6 +767,97 @@
   },
   "SIDEBAR": {
     "LOGOUT": "Logout"
+  },
+  "ADMIN": {
+    "NURSES": {
+      "TITLE": "Nurse Management",
+      "CARD_TITLE": "Nurses List",
+      "CARD_SUBTITLE": "Manage nurses registered on the platform",
+      "BREADCRUMB": {
+        "ADMIN": "Administration",
+        "NURSES": "Nurses",
+        "LIST": "List"
+      },
+      "FILTERS": {
+        "VERIFICATION": "Verification",
+        "STATUS": "Status",
+        "AVAILABILITY": "Availability",
+        "SEARCH": "Search",
+        "SEARCH_PLACEHOLDER": "Search by name, CEP or email...",
+        "ALL": "All",
+        "CLEAR": "Clear"
+      },
+      "TABLE": {
+        "NURSE": "Nurse",
+        "CEP": "CEP",
+        "STATUS": "Status",
+        "VERIFICATION": "Verification",
+        "RATING": "Rating",
+        "SERVICES": "Services",
+        "DISTRICT": "District",
+        "ACTIONS": "Actions"
+      },
+      "STATUS": {
+        "ACTIVE": "Active",
+        "INACTIVE": "Inactive"
+      },
+      "AVAILABILITY": {
+        "AVAILABLE": "Available",
+        "UNAVAILABLE": "Unavailable"
+      },
+      "VERIFICATION_STATUS": {
+        "PENDING": "Pending",
+        "UNDER_REVIEW": "Under Review",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected"
+      },
+      "ACTIONS": {
+        "VIEW": "View Profile",
+        "EDIT": "Edit",
+        "ACTIVATE": "Activate",
+        "DEACTIVATE": "Deactivate",
+        "SET_AVAILABLE": "Set Available",
+        "SET_UNAVAILABLE": "Set Unavailable",
+        "DELETE": "Delete"
+      },
+      "EMPTY_STATE": "No nurses found"
+    },
+    "PATIENTS": {
+      "TITLE": "Patient Management",
+      "CARD_TITLE": "Patients List",
+      "CARD_SUBTITLE": "View patients registered on the platform",
+      "BREADCRUMB": {
+        "ADMIN": "Administration",
+        "PATIENTS": "Patients",
+        "LIST": "List"
+      },
+      "FILTERS": {
+        "STATUS": "Status",
+        "SEARCH": "Search",
+        "SEARCH_PLACEHOLDER": "Search by name or email...",
+        "ALL": "All",
+        "CLEAR": "Clear"
+      },
+      "TABLE": {
+        "PATIENT": "Patient",
+        "EMAIL": "Email",
+        "PHONE": "Phone",
+        "STATUS": "Status",
+        "SERVICES": "Services",
+        "LAST_SERVICE": "Last Service",
+        "ACTIONS": "Actions",
+        "JOINED": "Joined"
+      },
+      "STATUS": {
+        "ACTIVE": "Active",
+        "INACTIVE": "Inactive"
+      },
+      "ACTIONS": {
+        "VIEW": "View Profile",
+        "SERVICE_HISTORY": "Service History"
+      },
+      "EMPTY_STATE": "No patients found"
+    }
   },
   "PATIENT_DASHBOARD": {
     "WELCOME_BACK": "Welcome back",

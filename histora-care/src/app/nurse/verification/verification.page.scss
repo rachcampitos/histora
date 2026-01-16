@@ -1117,16 +1117,38 @@ $border-radius: 12px;
 // Dark mode
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
+  // Toolbar dark mode
+  ion-toolbar {
+    --background: #1a202c;
+    --color: #ffffff;
+    --border-color: #334155;
+
+    ion-title {
+      color: #ffffff;
+    }
+
+    ion-button {
+      --color: #ffffff;
+    }
+  }
+
   .verification-content {
     --background: #1a202c;
   }
 
-  .loading-container p {
-    color: #94a3b8;
+  .loading-container {
+    ion-spinner {
+      --color: #10b981;
+    }
+
+    p {
+      color: #94a3b8;
+    }
   }
 
   .status-card {
     background: #1e293b;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 
     h2 {
       color: white;

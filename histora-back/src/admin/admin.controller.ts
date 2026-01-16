@@ -24,6 +24,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../users/schema/user.schema';
 import { AdminService } from './admin.service';
 import { CreateUserDto, UpdateUserDto, UserQueryDto } from './dto/admin-user.dto';
+import { NurseQueryDto, UpdateNurseDto, PatientQueryDto } from './dto/admin-nurse.dto';
 import {
   DashboardStatsDto,
   PanicAlertDto,
@@ -149,5 +150,72 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Contraseña restablecida' })
   async resetUserPassword(@Param('id') id: string) {
     return this.adminService.resetUserPassword(id);
+  }
+
+  // ==================== NURSE MANAGEMENT ENDPOINTS ====================
+
+  @Get('nurses')
+  @ApiOperation({ summary: 'Listar todas las enfermeras con filtros y paginación' })
+  @ApiResponse({ status: 200, description: 'Lista de enfermeras' })
+  async getNurses(@Query() query: NurseQueryDto) {
+    return this.adminService.getNurses(query);
+  }
+
+  @Get('nurses/:id')
+  @ApiOperation({ summary: 'Obtener detalle de una enfermera' })
+  @ApiResponse({ status: 200, description: 'Detalle de la enfermera' })
+  @ApiResponse({ status: 404, description: 'Enfermera no encontrada' })
+  async getNurse(@Param('id') id: string) {
+    return this.adminService.getNurse(id);
+  }
+
+  @Patch('nurses/:id')
+  @ApiOperation({ summary: 'Actualizar perfil de enfermera' })
+  @ApiResponse({ status: 200, description: 'Enfermera actualizada' })
+  @ApiResponse({ status: 404, description: 'Enfermera no encontrada' })
+  async updateNurse(@Param('id') id: string, @Body() updateNurseDto: UpdateNurseDto) {
+    return this.adminService.updateNurse(id, updateNurseDto);
+  }
+
+  @Delete('nurses/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Eliminar enfermera (soft delete)' })
+  @ApiResponse({ status: 200, description: 'Enfermera eliminada' })
+  @ApiResponse({ status: 404, description: 'Enfermera no encontrada' })
+  @ApiResponse({ status: 409, description: 'Tiene servicios activos' })
+  async deleteNurse(@Param('id') id: string) {
+    return this.adminService.deleteNurse(id);
+  }
+
+  @Patch('nurses/:id/toggle-status')
+  @ApiOperation({ summary: 'Activar/Desactivar enfermera' })
+  @ApiResponse({ status: 200, description: 'Estado de enfermera actualizado' })
+  async toggleNurseStatus(@Param('id') id: string) {
+    return this.adminService.toggleNurseStatus(id);
+  }
+
+  @Patch('nurses/:id/toggle-availability')
+  @ApiOperation({ summary: 'Cambiar disponibilidad de enfermera' })
+  @ApiResponse({ status: 200, description: 'Disponibilidad actualizada' })
+  @ApiResponse({ status: 409, description: 'Enfermera inactiva' })
+  async toggleNurseAvailability(@Param('id') id: string) {
+    return this.adminService.toggleNurseAvailability(id);
+  }
+
+  // ==================== PATIENT MANAGEMENT ENDPOINTS ====================
+
+  @Get('patients')
+  @ApiOperation({ summary: 'Listar pacientes de Histora Care con filtros y paginación' })
+  @ApiResponse({ status: 200, description: 'Lista de pacientes' })
+  async getPatients(@Query() query: PatientQueryDto) {
+    return this.adminService.getPatients(query);
+  }
+
+  @Get('patients/:id')
+  @ApiOperation({ summary: 'Obtener detalle de un paciente' })
+  @ApiResponse({ status: 200, description: 'Detalle del paciente' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
+  async getPatient(@Param('id') id: string) {
+    return this.adminService.getPatient(id);
   }
 }

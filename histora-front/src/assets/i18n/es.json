@@ -8,10 +8,12 @@
       "DASHBOARD": "Panel de Control",
       "CLINICS": "Clínicas",
       "USERS": "Usuarios",
+      "NURSES": "Enfermeras",
+      "PATIENTS": "Pacientes",
       "SUBSCRIPTIONS": "Suscripciones",
       "REPORTS": "Reportes",
-      "NURSE_VERIFICATIONS": "Verificación Enfermeras",
-      "SETTINGS": "Configuración"
+      "NURSE_VERIFICATIONS": "Verificacion Enfermeras",
+      "SETTINGS": "Configuracion"
     },
     "DASHBOARD": {
       "TEXT": "Panel",
@@ -783,6 +785,97 @@
   },
   "SIDEBAR": {
     "LOGOUT": "Cerrar Sesión"
+  },
+  "ADMIN": {
+    "NURSES": {
+      "TITLE": "Gestión de Enfermeras",
+      "CARD_TITLE": "Listado de Enfermeras",
+      "CARD_SUBTITLE": "Administra las enfermeras registradas en la plataforma",
+      "BREADCRUMB": {
+        "ADMIN": "Administración",
+        "NURSES": "Enfermeras",
+        "LIST": "Listado"
+      },
+      "FILTERS": {
+        "VERIFICATION": "Verificación",
+        "STATUS": "Estado",
+        "AVAILABILITY": "Disponibilidad",
+        "SEARCH": "Buscar",
+        "SEARCH_PLACEHOLDER": "Buscar por nombre, CEP o email...",
+        "ALL": "Todos",
+        "CLEAR": "Limpiar"
+      },
+      "TABLE": {
+        "NURSE": "Enfermera",
+        "CEP": "CEP",
+        "STATUS": "Estado",
+        "VERIFICATION": "Verificación",
+        "RATING": "Calificación",
+        "SERVICES": "Servicios",
+        "DISTRICT": "Distrito",
+        "ACTIONS": "Acciones"
+      },
+      "STATUS": {
+        "ACTIVE": "Activa",
+        "INACTIVE": "Inactiva"
+      },
+      "AVAILABILITY": {
+        "AVAILABLE": "Disponible",
+        "UNAVAILABLE": "No Disponible"
+      },
+      "VERIFICATION_STATUS": {
+        "PENDING": "Pendiente",
+        "UNDER_REVIEW": "En Revisión",
+        "APPROVED": "Aprobada",
+        "REJECTED": "Rechazada"
+      },
+      "ACTIONS": {
+        "VIEW": "Ver Perfil",
+        "EDIT": "Editar",
+        "ACTIVATE": "Activar",
+        "DEACTIVATE": "Desactivar",
+        "SET_AVAILABLE": "Marcar Disponible",
+        "SET_UNAVAILABLE": "Marcar No Disponible",
+        "DELETE": "Eliminar"
+      },
+      "EMPTY_STATE": "No se encontraron enfermeras"
+    },
+    "PATIENTS": {
+      "TITLE": "Gestión de Pacientes",
+      "CARD_TITLE": "Listado de Pacientes",
+      "CARD_SUBTITLE": "Visualiza los pacientes registrados en la plataforma",
+      "BREADCRUMB": {
+        "ADMIN": "Administración",
+        "PATIENTS": "Pacientes",
+        "LIST": "Listado"
+      },
+      "FILTERS": {
+        "STATUS": "Estado",
+        "SEARCH": "Buscar",
+        "SEARCH_PLACEHOLDER": "Buscar por nombre o email...",
+        "ALL": "Todos",
+        "CLEAR": "Limpiar"
+      },
+      "TABLE": {
+        "PATIENT": "Paciente",
+        "EMAIL": "Email",
+        "PHONE": "Teléfono",
+        "STATUS": "Estado",
+        "SERVICES": "Servicios",
+        "LAST_SERVICE": "Último Servicio",
+        "ACTIONS": "Acciones",
+        "JOINED": "Registro"
+      },
+      "STATUS": {
+        "ACTIVE": "Activo",
+        "INACTIVE": "Inactivo"
+      },
+      "ACTIONS": {
+        "VIEW": "Ver Perfil",
+        "SERVICE_HISTORY": "Historial de Servicios"
+      },
+      "EMPTY_STATE": "No se encontraron pacientes"
+    }
   },
   "PATIENT_DASHBOARD": {
     "WELCOME_BACK": "Bienvenido de nuevo",
