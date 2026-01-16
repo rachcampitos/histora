@@ -229,7 +229,37 @@ export class AdminService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    // Soft delete
+    // Check if user is a nurse and cancel pending verifications
+    const nurse = await this.nurseModel.findOne({ userId: id });
+    if (nurse) {
+      // Cancel any pending verifications for this nurse
+      const cancelledCount = await this.nurseVerificationModel.updateMany(
+        {
+          nurseId: nurse._id,
+          status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
+        },
+        {
+          $set: {
+            status: VerificationStatus.REJECTED,
+            rejectionReason: 'Usuario eliminado por administrador',
+            reviewedAt: new Date(),
+          },
+        },
+      );
+
+      if (cancelledCount.modifiedCount > 0) {
+        this.logger.log(`Cancelled ${cancelledCount.modifiedCount} pending verification(s) for deleted user ${user.email}`);
+      }
+
+      // Mark nurse as inactive
+      await this.nurseModel.findByIdAndUpdate(nurse._id, {
+        isActive: false,
+        isAvailable: false,
+        verificationStatus: VerificationStatus.REJECTED,
+      });
+    }
+
+    // Soft delete user
     await this.userModel.findByIdAndUpdate(id, {
       isDeleted: true,
       isActive: false,
@@ -666,6 +696,7 @@ export class AdminService {
 
   /**
    * Get pending verifications with waiting time
+   * Filters out verifications for deleted users
    */
   async getPendingVerifications(): Promise<PendingVerificationDto[]> {
     const verifications = await this.nurseVerificationModel
@@ -674,15 +705,23 @@ export class AdminService {
       })
       .populate({
         path: 'nurseId',
-        populate: { path: 'userId', select: 'firstName lastName avatar' },
+        populate: { path: 'userId', select: 'firstName lastName avatar isDeleted' },
       })
       .sort({ createdAt: 1 }) // Oldest first (longest waiting)
-      .limit(20)
+      .limit(50) // Fetch more to account for filtering
       .exec();
 
     const now = new Date();
 
-    return verifications.map((v) => {
+    // Filter out verifications where the user has been deleted
+    const activeVerifications = verifications.filter((v) => {
+      const nurse = v.nurseId as any;
+      const user = nurse?.userId as any;
+      // Exclude if user is deleted or doesn't exist
+      return user && !user.isDeleted;
+    });
+
+    return activeVerifications.slice(0, 20).map((v) => {
       const nurse = v.nurseId as any;
       const user = nurse?.userId as any;
       const createdAt = (v as any).createdAt;

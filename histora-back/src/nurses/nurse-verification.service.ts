@@ -170,6 +170,7 @@ export class NurseVerificationService {
 
   /**
    * Get all pending verifications (admin)
+   * Filters out verifications for deleted users
    */
   async getPendingVerifications(
     query: VerificationQueryDto,
@@ -186,23 +187,29 @@ export class NurseVerificationService {
       filter.status = { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] };
     }
 
-    const [verifications, total] = await Promise.all([
-      this.verificationModel
-        .find(filter)
-        .populate({
-          path: 'nurseId',
-          select: 'cepNumber specialties officialCepPhotoUrl selfieUrl cepRegisteredName',
-          populate: {
-            path: 'userId',
-            select: 'firstName lastName email phone avatar',
-          },
-        })
-        .sort({ createdAt: 1 }) // Oldest first
-        .skip(skip)
-        .limit(limit)
-        .exec(),
-      this.verificationModel.countDocuments(filter),
-    ]);
+    // Fetch more to account for filtering deleted users
+    const allVerifications = await this.verificationModel
+      .find(filter)
+      .populate({
+        path: 'nurseId',
+        select: 'cepNumber specialties officialCepPhotoUrl selfieUrl cepRegisteredName',
+        populate: {
+          path: 'userId',
+          select: 'firstName lastName email phone avatar isDeleted',
+        },
+      })
+      .sort({ createdAt: 1 }) // Oldest first
+      .exec();
+
+    // Filter out verifications where the user has been deleted
+    const activeVerifications = allVerifications.filter((v) => {
+      const nurse = v.nurseId as any;
+      const user = nurse?.userId as any;
+      return user && !user.isDeleted;
+    });
+
+    const total = activeVerifications.length;
+    const verifications = activeVerifications.slice(skip, skip + limit);
 
     return {
       verifications,
