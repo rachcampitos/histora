@@ -83,10 +83,9 @@ export class RegisterPage implements OnInit, OnDestroy {
         this.selectUserType('nurse');
       } else if (params['type'] === 'patient') {
         this.selectUserType('patient');
-      } else {
-        // No type specified, redirect to landing to choose
-        this.router.navigate(['/onboarding/landing']);
       }
+      // If no type specified, show type selector (don't redirect to landing)
+      // This allows users coming from login page to select their type here
     });
   }
 
@@ -132,8 +131,18 @@ export class RegisterPage implements OnInit, OnDestroy {
   }
 
   goBack() {
-    // Always go back to landing (type selection is there now)
-    this.router.navigate(['/onboarding/landing']);
+    // If user has selected a type and is in the form, go back to type selection
+    if (this.selectedUserType) {
+      this.selectedUserType = null;
+      // Clear any nurse-specific validators
+      this.registerForm.get('cepNumber')?.clearValidators();
+      this.registerForm.get('acceptProfessionalDisclaimer')?.clearValidators();
+      this.registerForm.get('cepNumber')?.updateValueAndValidity();
+      this.registerForm.get('acceptProfessionalDisclaimer')?.updateValueAndValidity();
+    } else {
+      // If at type selection, go back to login
+      this.router.navigate(['/auth/login']);
+    }
   }
 
   togglePassword() {

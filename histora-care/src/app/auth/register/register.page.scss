@@ -32,6 +32,172 @@ $border-radius: 12px;
   }
 }
 
+// ============================================
+// Type Selection Section
+// ============================================
+.type-selection-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+}
+
+.type-selection-header {
+  text-align: center;
+  margin-bottom: 32px;
+
+  .logo-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .logo-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .type-selection-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: $text-dark;
+    margin: 0 0 8px;
+  }
+
+  .type-selection-subtitle {
+    font-size: 14px;
+    color: $text-muted;
+    margin: 0;
+  }
+}
+
+.type-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.type-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .type-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    ion-icon {
+      font-size: 28px;
+      color: white;
+    }
+  }
+
+  .type-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0 0 8px;
+  }
+
+  .type-card-description {
+    font-size: 13px;
+    color: $text-muted;
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+
+  .type-card-features {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    span {
+      font-size: 12px;
+      color: $text-muted;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+  }
+
+  // Patient Card Variant
+  &.patient-card {
+    .type-card-icon {
+      background: linear-gradient(135deg, #4a9d9a 0%, #6ab8b5 100%);
+    }
+
+    .type-card-features ion-icon {
+      color: #4a9d9a;
+    }
+
+    &:hover {
+      border-color: #4a9d9a;
+    }
+  }
+
+  // Nurse Card Variant
+  &.nurse-card {
+    .type-card-icon {
+      background: linear-gradient(135deg, $nurse-color 0%, #0d9668 100%);
+    }
+
+    .type-card-features ion-icon {
+      color: $nurse-color;
+    }
+
+    &:hover {
+      border-color: $nurse-color;
+    }
+  }
+}
+
+.type-selection-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+
+  p {
+    font-size: 14px;
+    color: $text-muted;
+    margin: 0 0 4px;
+  }
+
+  .login-link {
+    --color: #{$primary-color};
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: none;
+  }
+}
+
 // Form Section
 .form-section {
   flex: 1;
@@ -202,6 +368,50 @@ $border-radius: 12px;
 
   .back-btn {
     --color: white;
+  }
+
+  // Type Selection Dark Mode
+  .type-selection-header {
+    .type-selection-title {
+      color: white;
+    }
+
+    .type-selection-subtitle {
+      color: #a0aec0;
+    }
+  }
+
+  .type-card {
+    background: #1a1a1a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+    .type-card-title {
+      color: white;
+    }
+
+    .type-card-description {
+      color: #94a3b8;
+    }
+
+    .type-card-features span {
+      color: #94a3b8;
+    }
+
+    &:hover {
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  .type-selection-footer {
+    border-top-color: #2d3748;
+
+    p {
+      color: #a0aec0;
+    }
+
+    .login-link {
+      --color: #4a9d9a;
+    }
   }
 
   .form-section {

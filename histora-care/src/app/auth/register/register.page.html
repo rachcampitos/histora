@@ -5,6 +5,56 @@
       <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
     </ion-button>
 
+    <!-- User Type Selection (shown when no type is selected) -->
+    <div class="type-selection-section" *ngIf="!selectedUserType">
+      <div class="type-selection-header">
+        <div class="logo-wrapper">
+          <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
+        </div>
+        <h2 class="type-selection-title">¿Cómo deseas registrarte?</h2>
+        <p class="type-selection-subtitle">Selecciona una opción para continuar</p>
+      </div>
+
+      <div class="type-cards">
+        <!-- Patient Card -->
+        <div class="type-card patient-card" (click)="selectUserType('patient')">
+          <div class="type-card-icon">
+            <ion-icon name="search"></ion-icon>
+          </div>
+          <h3 class="type-card-title">Busco Enfermera</h3>
+          <p class="type-card-description">
+            Necesito atención de enfermería a domicilio para mí o un familiar
+          </p>
+          <div class="type-card-features">
+            <span><ion-icon name="checkmark-circle"></ion-icon> Sin suscripciones</span>
+            <span><ion-icon name="checkmark-circle"></ion-icon> Enfermeras verificadas</span>
+          </div>
+        </div>
+
+        <!-- Nurse Card -->
+        <div class="type-card nurse-card" (click)="selectUserType('nurse')">
+          <div class="type-card-icon">
+            <ion-icon name="medical"></ion-icon>
+          </div>
+          <h3 class="type-card-title">Soy Enfermera/o</h3>
+          <p class="type-card-description">
+            Quiero ofrecer mis servicios profesionales de enfermería
+          </p>
+          <div class="type-card-features">
+            <span><ion-icon name="checkmark-circle"></ion-icon> Define tu tarifa</span>
+            <span><ion-icon name="checkmark-circle"></ion-icon> Horarios flexibles</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="type-selection-footer">
+        <p>¿Ya tienes una cuenta?</p>
+        <ion-button fill="clear" class="login-link" routerLink="/auth/login">
+          Iniciar Sesión
+        </ion-button>
+      </div>
+    </div>
+
     <!-- Registration Form -->
     <div class="form-section" *ngIf="selectedUserType">
       <h2 class="form-title">
