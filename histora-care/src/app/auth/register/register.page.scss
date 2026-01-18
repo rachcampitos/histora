@@ -330,7 +330,7 @@ $border-radius: 12px;
     }
 
     .terms-text {
-      color: darken($text-muted, 10%);
+      color: var(--histora-text-secondary, #78716c);
     }
   }
 }
