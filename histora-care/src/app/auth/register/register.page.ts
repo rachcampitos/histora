@@ -168,20 +168,26 @@ export class RegisterPage implements OnInit, OnDestroy {
   }
 
   async onSubmit() {
+    console.log('[REGISTER] onSubmit called, isSubmitting:', this.isSubmitting());
+
     // Prevent double submission
     if (this.isSubmitting()) {
+      console.log('[REGISTER] Already submitting, returning early');
       return;
     }
 
     if (this.registerForm.invalid) {
+      console.log('[REGISTER] Form invalid, marking touched');
       this.markFormTouched();
       return;
     }
 
     // Mark as submitting immediately
     this.isSubmitting.set(true);
+    console.log('[REGISTER] Set isSubmitting to true');
 
     const { firstName, lastName, email, phone, password, cepNumber, specialties, acceptTerms, acceptProfessionalDisclaimer } = this.registerForm.value;
+    console.log('[REGISTER] Registering with email:', email);
 
     if (this.selectedUserType === 'nurse') {
       // Use custom CEP loading overlay for nurses
@@ -199,13 +205,17 @@ export class RegisterPage implements OnInit, OnDestroy {
         termsAccepted: acceptTerms,
         professionalDisclaimerAccepted: acceptProfessionalDisclaimer
       }).subscribe({
-        next: async () => {
+        next: async (response) => {
+          console.log('[REGISTER] SUCCESS - Registration completed:', response);
           this.stopCepLoadingMessages();
           // Show success transition screen
           this.showSuccessTransition.set(true);
           // Note: Don't reset isSubmitting here, user is navigating away
         },
         error: async (error) => {
+          console.log('[REGISTER] ERROR - Registration failed:', error);
+          console.log('[REGISTER] Error status:', error.status);
+          console.log('[REGISTER] Error body:', error.error);
           this.stopCepLoadingMessages();
           this.isSubmitting.set(false); // Allow retry on error
           await this.showError(error);

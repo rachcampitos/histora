@@ -249,11 +249,15 @@ export class AuthService {
   }
 
   async registerNurse(registerDto: RegisterNurseDto): Promise<AuthResponse> {
+    this.logger.log(`[REGISTER NURSE] Starting registration for email: ${registerDto.email}`);
+
     // Check if email already exists
     const existingUser = await this.usersService.findByEmail(registerDto.email);
     if (existingUser) {
+      this.logger.warn(`[REGISTER NURSE] Email already exists: ${registerDto.email}`);
       throw new ConflictException('Este email ya está registrado');
     }
+    this.logger.log(`[REGISTER NURSE] Email check passed, email is available`);
 
     // Validate terms acceptance
     if (!registerDto.termsAccepted) {
@@ -264,6 +268,7 @@ export class AuthService {
     }
 
     // Create user as nurse with terms acceptance
+    this.logger.log(`[REGISTER NURSE] Creating user...`);
     const user = await this.usersService.create({
       email: registerDto.email,
       password: registerDto.password,
@@ -277,12 +282,15 @@ export class AuthService {
       professionalDisclaimerAccepted: true,
       professionalDisclaimerAcceptedAt: new Date(),
     });
+    this.logger.log(`[REGISTER NURSE] User created with ID: ${user['_id']}`);
 
     // Create nurse profile
+    this.logger.log(`[REGISTER NURSE] Creating nurse profile...`);
     const nurseProfile = await this.nursesService.create(user['_id'].toString(), {
       cepNumber: registerDto.cepNumber,
       specialties: registerDto.specialties || [],
     });
+    this.logger.log(`[REGISTER NURSE] Nurse profile created`);
 
     const nurseProfileId = (nurseProfile as any)._id;
 
