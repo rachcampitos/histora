@@ -5,6 +5,7 @@ import { Doctor, DoctorDocument } from '../doctors/schema/doctor.schema';
 import { Clinic, ClinicDocument } from '../clinics/schema/clinic.schema';
 import { Review, ReviewDocument } from '../reviews/schema/review.schema';
 import { Appointment, AppointmentDocument, AppointmentStatus } from '../appointments/schema/appointment.schema';
+import { sanitizeRegex } from '../common/utils/security.util';
 
 @Injectable()
 export class PublicDirectoryService {
@@ -26,16 +27,18 @@ export class PublicDirectoryService {
     const query: any = { isDeleted: false, isPublicProfile: true };
 
     if (filters.specialty) {
+      const safeSpecialty = sanitizeRegex(filters.specialty);
       query.$or = [
-        { specialty: { $regex: filters.specialty, $options: 'i' } },
-        { subspecialties: { $regex: filters.specialty, $options: 'i' } },
+        { specialty: { $regex: safeSpecialty, $options: 'i' } },
+        { subspecialties: { $regex: safeSpecialty, $options: 'i' } },
       ];
     }
 
     if (filters.name) {
+      const safeName = sanitizeRegex(filters.name);
       const nameQuery = [
-        { firstName: { $regex: filters.name, $options: 'i' } },
-        { lastName: { $regex: filters.name, $options: 'i' } },
+        { firstName: { $regex: safeName, $options: 'i' } },
+        { lastName: { $regex: safeName, $options: 'i' } },
       ];
       if (query.$or) {
         query.$and = [{ $or: query.$or }, { $or: nameQuery }];
@@ -56,8 +59,9 @@ export class PublicDirectoryService {
 
     // Filter by city (from clinic)
     if (filters.city) {
+      const safeCity = sanitizeRegex(filters.city);
       const clinicsInCity = await this.clinicModel
-        .find({ 'address.city': { $regex: filters.city, $options: 'i' }, isDeleted: false })
+        .find({ 'address.city': { $regex: safeCity, $options: 'i' }, isDeleted: false })
         .select('_id');
       const clinicIds = clinicsInCity.map((c) => c._id);
       query.clinicId = { $in: clinicIds };
@@ -238,11 +242,11 @@ export class PublicDirectoryService {
     const query: any = { isDeleted: false, isActive: true };
 
     if (filters.name) {
-      query.name = { $regex: filters.name, $options: 'i' };
+      query.name = { $regex: sanitizeRegex(filters.name), $options: 'i' };
     }
 
     if (filters.city) {
-      query['address.city'] = { $regex: filters.city, $options: 'i' };
+      query['address.city'] = { $regex: sanitizeRegex(filters.city), $options: 'i' };
     }
 
     const [clinics, total] = await Promise.all([

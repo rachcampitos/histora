@@ -17,6 +17,7 @@ import { RegisterDto, RegisterPatientDto, RegisterNurseDto, ValidateNurseCepDto,
 import { NursesService } from '../nurses/nurses.service';
 import { CepValidationService } from '../nurses/cep-validation.service';
 import { ReniecValidationService } from '../nurses/reniec-validation.service';
+import { AccountLockoutService } from './services/account-lockout.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UserRole } from '../users/schema/user.schema';
 import { JwtPayload } from './strategies/jwt.strategy';
@@ -61,6 +62,7 @@ export class AuthService {
     private nursesService: NursesService,
     private cepValidationService: CepValidationService,
     private reniecValidationService: ReniecValidationService,
+    private accountLockoutService: AccountLockoutService,
     private emailProvider: EmailProvider,
     private notificationsService: NotificationsService,
   ) {}
@@ -318,9 +320,22 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<AuthResponse> {
-    const user = await this.usersService.findByEmailWithPassword(loginDto.email);
+    const email = loginDto.email.toLowerCase();
+
+    // Check if account is locked due to too many failed attempts
+    const lockStatus = this.accountLockoutService.isLocked(email);
+    if (lockStatus.isLocked) {
+      const minutes = Math.ceil(lockStatus.remainingTime / 60);
+      throw new UnauthorizedException(
+        `Cuenta bloqueada temporalmente. Intenta de nuevo en ${minutes} minuto${minutes !== 1 ? 's' : ''}.`,
+      );
+    }
+
+    const user = await this.usersService.findByEmailWithPassword(email);
 
     if (!user) {
+      // Record failed attempt even for non-existent users (prevents user enumeration)
+      this.accountLockoutService.recordFailedAttempt(email);
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
@@ -339,8 +354,20 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      // Record failed attempt
+      const result = this.accountLockoutService.recordFailedAttempt(email);
+      if (result.isLocked) {
+        throw new UnauthorizedException(
+          `Demasiados intentos fallidos. Cuenta bloqueada por ${Math.ceil(result.lockoutDuration / 60)} minutos.`,
+        );
+      }
+      throw new UnauthorizedException(
+        `Credenciales inválidas. ${result.attemptsRemaining} intento${result.attemptsRemaining !== 1 ? 's' : ''} restante${result.attemptsRemaining !== 1 ? 's' : ''}.`,
+      );
     }
+
+    // Clear lockout on successful login
+    this.accountLockoutService.recordSuccessfulLogin(email);
 
     // Update last login
     await this.usersService.updateLastLogin(user['_id'].toString());

@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { AccountLockoutService } from './services/account-lockout.service';
 import { UsersModule } from '../users/users.module';
 import { ClinicsModule } from '../clinics/clinics.module';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
@@ -42,7 +43,7 @@ import { EmailProvider } from '../notifications/providers/email.provider';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy, EmailProvider],
-  exports: [AuthService, JwtModule, PassportModule],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, EmailProvider, AccountLockoutService],
+  exports: [AuthService, JwtModule, PassportModule, AccountLockoutService],
 })
 export class AuthModule {}

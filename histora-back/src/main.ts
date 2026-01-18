@@ -1,32 +1,62 @@
-// Build version: 2026-01-08-v2
+// Build version: 2026-01-18-security
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
+import { SanitizeInterceptor } from './common/interceptors/sanitize.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Security: Helmet for HTTP headers protection
-  // Disable in development for OAuth testing
   const isProduction = process.env.NODE_ENV === 'production';
-  if (isProduction) {
-    app.use(
-      helmet({
-        contentSecurityPolicy: {
-          directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
-            scriptSrc: ["'self'"],
-          },
-        },
-        crossOriginEmbedderPolicy: false,
-      }),
-    );
-  }
+  app.use(
+    helmet({
+      contentSecurityPolicy: isProduction
+        ? {
+            directives: {
+              defaultSrc: ["'self'"],
+              styleSrc: ["'self'", "'unsafe-inline'"],
+              imgSrc: [
+                "'self'",
+                'data:',
+                'blob:',
+                'https://res.cloudinary.com', // Cloudinary images
+                'https://www.cep.org.pe', // CEP photos
+              ],
+              scriptSrc: ["'self'"],
+              connectSrc: [
+                "'self'",
+                'https://api.historahealth.com',
+                'https://res.cloudinary.com',
+              ],
+              fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+              objectSrc: ["'none'"],
+              frameSrc: ["'none'"],
+              baseUri: ["'self'"],
+              formAction: ["'self'"],
+              upgradeInsecureRequests: [],
+            },
+          }
+        : false, // Disable CSP in development for easier debugging
+      crossOriginEmbedderPolicy: false,
+      crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      // Additional security headers
+      hsts: isProduction
+        ? {
+            maxAge: 31536000, // 1 year
+            includeSubDomains: true,
+            preload: true,
+          }
+        : false,
+      noSniff: true, // X-Content-Type-Options: nosniff
+      xssFilter: true, // X-XSS-Protection
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    }),
+  );
 
   // Increase body size limit for file uploads (base64 images)
   app.use(json({ limit: '10mb' }));
@@ -68,6 +98,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Global XSS sanitization interceptor
+  app.useGlobalInterceptors(new SanitizeInterceptor());
 
   // Swagger Configuration - only enable in non-production
   if (!isProduction) {
