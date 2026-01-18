@@ -215,9 +215,9 @@
           expand="block"
           type="submit"
           class="register-btn"
-          [disabled]="registerForm.invalid">
+          [disabled]="registerForm.invalid || isSubmitting()">
           <ion-icon name="person-add-outline" slot="start"></ion-icon>
-          Crear Cuenta
+          {{ isSubmitting() ? 'Creando cuenta...' : 'Crear Cuenta' }}
         </ion-button>
       </form>
     </div>
