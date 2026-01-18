@@ -19,7 +19,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const existingUser = await this.findByEmail(createUserDto.email);
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('Este email ya está registrado');
     }
 
     const hashedPassword = await this.hashPassword(createUserDto.password);
@@ -28,7 +28,15 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    return newUser.save();
+    try {
+      return await newUser.save();
+    } catch (error: any) {
+      // Handle MongoDB duplicate key error (race condition)
+      if (error.code === 11000) {
+        throw new ConflictException('Este email ya está registrado');
+      }
+      throw error;
+    }
   }
 
   async findAll(clinicId?: string): Promise<User[]> {
