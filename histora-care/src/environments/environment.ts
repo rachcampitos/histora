@@ -1,4 +1,12 @@
-export const environment = {
+export interface Environment {
+  production: boolean;
+  apiUrl: string;
+  wsUrl: string;
+  mapboxToken: string;
+  appScheme: string;
+}
+
+export const environment: Environment = {
   production: false,
   // Use production API for development (uncomment localhost for local backend)
   apiUrl: 'https://api.historahealth.com/api',
