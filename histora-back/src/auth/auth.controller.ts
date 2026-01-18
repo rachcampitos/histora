@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, HttpCode, HttpStatus, Req, Res } from '@nestjs/common';
+import { Controller, Post, Body, Get, Patch, UseGuards, HttpCode, HttpStatus, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   ApiTags,
@@ -14,6 +14,7 @@ import { RegisterDto, RegisterPatientDto, RegisterNurseDto, CompleteGoogleRegist
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateProfileDto, ChangePasswordDto } from './dto/update-profile.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -138,6 +139,39 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'No autorizado' })
   getProfile(@CurrentUser() user: CurrentUserPayload) {
     return this.authService.getProfile(user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Actualizar perfil del usuario actual' })
+  @ApiResponse({ status: 200, description: 'Perfil actualizado exitosamente' })
+  @ApiResponse({ status: 401, description: 'No autorizado' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  updateProfile(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    return this.authService.updateProfile(user.userId, updateProfileDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Cambiar contraseña del usuario actual' })
+  @ApiResponse({ status: 200, description: 'Contraseña actualizada exitosamente' })
+  @ApiResponse({ status: 401, description: 'Contraseña actual incorrecta' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
+  changePassword(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(
+      user.userId,
+      changePasswordDto.currentPassword,
+      changePasswordDto.newPassword,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

@@ -10,6 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { AuthService } from '@core';
 import { UploadsService } from '@core/service/uploads.service';
+import { LoginService } from '@core/service/login.service';
 
 @Component({
   standalone: true,
@@ -35,10 +36,14 @@ export class SettingsComponent implements OnInit {
   avatarUrl: string | null = null;
   uploadingAvatar = false;
 
+  isSavingProfile = false;
+  isChangingPassword = false;
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private uploadsService: UploadsService,
+    private loginService: LoginService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -169,27 +174,77 @@ export class SettingsComponent implements OnInit {
 
   saveProfile(): void {
     if (this.profileForm.valid) {
-      // TODO: Implement API call to update profile
-      console.log('Profile data:', this.profileForm.value);
-      this.snackBar.open('Perfil actualizado', '', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
+      this.isSavingProfile = true;
+      const profileData = this.profileForm.value;
+
+      this.loginService.updateProfile(profileData).subscribe({
+        next: (response) => {
+          this.isSavingProfile = false;
+          if ('success' in response && response.success) {
+            // Update local user data
+            if (response.user) {
+              const currentUser = this.authService.currentUserValue;
+              const updatedUser = { ...currentUser, ...response.user };
+              this.authService.user$.next(updatedUser);
+            }
+            this.snackBar.open('Perfil actualizado exitosamente', '', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            });
+          } else if ('error' in response) {
+            this.snackBar.open(response.error || 'Error al actualizar perfil', '', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            });
+          }
+        },
+        error: () => {
+          this.isSavingProfile = false;
+          this.snackBar.open('Error al actualizar perfil', '', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          });
+        }
       });
     }
   }
 
   changePassword(): void {
     if (this.passwordForm.valid) {
-      // TODO: Implement API call to change password
-      console.log('Password change data:', this.passwordForm.value);
-      this.snackBar.open('Contraseña actualizada', '', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
+      this.isChangingPassword = true;
+      const { currentPassword, newPassword } = this.passwordForm.value;
+
+      this.loginService.changePassword(currentPassword, newPassword).subscribe({
+        next: (response) => {
+          this.isChangingPassword = false;
+          if ('success' in response && response.success) {
+            this.snackBar.open('Contraseña actualizada exitosamente', '', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            });
+            this.passwordForm.reset();
+            this.loadUserData();
+          } else if ('error' in response) {
+            this.snackBar.open(response.error || 'Error al cambiar contraseña', '', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            });
+          }
+        },
+        error: () => {
+          this.isChangingPassword = false;
+          this.snackBar.open('Error al cambiar contraseña', '', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom',
+          });
+        }
       });
-      this.passwordForm.reset();
-      this.loadUserData(); // Reload username
     }
   }
 }

@@ -5,6 +5,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { ThemeService, ThemeMode } from '../../core/services/theme.service';
 import { UploadsService } from '../../core/services/uploads.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
+import { AuthUser } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-settings',
@@ -22,7 +23,7 @@ export class SettingsPage implements OnInit {
   private productTourService = inject(ProductTourService);
   themeService = inject(ThemeService);
 
-  user = signal<any>(null);
+  user = signal<AuthUser | null>(null);
   isUploadingAvatar = signal(false);
 
   ngOnInit() {

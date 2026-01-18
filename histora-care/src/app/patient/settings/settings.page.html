@@ -16,7 +16,7 @@
     <div class="profile-avatar-wrapper" (click)="changeAvatar($event)">
       <div class="profile-avatar">
         @if (user()?.avatar) {
-          <img [src]="user().avatar" alt="Avatar" />
+          <img [src]="user()?.avatar" alt="Avatar" />
         } @else {
           <ion-icon name="person"></ion-icon>
         }
