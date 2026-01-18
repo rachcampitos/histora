@@ -101,19 +101,19 @@ $border-radius: 12px;
 
   &.approved {
     .status-icon {
-      background: linear-gradient(135deg, $success-color 0%, darken($success-color, 10%) 100%);
+      background: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
     }
   }
 
   &.under-review {
     .status-icon {
-      background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+      background: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f) 0%, var(--ion-color-primary-shade, #1a3353) 100%);
     }
   }
 
   &.rejected {
     .status-icon {
-      background: linear-gradient(135deg, $danger-color 0%, darken($danger-color, 10%) 100%);
+      background: linear-gradient(135deg, var(--ion-color-danger, #ef4444) 0%, var(--ion-color-danger-shade, #d93636) 100%);
     }
   }
 }
@@ -277,10 +277,10 @@ $border-radius: 12px;
   margin-top: 16px;
 
   ion-button {
-    --background: #{$nurse-color};
-    --background-hover: #{scale-color($nurse-color, $lightness: -10%)};
+    --background: var(--ion-color-success, #10b981);
+    --background-hover: var(--ion-color-success-shade, #0d9668);
     --border-radius: #{$border-radius};
-    --box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    --box-shadow: 0 4px 16px rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.4);
     height: 52px;
     font-size: 16px;
     font-weight: 600;
@@ -686,10 +686,10 @@ $border-radius: 12px;
 // Submit Section
 .submit-section {
   ion-button {
-    --background: #{$nurse-color};
-    --background-hover: #{darken($nurse-color, 5%)};
+    --background: var(--ion-color-success, #10b981);
+    --background-hover: var(--ion-color-success-shade, #0d9668);
     --border-radius: #{$border-radius};
-    --box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    --box-shadow: 0 4px 16px rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.4);
     height: 52px;
     font-size: 16px;
     font-weight: 600;
