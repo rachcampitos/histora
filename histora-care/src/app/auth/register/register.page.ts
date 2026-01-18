@@ -44,6 +44,9 @@ export class RegisterPage implements OnInit, OnDestroy {
   showSuccessTransition = signal(false);
   registeredUserName = signal('');
 
+  // Prevent double submission
+  isSubmitting = signal(false);
+
   // CEP specialties options
   specialtiesOptions = [
     'Cuidados Generales',
@@ -165,10 +168,18 @@ export class RegisterPage implements OnInit, OnDestroy {
   }
 
   async onSubmit() {
+    // Prevent double submission
+    if (this.isSubmitting()) {
+      return;
+    }
+
     if (this.registerForm.invalid) {
       this.markFormTouched();
       return;
     }
+
+    // Mark as submitting immediately
+    this.isSubmitting.set(true);
 
     const { firstName, lastName, email, phone, password, cepNumber, specialties, acceptTerms, acceptProfessionalDisclaimer } = this.registerForm.value;
 
@@ -192,9 +203,11 @@ export class RegisterPage implements OnInit, OnDestroy {
           this.stopCepLoadingMessages();
           // Show success transition screen
           this.showSuccessTransition.set(true);
+          // Note: Don't reset isSubmitting here, user is navigating away
         },
         error: async (error) => {
           this.stopCepLoadingMessages();
+          this.isSubmitting.set(false); // Allow retry on error
           await this.showError(error);
         }
       });
@@ -227,6 +240,7 @@ export class RegisterPage implements OnInit, OnDestroy {
         },
         error: async (error) => {
           await loading.dismiss();
+          this.isSubmitting.set(false); // Allow retry on error
           await this.showError(error);
         }
       });
