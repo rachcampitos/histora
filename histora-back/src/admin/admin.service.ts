@@ -30,6 +30,7 @@ import {
   ExpiringVerificationDto,
 } from './dto/dashboard.dto';
 import { UserRole } from '../users/schema/user.schema';
+import { sanitizeRegex } from '../common/utils/security.util';
 
 @Injectable()
 export class AdminService {
@@ -53,10 +54,11 @@ export class AdminService {
     const filter: any = { isDeleted: false };
 
     if (search) {
+      const safeSearch = sanitizeRegex(search);
       filter.$or = [
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: safeSearch, $options: 'i' } },
+        { lastName: { $regex: safeSearch, $options: 'i' } },
+        { email: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 
@@ -894,15 +896,22 @@ export class AdminService {
     }
 
     if (district) {
-      filter['location.district'] = { $regex: district, $options: 'i' };
+      filter['location.district'] = { $regex: sanitizeRegex(district), $options: 'i' };
     }
 
     // Get nurses with user info
     let nurses = await this.nurseModel
       .find(filter)
-      .populate('userId', 'firstName lastName email phone avatar isActive')
+      .populate('userId', 'firstName lastName email phone avatar isActive isDeleted')
       .sort({ createdAt: -1 })
       .exec();
+
+    // Filter out nurses where the user has been deleted or doesn't exist
+    nurses = nurses.filter((nurse) => {
+      const user = nurse.userId as any;
+      // Exclude if user is null (hard-deleted) or if user is soft-deleted
+      return user && !user.isDeleted;
+    });
 
     // Apply search filter on populated fields
     if (search) {
@@ -1200,10 +1209,11 @@ export class AdminService {
     };
 
     if (search) {
+      const safeSearch = sanitizeRegex(search);
       filter.$or = [
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: safeSearch, $options: 'i' } },
+        { lastName: { $regex: safeSearch, $options: 'i' } },
+        { email: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 
