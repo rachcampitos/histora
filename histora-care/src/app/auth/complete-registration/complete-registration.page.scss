@@ -1,16 +1,16 @@
-// Variables
-$primary-color: #1e3a5f;
-$primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
-$success-color: #10b981;
-$error-color: #f44336;
-$warning-color: #f59e0b;
-$text-dark: #1a1a1a;
-$text-muted: #a1a1aa;
-$bg-light: #f7fafc;
+// Variables - using CSS custom properties for theming
+$primary-color: var(--ion-color-primary, #1e3a5f);
+$primary-gradient: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
+$success-color: var(--ion-color-success, #10b981);
+$error-color: var(--ion-color-danger, #f44336);
+$warning-color: var(--ion-color-warning, #f59e0b);
+$text-dark: var(--histora-text-primary, #1a1a1a);
+$text-muted: var(--histora-text-muted, #a1a1aa);
+$bg-light: var(--histora-background, #f7fafc);
 $border-radius: 12px;
 
 .complete-registration-content {
-  --background: #{$bg-light};
+  --background: var(--histora-background, #f7fafc);
 }
 
 .registration-container {
@@ -48,11 +48,11 @@ $border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.3);
 
     .logo-icon {
       font-size: 36px;
-      color: white;
+      color: var(--ion-color-primary-contrast, #ffffff);
     }
   }
 
@@ -96,8 +96,8 @@ $border-radius: 12px;
 }
 
 .type-card {
-  background: white;
-  border: 2px solid #e7e5e4;
+  background: var(--histora-surface, #ffffff);
+  border: 2px solid var(--histora-border, #e7e5e4);
   border-radius: 16px;
   padding: 20px;
   text-align: left;
@@ -108,7 +108,7 @@ $border-radius: 12px;
   &:hover, &:focus {
     border-color: $primary-color;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.15);
   }
 
   &:active {
@@ -126,16 +126,16 @@ $border-radius: 12px;
 
     ion-icon {
       font-size: 28px;
-      color: white;
+      color: var(--ion-color-primary-contrast, #ffffff);
     }
   }
 
   &.nurse-card .card-icon {
-    background: linear-gradient(135deg, #1e3a5f, #4a9d9a);
+    background: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f), var(--ion-color-tertiary, #4a9d9a));
   }
 
   &.patient-card .card-icon {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, var(--ion-color-success, #10b981), var(--ion-color-success-shade, #059669));
   }
 
   h3 {
@@ -209,7 +209,7 @@ $border-radius: 12px;
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #e7e5e4;
+      background: var(--histora-border, #e7e5e4);
       color: $text-muted;
       font-size: 13px;
       font-weight: 600;
@@ -231,7 +231,7 @@ $border-radius: 12px;
     &.active {
       .step-number {
         background: $primary-gradient;
-        color: white;
+        color: var(--ion-color-primary-contrast, #ffffff);
       }
       .step-label {
         color: $primary-color;
@@ -249,7 +249,7 @@ $border-radius: 12px;
   .progress-line {
     width: 60px;
     height: 3px;
-    background: #e7e5e4;
+    background: var(--histora-border, #e7e5e4);
     border-radius: 2px;
     margin-bottom: 18px;
 
@@ -261,13 +261,13 @@ $border-radius: 12px;
 
 // Input Items
 .input-item {
-  --background: white;
+  --background: var(--histora-surface, #ffffff);
   --border-radius: #{$border-radius};
   --padding-start: 16px;
   --padding-end: 8px;
   --min-height: 52px;
   margin-bottom: 4px;
-  border: 2px solid #e7e5e4;
+  border: 2px solid var(--histora-border, #e7e5e4);
   border-radius: $border-radius;
   transition: all 0.3s ease;
 
@@ -334,8 +334,8 @@ $border-radius: 12px;
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
-  background: white;
-  border: 1px solid #e7e5e4;
+  background: var(--histora-surface, #ffffff);
+  border: 1px solid var(--histora-border, #e7e5e4);
   border-radius: 20px;
   font-size: 13px;
   color: $text-muted;
@@ -352,7 +352,7 @@ $border-radius: 12px;
   }
 
   &.selected {
-    background: rgba(102, 126, 234, 0.1);
+    background: rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.1);
     border-color: $primary-color;
     color: $primary-color;
 
@@ -369,7 +369,7 @@ $border-radius: 12px;
   justify-content: center;
   gap: 8px;
   padding: 12px;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.1);
   border-radius: 8px;
   margin-bottom: 20px;
 
@@ -393,8 +393,8 @@ $border-radius: 12px;
 }
 
 .document-card {
-  background: white;
-  border: 2px dashed #e7e5e4;
+  background: var(--histora-surface, #ffffff);
+  border: 2px dashed var(--histora-border, #e7e5e4);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -440,7 +440,7 @@ $border-radius: 12px;
       gap: 6px;
       padding: 8px 16px;
       background: $primary-gradient;
-      color: white;
+      color: var(--ion-color-primary-contrast, #ffffff);
       border-radius: 20px;
       font-size: 13px;
       font-weight: 500;
@@ -479,7 +479,7 @@ $border-radius: 12px;
 
       ion-icon {
         font-size: 20px;
-        color: white;
+        color: var(--ion-color-primary-contrast, #ffffff);
       }
     }
   }
@@ -489,7 +489,7 @@ $border-radius: 12px;
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: rgba(16, 185, 129, 0.05);
+    background: rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.05);
 
     .document-label {
       font-size: 13px;
@@ -519,8 +519,8 @@ $border-radius: 12px;
   display: flex;
   gap: 12px;
   padding: 16px;
-  background: rgba(102, 126, 234, 0.05);
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  background: rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.05);
+  border: 1px solid rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.2);
   border-radius: 12px;
   margin-bottom: 24px;
 
@@ -544,7 +544,7 @@ $border-radius: 12px;
   --background-hover: #{$primary-gradient};
   --background-activated: #{$primary-gradient};
   --border-radius: #{$border-radius};
-  --box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  --box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.4);
   height: 52px;
   font-size: 16px;
   font-weight: 600;
@@ -556,7 +556,7 @@ $border-radius: 12px;
   }
 
   &[disabled] {
-    --background: #cbd5e0;
+    --background: var(--histora-border, #cbd5e0);
     --box-shadow: none;
     opacity: 1;
   }
@@ -721,19 +721,19 @@ $border-radius: 12px;
 }
 
 .terms-card {
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 16px;
-  border: 2px solid #e7e5e4;
+  border: 2px solid var(--histora-border, #e7e5e4);
 
   .terms-header {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-    border-bottom: 1px solid #e7e5e4;
+    background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-bottom: 1px solid var(--histora-border, #e7e5e4);
 
     ion-icon {
       font-size: 24px;
@@ -779,8 +779,8 @@ $border-radius: 12px;
       align-items: center;
       gap: 6px;
       padding: 8px 14px;
-      background: rgba(102, 126, 234, 0.1);
-      border: 1px solid rgba(102, 126, 234, 0.3);
+      background: rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.1);
+      border: 1px solid rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.3);
       border-radius: 8px;
       font-size: 13px;
       color: $primary-color;
@@ -792,7 +792,7 @@ $border-radius: 12px;
       }
 
       &:hover {
-        background: rgba(102, 126, 234, 0.15);
+        background: rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.15);
       }
     }
   }
@@ -802,13 +802,13 @@ $border-radius: 12px;
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: #f7fafc;
-    border-top: 1px solid #e7e5e4;
+    background: var(--histora-surface-secondary, #f7fafc);
+    border-top: 1px solid var(--histora-border, #e7e5e4);
     cursor: pointer;
     transition: background 0.2s ease;
 
     &:hover {
-      background: #edf2f7;
+      background: var(--histora-surface-tertiary, #edf2f7);
     }
 
     ion-checkbox {
@@ -869,7 +869,7 @@ $border-radius: 12px;
         align-items: flex-start;
         gap: 10px;
         padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--histora-border-light, #f0f0f0);
 
         &:last-child {
           border-bottom: none;
@@ -911,7 +911,7 @@ $border-radius: 12px;
 
 // Modal Content Styles
 .modal-content {
-  --background: white;
+  --background: var(--histora-surface, #ffffff);
 
   .modal-body {
     padding: 24px;

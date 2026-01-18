@@ -1,16 +1,16 @@
-// Variables
-$primary-color: #1e3a5f;
-$primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
-$nurse-color: #10b981;
-$patient-color: #2d5f8a;
-$error-color: #f44336;
-$text-dark: #1a1a1a;
-$text-muted: #a1a1aa;
-$bg-light: #f7fafc;
+// Variables - using CSS custom properties for theming
+$primary-color: var(--ion-color-primary, #1e3a5f);
+$primary-gradient: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
+$nurse-color: var(--ion-color-success, #10b981);
+$patient-color: var(--splash-gradient-end, #2d5f8a);
+$error-color: var(--ion-color-danger, #f44336);
+$text-dark: var(--histora-text-primary, #1a1a1a);
+$text-muted: var(--histora-text-muted, #a1a1aa);
+$bg-light: var(--histora-background, #f7fafc);
 $border-radius: 12px;
 
 .register-content {
-  --background: #{$bg-light};
+  --background: var(--histora-background, #f7fafc);
 }
 
 .register-container {
@@ -83,7 +83,7 @@ $border-radius: 12px;
 }
 
 .type-card {
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: 16px;
   padding: 24px 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -111,7 +111,7 @@ $border-radius: 12px;
 
     ion-icon {
       font-size: 28px;
-      color: white;
+      color: var(--ion-color-primary-contrast, #ffffff);
     }
   }
 
@@ -150,30 +150,30 @@ $border-radius: 12px;
   // Patient Card Variant
   &.patient-card {
     .type-card-icon {
-      background: linear-gradient(135deg, #4a9d9a 0%, #6ab8b5 100%);
+      background: linear-gradient(135deg, var(--ion-color-tertiary, #4a9d9a) 0%, var(--ion-color-tertiary-tint, #6ab8b5) 100%);
     }
 
     .type-card-features ion-icon {
-      color: #4a9d9a;
+      color: var(--ion-color-tertiary, #4a9d9a);
     }
 
     &:hover {
-      border-color: #4a9d9a;
+      border-color: var(--ion-color-tertiary, #4a9d9a);
     }
   }
 
   // Nurse Card Variant
   &.nurse-card {
     .type-card-icon {
-      background: linear-gradient(135deg, $nurse-color 0%, #0d9668 100%);
+      background: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
     }
 
     .type-card-features ion-icon {
-      color: $nurse-color;
+      color: var(--ion-color-success, #10b981);
     }
 
     &:hover {
-      border-color: $nurse-color;
+      border-color: var(--ion-color-success, #10b981);
     }
   }
 }
@@ -182,7 +182,7 @@ $border-radius: 12px;
   text-align: center;
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--histora-border, #e2e8f0);
 
   p {
     font-size: 14px;
@@ -201,7 +201,7 @@ $border-radius: 12px;
 // Form Section
 .form-section {
   flex: 1;
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: 20px;
   padding: 24px 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -225,7 +225,7 @@ $border-radius: 12px;
 }
 
 .input-item {
-  --background: #f8fafc;
+  --background: var(--histora-surface-secondary, #f8fafc);
   --border-radius: #{$border-radius};
   --padding-start: 16px;
   --padding-end: 8px;
@@ -237,12 +237,12 @@ $border-radius: 12px;
 
   &:focus-within {
     border-color: $primary-color;
-    --background: white;
+    --background: var(--histora-surface, #ffffff);
   }
 
   &.input-error {
     border-color: $error-color;
-    --background: #fff5f5;
+    --background: var(--error-background, #fff5f5);
   }
 
   .input-icon {
@@ -340,7 +340,7 @@ $border-radius: 12px;
   --background-hover: #{$primary-gradient};
   --background-activated: #{$primary-gradient};
   --border-radius: #{$border-radius};
-  --box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+  --box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.4);
   height: 48px;
   font-size: 15px;
   font-weight: 600;
@@ -353,7 +353,7 @@ $border-radius: 12px;
   }
 
   &[disabled] {
-    --background: #cbd5e0;
+    --background: var(--histora-border, #cbd5e0);
     --box-shadow: none;
     opacity: 1;
   }
@@ -477,7 +477,7 @@ $border-radius: 12px;
 }
 
 .cep-loading-card {
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: 20px;
   padding: 32px 24px;
   max-width: 340px;
@@ -624,7 +624,7 @@ $border-radius: 12px;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  background: linear-gradient(135deg, var(--success-overlay-start, #f0fdf4) 0%, var(--success-overlay-end, #dcfce7) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -633,13 +633,13 @@ $border-radius: 12px;
 }
 
 .success-transition-card {
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: 24px;
   padding: 32px 24px;
   max-width: 380px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 20px 60px rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.2);
   animation: scaleIn 0.4s ease-out;
 }
 
@@ -658,7 +658,7 @@ $border-radius: 12px;
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
-  background: linear-gradient(135deg, $nurse-color 0%, #0d9668 100%);
+  background: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -667,7 +667,7 @@ $border-radius: 12px;
 
   .success-icon {
     font-size: 48px;
-    color: white;
+    color: var(--ion-color-success-contrast, #ffffff);
   }
 }
 
@@ -697,7 +697,7 @@ $border-radius: 12px;
 }
 
 .progress-checklist {
-  background: #f8fafc;
+  background: var(--histora-surface-secondary, #f8fafc);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
@@ -716,18 +716,18 @@ $border-radius: 12px;
     }
 
     &.completed {
-      color: $nurse-color;
+      color: var(--ion-color-success, #10b981);
 
       ion-icon {
-        color: $nurse-color;
+        color: var(--ion-color-success, #10b981);
       }
     }
 
     &.pending {
-      color: #94a3b8;
+      color: var(--histora-text-muted, #94a3b8);
 
       ion-icon {
-        color: #cbd5e0;
+        color: var(--histora-border, #cbd5e0);
       }
     }
   }
@@ -737,7 +737,7 @@ $border-radius: 12px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba($nurse-color, 0.08);
+  background: rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.08);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
@@ -745,7 +745,7 @@ $border-radius: 12px;
 
   .next-step-icon {
     font-size: 28px;
-    color: $nurse-color;
+    color: var(--ion-color-success, #10b981);
     flex-shrink: 0;
   }
 
@@ -768,7 +768,7 @@ $border-radius: 12px;
 
 .time-estimate {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--histora-text-muted, #94a3b8);
   margin: 0 0 20px;
   display: flex;
   align-items: center;
@@ -781,10 +781,10 @@ $border-radius: 12px;
 }
 
 .continue-btn {
-  --background: linear-gradient(135deg, $nurse-color 0%, #0d9668 100%);
-  --background-hover: linear-gradient(135deg, $nurse-color 0%, #0d9668 100%);
+  --background: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
+  --background-hover: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
   --border-radius: 12px;
-  --box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+  --box-shadow: 0 4px 16px rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.4);
   height: 50px;
   font-size: 16px;
   font-weight: 600;

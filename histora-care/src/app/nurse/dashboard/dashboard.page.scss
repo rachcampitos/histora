@@ -45,19 +45,19 @@ $primary-gradient: var(--histora-gradient);
 
     ion-icon {
       font-size: tokens.$font-size-2xl;
-      color: white;
+      color: var(--ion-color-primary-contrast, #ffffff);
     }
 
     &.pending {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      background: linear-gradient(135deg, var(--ion-color-warning, #f59e0b) 0%, var(--ion-color-warning-shade, #d97706) 100%);
     }
 
     &.under_review {
-      background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+      background: linear-gradient(135deg, var(--splash-gradient-end, #2d5f8a) 0%, var(--ion-color-primary, #1e3a5f) 100%);
     }
 
     &.rejected {
-      background: linear-gradient(135deg, #ef4444 0%, tokens.$color-error 100%);
+      background: linear-gradient(135deg, var(--ion-color-danger, #ef4444) 0%, var(--ion-color-danger-shade) 100%);
     }
   }
 
@@ -69,7 +69,7 @@ $primary-gradient: var(--histora-gradient);
       margin: 0;
       font-size: 15px;
       font-weight: tokens.$font-weight-semibold;
-      color: white;
+      color: var(--ion-color-primary-contrast, #ffffff);
     }
 
     p {
@@ -86,14 +86,14 @@ $primary-gradient: var(--histora-gradient);
   }
 
   // Background based on status
-  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(90deg, var(--ion-color-warning, #f59e0b) 0%, var(--ion-color-warning-shade, #d97706) 100%);
 
   &:has(.banner-icon.under_review) {
-    background: linear-gradient(90deg, #2d5f8a 0%, #1e3a5f 100%);
+    background: linear-gradient(90deg, var(--splash-gradient-end, #2d5f8a) 0%, var(--ion-color-primary, #1e3a5f) 100%);
   }
 
   &:has(.banner-icon.rejected) {
-    background: linear-gradient(90deg, #ef4444 0%, tokens.$color-error 100%);
+    background: linear-gradient(90deg, var(--ion-color-danger, #ef4444) 0%, var(--ion-color-danger-shade) 100%);
   }
 }
 
@@ -147,7 +147,7 @@ $primary-gradient: var(--histora-gradient);
 
   .stat-card {
     flex: 1;
-    background: white;
+    background: var(--histora-surface, #ffffff);
     border-radius: tokens.$radius-lg;
     padding: tokens.$spacing-4 tokens.$spacing-3;
     text-align: center;
@@ -281,7 +281,7 @@ $primary-gradient: var(--histora-gradient);
 }
 
 .active-request-card {
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: tokens.$radius-xl;
   padding: tokens.$spacing-4;
   box-shadow: tokens.$shadow-md;
@@ -394,7 +394,7 @@ $primary-gradient: var(--histora-gradient);
 
 // Request List
 .request-list {
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: tokens.$radius-lg;
   overflow: hidden;
   box-shadow: tokens.$shadow-sm;
@@ -453,7 +453,7 @@ $primary-gradient: var(--histora-gradient);
 .empty-state {
   text-align: center;
   padding: tokens.$spacing-10 tokens.$spacing-5;
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: tokens.$radius-lg;
   box-shadow: tokens.$shadow-sm;
 
@@ -483,7 +483,7 @@ $primary-gradient: var(--histora-gradient);
   display: flex;
   justify-content: space-around;
   padding: tokens.$spacing-5 tokens.$spacing-4;
-  background: white;
+  background: var(--histora-surface, #ffffff);
   margin: tokens.$spacing-4;
   border-radius: tokens.$radius-lg;
   box-shadow: tokens.$shadow-sm;
@@ -498,7 +498,7 @@ $primary-gradient: var(--histora-gradient);
       width: 50px;
       height: 50px;
       border-radius: tokens.$radius-lg;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+      background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
