@@ -28,22 +28,6 @@ interface CepValidationResult {
   error?: string;
 }
 
-interface NurseRegistrationResponse {
-  access_token: string;
-  refresh_token: string;
-  user: {
-    _id: string;
-    email: string;
-    role: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  verificationStatus?: string;
-}
-
-interface NurseRegistrationError {
-  error: string;
-}
 
 @Component({
   selector: 'app-signup-nurse',
@@ -262,10 +246,10 @@ export class SignupNurseComponent implements OnInit {
     };
 
     this.loginService.completeNurseRegistration(registrationData).subscribe({
-      next: (response: NurseRegistrationResponse | NurseRegistrationError) => {
+      next: (response) => {
         this.isLoading = false;
 
-        if ('error' in response) {
+        if ('error' in response && response.error) {
           this.snackBar.open(response.error || 'Error al completar el registro', 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar'],
@@ -273,23 +257,25 @@ export class SignupNurseComponent implements OnInit {
           return;
         }
 
-        // Store tokens and user data
-        this.tokenService.set({ access_token: response.access_token });
-        this.store.set('refreshToken', response.refresh_token);
-        this.store.set('currentUser', response.user);
+        if ('access_token' in response) {
+          // Store tokens and user data
+          this.tokenService.set({ access_token: response.access_token });
+          this.store.set('refreshToken', response.refresh_token);
+          this.store.set('currentUser', response.user);
 
-        // Show success message
-        const message = response.verificationStatus === 'pending'
-          ? 'Registro exitoso. Tu cuenta será verificada por un administrador.'
-          : 'Registro exitoso. Por favor sube una selfie para completar la verificación.';
+          // Show success message
+          const message = response.verificationStatus === 'pending'
+            ? 'Registro exitoso. Tu cuenta será verificada por un administrador.'
+            : 'Registro exitoso. Por favor sube una selfie para completar la verificación.';
 
-        this.snackBar.open(message, 'Entendido', {
-          duration: 8000,
-          panelClass: ['success-snackbar'],
-        });
+          this.snackBar.open(message, 'Entendido', {
+            duration: 8000,
+            panelClass: ['success-snackbar'],
+          });
 
-        // Navigate to nurse dashboard
-        this.router.navigate(['/nurse/dashboard']);
+          // Navigate to nurse dashboard
+          this.router.navigate(['/nurse/dashboard']);
+        }
       },
       error: (err) => {
         this.isLoading = false;
