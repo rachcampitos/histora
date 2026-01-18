@@ -140,15 +140,14 @@ export class SigninComponent
   }
 
   signInWithGoogle(): void {
-    console.log('signInWithGoogle clicked - redirecting to backend');
     this.authService.loginWithGoogle();
   }
 
   signInWithFacebook(): void {
-    console.log('Login with Facebook');
+    // TODO: Implement Facebook login
   }
 
   signInWithApple(): void {
-    console.log('Login with Apple');
+    // TODO: Implement Apple login
   }
 }

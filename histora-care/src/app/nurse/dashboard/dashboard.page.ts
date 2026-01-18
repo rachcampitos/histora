@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { RefresherCustomEvent, ToastController, AlertController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
@@ -25,6 +26,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
+  private destroyRef = inject(DestroyRef);
 
   // State signals
   nurse = signal<Nurse | null>(null);
@@ -104,7 +106,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.isLoading.set(true);
     try {
       // Load nurse profile
-      this.nurseApi.getMyProfile().subscribe({
+      this.nurseApi.getMyProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (nurse) => {
           this.nurse.set(nurse);
           this.loadRequests(nurse._id);
@@ -127,6 +129,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       if (position) {
         this.requestService
           .getPendingNearby(position.latitude, position.longitude, 10)
+          .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: (requests) => this.pendingRequests.set(requests.slice(0, 5)),
             error: (err) => console.error('Error loading pending:', err),
@@ -135,7 +138,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
 
     // Load active requests (accepted, on_the_way, arrived, in_progress)
-    this.requestService.getNurseRequests().subscribe({
+    this.requestService.getNurseRequests().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (requests) => {
         const active = requests.filter((r) =>
           ['accepted', 'on_the_way', 'arrived', 'in_progress'].includes(r.status)
@@ -199,7 +202,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         });
 
         // Also update on the server
-        this.nurseApi.updateLocation(position.latitude, position.longitude).subscribe();
+        this.nurseApi.updateLocation(position.latitude, position.longitude).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
       }
     } catch (error) {
       console.error('Error broadcasting location:', error);
@@ -218,8 +221,8 @@ export class DashboardPage implements OnInit, OnDestroy {
         {
           text: 'Confirmar',
           handler: () => {
-            this.requestService.updateStatus(request._id, 'on_the_way').subscribe({
-              next: (updated) => {
+            this.requestService.updateStatus(request._id, 'on_the_way').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+              next: () => {
                 this.showToast('En camino al paciente', 'success');
                 // Refresh requests to trigger location broadcasting
                 this.loadRequests(this.nurse()?._id || '');
@@ -245,7 +248,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         {
           text: 'Confirmar',
           handler: () => {
-            this.requestService.updateStatus(request._id, 'arrived').subscribe({
+            this.requestService.updateStatus(request._id, 'arrived').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
               next: () => {
                 // Notify via WebSocket
                 this.wsService.notifyArrival(request._id);
@@ -273,7 +276,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         {
           text: 'Confirmar',
           handler: () => {
-            this.requestService.updateStatus(request._id, 'in_progress').subscribe({
+            this.requestService.updateStatus(request._id, 'in_progress').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
               next: () => {
                 // Notify via WebSocket
                 this.wsService.notifyServiceStarted(request._id);
@@ -301,7 +304,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         {
           text: 'Completar',
           handler: () => {
-            this.requestService.updateStatus(request._id, 'completed').subscribe({
+            this.requestService.updateStatus(request._id, 'completed').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
               next: () => {
                 // Notify via WebSocket
                 this.wsService.notifyServiceCompleted(request._id);
@@ -324,7 +327,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.isTogglingAvailability.set(true);
     const newStatus = !nurse.isAvailable;
 
-    this.nurseApi.setAvailability(newStatus).subscribe({
+    this.nurseApi.setAvailability(newStatus).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updatedNurse) => {
         this.nurse.set(updatedNurse);
         this.showToast(
@@ -344,7 +347,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   async updateLocation() {
     const position = await this.geoService.getCurrentPosition();
     if (position) {
-      this.nurseApi.updateLocation(position.latitude, position.longitude).subscribe({
+      this.nurseApi.updateLocation(position.latitude, position.longitude).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => this.showToast('Ubicación actualizada', 'success'),
         error: () => this.showToast('Error al actualizar ubicación', 'danger'),
       });

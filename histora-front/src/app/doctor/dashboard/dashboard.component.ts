@@ -312,11 +312,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ];
 
   onTodoToggled(todo: any) {
-    console.log('Todo toggled:', todo);
+    // Handle todo toggle event
   }
 
   onTodosUpdated(updatedTodos: any[]) {
-    console.log('Todos updated:', updatedTodos);
+    // Handle todos updated event
   }
   // TODO end
 

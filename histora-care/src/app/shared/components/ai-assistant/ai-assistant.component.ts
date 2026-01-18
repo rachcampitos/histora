@@ -30,6 +30,52 @@ export interface AIResponse {
 
 type AssistantState = 'inactive' | 'listening' | 'processing' | 'speaking';
 
+// Web Speech API types
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  readonly length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  readonly length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+  readonly isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  readonly transcript: string;
+  readonly confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((event: Event) => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
 @Component({
   selector: 'app-ai-assistant',
   standalone: true,
@@ -47,7 +93,7 @@ export class AIAssistantComponent implements OnInit, OnDestroy {
   isListening = false;
 
   private apiUrl = `${environment.apiUrl}/ai-assistant`;
-  private recognition: any = null;
+  private recognition: SpeechRecognition | null = null;
   private destroy$ = new Subject<void>();
 
   suggestedActions = [
@@ -74,15 +120,14 @@ export class AIAssistantComponent implements OnInit, OnDestroy {
   }
 
   private initVoiceRecognition(): void {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).SpeechRecognition ||
-                                 (window as any).webkitSpeechRecognition;
-      this.recognition = new SpeechRecognition();
+    const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognitionClass) {
+      this.recognition = new SpeechRecognitionClass();
       this.recognition.lang = 'es-PE';
       this.recognition.continuous = false;
       this.recognition.interimResults = true;
 
-      this.recognition.onresult = (event: any) => {
+      this.recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[event.results.length - 1][0].transcript;
         this.currentMessage = transcript;
       };

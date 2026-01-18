@@ -239,18 +239,18 @@ export class ClinicsComponent implements OnInit {
   }
 
   viewClinic(clinic: Clinic): void {
-    console.log('View clinic:', clinic);
+    // TODO: Implement view clinic
   }
 
   editClinic(clinic: Clinic): void {
-    console.log('Edit clinic:', clinic);
+    // TODO: Implement edit clinic
   }
 
   suspendClinic(clinic: Clinic): void {
-    console.log('Suspend clinic:', clinic);
+    // TODO: Implement suspend clinic
   }
 
   deleteClinic(clinic: Clinic): void {
-    console.log('Delete clinic:', clinic);
+    // TODO: Implement delete clinic
   }
 }

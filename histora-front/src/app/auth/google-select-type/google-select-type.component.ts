@@ -14,6 +14,18 @@ import { environment } from '../../../environments/environment';
 
 type UserType = 'doctor' | 'patient' | null;
 
+interface GoogleRegistrationResponse {
+  access_token: string;
+  refresh_token: string;
+  user: {
+    _id: string;
+    email: string;
+    role: string;
+    firstName?: string;
+    lastName?: string;
+  };
+}
+
 @Component({
   selector: 'app-google-select-type',
   standalone: true,
@@ -505,7 +517,7 @@ export class GoogleSelectTypeComponent implements OnInit {
 
     const apiUrl = environment.apiUrl || 'http://localhost:3000';
 
-    this.http.post<any>(`${apiUrl}/auth/google/complete-registration`, {
+    this.http.post<GoogleRegistrationResponse>(`${apiUrl}/auth/google/complete-registration`, {
       userType: 'doctor',
       clinicName: this.clinicForm.value.clinicName,
       clinicPhone: this.clinicForm.value.clinicPhone || undefined,
@@ -521,7 +533,7 @@ export class GoogleSelectTypeComponent implements OnInit {
         // Navigate to doctor dashboard
         this.router.navigate(['/doctor/dashboard']);
       },
-      error: (err) => {
+      error: (err: { error?: { message?: string } }) => {
         this.loading.set(false);
         this.error.set(err.error?.message || 'Error al completar el registro');
       }
@@ -534,7 +546,7 @@ export class GoogleSelectTypeComponent implements OnInit {
 
     const apiUrl = environment.apiUrl || 'http://localhost:3000';
 
-    this.http.post<any>(`${apiUrl}/auth/google/complete-registration`, {
+    this.http.post<GoogleRegistrationResponse>(`${apiUrl}/auth/google/complete-registration`, {
       userType: 'patient',
     }).subscribe({
       next: (response) => {
@@ -548,7 +560,7 @@ export class GoogleSelectTypeComponent implements OnInit {
         // Navigate to patient dashboard
         this.router.navigate(['/patient/dashboard']);
       },
-      error: (err) => {
+      error: (err: { error?: { message?: string } }) => {
         this.loading.set(false);
         this.error.set(err.error?.message || 'Error al completar el registro');
       }

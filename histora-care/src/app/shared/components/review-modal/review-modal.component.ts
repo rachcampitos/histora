@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
+import { IonTextareaCustomEvent, TextareaInputEventDetail } from '@ionic/core';
 
 export interface ReviewSubmitData {
   rating: number;
@@ -55,8 +56,8 @@ export class ReviewModalComponent {
     return star <= currentRating;
   }
 
-  updateComment(event: any): void {
-    this.comment.set(event.detail.value || '');
+  updateComment(event: IonTextareaCustomEvent<TextareaInputEventDetail>): void {
+    this.comment.set(event.detail.value ?? '');
   }
 
   canSubmit(): boolean {

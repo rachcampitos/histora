@@ -38,7 +38,7 @@ export class MapboxService {
 
   constructor() {
     // Set access token
-    mapboxgl.accessToken = (environment as any).mapboxToken || '';
+    mapboxgl.accessToken = environment.mapboxToken || '';
   }
 
   /**
