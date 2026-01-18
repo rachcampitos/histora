@@ -1,5 +1,5 @@
 .requests-content {
-  --background: #f5f7fa;
+  --background: var(--histora-background, #f5f7fa);
 }
 
 // Header & Segment
@@ -42,7 +42,7 @@ ion-segment-button {
   }
 
   p {
-    color: #64748b;
+    color: var(--histora-text-secondary, #64748b);
     font-size: 14px;
   }
 }
@@ -54,7 +54,7 @@ ion-segment-button {
 
   ion-icon {
     font-size: 72px;
-    color: #cbd5e1;
+    color: var(--histora-border, #cbd5e1);
     margin-bottom: 16px;
   }
 
@@ -62,14 +62,14 @@ ion-segment-button {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
-    color: #64748b;
+    color: var(--histora-text-secondary, #64748b);
   }
 
   span {
     display: block;
     margin-top: 8px;
     font-size: 14px;
-    color: #94a3b8;
+    color: var(--histora-text-muted, #94a3b8);
   }
 }
 
@@ -103,7 +103,7 @@ ion-segment-button {
 // Request Card
 .request-card {
   width: 100%;
-  background: white;
+  background: var(--histora-surface, #ffffff);
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -131,7 +131,7 @@ ion-segment-button {
 
       .avatar-placeholder {
         font-size: 48px;
-        color: #cbd5e1;
+        color: var(--histora-border, #cbd5e1);
 
         &.small {
           font-size: 40px;
@@ -142,7 +142,7 @@ ion-segment-button {
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+        background: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -151,7 +151,7 @@ ion-segment-button {
         span {
           font-size: 16px;
           font-weight: 600;
-          color: white;
+          color: var(--ion-color-primary-contrast, #ffffff);
         }
 
         &.small {
@@ -169,15 +169,15 @@ ion-segment-button {
           margin: 0;
           font-size: 16px;
           font-weight: 600;
-          color: #1e293b;
+          color: var(--histora-text-primary, #1e293b);
         }
 
         .role-badge {
           display: inline-block;
           font-size: 12px;
           font-weight: 500;
-          color: #1e3a5f;
-          background: rgba(102, 126, 234, 0.1);
+          color: var(--ion-color-primary, #1e3a5f);
+          background: rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.1);
           padding: 2px 8px;
           border-radius: 4px;
           margin-top: 2px;
@@ -191,14 +191,14 @@ ion-segment-button {
         .service-type {
           margin: 4px 0 0;
           font-size: 13px;
-          color: #1e3a5f;
+          color: var(--ion-color-primary, #1e3a5f);
           font-weight: 500;
         }
       }
     }
 
     .price-badge {
-      background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+      background: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
       border-radius: 12px;
       padding: 8px 12px;
       text-align: center;
@@ -218,7 +218,7 @@ ion-segment-button {
       .amount {
         font-size: 18px;
         font-weight: 700;
-        color: white;
+        color: var(--ion-color-primary-contrast, #ffffff);
         line-height: 1.2;
       }
     }
@@ -227,8 +227,8 @@ ion-segment-button {
   // Card Details
   .card-details {
     padding: 12px 0;
-    border-top: 1px solid #f1f5f9;
-    border-bottom: 1px solid #f1f5f9;
+    border-top: 1px solid var(--histora-border-light, #f1f5f9);
+    border-bottom: 1px solid var(--histora-border-light, #f1f5f9);
 
     &.compact {
       display: flex;
@@ -252,28 +252,28 @@ ion-segment-button {
 
       ion-icon {
         font-size: 18px;
-        color: #94a3b8;
+        color: var(--histora-text-muted, #94a3b8);
         flex-shrink: 0;
       }
 
       span {
         font-size: 13px;
-        color: #64748b;
+        color: var(--histora-text-secondary, #64748b);
 
         &.address {
-          color: #1e293b;
+          color: var(--histora-text-primary, #1e293b);
           font-weight: 500;
         }
       }
 
       &.price {
         span {
-          color: #4caf50;
+          color: var(--ion-color-success, #4caf50);
           font-weight: 600;
         }
 
         ion-icon {
-          color: #4caf50;
+          color: var(--ion-color-success, #4caf50);
         }
       }
     }
@@ -300,12 +300,12 @@ ion-segment-button {
     gap: 4px;
     padding-top: 12px;
     margin-top: 12px;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--histora-border-light, #f1f5f9);
 
     ion-button {
       --padding-start: 12px;
       --padding-end: 12px;
-      --color: #1e3a5f;
+      --color: var(--ion-color-primary, #1e3a5f);
 
       ion-icon {
         font-size: 22px;
@@ -323,12 +323,12 @@ ion-segment-button {
 
 // Pending Card Specific
 .pending-card {
-  border-left: 4px solid #f59e0b;
+  border-left: 4px solid var(--ion-color-warning, #f59e0b);
 
   .card-actions {
     ion-button[color="success"] {
-      --background: #10b981;
-      --background-hover: #059669;
+      --background: var(--ion-color-success, #10b981);
+      --background-hover: var(--ion-color-success-shade, #059669);
     }
   }
 }
@@ -364,8 +364,8 @@ ion-segment-button {
   }
 
   &.status-in_progress {
-    border-left: 4px solid #1e3a5f;
-    background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+    border-left: 4px solid var(--ion-color-primary, #1e3a5f);
+    background: linear-gradient(135deg, var(--histora-surface, #ffffff) 0%, var(--in-progress-gradient-end, #f0f4ff) 100%);
   }
 
   .card-actions {
@@ -415,7 +415,7 @@ ion-segment-button {
   gap: 8px;
   padding-top: 8px;
   margin-top: 8px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--histora-border-light, #f1f5f9);
 
   .stars {
     display: flex;
@@ -428,7 +428,7 @@ ion-segment-button {
 
   .rating-text {
     font-size: 12px;
-    color: #64748b;
+    color: var(--histora-text-secondary, #64748b);
     font-style: italic;
     flex: 1;
     white-space: nowrap;
@@ -447,7 +447,7 @@ ion-item-options {
 // Status colors for border
 .request-card[class*="status-"] {
   &.status-pending {
-    border-left-color: #f59e0b;
+    border-left-color: var(--ion-color-warning, #f59e0b);
   }
 
   &.status-accepted {
@@ -463,24 +463,27 @@ ion-item-options {
   }
 
   &.status-in_progress {
-    border-left-color: #1e3a5f;
+    border-left-color: var(--ion-color-primary, #1e3a5f);
   }
 
   &.status-completed {
-    border-left-color: #10b981;
+    border-left-color: var(--ion-color-success, #10b981);
   }
 
   &.status-cancelled,
   &.status-rejected {
-    border-left-color: #ef4444;
+    border-left-color: var(--ion-color-danger, #ef4444);
   }
 }
 
 // Dark mode support
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
+  // Define dark mode specific custom properties
+  --in-progress-gradient-end: #1e1b4b;
+
   .requests-content {
-    --background: #0f172a;
+    --background: var(--histora-background);
   }
 
   // Segment badge styling in dark mode
@@ -492,50 +495,54 @@ ion-item-options {
   }
 
   .request-card {
-    background: #1e293b;
+    background: var(--histora-surface);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 
     .card-header {
       .patient-info {
         .avatar-placeholder {
-          color: #475569;
+          color: var(--histora-border);
         }
 
         .patient-details {
           h3 {
-            color: #f1f5f9;
+            color: var(--histora-text-primary);
           }
 
           .service-type {
-            color: #6bb5b3;
+            color: var(--ion-color-tertiary-tint, #6bb5b3);
+          }
+
+          .role-badge {
+            background: rgba(var(--ion-color-primary-rgb), 0.2);
           }
         }
       }
     }
 
     .card-details {
-      border-color: #334155;
+      border-color: var(--histora-border);
 
       .detail-row {
         ion-icon {
-          color: #64748b;
+          color: var(--histora-text-secondary);
         }
 
         span {
-          color: #94a3b8;
+          color: var(--histora-text-muted);
 
           &.address {
-            color: #e2e8f0;
+            color: var(--histora-text-primary);
           }
         }
       }
     }
 
     .quick-actions {
-      border-color: #334155;
+      border-color: var(--histora-border);
 
       ion-button {
-        --color: #6bb5b3;
+        --color: var(--ion-color-tertiary-tint, #6bb5b3);
       }
     }
   }
@@ -543,26 +550,26 @@ ion-item-options {
   // Active card in progress state
   .active-card {
     &.status-in_progress {
-      background: linear-gradient(135deg, #1e293b 0%, #1e1b4b 100%);
+      background: linear-gradient(135deg, var(--histora-surface) 0%, var(--in-progress-gradient-end) 100%);
     }
   }
 
   .empty-state {
     ion-icon {
-      color: #475569;
+      color: var(--histora-border);
     }
 
     p {
-      color: #94a3b8;
+      color: var(--histora-text-muted);
     }
 
     span {
-      color: #64748b;
+      color: var(--histora-text-secondary);
     }
   }
 
   .loading-state p {
-    color: #94a3b8;
+    color: var(--histora-text-muted);
   }
 
   .history-card .card-details {
@@ -570,10 +577,10 @@ ion-item-options {
   }
 
   .rating-section {
-    border-color: #334155;
+    border-color: var(--histora-border);
 
     .rating-text {
-      color: #94a3b8;
+      color: var(--histora-text-muted);
     }
   }
 }
