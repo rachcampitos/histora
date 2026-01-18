@@ -13,6 +13,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '@core/service/auth.service';
+import { LoginService } from '@core/service/login.service';
 
 @Component({
   standalone: true,
@@ -46,6 +47,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private loginService: LoginService,
     private snackBar: MatSnackBar,
     private translate: TranslateService
   ) {
@@ -98,16 +100,44 @@ export class SettingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isSavingSecurity = true;
-    // TODO: Implement password change API
-    setTimeout(() => {
-      this.isSavingSecurity = false;
+    const { currentPassword, newPassword } = this.securityForm.value;
+    if (!currentPassword || !newPassword) {
       this.snackBar.open(
-        this.translate.instant('SETTINGS.MESSAGES.SECURITY_SAVED'),
+        'Por favor ingresa tu contraseña actual y nueva',
         this.translate.instant('COMMON.ACTIONS.CLOSE'),
         { duration: 3000 }
       );
-    }, 1000);
+      return;
+    }
+
+    this.isSavingSecurity = true;
+    this.loginService.changePassword(currentPassword, newPassword).subscribe({
+      next: (response) => {
+        this.isSavingSecurity = false;
+        if ('success' in response && response.success) {
+          this.snackBar.open(
+            this.translate.instant('SETTINGS.MESSAGES.SECURITY_SAVED'),
+            this.translate.instant('COMMON.ACTIONS.CLOSE'),
+            { duration: 3000 }
+          );
+          this.securityForm.patchValue({ currentPassword: '', newPassword: '' });
+        } else if ('error' in response) {
+          this.snackBar.open(
+            response.error || 'Error al cambiar contraseña',
+            this.translate.instant('COMMON.ACTIONS.CLOSE'),
+            { duration: 3000 }
+          );
+        }
+      },
+      error: () => {
+        this.isSavingSecurity = false;
+        this.snackBar.open(
+          'Error al cambiar contraseña',
+          this.translate.instant('COMMON.ACTIONS.CLOSE'),
+          { duration: 3000 }
+        );
+      }
+    });
   }
 
   saveAccountSettings(): void {
@@ -116,14 +146,46 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
 
     this.isSavingAccount = true;
-    // TODO: Implement profile update API
-    setTimeout(() => {
-      this.isSavingAccount = false;
-      this.snackBar.open(
-        this.translate.instant('SETTINGS.MESSAGES.ACCOUNT_SAVED'),
-        this.translate.instant('COMMON.ACTIONS.CLOSE'),
-        { duration: 3000 }
-      );
-    }, 1000);
+    const profileData = {
+      firstName: this.accountForm.value.firstName,
+      lastName: this.accountForm.value.lastName,
+      city: this.accountForm.value.city,
+      country: this.accountForm.value.country,
+      address: this.accountForm.value.address,
+      phone: this.accountForm.value.mobile,
+    };
+
+    this.loginService.updateProfile(profileData).subscribe({
+      next: (response) => {
+        this.isSavingAccount = false;
+        if ('success' in response && response.success) {
+          // Update local user data
+          if (response.user) {
+            const currentUser = this.authService.currentUserValue;
+            const updatedUser = { ...currentUser, ...response.user };
+            this.authService.user$.next(updatedUser);
+          }
+          this.snackBar.open(
+            this.translate.instant('SETTINGS.MESSAGES.ACCOUNT_SAVED'),
+            this.translate.instant('COMMON.ACTIONS.CLOSE'),
+            { duration: 3000 }
+          );
+        } else if ('error' in response) {
+          this.snackBar.open(
+            response.error || 'Error al actualizar perfil',
+            this.translate.instant('COMMON.ACTIONS.CLOSE'),
+            { duration: 3000 }
+          );
+        }
+      },
+      error: () => {
+        this.isSavingAccount = false;
+        this.snackBar.open(
+          'Error al actualizar perfil',
+          this.translate.instant('COMMON.ACTIONS.CLOSE'),
+          { duration: 3000 }
+        );
+      }
+    });
   }
 }

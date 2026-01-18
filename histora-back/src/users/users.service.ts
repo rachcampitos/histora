@@ -63,6 +63,12 @@ export class UsersService {
       .exec();
   }
 
+  async findByIdWithPassword(id: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({ _id: id, isDeleted: false })
+      .exec();
+  }
+
   async findByDni(dni: string): Promise<UserDocument | null> {
     const cleanDni = dni.replace(/\D/g, '');
     return this.userModel

@@ -179,6 +179,51 @@ export class LoginService {
     );
   }
 
+  updateProfile(profileData: {
+    firstName?: string;
+    lastName?: string;
+    city?: string;
+    country?: string;
+    address?: string;
+    phone?: string;
+  }): Observable<{ success: boolean; message: string; user?: User } | { status: number; error?: string }> {
+    return this.http.patch<{ success: boolean; message: string; user: User }>(
+      `${this.apiUrl}/auth/profile`,
+      profileData
+    ).pipe(
+      map((response) => ({
+        ...response,
+        status: 200,
+      })),
+      catchError((error) => {
+        console.error('Update profile error:', error);
+        return of({
+          status: error.status || 400,
+          error: error.error?.message || 'Error al actualizar el perfil',
+        });
+      })
+    );
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<{ success: boolean; message: string } | { status: number; error?: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.apiUrl}/auth/change-password`,
+      { currentPassword, newPassword }
+    ).pipe(
+      map((response) => ({
+        ...response,
+        status: 200,
+      })),
+      catchError((error) => {
+        console.error('Change password error:', error);
+        return of({
+          status: error.status || 400,
+          error: error.error?.message || 'Error al cambiar la contraseña',
+        });
+      })
+    );
+  }
+
   // ============= NURSE REGISTRATION (2-Step Flow) =============
 
   /**

@@ -450,6 +450,63 @@ export class AuthService {
     return this.usersService.findOne(userId);
   }
 
+  async updateProfile(userId: string, updateData: {
+    firstName?: string;
+    lastName?: string;
+    city?: string;
+    country?: string;
+    address?: string;
+    phone?: string;
+  }) {
+    const updatedUser = await this.usersService.update(userId, updateData);
+    if (!updatedUser) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    return {
+      success: true,
+      message: 'Perfil actualizado exitosamente',
+      user: {
+        id: updatedUser['_id'].toString(),
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        role: updatedUser.role,
+        avatar: updatedUser.avatar,
+      },
+    };
+  }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await this.usersService.findByIdWithPassword(userId);
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Check if user has a password (social login users may not have one)
+    if (!user.password) {
+      throw new UnauthorizedException('No puedes cambiar la contraseña de una cuenta de Google');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await this.usersService.comparePasswords(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('La contraseña actual es incorrecta');
+    }
+
+    // Update password
+    await this.usersService.updatePassword(userId, newPassword);
+
+    return {
+      success: true,
+      message: 'Contraseña actualizada exitosamente',
+    };
+  }
+
   async forgotPassword(email: string): Promise<{ message: string }> {
     const user = await this.usersService.findByEmail(email);
 
