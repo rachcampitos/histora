@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   RefresherCustomEvent,
@@ -32,6 +33,7 @@ export class RequestsPage implements OnInit, OnDestroy {
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
   private loadingCtrl = inject(LoadingController);
+  private destroyRef = inject(DestroyRef);
 
   // State signals
   currentTab = signal<TabType>('pending');
@@ -73,7 +75,7 @@ export class RequestsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Read query params for tab selection
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['tab']) {
         const tab = params['tab'] as TabType;
         if (['pending', 'active', 'history'].includes(tab)) {
@@ -130,7 +132,7 @@ export class RequestsPage implements OnInit, OnDestroy {
         this.loadPendingNearby(position.latitude, position.longitude);
       } catch {
         // Load without distance calculation
-        this.requestService.getPendingNearby(0, 0, 50).subscribe({
+        this.requestService.getPendingNearby(0, 0, 50).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: (requests) => this.pendingRequests.set(requests),
           error: (err) => console.error('Error loading pending:', err)
         });
@@ -141,7 +143,7 @@ export class RequestsPage implements OnInit, OnDestroy {
   }
 
   private loadPendingNearby(lat: number, lng: number) {
-    this.requestService.getPendingNearby(lat, lng, 20).subscribe({
+    this.requestService.getPendingNearby(lat, lng, 20).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (requests) => {
         const withDistance = requests.map(request => ({
           ...request,
@@ -156,7 +158,7 @@ export class RequestsPage implements OnInit, OnDestroy {
   }
 
   loadActiveRequests() {
-    this.requestService.getNurseRequests().subscribe({
+    this.requestService.getNurseRequests().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (requests) => {
         const activeStatuses: ServiceRequestStatus[] = [
           'accepted',
@@ -173,7 +175,7 @@ export class RequestsPage implements OnInit, OnDestroy {
   }
 
   loadHistoryRequests() {
-    this.requestService.getNurseRequests().subscribe({
+    this.requestService.getNurseRequests().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (requests) => {
         const historyStatuses: ServiceRequestStatus[] = [
           'completed',
@@ -254,7 +256,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     });
     await loading.present();
 
-    this.requestService.accept(request._id).subscribe({
+    this.requestService.accept(request._id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updatedRequest) => {
         loading.dismiss();
         this.showToast('Solicitud aceptada', 'success');
@@ -310,7 +312,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     });
     await loading.present();
 
-    this.requestService.reject(request._id, reason).subscribe({
+    this.requestService.reject(request._id, reason).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         loading.dismiss();
         this.showToast('Solicitud rechazada', 'success');
@@ -368,7 +370,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     });
     await loading.present();
 
-    this.requestService.updateStatus(request._id, newStatus).subscribe({
+    this.requestService.updateStatus(request._id, newStatus).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updatedRequest) => {
         loading.dismiss();
         this.showToast(`Estado actualizado: ${this.getStatusLabel(newStatus)}`, 'success');

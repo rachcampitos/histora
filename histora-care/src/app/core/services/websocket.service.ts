@@ -49,11 +49,10 @@ export class WebSocketService {
     // Skip WebSocket in production if not configured
     // This prevents console errors when WebSocket server is not available
     if (environment.production) {
-      console.log('WebSocket: Skipping connection in production (not configured)');
       return;
     }
 
-    const wsUrl = (environment as any).wsUrl || environment.apiUrl.replace('/api', '');
+    const wsUrl = environment.wsUrl || environment.apiUrl.replace('/api', '');
 
     this.socket = io(wsUrl, {
       auth: { token },
@@ -74,13 +73,11 @@ export class WebSocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('WebSocket connected');
       this._isConnected.set(true);
       this._connectionError.set(null);
     });
 
-    this.socket.on('disconnect', (reason) => {
-      console.log('WebSocket disconnected:', reason);
+    this.socket.on('disconnect', () => {
       this._isConnected.set(false);
     });
 

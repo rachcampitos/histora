@@ -340,17 +340,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   navigateToAlert(alert: PanicAlert): void {
     // TODO: Navigate to alert detail or open map
-    console.log('Navigate to alert:', alert.id);
   }
 
   acknowledgeAlert(alert: PanicAlert): void {
     // TODO: Call API to acknowledge
-    console.log('Acknowledge alert:', alert.id);
   }
 
   reviewVerification(verification: PendingVerification): void {
     // TODO: Navigate to verification review
-    console.log('Review verification:', verification.id);
   }
 
   hasEmergencyAlerts(): boolean {

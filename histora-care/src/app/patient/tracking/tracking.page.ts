@@ -52,6 +52,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   private isDevelopment = !environment.production;
   private hasRealNurseLocation = false;
   private pollingSubscription?: Subscription;
+  private simulationInterval?: ReturnType<typeof setInterval>;
   private previousStatus = signal<TrackingStatus | null>(null);
 
   // Computed values
@@ -152,9 +153,20 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     this.stopPolling();
+    this.stopSimulation();
     this.wsService.leaveTrackingRoom(this.requestId());
     this.wsService.disconnect();
     this.mapboxService.destroy();
+  }
+
+  /**
+   * Stop simulation interval
+   */
+  private stopSimulation() {
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
+      this.simulationInterval = undefined;
+    }
   }
 
   /**
@@ -356,7 +368,6 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     // Wait a bit to see if we get real location from WebSocket
     setTimeout(() => {
       if (!this.hasRealNurseLocation && this.currentStatus() === 'on_the_way') {
-        console.log('No real nurse location received, starting simulation for demo');
         this.simulateNurseLocation();
       }
     }, 2000);
@@ -461,6 +472,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     const patientLoc = this.patientLocation();
     if (!patientLoc) return;
 
+    // Stop any existing simulation
+    this.stopSimulation();
+
     // Start nurse 2km away
     let nurseLat = patientLoc[1] + 0.015;
     let nurseLng = patientLoc[0] + 0.01;
@@ -468,9 +482,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.nurseLocation.set([nurseLng, nurseLat]);
 
     // Simulate movement every 3 seconds
-    const interval = setInterval(() => {
+    this.simulationInterval = setInterval(() => {
       if (this.currentStatus() === 'completed') {
-        clearInterval(interval);
+        this.stopSimulation();
         return;
       }
 

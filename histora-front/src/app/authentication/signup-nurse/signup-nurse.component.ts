@@ -28,6 +28,23 @@ interface CepValidationResult {
   error?: string;
 }
 
+interface NurseRegistrationResponse {
+  access_token: string;
+  refresh_token: string;
+  user: {
+    _id: string;
+    email: string;
+    role: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  verificationStatus?: string;
+}
+
+interface NurseRegistrationError {
+  error: string;
+}
+
 @Component({
   selector: 'app-signup-nurse',
   standalone: true,
@@ -245,7 +262,7 @@ export class SignupNurseComponent implements OnInit {
     };
 
     this.loginService.completeNurseRegistration(registrationData).subscribe({
-      next: (response: any) => {
+      next: (response: NurseRegistrationResponse | NurseRegistrationError) => {
         this.isLoading = false;
 
         if ('error' in response) {
