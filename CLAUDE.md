@@ -88,6 +88,7 @@ cd histora-care && npm run test
 2. **NO usar emojis en codigo** - A menos que el usuario lo pida
 3. **Commits en español** - El proyecto es para Peru
 4. **Push = Deploy** - El push automaticamente despliega en Vercel
+5. **NO incluir coautoria en commits** - No agregar "Co-Authored-By" en los mensajes de commit
 
 ---
-Ultima actualizacion: 2026-01-15
+Ultima actualizacion: 2026-01-18
