@@ -8,13 +8,13 @@
           class="slide"
           [class.active]="i === currentSlide">
           <div class="slide-content">
-            <!-- Logo (only on slides 1 and 5) -->
-            <div class="slide-logo" *ngIf="slide.id === 1 || slide.id === 5">
+            <!-- Logo (only on first slide) -->
+            <div class="slide-logo" *ngIf="i === 0">
               <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
             </div>
 
-            <!-- Icon/Illustration (only on slides 2-4) -->
-            <div class="slide-illustration" *ngIf="slide.id !== 1 && slide.id !== 5">
+            <!-- Icon/Illustration (on all slides except first) -->
+            <div class="slide-illustration" *ngIf="i !== 0">
               <div class="icon-wrapper" [ngClass]="slide.gradient">
                 <ion-icon [name]="slide.icon"></ion-icon>
               </div>
@@ -78,10 +78,10 @@
             </button>
           </div>
 
-          <!-- CTA Button -->
+          <!-- CTA Button - Dynamic text based on user role -->
           <ion-button expand="block" class="cta-btn" (click)="completeAndStart()">
-            <ion-icon name="rocket" slot="start"></ion-icon>
-            Comenzar
+            <ion-icon [name]="userRole === 'nurse' ? 'shield-checkmark' : 'search'" slot="start"></ion-icon>
+            {{ lastSlideCta }}
           </ion-button>
         </div>
       </ng-container>

@@ -456,6 +456,31 @@ $border-radius: 12px;
       }
     }
   }
+
+  // Register button dark mode
+  .register-btn {
+    --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --color: white;
+    --color-hover: white;
+    --color-activated: white;
+    --box-shadow: 0 4px 16px rgba(30, 58, 95, 0.5);
+
+    ion-icon {
+      color: white;
+    }
+
+    &[disabled] {
+      --background: #4a5568;
+      --color: #a0aec0;
+      --box-shadow: none;
+
+      ion-icon {
+        color: #a0aec0;
+      }
+    }
+  }
 }
 
 // ============================================

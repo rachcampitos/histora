@@ -394,6 +394,10 @@
       --background: #1e293b;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
+      ion-card-content {
+        padding: 16px;
+      }
+
       .date-inputs {
         .date-input {
           ion-label {
@@ -407,6 +411,13 @@
             }
           }
         }
+      }
+
+      // Aplicar button dark mode
+      ion-button {
+        --color: white;
+        --color-hover: white;
+        --color-activated: white;
       }
     }
   }
