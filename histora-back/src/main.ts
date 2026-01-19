@@ -59,8 +59,9 @@ async function bootstrap() {
   );
 
   // Increase body size limit for file uploads (base64 images)
-  app.use(json({ limit: '10mb' }));
-  app.use(urlencoded({ extended: true, limit: '10mb' }));
+  // 5 verification images in base64 can be ~50MB total
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Enable graceful shutdown
   app.enableShutdownHooks();
