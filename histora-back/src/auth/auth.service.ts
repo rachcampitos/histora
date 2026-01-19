@@ -321,6 +321,17 @@ export class AuthService {
 
     this.logger.log(`Nurse registered: ${user.email} with CEP: ${registerDto.cepNumber}`);
 
+    // Notify admins about new nurse registration (async, don't block)
+    this.notificationsService.notifyAdminNewNurseRegistered({
+      id: user['_id'].toString(),
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      cepNumber: registerDto.cepNumber,
+    }).catch(err => {
+      this.logger.error(`Failed to notify admins about new nurse: ${err.message}`);
+    });
+
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: refreshToken,
@@ -834,6 +845,15 @@ export class AuthService {
 
       this.logger.log(`Google user ${user.email} completed registration as nurse`);
 
+      // Notify admins about new nurse registration
+      await this.notificationsService.notifyAdminNewNurseRegistered({
+        id: userId,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        cepNumber: nurseData.cepNumber,
+      });
+
       return {
         access_token: this.jwtService.sign(payload),
         refresh_token: refreshToken,
@@ -1105,6 +1125,17 @@ export class AuthService {
     await this.saveRefreshToken(user['_id'].toString(), refreshToken);
 
     this.logger.log(`Nurse registered: ${user.email} with CEP: ${cleanCep}, Status: ${verificationStatus}`);
+
+    // Notify admins about new nurse registration (async, don't block)
+    this.notificationsService.notifyAdminNewNurseRegistered({
+      id: user['_id'].toString(),
+      email: user.email,
+      firstName: nameParts.firstName,
+      lastName: nameParts.lastName,
+      cepNumber: cleanCep,
+    }).catch(err => {
+      this.logger.error(`Failed to notify admins about new nurse: ${err.message}`);
+    });
 
     return {
       access_token: this.jwtService.sign(payload),
