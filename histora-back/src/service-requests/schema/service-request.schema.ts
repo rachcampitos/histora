@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
+export type ServiceRequestDocument = ServiceRequest & Document;
+
 // Status change history sub-schema
 @Schema({ _id: false })
 export class StatusChange {

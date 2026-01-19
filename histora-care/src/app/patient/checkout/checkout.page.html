@@ -1,0 +1,365 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      @if (currentStep() === 'method') {
+        <ion-button (click)="cancelCheckout()" color="medium">
+          <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      } @else if (currentStep() === 'card' || currentStep() === 'yape') {
+        <ion-button (click)="backToMethodSelection()" color="medium">
+          <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      }
+    </ion-buttons>
+    <ion-title>Pago</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="checkout-content">
+  <!-- Simulation Mode Banner -->
+  @if (isSimulationMode()) {
+    <div class="simulation-banner">
+      <ion-icon name="flask-outline"></ion-icon>
+      <span>Modo de prueba - Los pagos son simulados</span>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando...</p>
+    </div>
+  }
+
+  <!-- Error State (initial load) -->
+  @if (!isLoading() && error() && currentStep() !== 'error') {
+    <div class="error-container">
+      <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+      <h3>Error</h3>
+      <p>{{ error() }}</p>
+      <ion-button (click)="cancelCheckout()" fill="outline" color="medium">
+        Volver
+      </ion-button>
+    </div>
+  }
+
+  <!-- Main Content -->
+  @if (!isLoading() && !error()) {
+    <!-- Payment Summary Header -->
+    <div class="summary-header">
+      <div class="summary-row">
+        <span class="label">Servicio</span>
+        <span class="value">{{ serviceRequest()?.service?.name }}</span>
+      </div>
+      @if (paymentSummary()) {
+        <div class="summary-row subtotal">
+          <span class="label">Subtotal</span>
+          <span class="value">{{ formatAmount(paymentSummary()!.subtotal) }}</span>
+        </div>
+        @if (paymentSummary()!.serviceFee > 0) {
+          <div class="summary-row fee">
+            <span class="label">Cargo de servicio</span>
+            <span class="value">{{ formatAmount(paymentSummary()!.serviceFee) }}</span>
+          </div>
+        }
+        @if (paymentSummary()!.discount > 0) {
+          <div class="summary-row discount">
+            <span class="label">Descuento</span>
+            <span class="value">-{{ formatAmount(paymentSummary()!.discount) }}</span>
+          </div>
+        }
+        <div class="summary-row total">
+          <span class="label">Total a pagar</span>
+          <span class="value">{{ formattedTotal() }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Step: Method Selection -->
+    @if (currentStep() === 'method') {
+      <div class="step-content">
+        <h2 class="step-title">Selecciona tu metodo de pago</h2>
+
+        <!-- Saved Cards -->
+        @if (savedCards().length > 0) {
+          <div class="section">
+            <h3 class="section-title">Tarjetas guardadas</h3>
+            @for (card of savedCards(); track card._id) {
+              <ion-item
+                button
+                (click)="selectSavedCard(card)"
+                class="payment-option"
+                [class.selected]="selectedSavedCard()?._id === card._id">
+                <ion-icon [name]="getCardBrandIcon(card.cardBrand)" slot="start"></ion-icon>
+                <ion-label>
+                  <h3>{{ card.cardBrand | titlecase }} ****{{ card.last4 }}</h3>
+                  <p>Vence {{ card.expMonth }}/{{ card.expYear }}</p>
+                </ion-label>
+                @if (selectedSavedCard()?._id === card._id) {
+                  <ion-icon name="checkmark-circle" color="primary" slot="end"></ion-icon>
+                }
+              </ion-item>
+            }
+          </div>
+        }
+
+        <!-- Payment Methods -->
+        <div class="section">
+          <h3 class="section-title">Metodos de pago</h3>
+
+          <!-- Card -->
+          <ion-item button (click)="selectMethod('card')" class="payment-option">
+            <ion-icon name="card-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Tarjeta de credito/debito</h3>
+              <p>Visa, Mastercard, American Express</p>
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+          </ion-item>
+
+          <!-- Yape -->
+          <ion-item button (click)="selectMethod('yape')" class="payment-option">
+            <div class="yape-icon" slot="start">
+              <span>Y</span>
+            </div>
+            <ion-label>
+              <h3>Yape</h3>
+              <p>Paga con tu billetera digital</p>
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+          </ion-item>
+
+          <!-- Cash -->
+          <ion-item button (click)="selectMethod('cash')" class="payment-option">
+            <ion-icon name="cash-outline" slot="start" color="success"></ion-icon>
+            <ion-label>
+              <h3>Efectivo</h3>
+              <p>Paga al finalizar el servicio</p>
+            </ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+          </ion-item>
+        </div>
+      </div>
+    }
+
+    <!-- Step: Card Form -->
+    @if (currentStep() === 'card') {
+      <div class="step-content">
+        <h2 class="step-title">Datos de la tarjeta</h2>
+
+        <form [formGroup]="cardForm" class="card-form">
+          <!-- Card Number -->
+          <div class="form-group">
+            <ion-label position="stacked">Numero de tarjeta</ion-label>
+            <div class="input-with-icon">
+              <ion-input
+                formControlName="number"
+                type="text"
+                inputmode="numeric"
+                placeholder="1234 5678 9012 3456"
+                maxlength="19"
+                (ionInput)="formatCardNumber($event)"
+                class="card-input">
+              </ion-input>
+              <ion-icon [name]="getCardBrandIcon(getCardBrand())" class="card-brand-icon"></ion-icon>
+            </div>
+            @if (cardForm.get('number')?.invalid && cardForm.get('number')?.touched) {
+              <span class="error-text">Numero de tarjeta invalido</span>
+            }
+          </div>
+
+          <!-- Cardholder Name -->
+          <div class="form-group">
+            <ion-label position="stacked">Nombre en la tarjeta</ion-label>
+            <ion-input
+              formControlName="name"
+              type="text"
+              placeholder="JUAN PEREZ"
+              class="card-input">
+            </ion-input>
+            @if (cardForm.get('name')?.invalid && cardForm.get('name')?.touched) {
+              <span class="error-text">Ingrese el nombre como aparece en la tarjeta</span>
+            }
+          </div>
+
+          <!-- Expiry and CVV Row -->
+          <div class="form-row">
+            <div class="form-group half">
+              <ion-label position="stacked">Vencimiento</ion-label>
+              <div class="expiry-inputs">
+                <ion-input
+                  formControlName="expMonth"
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="MM"
+                  maxlength="2"
+                  class="card-input small">
+                </ion-input>
+                <span class="separator">/</span>
+                <ion-input
+                  formControlName="expYear"
+                  type="text"
+                  inputmode="numeric"
+                  placeholder="AA"
+                  maxlength="2"
+                  class="card-input small">
+                </ion-input>
+              </div>
+            </div>
+            <div class="form-group half">
+              <ion-label position="stacked">CVV</ion-label>
+              <div class="input-with-icon">
+                <ion-input
+                  formControlName="cvv"
+                  type="password"
+                  inputmode="numeric"
+                  placeholder="123"
+                  maxlength="4"
+                  class="card-input small">
+                </ion-input>
+                <ion-icon name="help-circle-outline" class="help-icon"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <ion-label position="stacked">Correo electronico</ion-label>
+            <ion-input
+              formControlName="email"
+              type="email"
+              placeholder="tu@email.com"
+              class="card-input">
+            </ion-input>
+            @if (cardForm.get('email')?.invalid && cardForm.get('email')?.touched) {
+              <span class="error-text">Ingrese un correo valido</span>
+            }
+          </div>
+
+          <!-- Save Card Checkbox -->
+          <ion-item lines="none" class="save-card-item">
+            <ion-checkbox formControlName="saveCard" slot="start"></ion-checkbox>
+            <ion-label>Guardar tarjeta para futuros pagos</ion-label>
+          </ion-item>
+        </form>
+
+        <!-- Security Note -->
+        <div class="security-note">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Tus datos estan protegidos con encriptacion SSL</span>
+        </div>
+      </div>
+    }
+
+    <!-- Step: Yape -->
+    @if (currentStep() === 'yape') {
+      <div class="step-content">
+        <h2 class="step-title">Pago con Yape</h2>
+
+        <div class="yape-info">
+          <div class="yape-logo">
+            <span>Y</span>
+          </div>
+          <p>Ingresa tu numero de Yape para recibir el codigo de confirmacion</p>
+        </div>
+
+        <div class="form-group">
+          <ion-label position="stacked">Numero de celular Yape</ion-label>
+          <ion-input
+            type="tel"
+            inputmode="numeric"
+            placeholder="999 999 999"
+            maxlength="9"
+            [value]="yapeNumber()"
+            (ionInput)="onYapeNumberChange($event)"
+            class="yape-input">
+          </ion-input>
+          @if (yapeNumber().length > 0 && yapeNumber().length < 9) {
+            <span class="error-text">Ingrese un numero de 9 digitos</span>
+          }
+        </div>
+
+        <div class="yape-instructions">
+          <h4>Pasos para pagar:</h4>
+          <ol>
+            <li>Abre tu app de Yape</li>
+            <li>Recibiras una notificacion de pago</li>
+            <li>Confirma el pago en tu app</li>
+          </ol>
+        </div>
+      </div>
+    }
+
+    <!-- Step: Processing -->
+    @if (currentStep() === 'processing') {
+      <div class="status-container">
+        <div class="status-icon processing">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+        <h2>Procesando pago</h2>
+        <p>Por favor espera, no cierres esta pantalla...</p>
+      </div>
+    }
+
+    <!-- Step: Success -->
+    @if (currentStep() === 'success') {
+      <div class="status-container">
+        <div class="status-icon success">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+        <h2>Pago exitoso</h2>
+        <p>Tu servicio ha sido confirmado</p>
+        <p class="redirect-text">Redirigiendo al seguimiento...</p>
+      </div>
+    }
+
+    <!-- Step: Error -->
+    @if (currentStep() === 'error') {
+      <div class="status-container">
+        <div class="status-icon error">
+          <ion-icon name="close-circle"></ion-icon>
+        </div>
+        <h2>Error en el pago</h2>
+        <p>{{ error() }}</p>
+        <ion-button (click)="retryPayment()" expand="block" class="retry-button">
+          Intentar de nuevo
+        </ion-button>
+        <ion-button (click)="cancelCheckout()" expand="block" fill="outline" color="medium">
+          Cancelar
+        </ion-button>
+      </div>
+    }
+  }
+</ion-content>
+
+<!-- Footer with Pay Button -->
+@if (!isLoading() && (currentStep() === 'card' || currentStep() === 'yape') && !isProcessing()) {
+  <ion-footer class="checkout-footer">
+    <ion-toolbar>
+      <ion-button
+        expand="block"
+        (click)="processPayment()"
+        [disabled]="!canProceed()"
+        class="pay-button">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        Pagar {{ formattedTotal() }}
+      </ion-button>
+    </ion-toolbar>
+  </ion-footer>
+}
+
+<!-- Footer for saved card payment -->
+@if (!isLoading() && currentStep() === 'method' && selectedSavedCard() && !isProcessing()) {
+  <ion-footer class="checkout-footer">
+    <ion-toolbar>
+      <ion-button
+        expand="block"
+        (click)="processPayment()"
+        class="pay-button">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        Pagar con ****{{ selectedSavedCard()!.last4 }}
+      </ion-button>
+    </ion-toolbar>
+  </ion-footer>
+}

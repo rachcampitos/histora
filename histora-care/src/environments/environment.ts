@@ -4,6 +4,8 @@ export interface Environment {
   wsUrl: string;
   mapboxToken: string;
   appScheme: string;
+  culqiPublicKey: string;
+  paymentSimulationMode: boolean; // true = simulate payments without Culqi
 }
 
 export const environment: Environment = {
@@ -13,7 +15,10 @@ export const environment: Environment = {
   wsUrl: 'https://api.historahealth.com',
   // apiUrl: 'http://localhost:3000/api',
   // wsUrl: 'http://localhost:3000',
-  mapboxToken: 'pk.eyJ1IjoicmFjaGNhbXBpdG9zIiwiYSI6ImNta2FxdDN6ZTI0YWwzY291Nm5ya2ZvbTcifQ.FdliekF2uQU0FC8jPUQFRA', // Get from https://account.mapbox.com/access-tokens/
-  // Deep link scheme for OAuth callback
-  appScheme: 'historacare'
+  mapboxToken: 'pk.eyJ1IjoicmFjaGNhbXBpdG9zIiwiYSI6ImNta2FxdDN6ZTI0YWwzY291Nm5ya2ZvbTcifQ.FdliekF2uQU0FC8jPUQFRA',
+  appScheme: 'historacare',
+  // Culqi payment gateway
+  culqiPublicKey: 'pk_test_xxxxxxxxxx',
+  // Payment simulation mode - set to false when Culqi is configured
+  paymentSimulationMode: true
 };

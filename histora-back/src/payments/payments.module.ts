@@ -13,6 +13,6 @@ import { CulqiProvider } from './providers/culqi.provider';
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService, CulqiProvider],
-  exports: [PaymentsService],
+  exports: [PaymentsService, CulqiProvider],
 })
 export class PaymentsModule {}
