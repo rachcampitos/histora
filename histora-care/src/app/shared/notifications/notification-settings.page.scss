@@ -1,0 +1,151 @@
+.notification-settings-content {
+  --background: var(--ion-background-color);
+}
+
+.settings-container {
+  padding: 16px;
+}
+
+.settings-section {
+  background: var(--ion-color-light);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ion-color-light-shade);
+
+    ion-icon {
+      font-size: 28px;
+      margin-top: 2px;
+    }
+
+    .section-info {
+      flex: 1;
+
+      h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        color: var(--ion-text-color);
+      }
+
+      p {
+        font-size: 13px;
+        color: var(--ion-color-medium);
+        margin: 0;
+      }
+    }
+  }
+}
+
+.settings-item {
+  --background: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  ion-label {
+    h3 {
+      font-size: 15px;
+      font-weight: 500;
+      margin: 0 0 4px 0;
+    }
+
+    p {
+      font-size: 13px;
+      color: var(--ion-color-medium);
+      margin: 0;
+      white-space: normal;
+    }
+  }
+
+  ion-toggle {
+    --track-background: var(--ion-color-medium-tint);
+    --track-background-checked: var(--ion-color-primary);
+    --handle-background: white;
+    --handle-background-checked: white;
+  }
+
+  &.main-toggle {
+    padding: 8px 0;
+
+    ion-label h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+}
+
+.web-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--ion-color-warning-tint);
+  border-radius: 8px;
+  margin-top: 8px;
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--ion-color-warning-shade);
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 13px;
+    color: var(--ion-color-warning-shade);
+  }
+}
+
+.info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--ion-color-primary-tint);
+  border-radius: 12px;
+  margin-top: 8px;
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
+  }
+
+  p {
+    font-size: 13px;
+    color: var(--ion-color-primary-shade);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Dark mode
+:host-context(body.dark) {
+  .settings-section {
+    background: var(--ion-color-dark-shade);
+
+    .section-header {
+      border-bottom-color: var(--ion-color-dark-tint);
+    }
+  }
+
+  .web-notice {
+    background: rgba(var(--ion-color-warning-rgb), 0.15);
+  }
+
+  .info-note {
+    background: rgba(var(--ion-color-primary-rgb), 0.15);
+  }
+}

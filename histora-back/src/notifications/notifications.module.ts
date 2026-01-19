@@ -5,6 +5,7 @@ import { NotificationsService } from './notifications.service';
 import { ReminderSchedulerService } from './reminder-scheduler.service';
 import { Notification, NotificationSchema } from './schema/notification.schema';
 import { NotificationPreferences, NotificationPreferencesSchema } from './schema/notification-preferences.schema';
+import { DeviceToken, DeviceTokenSchema } from './schema/device-token.schema';
 import { Appointment, AppointmentSchema } from '../appointments/schema/appointment.schema';
 import { User, UserSchema } from '../users/schema/user.schema';
 import { EmailProvider } from './providers/email.provider';
@@ -17,6 +18,7 @@ import { PushProvider } from './providers/push.provider';
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema },
       { name: NotificationPreferences.name, schema: NotificationPreferencesSchema },
+      { name: DeviceToken.name, schema: DeviceTokenSchema },
       { name: Appointment.name, schema: AppointmentSchema },
       { name: User.name, schema: UserSchema },
     ]),

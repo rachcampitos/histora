@@ -12,3 +12,4 @@ export * from './safety.service';
 export * from './onboarding.service';
 export * from './product-tour.service';
 export * from './payment.service';
+export * from './notification.service';

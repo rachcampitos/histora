@@ -125,7 +125,7 @@ export class SettingsPage implements OnInit {
   }
 
   openNotificationSettings() {
-    this.showToast('Próximamente: Configuración de notificaciones', 'primary');
+    this.router.navigate(['/notifications/settings']);
   }
 
   openPrivacy() {

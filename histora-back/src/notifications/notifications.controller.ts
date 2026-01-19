@@ -93,6 +93,29 @@ export class NotificationsController {
     );
   }
 
+  @Post('register-device')
+  @ApiOperation({ summary: 'Register device for push notifications (mobile app)' })
+  registerDeviceMobile(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: { token: string; platform: string; deviceInfo?: Record<string, any> },
+  ) {
+    return this.notificationsService.registerDevice(
+      user.userId,
+      dto.token,
+      dto.platform,
+      dto.deviceInfo,
+    );
+  }
+
+  @Post('unregister-device')
+  @ApiOperation({ summary: 'Unregister device from push notifications' })
+  unregisterDevice(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: { token: string },
+  ) {
+    return this.notificationsService.unregisterDevice(user.userId, dto.token);
+  }
+
   // Admin endpoints
   @Post('send')
   @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
