@@ -13,12 +13,14 @@
   background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
   z-index: 99999;
   opacity: 1;
-  transition: opacity 0.3s ease-out;
+  transition: opacity 0.4s ease-out;
 
-  // Exit animation - fade out
+  // Exit animation - logo moves up + container fades out
   &.exiting {
+    opacity: 0;
+
     .splash-logo {
-      transform: translateY(-35vh) scale(0.7);
+      transform: translateY(-30vh) scale(0.8);
     }
 
     .splash-tagline {
