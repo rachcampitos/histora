@@ -2,7 +2,7 @@
   <div class="tutorial-container">
     <!-- Intro Video Slide (shown only once at the beginning) -->
     <div class="intro-slide" *ngIf="showIntroVideo" [class.video-ended]="videoEnded" (click)="skipIntro()">
-      <!-- Video Container -->
+      <!-- Video Container (shrinks with clip-path, logo inside for perfect transition) -->
       <div class="video-container" [class.shrinking]="videoEnded">
         <video
           #introVideo
@@ -15,7 +15,7 @@
           <source src="assets/video/NurseLite video 2.mp4" type="video/mp4">
         </video>
 
-        <!-- Logo that appears after video shrinks -->
+        <!-- Logo inside container - fills the clipped area perfectly -->
         <img
           src="assets/icon/nurselite.png"
           alt="NurseLite"

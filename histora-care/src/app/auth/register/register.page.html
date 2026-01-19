@@ -68,14 +68,18 @@
             <ion-input
               formControlName="firstName"
               placeholder="Nombre"
-              autocomplete="given-name">
+              autocomplete="given-name"
+              class="uppercase-input"
+              (ionInput)="toUpperCase($event, 'firstName')">
             </ion-input>
           </ion-item>
           <ion-item lines="none" class="input-item" [class.input-error]="lastName?.invalid && lastName?.touched">
             <ion-input
               formControlName="lastName"
               placeholder="Apellido"
-              autocomplete="family-name">
+              autocomplete="family-name"
+              class="uppercase-input"
+              (ionInput)="toUpperCase($event, 'lastName')">
             </ion-input>
           </ion-item>
         </div>

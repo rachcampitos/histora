@@ -328,4 +328,13 @@ export class RegisterPage implements OnInit, OnDestroy {
   get cepNumber() { return this.registerForm.get('cepNumber'); }
   get acceptTerms() { return this.registerForm.get('acceptTerms'); }
   get acceptProfessionalDisclaimer() { return this.registerForm.get('acceptProfessionalDisclaimer'); }
+
+  /**
+   * Transform input to uppercase for name fields
+   */
+  toUpperCase(event: Event, controlName: string): void {
+    const input = event.target as HTMLInputElement;
+    const upperValue = input.value.toUpperCase();
+    this.registerForm.get(controlName)?.setValue(upperValue, { emitEvent: false });
+  }
 }
