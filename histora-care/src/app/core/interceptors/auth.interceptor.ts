@@ -6,9 +6,14 @@ import { AuthService } from '../services/auth.service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
-  // Skip auth header for login/register endpoints
+  // Bypass service worker for auth endpoints (login/register) to prevent duplicate requests
   if (req.url.includes('/auth/login') || req.url.includes('/auth/register')) {
-    return next(req);
+    const bypassReq = req.clone({
+      setHeaders: {
+        'ngsw-bypass': 'true'
+      }
+    });
+    return next(bypassReq);
   }
 
   return from(authService.getToken()).pipe(
