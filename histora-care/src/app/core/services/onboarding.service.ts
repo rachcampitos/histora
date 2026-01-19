@@ -22,7 +22,8 @@ export interface OnboardingStatus {
 
 const LANDING_KEY = 'histora_care_landing_status';
 const ONBOARDING_KEY = 'histora_care_onboarding_status';
-const CURRENT_VERSION = '1.0';
+// Version 2.0: Differentiated onboarding for nurses and patients
+const CURRENT_VERSION = '2.0';
 
 /**
  * OnboardingService manages the hybrid onboarding flow for NurseLite:

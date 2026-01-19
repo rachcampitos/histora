@@ -78,6 +78,9 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   ionViewDidEnter() {
+    // Refresh nurse profile to get latest verification status
+    this.refreshNurseProfile();
+
     // Start tour after page is fully visible
     setTimeout(async () => {
       // First check if there's a pending tour (from replay)
@@ -85,6 +88,31 @@ export class DashboardPage implements OnInit, OnDestroy {
       // Then try to start the regular tour if not already completed
       this.productTour.startTour('nurse_dashboard');
     }, 500);
+  }
+
+  /**
+   * Refresh only the nurse profile (for verification status updates)
+   */
+  private refreshNurseProfile() {
+    this.nurseApi.getMyProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (nurse) => {
+        const currentNurse = this.nurse();
+        // Only update if verification status changed
+        if (!currentNurse || currentNurse.verificationStatus !== nurse.verificationStatus) {
+          this.nurse.set(nurse);
+          // If newly approved, show a toast
+          if (nurse.verificationStatus === 'approved' && currentNurse?.verificationStatus !== 'approved') {
+            this.showToast('¡Tu cuenta ha sido verificada!', 'success');
+          }
+        } else {
+          // Still update the nurse data for other potential changes
+          this.nurse.set(nurse);
+        }
+      },
+      error: (err) => {
+        console.error('Error refreshing profile:', err);
+      },
+    });
   }
 
   ngOnDestroy() {

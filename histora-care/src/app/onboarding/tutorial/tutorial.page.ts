@@ -1,4 +1,4 @@
-import { Component, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -10,16 +10,18 @@ interface OnboardingSlide {
   title: string;
   description: string;
   features?: { icon: string; text: string }[];
+  ctaText?: string; // Custom CTA text for last slide
 }
 
 /**
  * POST-AUTH ONBOARDING TUTORIAL
  *
  * This component is shown AFTER successful registration.
- * Purpose: Security education + feature discovery
+ * Implements DIFFERENTIATED onboarding based on user role:
+ * - Nurses: Focus on income, flexibility, CEP verification
+ * - Patients: Focus on trust, convenience, easy booking
  *
- * Based on "Commitment & Consistency" (Cialdini):
- * Users are more receptive to learning after making a commitment (registration)
+ * Based on UX best practices for two-sided healthcare marketplaces
  */
 @Component({
   selector: 'app-tutorial',
@@ -27,83 +29,171 @@ interface OnboardingSlide {
   styleUrls: ['./tutorial.page.scss'],
   standalone: false,
 })
-export class TutorialPage {
+export class TutorialPage implements OnInit {
   currentSlide = 0;
   touchStartX = 0;
   touchEndX = 0;
+  userRole: 'nurse' | 'patient' | 'unknown' = 'unknown';
 
   /**
-   * 5 SLIDES - POST-AUTH SECURITY EDUCATION
-   *
-   * Slide 1: Welcome + Platform Overview
-   * Slide 2: Security Overview
-   * Slide 3: Verification Process (CEP, RENIEC, Biometria)
-   * Slide 4: Continuous Protection
-   * Slide 5: Call to Action
+   * NURSE SLIDES (4 slides)
+   * Focus: Income opportunity, flexibility, CEP verification, support
    */
-  slides: OnboardingSlide[] = [
+  private nurseSlides: OnboardingSlide[] = [
     {
       id: 1,
-      icon: 'flash',
+      icon: 'time',
       gradient: 'gradient-primary',
-      title: 'Bienvenido a NurseLite',
+      title: 'Trabaja en tus propios horarios',
       description:
-        'Tu cuenta ha sido creada exitosamente. Conoce como protegemos tu seguridad y la de tu familia.',
+        'Bienvenida a NurseLite. Gana dinero brindando cuidado de enfermeria a domicilio con total flexibilidad.',
+      features: [
+        { icon: 'calendar', text: 'Horarios flexibles' },
+        { icon: 'wallet', text: 'Ingresos adicionales' },
+        { icon: 'home', text: 'Servicios a domicilio' },
+      ],
+    },
+    {
+      id: 2,
+      icon: 'ribbon',
+      gradient: 'gradient-success',
+      title: 'Tu profesionalismo respaldado',
+      description:
+        'Tu verificacion CEP garantiza confianza y seguridad. Los pacientes prefieren enfermeras verificadas.',
+      features: [
+        { icon: 'shield-checkmark', text: 'CEP verificado oficialmente' },
+        { icon: 'star', text: 'Perfil profesional destacado' },
+        { icon: 'people', text: 'Red de pacientes confiables' },
+      ],
+    },
+    {
+      id: 3,
+      icon: 'list',
+      gradient: 'gradient-info',
+      title: 'Comienza en 3 pasos',
+      description:
+        'Empieza a recibir solicitudes de servicios de manera rapida y sencilla.',
+      features: [
+        { icon: 'checkmark-circle', text: '1. Verifica tu CEP' },
+        { icon: 'person', text: '2. Completa tu perfil' },
+        { icon: 'cash', text: '3. Acepta solicitudes y gana' },
+      ],
+    },
+    {
+      id: 4,
+      icon: 'shield',
+      gradient: 'gradient-warning',
+      title: 'Trabaja con tranquilidad',
+      description:
+        'Te acompanamos en cada servicio con herramientas de seguridad y soporte.',
+      features: [
+        { icon: 'card', text: 'Pagos seguros y puntuales' },
+        { icon: 'headset', text: 'Soporte tecnico 24/7' },
+        { icon: 'warning', text: 'Boton de panico de emergencia' },
+      ],
+      ctaText: 'Comenzar Verificacion',
+    },
+  ];
+
+  /**
+   * PATIENT SLIDES (4 slides)
+   * Focus: Trust, verified professionals, easy booking, safety
+   */
+  private patientSlides: OnboardingSlide[] = [
+    {
+      id: 1,
+      icon: 'medkit',
+      gradient: 'gradient-primary',
+      title: 'Enfermeria profesional en tu hogar',
+      description:
+        'Bienvenido a NurseLite. Encuentra enfermeras verificadas cuando las necesites, en la comodidad de tu hogar.',
+      features: [
+        { icon: 'home', text: 'Atencion a domicilio' },
+        { icon: 'time', text: 'Disponibilidad inmediata' },
+        { icon: 'shield-checkmark', text: 'Profesionales verificados' },
+      ],
     },
     {
       id: 2,
       icon: 'shield-checkmark',
       gradient: 'gradient-success',
-      title: 'Tu seguridad es nuestra prioridad',
+      title: 'Solo profesionales verificados',
       description:
-        'Implementamos multiples capas de verificacion para garantizar que recibas atencion de profesionales confiables.',
+        'Todas nuestras enfermeras cuentan con CEP vigente y HABIL, verificado directamente con el Colegio de Enfermeros.',
       features: [
-        { icon: 'ribbon', text: 'Identidad verificada' },
-        { icon: 'checkmark-circle', text: 'Certificaciones validadas' },
-        { icon: 'location', text: 'Seguimiento GPS' },
+        { icon: 'ribbon', text: 'CEP validado oficialmente' },
+        { icon: 'finger-print', text: 'Identidad confirmada' },
+        { icon: 'star', text: 'Calificaciones verificadas' },
       ],
     },
     {
       id: 3,
-      icon: 'shield',
+      icon: 'calendar',
       gradient: 'gradient-info',
-      title: 'Enfermeras 100% verificadas',
+      title: 'Agenda en minutos',
       description:
-        'Cada profesional pasa por un riguroso proceso de validacion antes de poder ofrecer servicios.',
+        'Solicitar un servicio de enfermeria nunca fue tan facil y rapido.',
       features: [
-        { icon: 'ribbon', text: 'CEP validado con el colegio' },
-        { icon: 'finger-print', text: 'DNI verificado con RENIEC' },
-        { icon: 'scan', text: 'Comparacion biometrica IA' },
+        { icon: 'create', text: '1. Describe lo que necesitas' },
+        { icon: 'people', text: '2. Elige tu enfermera' },
+        { icon: 'checkmark-circle', text: '3. Confirma fecha y hora' },
       ],
     },
     {
       id: 4,
-      icon: 'lock-closed',
+      icon: 'heart',
       gradient: 'gradient-warning',
-      title: 'Proteccion durante el servicio',
+      title: 'Estamos contigo',
       description:
-        'Monitoreo en tiempo real, calificaciones verificadas y boton de panico para tu tranquilidad.',
+        'Tu tranquilidad es nuestra prioridad. Monitoreo en tiempo real y soporte cuando lo necesites.',
       features: [
-        { icon: 'star', text: 'Calificaciones reales' },
-        { icon: 'time', text: 'Monitoreo en vivo' },
-        { icon: 'warning', text: 'Boton de panico 24/7' },
+        { icon: 'location', text: 'Seguimiento GPS en vivo' },
+        { icon: 'card', text: 'Pagos 100% seguros' },
+        { icon: 'headset', text: 'Atencion al cliente 24/7' },
       ],
-    },
-    {
-      id: 5,
-      icon: 'bulb',
-      gradient: 'gradient-danger',
-      title: 'Listo para comenzar',
-      description:
-        'Ya formas parte de la comunidad NurseLite. Explora enfermeras verificadas y agenda tu primer servicio.',
+      ctaText: 'Buscar Enfermera',
     },
   ];
+
+  // Active slides based on user role
+  slides: OnboardingSlide[] = [];
 
   constructor(
     private router: Router,
     private onboardingService: OnboardingService,
     private authService: AuthService
   ) {}
+
+  ngOnInit(): void {
+    this.initializeSlides();
+  }
+
+  /**
+   * Initialize slides based on user role
+   */
+  private initializeSlides(): void {
+    const user = this.authService.user();
+
+    if (user?.role === 'nurse') {
+      this.userRole = 'nurse';
+      this.slides = this.nurseSlides;
+    } else if (user?.role === 'patient') {
+      this.userRole = 'patient';
+      this.slides = this.patientSlides;
+    } else {
+      // Fallback to patient slides for unknown roles
+      this.userRole = 'unknown';
+      this.slides = this.patientSlides;
+    }
+  }
+
+  /**
+   * Get the CTA text for the last slide based on user role
+   */
+  get lastSlideCta(): string {
+    const lastSlide = this.slides[this.slides.length - 1];
+    return lastSlide?.ctaText || 'Comenzar';
+  }
 
   // Touch handling for swipe gestures
   @HostListener('touchstart', ['$event'])
