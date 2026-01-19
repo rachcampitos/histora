@@ -33,35 +33,31 @@ $primary-gradient: var(--histora-gradient);
   }
 }
 
-// Video Container with shrink animation
+// Video Container with shrink animation using scale transform
 .video-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  max-height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.shrinking {
-    position: relative;
-    top: auto;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    width: 100px;
-    height: 100px;
+    transform: scale(0.25);
   }
 }
 
 .intro-video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  border-radius: tokens.$radius-lg;
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease 0.3s;
 
   &.hidden {
     opacity: 0;
@@ -78,7 +74,7 @@ $primary-gradient: var(--histora-gradient);
   border-radius: tokens.$radius-lg;
   box-shadow: 0 8px 32px rgba(74, 157, 154, 0.4);
   opacity: 0;
-  transition: opacity 0.4s ease 0.1s;
+  transition: opacity 0.4s ease 0.5s;
 
   &.visible {
     opacity: 1;
@@ -584,10 +580,8 @@ $primary-gradient: var(--histora-gradient);
 @media (max-height: 667px) {
   // Intro video adjustments for small screens
   .video-container {
-    &.shrinking {
-      width: 80px;
-      height: 80px;
-    }
+    height: 50vh;
+    max-height: 280px;
   }
 
   .intro-logo {
