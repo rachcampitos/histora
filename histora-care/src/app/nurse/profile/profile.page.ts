@@ -243,14 +243,20 @@ export class ProfilePage implements OnInit {
           },
           error: (err) => {
             console.error('Error uploading avatar:', err);
-            this.showToast('Error al subir la foto', 'danger');
+            const errorMsg = err?.error?.message || 'Error al subir la foto';
+            this.showToast(errorMsg, 'danger');
             this.isUploadingAvatar.set(false);
           }
         });
       }
-    } catch (error) {
+      // If photo is null, user cancelled - no action needed
+    } catch (error: any) {
       console.error('Error changing avatar:', error);
-      this.showToast('Error al cambiar la foto', 'danger');
+      // Show user-friendly error message
+      const message = error?.message?.includes('User denied')
+        ? 'Permiso de cámara denegado'
+        : 'Error al acceder a la cámara';
+      this.showToast(message, 'danger');
       this.isUploadingAvatar.set(false);
     }
   }

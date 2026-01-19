@@ -114,9 +114,17 @@ export class UploadsService {
         };
       }
       return null;
-    } catch (error) {
+    } catch (error: any) {
+      // User cancelled - return null without error
+      if (error?.message?.includes('User cancelled') ||
+          error?.message?.includes('cancelled') ||
+          error?.message?.includes('No image picked')) {
+        console.log('User cancelled photo selection');
+        return null;
+      }
+      // Re-throw other errors for caller to handle
       console.error('Error getting photo:', error);
-      return null;
+      throw error;
     }
   }
 }
