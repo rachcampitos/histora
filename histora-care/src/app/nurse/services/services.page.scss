@@ -230,8 +230,13 @@ ion-item-option {
   }
 
   ion-button {
+    --background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+    --background-hover: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+    --background-activated: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
     --border-radius: 12px;
+    --box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
     font-weight: 600;
+    height: 48px;
     width: 100%;
     max-width: 280px;
   }
@@ -445,6 +450,11 @@ ion-toggle {
 
     p {
       color: #94a3b8;
+    }
+
+    ion-button {
+      --background: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
+      --box-shadow: 0 4px 12px rgba(74, 157, 154, 0.3);
     }
   }
 

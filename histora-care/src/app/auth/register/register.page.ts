@@ -330,11 +330,15 @@ export class RegisterPage implements OnInit, OnDestroy {
   get acceptProfessionalDisclaimer() { return this.registerForm.get('acceptProfessionalDisclaimer'); }
 
   /**
-   * Transform input to uppercase for name fields
+   * Transform input to title case for name fields (first letter uppercase)
    */
-  toUpperCase(event: Event, controlName: string): void {
+  toTitleCase(event: Event, controlName: string): void {
     const input = event.target as HTMLInputElement;
-    const upperValue = input.value.toUpperCase();
-    this.registerForm.get(controlName)?.setValue(upperValue, { emitEvent: false });
+    const titleCaseValue = input.value
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    this.registerForm.get(controlName)?.setValue(titleCaseValue, { emitEvent: false });
   }
 }

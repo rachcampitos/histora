@@ -224,14 +224,6 @@ $border-radius: 12px;
   }
 }
 
-// Uppercase input for name fields
-.uppercase-input {
-  text-transform: uppercase;
-
-  &::placeholder {
-    text-transform: none;
-  }
-}
 
 .input-item {
   --background: var(--histora-surface-secondary, #f8fafc);
