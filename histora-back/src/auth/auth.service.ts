@@ -259,6 +259,14 @@ export class AuthService {
     }
     this.logger.log(`[REGISTER NURSE] Email check passed, email is available`);
 
+    // Check if CEP number is already registered BEFORE creating user
+    const existingNurse = await this.nursesService.findByCepNumber(registerDto.cepNumber);
+    if (existingNurse) {
+      this.logger.warn(`[REGISTER NURSE] CEP already registered: ${registerDto.cepNumber}`);
+      throw new ConflictException('Este número CEP ya está registrado');
+    }
+    this.logger.log(`[REGISTER NURSE] CEP check passed, CEP is available`);
+
     // Validate terms acceptance
     if (!registerDto.termsAccepted) {
       throw new UnauthorizedException('Debe aceptar los términos y condiciones');
