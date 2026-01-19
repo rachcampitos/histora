@@ -63,21 +63,22 @@ $border-radius: tokens.$radius-lg;
 }
 
 // Logo animation keyframes
+// Adjusted for layout without hero section - shorter travel distance
 @keyframes logoFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(calc(40vh - 60px)) scale(1.2);
+    transform: translateY(calc(25vh - 40px)) scale(1.1);
   }
   100% {
     opacity: 1;
-    transform: translateY(calc(40vh - 60px)) scale(1.4);
+    transform: translateY(calc(25vh - 40px)) scale(1.2);
   }
 }
 
 @keyframes logoIntroMove {
   0% {
     opacity: 1;
-    transform: translateY(calc(40vh - 60px)) scale(1.4);
+    transform: translateY(calc(25vh - 40px)) scale(1.2);
   }
   100% {
     opacity: 1;
