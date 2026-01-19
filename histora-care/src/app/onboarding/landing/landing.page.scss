@@ -15,14 +15,8 @@ $border-radius: tokens.$radius-lg;
 // Using transforms only for smooth animation (no position change)
 // ============================================================
 
-// During intro: hide all content except logo, center the main container
+// During intro: hide all content except logo
 .landing-container.intro-active {
-  // Make the main area take full height for proper centering
-  .landing-main {
-    justify-content: flex-start;
-    padding-top: tokens.$spacing-4;
-  }
-
   .tab-selector,
   .value-section,
   .features-list,
@@ -63,22 +57,22 @@ $border-radius: tokens.$radius-lg;
 }
 
 // Logo animation keyframes
-// Adjusted for layout without hero section - shorter travel distance
+// Logo starts centered, then moves up smoothly to final position
 @keyframes logoFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(calc(25vh - 40px)) scale(1.1);
+    transform: translateY(calc(40vh - 60px)) scale(1.2);
   }
   100% {
     opacity: 1;
-    transform: translateY(calc(25vh - 40px)) scale(1.2);
+    transform: translateY(calc(40vh - 60px)) scale(1.4);
   }
 }
 
 @keyframes logoIntroMove {
   0% {
     opacity: 1;
-    transform: translateY(calc(25vh - 40px)) scale(1.2);
+    transform: translateY(calc(40vh - 60px)) scale(1.4);
   }
   100% {
     opacity: 1;
@@ -150,7 +144,8 @@ $border-radius: tokens.$radius-lg;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; // Always flex-start to prevent layout shift after intro
+  padding-top: 10vh; // Vertical spacing from top
   text-align: center;
 }
 
