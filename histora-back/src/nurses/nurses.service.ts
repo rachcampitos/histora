@@ -159,9 +159,10 @@ export class NursesService {
 
   /**
    * Find nurse by CEP number (returns null if not found, doesn't throw)
+   * Excludes deleted nurses
    */
   async findByCepNumber(cepNumber: string): Promise<Nurse | null> {
-    return this.nurseModel.findOne({ cepNumber }).exec();
+    return this.nurseModel.findOne({ cepNumber, isDeleted: { $ne: true } }).exec();
   }
 
   async searchNearby(searchDto: SearchNurseDto): Promise<{ nurse: Nurse; distance: number }[]> {
@@ -177,9 +178,10 @@ export class NursesService {
 
     const radiusInMeters = radius * 1000;
 
-    // Build match conditions
+    // Build match conditions - exclude deleted nurses
     const matchConditions: Record<string, unknown> = {
       isActive: true,
+      isDeleted: { $ne: true },
     };
 
     if (availableNow) {

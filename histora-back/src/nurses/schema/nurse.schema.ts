@@ -160,6 +160,9 @@ export class Nurse extends Document {
   @Prop({ default: true })
   isActive: boolean;
 
+  @Prop({ default: false })
+  isDeleted: boolean;
+
   // Timestamps added by mongoose
   createdAt: Date;
   updatedAt: Date;
