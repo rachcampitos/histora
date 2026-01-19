@@ -1,0 +1,506 @@
+// Checkout Page Styles
+
+.checkout-content {
+  --background: var(--ion-background-color);
+}
+
+// Simulation mode banner
+.simulation-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 18px;
+  }
+}
+
+// Loading container
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 16px;
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+// Error container
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  padding: 24px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 0 0 24px 0;
+  }
+}
+
+// Summary header
+.summary-header {
+  background: var(--ion-color-light);
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  margin: 16px;
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+
+    .label {
+      color: var(--ion-color-medium);
+      font-size: 14px;
+    }
+
+    .value {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    &.subtotal {
+      border-bottom: 1px solid var(--ion-color-light-shade);
+      padding-bottom: 12px;
+    }
+
+    &.fee,
+    &.discount {
+      font-size: 13px;
+
+      .label,
+      .value {
+        font-size: 13px;
+      }
+    }
+
+    &.discount .value {
+      color: var(--ion-color-success);
+    }
+
+    &.total {
+      border-top: 1px solid var(--ion-color-light-shade);
+      padding-top: 12px;
+      margin-top: 4px;
+
+      .label,
+      .value {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--ion-text-color);
+      }
+    }
+  }
+}
+
+// Step content
+.step-content {
+  padding: 0 16px 24px;
+}
+
+.step-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--ion-text-color);
+}
+
+// Sections
+.section {
+  margin-bottom: 24px;
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-color-medium);
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Payment options
+.payment-option {
+  --background: var(--ion-color-light);
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 64px;
+  margin-bottom: 8px;
+
+  ion-icon[slot="start"] {
+    font-size: 24px;
+    margin-right: 16px;
+  }
+
+  ion-label {
+    h3 {
+      font-weight: 600;
+      font-size: 15px;
+      margin: 0 0 4px 0;
+    }
+
+    p {
+      font-size: 13px;
+      color: var(--ion-color-medium);
+      margin: 0;
+    }
+  }
+
+  &.selected {
+    --background: var(--ion-color-primary-tint);
+    border: 2px solid var(--ion-color-primary);
+  }
+}
+
+// Yape icon
+.yape-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #7B2BF9, #A855F7);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+
+  span {
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+// Card form
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  ion-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-color-medium);
+  }
+
+  &.half {
+    flex: 1;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  ion-input {
+    flex: 1;
+  }
+
+  .card-brand-icon,
+  .help-icon {
+    position: absolute;
+    right: 12px;
+    font-size: 20px;
+    color: var(--ion-color-medium);
+  }
+}
+
+.card-input {
+  --background: var(--ion-color-light);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  border-radius: 10px;
+  font-size: 16px;
+
+  &.small {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+}
+
+.expiry-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .separator {
+    color: var(--ion-color-medium);
+    font-size: 18px;
+  }
+
+  ion-input {
+    flex: 1;
+    max-width: 60px;
+    text-align: center;
+  }
+}
+
+.error-text {
+  font-size: 12px;
+  color: var(--ion-color-danger);
+}
+
+.save-card-item {
+  --background: transparent;
+  --padding-start: 0;
+  margin-top: 8px;
+
+  ion-label {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+  }
+}
+
+.security-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--ion-color-success-tint);
+  border-radius: 8px;
+  margin-top: 16px;
+
+  ion-icon {
+    font-size: 18px;
+    color: var(--ion-color-success);
+  }
+
+  span {
+    font-size: 13px;
+    color: var(--ion-color-success-shade);
+  }
+}
+
+// Yape styles
+.yape-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  text-align: center;
+
+  .yape-logo {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #7B2BF9, #A855F7);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    span {
+      color: white;
+      font-size: 32px;
+      font-weight: 700;
+    }
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.yape-input {
+  --background: var(--ion-color-light);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  border-radius: 10px;
+  font-size: 20px;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.yape-instructions {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+  }
+
+  ol {
+    margin: 0;
+    padding-left: 20px;
+
+    li {
+      font-size: 14px;
+      color: var(--ion-color-medium);
+      margin-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Status containers
+.status-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  padding: 24px;
+  text-align: center;
+
+  .status-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+
+    ion-icon {
+      font-size: 56px;
+    }
+
+    ion-spinner {
+      --color: var(--ion-color-primary);
+      width: 48px;
+      height: 48px;
+    }
+
+    &.processing {
+      background: var(--ion-color-primary-tint);
+    }
+
+    &.success {
+      background: var(--ion-color-success-tint);
+
+      ion-icon {
+        color: var(--ion-color-success);
+      }
+    }
+
+    &.error {
+      background: var(--ion-color-danger-tint);
+
+      ion-icon {
+        color: var(--ion-color-danger);
+      }
+    }
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--ion-color-medium);
+    margin: 0 0 8px 0;
+  }
+
+  .redirect-text {
+    font-size: 13px;
+    color: var(--ion-color-medium-shade);
+  }
+
+  .retry-button {
+    margin-top: 24px;
+    margin-bottom: 12px;
+  }
+}
+
+// Footer
+.checkout-footer {
+  ion-toolbar {
+    --background: var(--ion-background-color);
+    --border-width: 0;
+    padding: 8px 16px 16px;
+  }
+
+  .pay-button {
+    --border-radius: 12px;
+    height: 52px;
+    font-weight: 600;
+    font-size: 16px;
+
+    ion-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Dark mode adjustments
+:host-context(body.dark) {
+  .summary-header {
+    background: var(--ion-color-dark-shade);
+  }
+
+  .card-input,
+  .yape-input {
+    --background: var(--ion-color-dark-shade);
+  }
+
+  .payment-option {
+    --background: var(--ion-color-dark-shade);
+
+    &.selected {
+      --background: var(--ion-color-primary-shade);
+    }
+  }
+
+  .yape-instructions {
+    background: var(--ion-color-dark-shade);
+  }
+
+  .security-note {
+    background: rgba(var(--ion-color-success-rgb), 0.15);
+  }
+}

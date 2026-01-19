@@ -33,6 +33,7 @@ import { SafetyModule } from './safety/safety.module';
 import { TrackingModule } from './tracking/tracking.module';
 import { AIAssistantModule } from './ai-assistant/ai-assistant.module';
 import { ChatModule } from './chat/chat.module';
+import { ServicePaymentsModule } from './service-payments/service-payments.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { ChatModule } from './chat/chat.module';
     TrackingModule,
     AIAssistantModule,
     ChatModule,
+    ServicePaymentsModule,
   ],
   controllers: [AppController],
   providers: [

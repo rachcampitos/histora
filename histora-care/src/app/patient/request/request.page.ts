@@ -250,13 +250,11 @@ export class RequestPage implements OnInit {
 
       const result = await this.serviceRequestService.create(requestData).toPromise();
 
-      await this.showToast('Solicitud enviada exitosamente', 'success');
+      await this.showToast('Solicitud creada. Procede al pago.', 'success');
 
-      // Navigate to tracking page
+      // Navigate to checkout page
       if (result?._id) {
-        this.router.navigate(['/patient/tracking'], {
-          queryParams: { requestId: result._id }
-        });
+        this.router.navigate(['/patient/checkout', result._id]);
       } else {
         this.router.navigate(['/patient/tabs/home']);
       }

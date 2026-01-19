@@ -181,6 +181,10 @@ const routes: Routes = [
         loadChildren: () => import('./patient/request/request.module').then(m => m.RequestPageModule),
       },
       {
+        path: 'checkout/:requestId',
+        loadChildren: () => import('./patient/checkout/checkout.module').then(m => m.CheckoutPageModule),
+      },
+      {
         path: 'tracking/:requestId',
         loadChildren: () => import('./patient/tracking/tracking.module').then(m => m.TrackingPageModule),
       },
