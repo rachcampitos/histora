@@ -40,6 +40,27 @@ const routes: Routes = [
   },
 
   // ============================================================
+  // LEGAL ROUTES (PUBLIC - No auth required)
+  // ============================================================
+  {
+    path: 'legal',
+    children: [
+      {
+        path: 'terms',
+        loadChildren: () => import('./legal/terms/terms.module').then(m => m.TermsPageModule),
+      },
+      {
+        path: 'privacy',
+        loadChildren: () => import('./legal/privacy/privacy.module').then(m => m.PrivacyPageModule),
+      },
+      {
+        path: 'help',
+        loadChildren: () => import('./legal/help/help.module').then(m => m.HelpPageModule),
+      },
+    ],
+  },
+
+  // ============================================================
   // ONBOARDING ROUTES
   // ============================================================
   {

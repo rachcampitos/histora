@@ -1,0 +1,46 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Politica de Privacidad</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="legal-content">
+  <div class="legal-container">
+    <div class="legal-header">
+      <h1>Politica de Privacidad</h1>
+      <p class="last-updated">Ultima actualizacion: {{ lastUpdated() }}</p>
+    </div>
+
+    <div class="legal-intro">
+      <p>
+        En NurseLite nos comprometemos a proteger tu privacidad y tus datos
+        personales. Esta politica explica como recopilamos, usamos y protegemos
+        tu informacion, en cumplimiento con la Ley 29733 - Ley de Proteccion de
+        Datos Personales del Peru.
+      </p>
+    </div>
+
+    @for (section of sections(); track section.title) {
+      <div class="legal-section">
+        <h2>{{ section.title }}</h2>
+        <div class="section-content">
+          @for (paragraph of section.paragraphs; track $index) {
+            <p [innerHTML]="paragraph"></p>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="legal-footer">
+      <p>
+        Al utilizar NurseLite, confirmas que has leido y comprendido esta
+        Politica de Privacidad.
+      </p>
+    </div>
+  </div>
+</ion-content>

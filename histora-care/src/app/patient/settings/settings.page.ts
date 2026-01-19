@@ -129,15 +129,15 @@ export class SettingsPage implements OnInit {
   }
 
   openPrivacy() {
-    this.showToast('Próximamente: Configuración de privacidad', 'primary');
+    this.router.navigate(['/legal/privacy']);
   }
 
   openHelp() {
-    this.showToast('Próximamente: Centro de ayuda', 'primary');
+    this.router.navigate(['/legal/help']);
   }
 
   openTerms() {
-    this.showToast('Próximamente: Términos y condiciones', 'primary');
+    this.router.navigate(['/legal/terms']);
   }
 
   async replayTour() {

@@ -1,0 +1,45 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Terminos y Condiciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="legal-content">
+  <div class="legal-container">
+    <div class="legal-header">
+      <h1>Terminos y Condiciones de Uso</h1>
+      <p class="last-updated">Ultima actualizacion: {{ lastUpdated() }}</p>
+    </div>
+
+    <div class="legal-intro">
+      <p>
+        Bienvenido a NurseLite. Al acceder y utilizar nuestra plataforma, aceptas
+        estos terminos y condiciones en su totalidad. Si no estas de acuerdo con
+        alguna parte de estos terminos, no debes usar nuestros servicios.
+      </p>
+    </div>
+
+    @for (section of sections(); track section.title) {
+      <div class="legal-section">
+        <h2>{{ section.title }}</h2>
+        <div class="section-content">
+          @for (paragraph of section.paragraphs; track $index) {
+            <p [innerHTML]="paragraph"></p>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="legal-footer">
+      <p>
+        Al utilizar NurseLite, confirmas que has leido, entendido y aceptado
+        estos Terminos y Condiciones.
+      </p>
+    </div>
+  </div>
+</ion-content>
