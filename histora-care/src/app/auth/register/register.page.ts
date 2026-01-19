@@ -289,10 +289,15 @@ export class RegisterPage implements OnInit, OnDestroy {
 
   private async showError(error: any) {
     let message = 'Error al crear la cuenta';
+    const errorMessage = error.error?.message || '';
+
     if (error.status === 409) {
-      message = 'Este correo ya está registrado';
-    } else if (error.error?.message?.includes('CEP')) {
-      message = 'Este número CEP ya está registrado';
+      // Check specific 409 error types
+      if (errorMessage.includes('CEP')) {
+        message = 'Este número CEP ya está registrado';
+      } else {
+        message = 'Este correo ya está registrado';
+      }
     } else if (error.status === 0) {
       message = 'Error de conexión. Verifica tu internet.';
     }
