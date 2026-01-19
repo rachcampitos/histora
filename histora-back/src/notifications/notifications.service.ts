@@ -590,6 +590,35 @@ export class NotificationsService {
     this.logger.log(`Notified ${admins.length} admin(s) about new patient: ${patient.email}`);
   }
 
+  // Notify admins when a new nurse registers (NurseLite)
+  async notifyAdminNewNurseRegistered(nurse: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    cepNumber: string;
+  }): Promise<void> {
+    const admins = await this.getPlatformAdmins();
+
+    for (const admin of admins) {
+      await this.send({
+        userId: admin._id.toString(),
+        type: NotificationType.NEW_NURSE_REGISTERED,
+        title: 'Nueva Enfermera Registrada - NurseLite',
+        message: `${nurse.firstName} ${nurse.lastName} (${nurse.email}) se ha registrado como enfermera con CEP: ${nurse.cepNumber}.`,
+        data: {
+          userId: nurse.id,
+          email: nurse.email,
+          name: `${nurse.firstName} ${nurse.lastName}`,
+          cepNumber: nurse.cepNumber,
+        },
+        channels: [NotificationChannel.IN_APP, NotificationChannel.EMAIL],
+      });
+    }
+
+    this.logger.log(`Notified ${admins.length} admin(s) about new nurse: ${nurse.email}`);
+  }
+
   // =====================
   // SERVICE REQUEST NOTIFICATIONS (Histora Care)
   // =====================

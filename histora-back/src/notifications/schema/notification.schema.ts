@@ -34,6 +34,7 @@ export enum NotificationType {
   // Admin notifications
   NEW_DOCTOR_REGISTERED = 'new_doctor_registered',
   NEW_PATIENT_REGISTERED = 'new_patient_registered',
+  NEW_NURSE_REGISTERED = 'new_nurse_registered',
   // Nurse notifications (Histora Care)
   NEW_NURSE_REVIEW = 'new_nurse_review',
 }
