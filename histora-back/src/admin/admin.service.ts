@@ -231,8 +231,8 @@ export class AdminService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    // Check if user is a nurse and cancel pending verifications
-    const nurse = await this.nurseModel.findOne({ userId: id });
+    // Check if user is a nurse and perform cascade delete
+    const nurse = await this.nurseModel.findOne({ userId: id, isDeleted: { $ne: true } });
     if (nurse) {
       // Cancel any pending verifications for this nurse
       const cancelledCount = await this.nurseVerificationModel.updateMany(
@@ -253,12 +253,16 @@ export class AdminService {
         this.logger.log(`Cancelled ${cancelledCount.modifiedCount} pending verification(s) for deleted user ${user.email}`);
       }
 
-      // Mark nurse as inactive
+      // Soft delete nurse profile and free up the CEP number
       await this.nurseModel.findByIdAndUpdate(nurse._id, {
         isActive: false,
         isAvailable: false,
+        isDeleted: true,
         verificationStatus: VerificationStatus.REJECTED,
+        cepNumber: `deleted_${Date.now()}_${nurse.cepNumber}`, // Free up CEP for reuse
       });
+
+      this.logger.log(`Cascade deleted nurse profile: CEP ${nurse.cepNumber}`);
     }
 
     // Soft delete user
@@ -880,8 +884,8 @@ export class AdminService {
     const { search, verificationStatus, status, availability, district, page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
 
-    // Build filter
-    const filter: any = {};
+    // Build filter - exclude deleted nurses
+    const filter: any = { isDeleted: { $ne: true } };
 
     if (verificationStatus) {
       filter.verificationStatus = verificationStatus;
@@ -982,7 +986,7 @@ export class AdminService {
    */
   async getNurse(id: string) {
     const nurse = await this.nurseModel
-      .findById(id)
+      .findOne({ _id: id, isDeleted: { $ne: true } })
       .populate('userId', 'firstName lastName email phone avatar isActive lastLoginAt createdAt')
       .exec();
 
@@ -1156,10 +1160,10 @@ export class AdminService {
   }
 
   /**
-   * Delete nurse (soft delete - deactivate user and nurse)
+   * Delete nurse (soft delete - deactivate user and nurse, free up CEP)
    */
   async deleteNurse(id: string) {
-    const nurse = await this.nurseModel.findById(id);
+    const nurse = await this.nurseModel.findOne({ _id: id, isDeleted: { $ne: true } });
 
     if (!nurse) {
       throw new NotFoundException('Enfermera no encontrada');
@@ -1175,18 +1179,45 @@ export class AdminService {
       throw new ConflictException(`No se puede eliminar: tiene ${activeServices} servicio(s) activo(s)`);
     }
 
-    // Soft delete: deactivate nurse and user
-    nurse.isActive = false;
-    nurse.isAvailable = false;
-    await nurse.save();
+    // Get user email before deleting for logging
+    const user = await this.userModel.findById(nurse.userId);
+    const userEmail = user?.email || 'unknown';
+    const originalCep = nurse.cepNumber;
 
-    // Deactivate user
-    await this.userModel.findByIdAndUpdate(nurse.userId, {
+    // Cancel any pending verifications
+    await this.nurseVerificationModel.updateMany(
+      {
+        nurseId: nurse._id,
+        status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
+      },
+      {
+        $set: {
+          status: VerificationStatus.REJECTED,
+          rejectionReason: 'Enfermera eliminada por administrador',
+          reviewedAt: new Date(),
+        },
+      },
+    );
+
+    // Soft delete nurse profile and free up CEP number
+    await this.nurseModel.findByIdAndUpdate(id, {
       isActive: false,
+      isAvailable: false,
       isDeleted: true,
+      verificationStatus: VerificationStatus.REJECTED,
+      cepNumber: `deleted_${Date.now()}_${nurse.cepNumber}`, // Free up CEP for reuse
     });
 
-    this.logger.log(`Admin deleted nurse: ${nurse.cepNumber}`);
+    // Soft delete user
+    if (user) {
+      await this.userModel.findByIdAndUpdate(nurse.userId, {
+        isActive: false,
+        isDeleted: true,
+        email: `deleted_${Date.now()}_${user.email}`, // Free up email for reuse
+      });
+    }
+
+    this.logger.log(`Admin deleted nurse: ${originalCep} (${userEmail})`);
 
     return {
       message: 'Enfermera eliminada exitosamente',
