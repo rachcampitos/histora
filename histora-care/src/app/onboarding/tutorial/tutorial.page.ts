@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -30,10 +30,17 @@ interface OnboardingSlide {
   standalone: false,
 })
 export class TutorialPage implements OnInit {
+  @ViewChild('introVideo') introVideoRef!: ElementRef<HTMLVideoElement>;
+
   currentSlide = 0;
   touchStartX = 0;
   touchEndX = 0;
   userRole: 'nurse' | 'patient' | 'unknown' = 'unknown';
+
+  // Intro video states
+  showIntroVideo = true;
+  videoEnded = false;
+  showLogoAfterVideo = false;
 
   /**
    * NURSE SLIDES (4 slides)
@@ -166,6 +173,46 @@ export class TutorialPage implements OnInit {
 
   ngOnInit(): void {
     this.initializeSlides();
+  }
+
+  // ============================================================
+  // INTRO VIDEO METHODS
+  // ============================================================
+
+  /**
+   * Called when the intro video finishes playing
+   * Triggers the shrink animation sequence
+   */
+  onVideoEnded(): void {
+    this.videoEnded = true;
+
+    // After shrink animation (800ms), show the logo
+    setTimeout(() => {
+      this.showLogoAfterVideo = true;
+    }, 800);
+  }
+
+  /**
+   * Skip the intro video and go directly to the shrink animation
+   */
+  skipIntro(): void {
+    if (this.videoEnded) return; // Already ended, ignore click
+
+    // Pause the video
+    if (this.introVideoRef?.nativeElement) {
+      this.introVideoRef.nativeElement.pause();
+    }
+
+    // Trigger the end animation
+    this.onVideoEnded();
+  }
+
+  /**
+   * Continue to the tutorial slides after the intro
+   */
+  startTutorial(event: Event): void {
+    event.stopPropagation(); // Prevent skipIntro from being called
+    this.showIntroVideo = false;
   }
 
   /**
