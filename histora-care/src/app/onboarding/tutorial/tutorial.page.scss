@@ -17,7 +17,7 @@ $primary-gradient: var(--histora-gradient);
   left: 0;
   right: 0;
   bottom: 0;
-  display: flex;
+  display: flex; 
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -27,54 +27,65 @@ $primary-gradient: var(--histora-gradient);
   padding-top: var(--ion-safe-area-top, 0);
   padding-bottom: var(--ion-safe-area-bottom, 0);
   cursor: pointer;
+  overflow: hidden; // Fix vertical overflow
 
   &.video-ended {
     cursor: default;
   }
 }
 
-// Video Container with shrink animation using scale transform
+// Video Container with shrink + clip-path animation (9:16 → 1:1)
 .video-container {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 60vh;
-  max-height: 400px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: scale(1);
+  // Start: full rectangle (9:16 portrait video)
+  clip-path: inset(0 0 0 0 round 0px);
+  transform: scale(1) translateY(0);
   transform-origin: center center;
-  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 1.4s cubic-bezier(0.4, 0, 0.2, 1),
+    clip-path 1.4s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.shrinking {
-    transform: scale(0.25);
+    // End: 1:1 square cropped from center, moved up, with rounded corners
+    // inset(top right bottom left) - 78% width x 36% height = square on 9:16 screen
+    clip-path: inset(26% 11% 38% 11% round 24px);
+    transform: scale(0.5) translateY(-20vh);
   }
 }
 
 .intro-video {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  border-radius: tokens.$radius-lg;
+  object-fit: cover;
   opacity: 1;
-  transition: opacity 0.5s ease 0.3s;
+  transition: opacity 0.5s ease 0.8s;
 
   &.hidden {
     opacity: 0;
   }
 }
 
+// Logo positioned to exactly match the clipped area
+// clip-path: inset(26% 11% 38% 11%) means visible area is:
+// - top: 26%, left: 11%, width: 78%, height: 36%
 .intro-logo {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80px;
-  height: 80px;
-  border-radius: tokens.$radius-lg;
-  box-shadow: 0 8px 32px rgba(74, 157, 154, 0.4);
+  top: 26%;
+  left: 11%;
+  width: 78%;
+  height: 36%;
+  object-fit: cover;
+  border-radius: 24px;
   opacity: 0;
-  transition: opacity 0.4s ease 0.5s;
+  z-index: 5;
+  transition: opacity 0.4s ease 1s;
 
   &.visible {
     opacity: 1;
@@ -83,11 +94,15 @@ $primary-gradient: var(--histora-gradient);
 
 // Welcome text
 .intro-welcome {
-  margin-top: tokens.$spacing-8;
+  position: absolute;
+  bottom: 28%;
+  left: 0;
+  right: 0;
+  z-index: 10;
   text-align: center;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.5s ease 0.3s;
+  transition: all 0.5s ease 1.2s;
 
   &.visible {
     opacity: 1;
@@ -135,18 +150,20 @@ $primary-gradient: var(--histora-gradient);
 // Continue button
 .continue-btn {
   position: absolute;
-  bottom: calc(#{tokens.$spacing-8} + var(--ion-safe-area-bottom, 0));
+  bottom: calc(12% + var(--ion-safe-area-bottom, 0));
   --background: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
   --background-hover: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
   --background-activated: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
   --color: #ffffff;
   --border-radius: 24px;
   --box-shadow: 0 8px 24px rgba(74, 157, 154, 0.4);
-  height: 48px;
+  height: 52px;
   font-weight: tokens.$font-weight-semibold;
+  font-size: tokens.$font-size-base;
   text-transform: none;
-  padding: 0 tokens.$spacing-6;
-  animation: fadeInUp 0.5s ease 0.5s both;
+  padding: 0 tokens.$spacing-8;
+  opacity: 0;
+  animation: fadeInUp 0.6s ease 1.4s forwards;
 
   ion-icon {
     margin-left: tokens.$spacing-2;
@@ -559,6 +576,11 @@ $primary-gradient: var(--histora-gradient);
   // Intro video - disable animations
   .video-container {
     transition: none;
+
+    &.shrinking {
+      clip-path: inset(26% 11% 38% 11% round 24px);
+      transform: scale(0.5) translateY(-20vh);
+    }
   }
 
   .intro-video,
@@ -573,6 +595,7 @@ $primary-gradient: var(--histora-gradient);
 
   .continue-btn {
     animation: none;
+    opacity: 1;
   }
 }
 
@@ -580,17 +603,30 @@ $primary-gradient: var(--histora-gradient);
 @media (max-height: 667px) {
   // Intro video adjustments for small screens
   .video-container {
-    height: 50vh;
-    max-height: 280px;
+    &.shrinking {
+      clip-path: inset(24% 10% 36% 10% round 20px);
+      transform: scale(0.45) translateY(-18vh);
+    }
   }
 
+  // Match small screen clip-path: top 24%, left 10%, width 80%, height 40%
   .intro-logo {
-    width: 64px;
-    height: 64px;
+    top: 24%;
+    left: 10%;
+    width: 80%;
+    height: 40%;
+  }
+
+  .intro-welcome {
+    bottom: 28%;
+  }
+
+  .continue-btn {
+    bottom: calc(12% + var(--ion-safe-area-bottom, 0));
   }
 
   .intro-title {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .intro-subtitle {
