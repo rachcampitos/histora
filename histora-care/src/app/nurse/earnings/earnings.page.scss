@@ -84,7 +84,7 @@
   gap: 8px;
   padding: 12px 16px;
   background: white;
-  margin: 0 16px 16px;
+  margin: 16px 16px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
@@ -171,19 +171,20 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
+    flex: 1;
 
     .card-label {
       font-size: 12px;
       color: #64748b;
       font-weight: 500;
       margin-bottom: 4px;
+      white-space: nowrap;
     }
 
     .card-value {
       font-size: 18px;
       font-weight: 700;
       color: #2c3e50;
-      word-break: break-all;
 
       &.negative {
         color: #ef4444;

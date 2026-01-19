@@ -37,8 +37,8 @@ export class TutorialPage implements OnInit {
   touchEndX = 0;
   userRole: 'nurse' | 'patient' | 'unknown' = 'unknown';
 
-  // Intro video states
-  showIntroVideo = true;
+  // Intro video states (disabled - animation not consistent enough)
+  showIntroVideo = false;
   videoEnded = false;
   showLogoAfterVideo = false;
 

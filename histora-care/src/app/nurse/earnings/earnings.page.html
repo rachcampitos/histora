@@ -108,7 +108,7 @@
           </div>
           <div class="card-info">
             <span class="card-label">Comision (15%)</span>
-            <span class="card-value negative">-{{ formatCurrency(earnings()!.commission) }}</span>
+            <span class="card-value" [class.negative]="earnings()!.commission > 0">{{ earnings()!.commission > 0 ? '-' : '' }}{{ formatCurrency(earnings()!.commission) }}</span>
           </div>
         </ion-card-content>
       </ion-card>
