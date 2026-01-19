@@ -76,9 +76,12 @@ export class NurseVerificationService {
     }
 
     // Upload all documents to Cloudinary
+    this.logger.log(`[VERIFICATION] Starting upload of ${dto.documents.length} documents for nurse ${nurseId}`);
     const uploadedDocuments = await Promise.all(
       dto.documents.map(async (doc) => {
+        this.logger.log(`[VERIFICATION] Uploading document: ${doc.documentType}, size: ${Math.round((doc.imageData?.length || 0) / 1024)}KB`);
         const result = await this.uploadVerificationDocument(nurseId, doc);
+        this.logger.log(`[VERIFICATION] Document ${doc.documentType} uploaded successfully`);
         return {
           url: result.url,
           publicId: result.publicId,
@@ -87,6 +90,7 @@ export class NurseVerificationService {
         };
       }),
     );
+    this.logger.log(`[VERIFICATION] All documents uploaded successfully`);
 
     // If there's an existing pending verification (from CEP identity confirmation), update it
     if (existingVerification) {
