@@ -733,26 +733,68 @@ interface NurseVerificationDetail {
 
       .documents-tabs {
         margin-bottom: 24px;
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 16px;
+
+        ::ng-deep {
+          .mat-mdc-tab-labels {
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+
+          .mat-mdc-tab {
+            min-width: auto;
+            padding: 0 16px;
+            height: 36px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            opacity: 1;
+
+            &.mdc-tab--active {
+              background: #667eea;
+              color: white;
+            }
+          }
+
+          .mat-mdc-tab-body-wrapper {
+            margin-top: 16px;
+          }
+        }
 
         .document-viewer {
-          padding: 16px;
-          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+          padding: 20px;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
           img {
             max-width: 100%;
-            max-height: 300px;
+            max-height: 400px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            object-fit: contain;
           }
 
           .open-link {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            margin-top: 12px;
-            color: #667eea;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
             text-decoration: none;
             font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
 
             i-feather {
               width: 16px;
@@ -760,7 +802,8 @@ interface NurseVerificationDetail {
             }
 
             &:hover {
-              text-decoration: underline;
+              background: #5a67d8;
+              transform: translateY(-1px);
             }
           }
         }
@@ -787,11 +830,53 @@ interface NurseVerificationDetail {
           display: flex;
           gap: 12px;
           justify-content: flex-end;
+          flex-wrap: wrap;
+          padding-top: 8px;
 
           button {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            min-width: 140px;
+            height: 44px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+
+            mat-icon {
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+            }
+
+            mat-spinner {
+              margin: 0;
+            }
+
+            &[color="warn"] {
+              background: #fee2e2;
+              color: #dc2626;
+
+              &:hover:not([disabled]) {
+                background: #fecaca;
+              }
+            }
+
+            &[color="primary"] {
+              background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+              color: white;
+              box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+
+              &:hover:not([disabled]) {
+                box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+              }
+            }
+
+            &[disabled] {
+              opacity: 0.6;
+              cursor: not-allowed;
+            }
           }
         }
       }
@@ -947,6 +1032,45 @@ interface NurseVerificationDetail {
           .no-photo {
             background: #4a5568;
             color: #a0aec0;
+          }
+        }
+
+        .documents-tabs {
+          background: #2d3748;
+
+          ::ng-deep {
+            .mat-mdc-tab {
+              color: #e2e8f0;
+
+              &.mdc-tab--active {
+                background: #667eea;
+                color: white;
+              }
+            }
+          }
+
+          .document-viewer {
+            background: #1a202e;
+
+            .open-link {
+              background: #667eea;
+              color: white;
+
+              &:hover {
+                background: #5a67d8;
+              }
+            }
+          }
+        }
+
+        .action-buttons button {
+          &[color="warn"] {
+            background: #7f1d1d;
+            color: #fecaca;
+
+            &:hover:not([disabled]) {
+              background: #991b1b;
+            }
           }
         }
       }
