@@ -35,15 +35,22 @@ $primary-gradient: var(--histora-gradient);
 
 // Video Container with shrink animation
 .video-container {
-  position: relative;
-  width: 280px;
-  height: 280px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.shrinking {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
     width: 100px;
     height: 100px;
   }
@@ -52,8 +59,7 @@ $primary-gradient: var(--histora-gradient);
 .intro-video {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  border-radius: tokens.$radius-lg;
+  object-fit: cover;
   opacity: 1;
   transition: opacity 0.3s ease;
 
@@ -578,9 +584,6 @@ $primary-gradient: var(--histora-gradient);
 @media (max-height: 667px) {
   // Intro video adjustments for small screens
   .video-container {
-    width: 200px;
-    height: 200px;
-
     &.shrinking {
       width: 80px;
       height: 80px;
