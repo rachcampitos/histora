@@ -1,0 +1,235 @@
+// Shared styles for legal pages (terms, privacy, help)
+
+.legal-content {
+  --background: var(--ion-background-color);
+}
+
+.legal-container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.legal-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: var(--ion-text-color);
+  }
+
+  .last-updated {
+    font-size: 13px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.legal-intro {
+  background: var(--ion-color-light);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ion-color-dark);
+  }
+}
+
+.legal-section {
+  margin-bottom: 24px;
+
+  h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--ion-color-primary-tint);
+  }
+
+  .section-content {
+    p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ion-text-color);
+      margin: 0 0 12px 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.legal-footer {
+  margin-top: 32px;
+  padding: 16px;
+  background: var(--ion-color-primary-tint);
+  border-radius: 12px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ion-color-primary-shade);
+    font-weight: 500;
+  }
+}
+
+// Help center specific styles
+.help-content {
+  --background: var(--ion-background-color);
+}
+
+.help-container {
+  padding: 16px;
+}
+
+.search-section {
+  margin-bottom: 24px;
+
+  ion-searchbar {
+    --background: var(--ion-color-light);
+    --border-radius: 12px;
+    --box-shadow: none;
+    --placeholder-color: var(--ion-color-medium);
+  }
+}
+
+.category-section {
+  margin-bottom: 24px;
+
+  .category-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+      color: var(--ion-text-color);
+    }
+  }
+}
+
+.faq-item {
+  --background: var(--ion-color-light);
+  --border-radius: 10px;
+  margin-bottom: 8px;
+
+  ion-label {
+    h3 {
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+      white-space: normal;
+    }
+  }
+}
+
+.faq-answer {
+  padding: 12px 16px;
+  background: var(--ion-color-light);
+  border-radius: 0 0 10px 10px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+
+  p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ion-color-medium-shade);
+    margin: 0;
+  }
+}
+
+.contact-section {
+  margin-top: 32px;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+  border-radius: 16px;
+  text-align: center;
+  color: white;
+
+  ion-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0 0 16px 0;
+    opacity: 0.9;
+  }
+
+  ion-button {
+    --background: white;
+    --color: var(--ion-color-primary);
+    --border-radius: 10px;
+    font-weight: 600;
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+
+  ion-icon {
+    font-size: 48px;
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+// Dark mode adjustments
+:host-context(body.dark) {
+  .legal-intro {
+    background: var(--ion-color-dark-shade);
+  }
+
+  .legal-footer {
+    background: rgba(var(--ion-color-primary-rgb), 0.15);
+
+    p {
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .faq-item {
+    --background: var(--ion-color-dark-shade);
+  }
+
+  .faq-answer {
+    background: var(--ion-color-dark-shade);
+  }
+
+  .contact-section {
+    background: linear-gradient(135deg, var(--ion-color-primary-shade), var(--ion-color-primary-tint));
+  }
+}
