@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
+import { Subject } from 'rxjs';
+import { exhaustMap, takeUntil, take } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 
 type UserType = 'nurse' | 'patient' | null;
@@ -47,6 +49,11 @@ export class RegisterPage implements OnInit, OnDestroy {
   // Prevent double submission
   isSubmitting = signal(false);
 
+  // RxJS subjects for controlled submission
+  private submitNurse$ = new Subject<void>();
+  private submitPatient$ = new Subject<void>();
+  private destroy$ = new Subject<void>();
+
   // CEP specialties options
   specialtiesOptions = [
     'Cuidados Generales',
@@ -81,7 +88,7 @@ export class RegisterPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Check URL parameter for user type from landing page
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
       if (params['type'] === 'nurse') {
         this.selectUserType('nurse');
       } else if (params['type'] === 'patient') {
@@ -90,10 +97,89 @@ export class RegisterPage implements OnInit, OnDestroy {
       // If no type specified, show type selector (don't redirect to landing)
       // This allows users coming from login page to select their type here
     });
+
+    // Set up nurse registration handler - exhaustMap ignores new requests while one is in progress
+    this.setupNurseRegistrationHandler();
+    this.setupPatientRegistrationHandler();
   }
 
   ngOnDestroy() {
     this.stopCepLoadingMessages();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupNurseRegistrationHandler() {
+    this.submitNurse$.pipe(
+      takeUntil(this.destroy$),
+      exhaustMap(() => {
+        const { firstName, lastName, email, phone, password, cepNumber, specialties, acceptTerms, acceptProfessionalDisclaimer } = this.registerForm.value;
+
+        this.startCepLoadingMessages();
+        this.registeredUserName.set(firstName);
+
+        return this.authService.registerNurse({
+          firstName,
+          lastName,
+          email,
+          phone,
+          password,
+          cepNumber,
+          specialties: specialties || [],
+          termsAccepted: acceptTerms,
+          professionalDisclaimerAccepted: acceptProfessionalDisclaimer
+        }).pipe(take(1)); // Ensure only one emission per request
+      })
+    ).subscribe({
+      next: async () => {
+        this.stopCepLoadingMessages();
+        this.showSuccessTransition.set(true);
+      },
+      error: async (error) => {
+        this.stopCepLoadingMessages();
+        this.isSubmitting.set(false);
+        await this.showError(error);
+      }
+    });
+  }
+
+  private setupPatientRegistrationHandler() {
+    this.submitPatient$.pipe(
+      takeUntil(this.destroy$),
+      exhaustMap(async () => {
+        const { firstName, lastName, email, phone, password } = this.registerForm.value;
+
+        const loading = await this.loadingCtrl.create({
+          message: 'Creando cuenta...',
+          spinner: 'crescent'
+        });
+        await loading.present();
+
+        return { loading, data: { firstName, lastName, email, phone, password } };
+      }),
+      exhaustMap(({ loading, data }) => {
+        return this.authService.registerPatient(data).pipe(
+          take(1),
+          takeUntil(this.destroy$)
+        );
+      })
+    ).subscribe({
+      next: async () => {
+        const toast = await this.toastCtrl.create({
+          message: 'Cuenta creada exitosamente',
+          duration: 3000,
+          position: 'bottom',
+          color: 'success',
+          icon: 'checkmark-circle-outline'
+        });
+        await toast.present();
+        this.router.navigate(['/patient/tabs/home']);
+      },
+      error: async (error) => {
+        this.isSubmitting.set(false);
+        await this.showError(error);
+      }
+    });
   }
 
   // CEP Loading Message Rotation
@@ -167,93 +253,25 @@ export class RegisterPage implements OnInit, OnDestroy {
     return null;
   }
 
-  async onSubmit() {
-    console.log('[REGISTER] onSubmit called, isSubmitting:', this.isSubmitting());
-
+  onSubmit() {
     // Prevent double submission
     if (this.isSubmitting()) {
-      console.log('[REGISTER] Already submitting, returning early');
       return;
     }
 
     if (this.registerForm.invalid) {
-      console.log('[REGISTER] Form invalid, marking touched');
       this.markFormTouched();
       return;
     }
 
     // Mark as submitting immediately
     this.isSubmitting.set(true);
-    console.log('[REGISTER] Set isSubmitting to true');
 
-    const { firstName, lastName, email, phone, password, cepNumber, specialties, acceptTerms, acceptProfessionalDisclaimer } = this.registerForm.value;
-    console.log('[REGISTER] Registering with email:', email);
-
+    // Trigger the appropriate subject - exhaustMap will handle the rest
     if (this.selectedUserType === 'nurse') {
-      // Use custom CEP loading overlay for nurses
-      this.startCepLoadingMessages();
-      this.registeredUserName.set(firstName);
-
-      this.authService.registerNurse({
-        firstName,
-        lastName,
-        email,
-        phone,
-        password,
-        cepNumber,
-        specialties: specialties || [],
-        termsAccepted: acceptTerms,
-        professionalDisclaimerAccepted: acceptProfessionalDisclaimer
-      }).subscribe({
-        next: async (response) => {
-          console.log('[REGISTER] SUCCESS - Registration completed:', response);
-          this.stopCepLoadingMessages();
-          // Show success transition screen
-          this.showSuccessTransition.set(true);
-          // Note: Don't reset isSubmitting here, user is navigating away
-        },
-        error: async (error) => {
-          console.log('[REGISTER] ERROR - Registration failed:', error);
-          console.log('[REGISTER] Error status:', error.status);
-          console.log('[REGISTER] Error body:', error.error);
-          this.stopCepLoadingMessages();
-          this.isSubmitting.set(false); // Allow retry on error
-          await this.showError(error);
-        }
-      });
+      this.submitNurse$.next();
     } else {
-      // Use standard loading for patients
-      const loading = await this.loadingCtrl.create({
-        message: 'Creando cuenta...',
-        spinner: 'crescent'
-      });
-      await loading.present();
-
-      this.authService.registerPatient({
-        firstName,
-        lastName,
-        email,
-        phone,
-        password
-      }).subscribe({
-        next: async () => {
-          await loading.dismiss();
-          const toast = await this.toastCtrl.create({
-            message: 'Cuenta creada exitosamente',
-            duration: 3000,
-            position: 'bottom',
-            color: 'success',
-            icon: 'checkmark-circle-outline'
-          });
-          await toast.present();
-          this.router.navigate(['/patient/tabs/home']);
-        },
-        error: async (error) => {
-          await loading.dismiss();
-          this.isSubmitting.set(false); // Allow retry on error
-          await this.showError(error);
-        }
-      });
+      this.submitPatient$.next();
     }
   }
 
