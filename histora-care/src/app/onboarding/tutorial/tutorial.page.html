@@ -1,7 +1,51 @@
 <ion-content class="tutorial-content" [fullscreen]="true">
   <div class="tutorial-container">
+    <!-- Intro Video Slide (shown only once at the beginning) -->
+    <div class="intro-slide" *ngIf="showIntroVideo" [class.video-ended]="videoEnded" (click)="skipIntro()">
+      <!-- Video Container -->
+      <div class="video-container" [class.shrinking]="videoEnded">
+        <video
+          #introVideo
+          class="intro-video"
+          [class.hidden]="showLogoAfterVideo"
+          autoplay
+          muted
+          playsinline
+          (ended)="onVideoEnded()">
+          <source src="assets/video/NurseLite video 2.mp4" type="video/mp4">
+        </video>
+
+        <!-- Logo that appears after video shrinks -->
+        <img
+          src="assets/icon/nurselite.png"
+          alt="NurseLite"
+          class="intro-logo"
+          [class.visible]="showLogoAfterVideo">
+      </div>
+
+      <!-- Welcome text (appears after video) -->
+      <div class="intro-welcome" [class.visible]="videoEnded">
+        <h1 class="intro-title">Bienvenido a NurseLite</h1>
+        <p class="intro-subtitle">{{ userRole === 'nurse' ? 'Tu plataforma de servicios de enfermería' : 'Enfermería profesional a domicilio' }}</p>
+      </div>
+
+      <!-- Skip hint -->
+      <div class="skip-hint" *ngIf="!videoEnded">
+        <span>Toca para omitir</span>
+      </div>
+
+      <!-- Continue button (after video) -->
+      <ion-button
+        *ngIf="videoEnded"
+        class="continue-btn"
+        (click)="startTutorial($event)">
+        Continuar
+        <ion-icon name="arrow-forward" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+
     <!-- Slides Wrapper -->
-    <div class="slides-wrapper">
+    <div class="slides-wrapper" *ngIf="!showIntroVideo">
       <div class="slides-track" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
         <div
           *ngFor="let slide of slides; let i = index"
@@ -38,8 +82,8 @@
       </div>
     </div>
 
-    <!-- Controls -->
-    <div class="tutorial-controls" [class.last-slide]="isLastSlide">
+    <!-- Controls (only show when not in intro video) -->
+    <div class="tutorial-controls" [class.last-slide]="isLastSlide" *ngIf="!showIntroVideo">
       <ng-container *ngIf="!isLastSlide">
         <!-- Skip Button -->
         <ion-button fill="clear" class="skip-btn" (click)="skip()">

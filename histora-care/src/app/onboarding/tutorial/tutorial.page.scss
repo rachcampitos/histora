@@ -7,6 +7,151 @@ $primary-gradient: var(--histora-gradient);
   --background: #{tokens.$surface-secondary};
 }
 
+// ============================================================
+// INTRO VIDEO SLIDE
+// ============================================================
+
+.intro-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a0f1a; // Dark night background
+  z-index: 100;
+  padding: tokens.$spacing-6;
+  padding-top: var(--ion-safe-area-top, 0);
+  padding-bottom: var(--ion-safe-area-bottom, 0);
+  cursor: pointer;
+
+  &.video-ended {
+    cursor: default;
+  }
+}
+
+// Video Container with shrink animation
+.video-container {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.shrinking {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.intro-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: tokens.$radius-lg;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+
+  &.hidden {
+    opacity: 0;
+  }
+}
+
+.intro-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: tokens.$radius-lg;
+  box-shadow: 0 8px 32px rgba(74, 157, 154, 0.4);
+  opacity: 0;
+  transition: opacity 0.4s ease 0.1s;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+// Welcome text
+.intro-welcome {
+  margin-top: tokens.$spacing-8;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease 0.3s;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intro-title {
+  font-size: 28px;
+  font-weight: tokens.$font-weight-bold;
+  color: #ffffff;
+  margin: 0 0 tokens.$spacing-2;
+  letter-spacing: -0.02em;
+}
+
+.intro-subtitle {
+  font-size: tokens.$font-size-base;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+// Skip hint
+.skip-hint {
+  position: absolute;
+  bottom: calc(#{tokens.$spacing-8} + var(--ion-safe-area-bottom, 0));
+  left: 50%;
+  transform: translateX(-50%);
+
+  span {
+    font-size: tokens.$font-size-sm;
+    color: rgba(255, 255, 255, 0.5);
+    animation: pulse-opacity 2s infinite;
+  }
+}
+
+@keyframes pulse-opacity {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+// Continue button
+.continue-btn {
+  position: absolute;
+  bottom: calc(#{tokens.$spacing-8} + var(--ion-safe-area-bottom, 0));
+  --background: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
+  --background-hover: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
+  --background-activated: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
+  --color: #ffffff;
+  --border-radius: 24px;
+  --box-shadow: 0 8px 24px rgba(74, 157, 154, 0.4);
+  height: 48px;
+  font-weight: tokens.$font-weight-semibold;
+  text-transform: none;
+  padding: 0 tokens.$spacing-6;
+  animation: fadeInUp 0.5s ease 0.5s both;
+
+  ion-icon {
+    margin-left: tokens.$spacing-2;
+    color: #ffffff;
+  }
+}
+
 .tutorial-container {
   display: flex;
   flex-direction: column;
@@ -408,10 +553,53 @@ $primary-gradient: var(--histora-gradient);
   .pagination-dots .dot {
     transition: none;
   }
+
+  // Intro video - disable animations
+  .video-container {
+    transition: none;
+  }
+
+  .intro-video,
+  .intro-logo,
+  .intro-welcome {
+    transition: none;
+  }
+
+  .skip-hint span {
+    animation: none;
+  }
+
+  .continue-btn {
+    animation: none;
+  }
 }
 
 // Responsive
 @media (max-height: 667px) {
+  // Intro video adjustments for small screens
+  .video-container {
+    width: 200px;
+    height: 200px;
+
+    &.shrinking {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  .intro-logo {
+    width: 64px;
+    height: 64px;
+  }
+
+  .intro-title {
+    font-size: 24px;
+  }
+
+  .intro-subtitle {
+    font-size: tokens.$font-size-sm;
+  }
+
   .slide {
     padding: tokens.$spacing-8 tokens.$spacing-5 140px;
   }
