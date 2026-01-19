@@ -9,6 +9,135 @@ $border-radius: tokens.$radius-lg;
   --background: #{tokens.$surface-secondary};
 }
 
+// ============================================================
+// INTRO ANIMATION
+// Logo appears centered with scale, then shrinks/moves to header
+// Using transforms only for smooth animation (no position change)
+// ============================================================
+
+// During intro: hide all content except logo, center the main container
+.landing-container.intro-active {
+  // Make the main area take full height for proper centering
+  .landing-main {
+    justify-content: flex-start;
+    padding-top: tokens.$spacing-4;
+  }
+
+  .tab-selector,
+  .hero-section,
+  .value-section,
+  .features-list,
+  .social-proof,
+  .cta-section {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// When intro is exiting: fade in content with stagger
+.landing-container.intro-exiting {
+  .tab-selector,
+  .hero-section,
+  .value-section,
+  .features-list,
+  .social-proof,
+  .cta-section {
+    animation: fadeInContent 0.4s ease-out forwards;
+  }
+
+  // Staggered appearance
+  .tab-selector { animation-delay: 0ms; }
+  .hero-section { animation-delay: 50ms; }
+  .value-section { animation-delay: 100ms; }
+  .features-list { animation-delay: 150ms; }
+  .social-proof { animation-delay: 200ms; }
+  .cta-section { animation-delay: 250ms; }
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Logo animation keyframes
+@keyframes logoFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(40vh - 60px)) scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(calc(40vh - 60px)) scale(1.4);
+  }
+}
+
+@keyframes logoIntroMove {
+  0% {
+    opacity: 1;
+    transform: translateY(calc(40vh - 60px)) scale(1.4);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Logo section intro states
+.logo-section {
+  // Centered state during intro (using transform, not position change)
+  &.intro-centered {
+    // Fade in and move to center
+    animation: logoFadeIn 0.4s ease-out forwards;
+    z-index: 100;
+
+    .logo-wrapper {
+      box-shadow: 0 12px 32px rgba(30, 58, 95, 0.4);
+    }
+  }
+
+  // Animating from center to header position
+  &.intro-moving {
+    animation: logoIntroMove 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+
+    .logo-wrapper {
+      transition: box-shadow 0.5s ease;
+      box-shadow: 0 8px 24px rgba(30, 58, 95, 0.3);
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .logo-section {
+    &.intro-centered {
+      transform: none;
+    }
+
+    &.intro-moving {
+      animation: none;
+      transform: none;
+    }
+  }
+
+  .landing-container.intro-exiting {
+    .tab-selector,
+    .hero-section,
+    .value-section,
+    .features-list,
+    .social-proof,
+    .cta-section {
+      animation: none !important;
+      opacity: 1;
+    }
+  }
+}
+
 .landing-container {
   display: flex;
   flex-direction: column;

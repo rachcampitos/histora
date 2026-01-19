@@ -1,9 +1,9 @@
 <ion-content class="landing-content" [fullscreen]="true">
-  <main class="landing-container" role="main" [class.nurse-mode]="activeTab() === 'nurse'">
+  <main class="landing-container" role="main" [class.nurse-mode]="activeTab() === 'nurse'" [class.intro-active]="showIntro()" [class.intro-exiting]="introExiting()">
     <!-- Main Content -->
     <div class="landing-main">
-      <!-- Logo + Tagline -->
-      <header class="logo-section" role="banner">
+      <!-- Logo + Tagline (animated during intro) -->
+      <header class="logo-section" role="banner" [class.intro-centered]="showIntro() && !introExiting()" [class.intro-moving]="introExiting()">
         <div class="logo-wrapper" aria-hidden="true">
           <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
         </div>

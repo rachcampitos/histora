@@ -13,6 +13,12 @@ interface TabContent {
   features: { icon: string; text: string }[];
 }
 
+// Intro animation configuration (UX recommended timing)
+const INTRO_CONFIG = {
+  logoDisplayDuration: 1000,   // Logo fade-in (400ms) + centered visible (600ms)
+  contentFadeInDelay: 500,     // Content starts fading in
+};
+
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.page.html',
@@ -21,6 +27,10 @@ interface TabContent {
 })
 export class LandingPage implements OnInit {
   activeTab = signal<UserType>('patient');
+
+  // Intro animation state
+  showIntro = signal(true);
+  introExiting = signal(false);
 
   // Content for each tab
   readonly content: Record<UserType, TabContent> = {
@@ -63,6 +73,27 @@ export class LandingPage implements OnInit {
         this.activeTab.set('nurse');
       }
     });
+
+    // Start intro animation sequence
+    this.playIntroAnimation();
+  }
+
+  private async playIntroAnimation(): Promise<void> {
+    // Wait for logo display duration
+    await this.delay(INTRO_CONFIG.logoDisplayDuration);
+
+    // Start exit animation (logo moves up, content fades in)
+    this.introExiting.set(true);
+
+    // Wait for animation to complete
+    await this.delay(INTRO_CONFIG.contentFadeInDelay);
+
+    // Intro complete
+    this.showIntro.set(false);
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   setTab(tab: UserType): void {
