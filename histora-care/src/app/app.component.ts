@@ -6,8 +6,7 @@ import { ThemeService } from './core/services/theme.service';
 // Splash screen configuration
 const SPLASH_CONFIG = {
   logoDisplayDuration: 800,    // Logo centered visible
-  repositionDuration: 400,     // Animation to move up
-  fadeOutDelay: 200,           // Delay before hiding
+  fadeOutDuration: 500,        // Fade out animation duration
   minimumSplashTime: 1300,     // Minimum total time for branding
 };
 
@@ -48,11 +47,11 @@ export class AppComponent implements OnInit {
     // Wait for minimum logo display time
     await this.delay(remainingTime);
 
-    // Start exit animation
+    // Start exit animation (fade out)
     this.splashExiting.set(true);
 
-    // Wait for animation to complete then hide splash
-    await this.delay(SPLASH_CONFIG.repositionDuration + SPLASH_CONFIG.fadeOutDelay);
+    // Wait for fade out to complete then hide splash
+    await this.delay(SPLASH_CONFIG.fadeOutDuration);
     this.showSplash.set(false);
   }
 
