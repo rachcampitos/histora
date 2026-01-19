@@ -1,0 +1,152 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Notificaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="notification-settings-content">
+  <div class="settings-container">
+    <!-- Push Notifications Section -->
+    <div class="settings-section">
+      <div class="section-header">
+        <ion-icon name="notifications-outline" color="primary"></ion-icon>
+        <div class="section-info">
+          <h2>Notificaciones Push</h2>
+          <p>Recibe alertas en tu dispositivo</p>
+        </div>
+      </div>
+
+      <ion-item lines="none" class="settings-item main-toggle">
+        <ion-label>
+          <h3>Activar notificaciones</h3>
+          <p>Recibir notificaciones push en este dispositivo</p>
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="notificationService.preferences().pushEnabled"
+          (ionChange)="togglePreference('pushEnabled')"
+          [disabled]="!isNative">
+        </ion-toggle>
+      </ion-item>
+
+      @if (!isNative) {
+        <div class="web-notice">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>Las notificaciones push solo estan disponibles en la app movil</span>
+        </div>
+      }
+    </div>
+
+    <!-- Service Notifications -->
+    <div class="settings-section">
+      <div class="section-header">
+        <ion-icon name="medkit-outline" color="success"></ion-icon>
+        <div class="section-info">
+          <h2>Servicios</h2>
+          <p>Notificaciones sobre tus servicios</p>
+        </div>
+      </div>
+
+      <ion-item lines="none" class="settings-item">
+        <ion-label>
+          <h3>Nuevas solicitudes</h3>
+          <p>Cuando un paciente solicita un servicio</p>
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="notificationService.preferences().serviceRequests"
+          (ionChange)="togglePreference('serviceRequests')"
+          [disabled]="!notificationService.preferences().pushEnabled">
+        </ion-toggle>
+      </ion-item>
+
+      <ion-item lines="none" class="settings-item">
+        <ion-label>
+          <h3>Actualizaciones de servicio</h3>
+          <p>Estado del servicio, llegada, finalizacion</p>
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="notificationService.preferences().serviceUpdates"
+          (ionChange)="togglePreference('serviceUpdates')"
+          [disabled]="!notificationService.preferences().pushEnabled">
+        </ion-toggle>
+      </ion-item>
+    </div>
+
+    <!-- Payment Notifications -->
+    <div class="settings-section">
+      <div class="section-header">
+        <ion-icon name="wallet-outline" color="warning"></ion-icon>
+        <div class="section-info">
+          <h2>Pagos</h2>
+          <p>Notificaciones de pagos y ganancias</p>
+        </div>
+      </div>
+
+      <ion-item lines="none" class="settings-item">
+        <ion-label>
+          <h3>Confirmacion de pagos</h3>
+          <p>Cuando se procesa un pago</p>
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="notificationService.preferences().payments"
+          (ionChange)="togglePreference('payments')"
+          [disabled]="!notificationService.preferences().pushEnabled">
+        </ion-toggle>
+      </ion-item>
+    </div>
+
+    <!-- Other Notifications -->
+    <div class="settings-section">
+      <div class="section-header">
+        <ion-icon name="megaphone-outline" color="tertiary"></ion-icon>
+        <div class="section-info">
+          <h2>Otros</h2>
+          <p>Recordatorios y promociones</p>
+        </div>
+      </div>
+
+      <ion-item lines="none" class="settings-item">
+        <ion-label>
+          <h3>Recordatorios</h3>
+          <p>Recordatorios de servicios programados</p>
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="notificationService.preferences().reminders"
+          (ionChange)="togglePreference('reminders')"
+          [disabled]="!notificationService.preferences().pushEnabled">
+        </ion-toggle>
+      </ion-item>
+
+      <ion-item lines="none" class="settings-item">
+        <ion-label>
+          <h3>Promociones y novedades</h3>
+          <p>Ofertas especiales y actualizaciones</p>
+        </ion-label>
+        <ion-toggle
+          slot="end"
+          [checked]="notificationService.preferences().promotions"
+          (ionChange)="togglePreference('promotions')"
+          [disabled]="!notificationService.preferences().pushEnabled">
+        </ion-toggle>
+      </ion-item>
+    </div>
+
+    <!-- Info Note -->
+    <div class="info-note">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <p>
+        Siempre recibiras notificaciones importantes sobre seguridad y
+        actualizaciones de tu cuenta, independientemente de tu configuracion.
+      </p>
+    </div>
+  </div>
+</ion-content>

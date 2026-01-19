@@ -12,6 +12,7 @@ import {
   NotificationPreferences,
   NotificationPreferencesDocument,
 } from './schema/notification-preferences.schema';
+import { DeviceToken, DeviceTokenDocument } from './schema/device-token.schema';
 import { User, UserDocument, UserRole } from '../users/schema/user.schema';
 import { SendNotificationDto, SendBulkNotificationDto } from './dto/send-notification.dto';
 import { UpdateNotificationPreferencesDto } from './dto/update-preferences.dto';
@@ -27,6 +28,7 @@ export class NotificationsService {
   constructor(
     @InjectModel(Notification.name) private notificationModel: Model<NotificationDocument>,
     @InjectModel(NotificationPreferences.name) private preferencesModel: Model<NotificationPreferencesDocument>,
+    @InjectModel(DeviceToken.name) private deviceTokenModel: Model<DeviceTokenDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private emailProvider: EmailProvider,
     private smsProvider: SmsProvider,
@@ -326,13 +328,6 @@ export class NotificationsService {
       channel: NotificationChannel.IN_APP,
       readAt: null,
     });
-  }
-
-  // Register device for push notifications
-  async registerDevice(userId: string, deviceToken: string, platform?: string): Promise<NotificationPreferences> {
-    const preferences = await this.getOrCreatePreferences(userId);
-    preferences.push = { enabled: true, value: deviceToken };
-    return preferences.save();
   }
 
   // Send appointment reminder
@@ -713,6 +708,62 @@ export class NotificationsService {
       message: `${review.patientName} te ha dejado una reseña por el servicio de ${review.serviceName}: ${stars}${review.comment ? ` - "${review.comment}"` : ''}`,
       data: { requestId: review.requestId, rating: review.rating },
       channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
+
+  // ==================== Device Token Management ====================
+
+  /**
+   * Register a device token for push notifications
+   */
+  async registerDevice(
+    userId: string,
+    token: string,
+    platform?: string,
+    deviceInfo?: Record<string, any>,
+  ): Promise<DeviceToken> {
+    const platformValue = (platform || 'android') as 'ios' | 'android' | 'web';
+
+    const existing = await this.deviceTokenModel.findOne({
+      userId: new Types.ObjectId(userId),
+      token,
+    });
+
+    if (existing) {
+      existing.isActive = true;
+      existing.lastUsedAt = new Date();
+      existing.platform = platformValue;
+      existing.deviceInfo = deviceInfo;
+      return existing.save();
+    }
+
+    return this.deviceTokenModel.create({
+      userId: new Types.ObjectId(userId),
+      token,
+      platform: platformValue,
+      deviceInfo,
+      isActive: true,
+      lastUsedAt: new Date(),
+    });
+  }
+
+  /**
+   * Unregister a device token
+   */
+  async unregisterDevice(userId: string, token: string): Promise<void> {
+    await this.deviceTokenModel.updateOne(
+      { userId: new Types.ObjectId(userId), token },
+      { isActive: false },
+    );
+  }
+
+  /**
+   * Get active device tokens for a user
+   */
+  async getActiveDeviceTokens(userId: string): Promise<DeviceToken[]> {
+    return this.deviceTokenModel.find({
+      userId: new Types.ObjectId(userId),
+      isActive: true,
     });
   }
 }
