@@ -24,7 +24,6 @@ $border-radius: tokens.$radius-lg;
   }
 
   .tab-selector,
-  .hero-section,
   .value-section,
   .features-list,
   .social-proof,
@@ -37,7 +36,6 @@ $border-radius: tokens.$radius-lg;
 // When intro is exiting: fade in content with stagger
 .landing-container.intro-exiting {
   .tab-selector,
-  .hero-section,
   .value-section,
   .features-list,
   .social-proof,
@@ -47,11 +45,10 @@ $border-radius: tokens.$radius-lg;
 
   // Staggered appearance
   .tab-selector { animation-delay: 0ms; }
-  .hero-section { animation-delay: 50ms; }
-  .value-section { animation-delay: 100ms; }
-  .features-list { animation-delay: 150ms; }
-  .social-proof { animation-delay: 200ms; }
-  .cta-section { animation-delay: 250ms; }
+  .value-section { animation-delay: 50ms; }
+  .features-list { animation-delay: 100ms; }
+  .social-proof { animation-delay: 150ms; }
+  .cta-section { animation-delay: 200ms; }
 }
 
 @keyframes fadeInContent {
@@ -127,7 +124,6 @@ $border-radius: tokens.$radius-lg;
 
   .landing-container.intro-exiting {
     .tab-selector,
-    .hero-section,
     .value-section,
     .features-list,
     .social-proof,
@@ -249,90 +245,6 @@ $border-radius: tokens.$radius-lg;
 
   ion-icon {
     color: #ffffff;
-  }
-}
-
-// Hero Section
-.hero-section {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  margin-bottom: tokens.$spacing-5;
-
-  .hero-circle {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: $primary-gradient;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 20px 60px rgba(74, 157, 154, 0.4);
-    animation: pulse 3s ease-in-out infinite;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-
-    .hero-icon {
-      font-size: 56px;
-      color: white;
-    }
-  }
-
-  .floating-badge {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    animation: float 3s ease-in-out infinite;
-
-    ion-icon {
-      font-size: 20px;
-      color: var(--ion-color-secondary);
-    }
-
-    &.badge-1 {
-      top: -8px;
-      right: 8px;
-      animation-delay: 0s;
-    }
-
-    &.badge-2 {
-      bottom: 8px;
-      left: -12px;
-      animation-delay: 0.5s;
-    }
-  }
-}
-
-// Nurse mode hero
-.nurse-mode .hero-section .hero-circle {
-  background: $nurse-gradient;
-  box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);
-}
-
-.nurse-mode .hero-section .floating-badge ion-icon {
-  color: #10b981;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
   }
 }
 
@@ -553,38 +465,6 @@ $border-radius: tokens.$radius-lg;
     }
   }
 
-  .hero-section {
-    .hero-circle {
-      background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
-      box-shadow: 0 20px 60px rgba(107, 181, 179, 0.3);
-
-      .hero-icon {
-        color: rgba(255, 255, 255, 0.95);
-      }
-    }
-
-    .floating-badge {
-      background: tokens.$surface-dark-secondary;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-
-      ion-icon {
-        color: #6bb5b3;
-      }
-    }
-  }
-
-  .nurse-mode .hero-section {
-    .hero-circle {
-      background: linear-gradient(135deg, #047857 0%, #059669 100%);
-      box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
-    }
-
-    .floating-badge ion-icon {
-      color: #34d399;
-    }
-  }
-
   .value-section {
     .headline {
       color: #f1f5f9;
@@ -656,15 +536,6 @@ $border-radius: tokens.$radius-lg;
   }
 }
 
-// Reduced motion
-@media (prefers-reduced-motion: reduce) {
-  .hero-section {
-    .hero-circle,
-    .floating-badge {
-      animation: none;
-    }
-  }
-}
 
 // Responsive - smaller screens
 @media (max-height: 667px) {
@@ -691,25 +562,6 @@ $border-radius: tokens.$radius-lg;
     .tab-btn {
       padding: tokens.$spacing-2 tokens.$spacing-3;
       font-size: tokens.$font-size-xs;
-    }
-  }
-
-  .hero-section {
-    width: 100px;
-    height: 100px;
-    margin-bottom: tokens.$spacing-4;
-
-    .hero-icon {
-      font-size: 40px;
-    }
-
-    .floating-badge {
-      width: 32px;
-      height: 32px;
-
-      ion-icon {
-        font-size: 16px;
-      }
     }
   }
 
