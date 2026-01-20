@@ -54,4 +54,5 @@ export interface RegisterPatientRequest {
   firstName: string;
   lastName: string;
   phone: string;
+  termsAccepted: boolean;
 }

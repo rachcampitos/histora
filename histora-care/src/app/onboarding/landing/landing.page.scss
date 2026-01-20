@@ -395,6 +395,33 @@ $border-radius: tokens.$radius-lg;
       color: #4a9d9a;
     }
   }
+
+  .browse-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: tokens.$spacing-2;
+    background: none;
+    border: none;
+    padding: tokens.$spacing-2;
+    font-size: tokens.$font-size-xs;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    min-height: tokens.$touch-target-min;
+    width: 100%;
+
+    ion-icon {
+      font-size: 16px;
+    }
+
+    span {
+      text-decoration: underline;
+    }
+
+    &:active {
+      color: var(--text-secondary);
+    }
+  }
 }
 
 // Nurse mode login link

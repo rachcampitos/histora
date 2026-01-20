@@ -1,235 +1,355 @@
 // Shared styles for legal pages (terms, privacy, help)
+@use '../../theme/design-tokens' as tokens;
+
+// =============================================================================
+// LEGAL PAGES (Terms, Privacy)
+// =============================================================================
 
 .legal-content {
-  --background: var(--ion-background-color);
+  --background: var(--surface-secondary);
 }
 
 .legal-container {
-  padding: 16px;
+  padding: tokens.$spacing-4;
+  padding-bottom: tokens.$spacing-8;
   max-width: 800px;
   margin: 0 auto;
 }
 
 .legal-header {
   text-align: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--ion-color-light-shade);
+  margin-bottom: tokens.$spacing-6;
+  padding-bottom: tokens.$spacing-4;
+  border-bottom: 1px solid tokens.$color-neutral-200;
 
   h1 {
-    font-size: 22px;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-    color: var(--ion-text-color);
+    font-size: tokens.$font-size-2xl;
+    font-weight: tokens.$font-weight-bold;
+    margin: 0 0 tokens.$spacing-2 0;
+    color: var(--text-primary);
   }
 
   .last-updated {
-    font-size: 13px;
-    color: var(--ion-color-medium);
+    font-size: tokens.$font-size-sm;
+    color: var(--text-tertiary);
     margin: 0;
   }
 }
 
 .legal-intro {
-  background: var(--ion-color-light);
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 24px;
+  background: var(--surface-primary);
+  padding: tokens.$spacing-4;
+  border-radius: tokens.$radius-lg;
+  margin-bottom: tokens.$spacing-6;
+  box-shadow: tokens.$shadow-sm;
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: tokens.$font-size-sm;
     line-height: 1.6;
-    color: var(--ion-color-dark);
+    color: var(--text-secondary);
   }
 }
 
 .legal-section {
-  margin-bottom: 24px;
+  margin-bottom: tokens.$spacing-6;
 
   h2 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--ion-color-primary);
-    margin: 0 0 12px 0;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--ion-color-primary-tint);
+    font-size: tokens.$font-size-base;
+    font-weight: tokens.$font-weight-semibold;
+    color: tokens.$color-brand-primary;
+    margin: 0 0 tokens.$spacing-3 0;
+    padding-bottom: tokens.$spacing-2;
+    border-bottom: 2px solid rgba(30, 58, 95, 0.2);
   }
 
   .section-content {
     p {
-      font-size: 14px;
+      font-size: tokens.$font-size-sm;
       line-height: 1.7;
-      color: var(--ion-text-color);
-      margin: 0 0 12px 0;
+      color: var(--text-secondary);
+      margin: 0 0 tokens.$spacing-3 0;
 
       &:last-child {
         margin-bottom: 0;
+      }
+    }
+
+    ul, ol {
+      margin: 0 0 tokens.$spacing-3 0;
+      padding-left: tokens.$spacing-5;
+
+      li {
+        font-size: tokens.$font-size-sm;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        margin-bottom: tokens.$spacing-2;
       }
     }
   }
 }
 
 .legal-footer {
-  margin-top: 32px;
-  padding: 16px;
-  background: var(--ion-color-primary-tint);
-  border-radius: 12px;
+  margin-top: tokens.$spacing-8;
+  padding: tokens.$spacing-4;
+  background: rgba(30, 58, 95, 0.08);
+  border-radius: tokens.$radius-lg;
   text-align: center;
 
   p {
     margin: 0;
-    font-size: 13px;
-    color: var(--ion-color-primary-shade);
-    font-weight: 500;
+    font-size: tokens.$font-size-sm;
+    color: tokens.$color-brand-primary;
+    font-weight: tokens.$font-weight-medium;
   }
 }
 
-// Help center specific styles
+// =============================================================================
+// HELP CENTER
+// =============================================================================
+
 .help-content {
-  --background: var(--ion-background-color);
+  --background: var(--surface-secondary);
 }
 
 .help-container {
-  padding: 16px;
+  padding: tokens.$spacing-4;
+  padding-bottom: tokens.$spacing-8;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .search-section {
-  margin-bottom: 24px;
+  margin-bottom: tokens.$spacing-6;
 
   ion-searchbar {
-    --background: var(--ion-color-light);
-    --border-radius: 12px;
-    --box-shadow: none;
-    --placeholder-color: var(--ion-color-medium);
+    --background: var(--surface-primary);
+    --border-radius: #{tokens.$radius-lg};
+    --box-shadow: #{tokens.$shadow-sm};
+    --placeholder-color: var(--text-tertiary);
+    --color: var(--text-primary);
   }
 }
 
 .category-section {
-  margin-bottom: 24px;
+  margin-bottom: tokens.$spacing-6;
 
   .category-title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: tokens.$spacing-2;
+    margin-bottom: tokens.$spacing-3;
 
     ion-icon {
       font-size: 20px;
-      color: var(--ion-color-primary);
+      color: tokens.$color-brand-primary;
     }
 
     h2 {
-      font-size: 16px;
-      font-weight: 600;
+      font-size: tokens.$font-size-base;
+      font-weight: tokens.$font-weight-semibold;
       margin: 0;
-      color: var(--ion-text-color);
+      color: var(--text-primary);
     }
   }
 }
 
 .faq-item {
-  --background: var(--ion-color-light);
-  --border-radius: 10px;
-  margin-bottom: 8px;
+  --background: var(--surface-primary);
+  --border-radius: #{tokens.$radius-md};
+  margin-bottom: tokens.$spacing-2;
+  box-shadow: tokens.$shadow-sm;
 
   ion-label {
     h3 {
-      font-size: 14px;
-      font-weight: 500;
+      font-size: tokens.$font-size-sm;
+      font-weight: tokens.$font-weight-medium;
       margin: 0;
       white-space: normal;
+      color: var(--text-primary);
     }
+  }
+
+  &.expanded {
+    --background: rgba(30, 58, 95, 0.06);
   }
 }
 
 .faq-answer {
-  padding: 12px 16px;
-  background: var(--ion-color-light);
-  border-radius: 0 0 10px 10px;
+  padding: tokens.$spacing-3 tokens.$spacing-4;
+  background: var(--surface-primary);
+  border-radius: 0 0 tokens.$radius-md tokens.$radius-md;
   margin-top: -8px;
-  margin-bottom: 8px;
+  margin-bottom: tokens.$spacing-2;
 
   p {
-    font-size: 14px;
+    font-size: tokens.$font-size-sm;
     line-height: 1.6;
-    color: var(--ion-color-medium-shade);
+    color: var(--text-secondary);
     margin: 0;
   }
 }
 
 .contact-section {
-  margin-top: 32px;
-  padding: 20px;
-  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
-  border-radius: 16px;
+  margin-top: tokens.$spacing-8;
+  padding: tokens.$spacing-5;
+  background: linear-gradient(135deg, tokens.$color-brand-primary 0%, tokens.$color-brand-secondary 100%);
+  border-radius: tokens.$radius-xl;
   text-align: center;
   color: white;
 
   ion-icon {
     font-size: 40px;
-    margin-bottom: 12px;
+    margin-bottom: tokens.$spacing-3;
   }
 
   h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0 0 8px 0;
+    font-size: tokens.$font-size-lg;
+    font-weight: tokens.$font-weight-semibold;
+    margin: 0 0 tokens.$spacing-2 0;
   }
 
   p {
-    font-size: 14px;
-    margin: 0 0 16px 0;
+    font-size: tokens.$font-size-sm;
+    margin: 0 0 tokens.$spacing-4 0;
     opacity: 0.9;
   }
 
   ion-button {
     --background: white;
-    --color: var(--ion-color-primary);
-    --border-radius: 10px;
-    font-weight: 600;
+    --color: #{tokens.$color-brand-primary};
+    --border-radius: #{tokens.$radius-md};
+    font-weight: tokens.$font-weight-semibold;
+    text-transform: none;
   }
 }
 
 .no-results {
   text-align: center;
-  padding: 40px 20px;
+  padding: tokens.$spacing-10 tokens.$spacing-5;
 
   ion-icon {
     font-size: 48px;
-    color: var(--ion-color-medium);
-    margin-bottom: 16px;
+    color: var(--text-tertiary);
+    margin-bottom: tokens.$spacing-4;
   }
 
   p {
-    color: var(--ion-color-medium);
+    color: var(--text-tertiary);
     margin: 0;
+    font-size: tokens.$font-size-sm;
   }
 }
 
-// Dark mode adjustments
-:host-context(body.dark) {
+// =============================================================================
+// DARK MODE
+// =============================================================================
+
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  // Legal pages
+  .legal-content,
+  .help-content {
+    --background: #{tokens.$surface-dark-primary};
+  }
+
+  .legal-header {
+    border-bottom-color: tokens.$color-neutral-700;
+
+    h1 {
+      color: tokens.$text-dark-primary;
+    }
+
+    .last-updated {
+      color: tokens.$text-dark-tertiary;
+    }
+  }
+
   .legal-intro {
-    background: var(--ion-color-dark-shade);
+    background: tokens.$surface-dark-secondary;
+    box-shadow: none;
+
+    p {
+      color: tokens.$text-dark-secondary;
+    }
+  }
+
+  .legal-section {
+    h2 {
+      color: #6bb5b3;
+      border-bottom-color: rgba(107, 181, 179, 0.3);
+    }
+
+    .section-content {
+      p, li {
+        color: tokens.$text-dark-secondary;
+      }
+    }
   }
 
   .legal-footer {
-    background: rgba(var(--ion-color-primary-rgb), 0.15);
+    background: rgba(107, 181, 179, 0.12);
 
     p {
-      color: var(--ion-color-primary);
+      color: #6bb5b3;
+    }
+  }
+
+  // Help center
+  .search-section ion-searchbar {
+    --background: #{tokens.$surface-dark-secondary};
+    --box-shadow: none;
+    --placeholder-color: #{tokens.$text-dark-tertiary};
+    --color: #{tokens.$text-dark-primary};
+  }
+
+  .category-section .category-title {
+    ion-icon {
+      color: #6bb5b3;
+    }
+
+    h2 {
+      color: tokens.$text-dark-primary;
     }
   }
 
   .faq-item {
-    --background: var(--ion-color-dark-shade);
+    --background: #{tokens.$surface-dark-secondary};
+    box-shadow: none;
+
+    ion-label h3 {
+      color: tokens.$text-dark-primary;
+    }
+
+    &.expanded {
+      --background: #{tokens.$surface-dark-tertiary};
+    }
   }
 
   .faq-answer {
-    background: var(--ion-color-dark-shade);
+    background: tokens.$surface-dark-secondary;
+
+    p {
+      color: tokens.$text-dark-secondary;
+    }
   }
 
   .contact-section {
-    background: linear-gradient(135deg, var(--ion-color-primary-shade), var(--ion-color-primary-tint));
+    background: linear-gradient(135deg, #1a3a52 0%, #2d5f8a 100%);
+
+    ion-button {
+      --background: white;
+      --color: #{tokens.$color-brand-primary};
+    }
+  }
+
+  .no-results {
+    ion-icon {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    p {
+      color: tokens.$text-dark-tertiary;
+    }
   }
 }

@@ -144,20 +144,22 @@ export class RegisterPage implements OnInit, OnDestroy {
   }
 
   private setupPatientRegistrationHandler() {
+    let loadingRef: HTMLIonLoadingElement | null = null;
+
     this.submitPatient$.pipe(
       takeUntil(this.destroy$),
       exhaustMap(async () => {
-        const { firstName, lastName, email, phone, password } = this.registerForm.value;
+        const { firstName, lastName, email, phone, password, acceptTerms } = this.registerForm.value;
 
-        const loading = await this.loadingCtrl.create({
+        loadingRef = await this.loadingCtrl.create({
           message: 'Creando cuenta...',
           spinner: 'crescent'
         });
-        await loading.present();
+        await loadingRef.present();
 
-        return { loading, data: { firstName, lastName, email, phone, password } };
+        return { firstName, lastName, email, phone, password, termsAccepted: acceptTerms };
       }),
-      exhaustMap(({ loading, data }) => {
+      exhaustMap((data) => {
         return this.authService.registerPatient(data).pipe(
           take(1),
           takeUntil(this.destroy$)
@@ -165,6 +167,9 @@ export class RegisterPage implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: async () => {
+        await loadingRef?.dismiss();
+        loadingRef = null;
+
         const toast = await this.toastCtrl.create({
           message: 'Cuenta creada exitosamente',
           duration: 3000,
@@ -176,6 +181,9 @@ export class RegisterPage implements OnInit, OnDestroy {
         this.router.navigate(['/patient/tabs/home']);
       },
       error: async (error) => {
+        await loadingRef?.dismiss();
+        loadingRef = null;
+
         this.isSubmitting.set(false);
         await this.showError(error);
       }

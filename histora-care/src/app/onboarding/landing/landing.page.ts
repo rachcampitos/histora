@@ -32,30 +32,30 @@ export class LandingPage implements OnInit {
   showIntro = signal(true);
   introExiting = signal(false);
 
-  // Content for each tab
+  // Content for each tab - Optimized copy based on marketing audit
   readonly content: Record<UserType, TabContent> = {
     patient: {
-      headline: 'Cuida a quien mas quieres,',
-      headlineSecond: 'aunque no puedas estar ahi',
-      subheadline: 'Enfermeras verificadas llegan a tu domicilio en menos de 2 horas',
-      ctaText: 'Solicitar enfermera ahora',
+      headline: 'Atencion profesional',
+      headlineSecond: 'en la puerta de tu casa',
+      subheadline: 'Enfermeras colegiadas y verificadas. Sin filas, sin esperas. Desde S/50.',
+      ctaText: 'Encontrar enfermera cerca',
       ctaIcon: 'search',
       features: [
-        { icon: 'shield-checkmark', text: 'Verificadas CEP + RENIEC' },
-        { icon: 'time', text: 'Disponibles en 2 horas' },
-        { icon: 'card', text: 'Pago seguro en la app' },
+        { icon: 'shield-checkmark', text: 'Colegiatura verificada en CEP' },
+        { icon: 'flash', text: 'Atencion en menos de 2 horas' },
+        { icon: 'wallet', text: 'Precios claros, sin sorpresas' },
       ],
     },
     nurse: {
-      headline: 'Tu practica profesional,',
-      headlineSecond: 'tus reglas',
-      subheadline: 'Define tu tarifa, elige tus horarios y trabaja con libertad. Sin suscripciones.',
-      ctaText: 'Registrarme como profesional',
-      ctaIcon: 'person-add',
+      headline: 'Gana mas,',
+      headlineSecond: 'trabaja cuando quieras',
+      subheadline: 'Conecta con pacientes cerca de ti. Sin comisiones por servicio. Tu decides cuanto cobrar.',
+      ctaText: 'Empezar a ganar hoy',
+      ctaIcon: 'rocket',
       features: [
-        { icon: 'cash', text: 'Tu defines tu precio' },
-        { icon: 'close-circle', text: 'Sin cuotas mensuales' },
-        { icon: 'calendar', text: 'Horarios flexibles' },
+        { icon: 'cash', text: '100% de tus ganancias' },
+        { icon: 'location', text: 'Pacientes en tu zona' },
+        { icon: 'calendar', text: 'Tu eliges tus horarios' },
       ],
     },
   };
@@ -119,5 +119,10 @@ export class LandingPage implements OnInit {
   async navigateToLogin(): Promise<void> {
     await this.onboardingService.markLandingSeen();
     this.router.navigate(['/auth/login']);
+  }
+
+  async navigateToBrowse(): Promise<void> {
+    await this.onboardingService.markLandingSeen();
+    this.router.navigate(['/browse']);
   }
 }
