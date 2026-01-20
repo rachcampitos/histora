@@ -62,7 +62,7 @@
           <ion-icon name="star-half" aria-hidden="true"></ion-icon>
         </div>
         <span class="proof-text">
-          {{ activeTab() === 'patient' ? '500+ enfermeras verificadas' : '500+ profesionales confian en nosotros' }}
+          {{ activeTab() === 'patient' ? 'Enfermeras verificadas en Lima' : 'Profesionales activos en la plataforma' }}
         </span>
       </div>
     </div>
@@ -81,9 +81,20 @@
         type="button"
         class="login-link"
         (click)="navigateToLogin()"
-        aria-label="Iniciar sesión con cuenta existente">
+        aria-label="Iniciar sesion con cuenta existente">
         ¿Ya tienes cuenta? <span class="link-text">Ingresar</span>
       </button>
+
+      @if (activeTab() === 'patient') {
+        <button
+          type="button"
+          class="browse-link"
+          (click)="navigateToBrowse()"
+          aria-label="Ver enfermeras disponibles sin registrarse">
+          <ion-icon name="eye-outline" aria-hidden="true"></ion-icon>
+          <span>Ver enfermeras sin registrarme</span>
+        </button>
+      }
     </nav>
   </main>
 </ion-content>

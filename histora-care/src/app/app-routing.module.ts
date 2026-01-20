@@ -40,6 +40,15 @@ const routes: Routes = [
   },
 
   // ============================================================
+  // BROWSE ROUTES (PUBLIC - No auth required)
+  // View nurses without registration
+  // ============================================================
+  {
+    path: 'browse',
+    loadChildren: () => import('./browse/browse.module').then(m => m.BrowsePageModule),
+  },
+
+  // ============================================================
   // LEGAL ROUTES (PUBLIC - No auth required)
   // ============================================================
   {

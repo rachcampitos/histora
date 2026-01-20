@@ -1,0 +1,617 @@
+@use '../../theme/design-tokens' as tokens;
+
+$primary-gradient: var(--histora-gradient);
+
+// Header styles
+ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+
+  ion-title {
+    font-size: tokens.$font-size-lg;
+    font-weight: tokens.$font-weight-semibold;
+  }
+
+  .login-btn {
+    --color: #{tokens.$color-brand-secondary};
+    font-weight: tokens.$font-weight-semibold;
+    text-transform: none;
+  }
+}
+
+.browse-content {
+  --background: transparent;
+  position: relative;
+}
+
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+// Search Overlay
+.search-overlay {
+  position: absolute;
+  top: calc(var(--ion-safe-area-top, 0) + 60px);
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
+  z-index: 1000;
+
+  .search-bar {
+    display: flex;
+    gap: tokens.$spacing-2;
+    background: white;
+    border-radius: tokens.$radius-lg;
+    padding: tokens.$spacing-1;
+    box-shadow: tokens.$shadow-md;
+
+    ion-item {
+      --background: #{tokens.$surface-secondary};
+      --border-radius: #{tokens.$radius-md};
+      --min-height: 40px;
+      font-size: tokens.$font-size-sm;
+
+      &.category-select {
+        flex: 1;
+      }
+
+      &.radius-select {
+        flex: 0 0 110px;
+      }
+    }
+  }
+}
+
+// Map Controls
+.map-controls {
+  position: absolute;
+  right: tokens.$spacing-3;
+  bottom: calc(var(--ion-safe-area-bottom, 0) + 200px);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-2;
+  transition: bottom tokens.$duration-slow tokens.$easing-standard;
+
+  &.card-open {
+    bottom: calc(var(--ion-safe-area-bottom, 0) + 380px);
+  }
+
+  .control-btn {
+    --background: white;
+    --color: var(--text-primary);
+    --border-radius: #{tokens.$radius-lg};
+    width: tokens.$touch-target-min;
+    height: tokens.$touch-target-min;
+    box-shadow: tokens.$shadow-md;
+
+    ion-icon {
+      font-size: 22px;
+    }
+  }
+}
+
+// Results Badge
+.results-badge {
+  position: absolute;
+  top: calc(var(--ion-safe-area-top, 0) + 120px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+
+  ion-badge {
+    font-size: tokens.$font-size-xs;
+    padding: 6px tokens.$spacing-3;
+    border-radius: tokens.$spacing-5;
+  }
+}
+
+// Loading Overlay
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background: white;
+  padding: tokens.$spacing-5 tokens.$spacing-8;
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-lg;
+  text-align: center;
+
+  ion-spinner {
+    --color: #{tokens.$color-brand-secondary};
+  }
+
+  p {
+    margin: tokens.$spacing-3 0 0;
+    color: var(--text-secondary);
+    font-size: tokens.$font-size-sm;
+  }
+}
+
+// Selected Nurse Card
+.nurse-card {
+  position: absolute;
+  bottom: calc(var(--ion-safe-area-bottom, 0) + 90px);
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
+  z-index: 1000;
+  background: white;
+  border-radius: tokens.$radius-xl;
+  padding: tokens.$spacing-4;
+  box-shadow: tokens.$shadow-lg;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+
+  .close-btn {
+    position: absolute;
+    top: tokens.$spacing-2;
+    right: tokens.$spacing-2;
+    --color: var(--text-tertiary);
+  }
+
+  .nurse-header {
+    display: flex;
+    align-items: flex-start;
+    gap: tokens.$spacing-3;
+
+    .nurse-avatar {
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+    }
+
+    .nurse-info {
+      flex: 1;
+      min-width: 0;
+
+      .info-row {
+        display: flex;
+        align-items: center;
+        gap: tokens.$spacing-2;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: tokens.$font-weight-semibold;
+        color: var(--text-primary);
+        flex-shrink: 1;
+        min-width: 0;
+      }
+
+      .availability-badge {
+        font-size: tokens.$font-size-xs;
+        font-weight: tokens.$font-weight-semibold;
+        padding: 6px 10px;
+        border-radius: tokens.$radius-lg;
+        background: #fee2e2;
+        color: tokens.$color-error;
+        white-space: nowrap;
+        flex-shrink: 0;
+
+        &.available {
+          background: #d1fae5;
+          color: #047857;
+        }
+      }
+
+      .nurse-meta {
+        display: flex;
+        gap: tokens.$spacing-3;
+        font-size: 13px;
+        color: var(--text-tertiary);
+
+        ion-icon {
+          font-size: tokens.$font-size-sm;
+          margin-right: 2px;
+          vertical-align: middle;
+        }
+
+        .rating ion-icon {
+          color: #fbbf24;
+        }
+      }
+    }
+  }
+
+  .nurse-specialties {
+    margin-top: tokens.$spacing-3;
+    display: flex;
+    gap: tokens.$spacing-2;
+    flex-wrap: wrap;
+
+    ion-chip {
+      height: 28px;
+      font-size: tokens.$font-size-xs;
+      margin: 0;
+    }
+  }
+
+  .nurse-services {
+    margin-top: tokens.$spacing-3;
+
+    h4 {
+      margin: 0 0 tokens.$spacing-2;
+      font-size: 13px;
+      font-weight: tokens.$font-weight-semibold;
+      color: var(--text-tertiary);
+    }
+
+    .service-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: tokens.$font-size-sm;
+
+      .service-name {
+        color: var(--text-primary);
+      }
+
+      .service-price {
+        color: tokens.$color-success;
+        font-weight: tokens.$font-weight-semibold;
+      }
+    }
+  }
+
+  .nurse-actions {
+    margin-top: tokens.$spacing-4;
+    display: flex;
+    gap: tokens.$spacing-3;
+
+    ion-button {
+      flex: 1;
+      --border-radius: 10px;
+      height: 42px;
+      font-size: tokens.$font-size-sm;
+      text-transform: none;
+
+      ion-icon {
+        font-size: tokens.$font-size-lg;
+      }
+    }
+  }
+}
+
+// Bottom List
+.bottom-list {
+  position: absolute;
+  bottom: calc(var(--ion-safe-area-bottom, 0) + 90px);
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
+  z-index: 1000;
+  background: white;
+  border-radius: tokens.$radius-xl;
+  padding: tokens.$spacing-3 tokens.$spacing-4;
+  box-shadow: tokens.$shadow-lg;
+
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: tokens.$spacing-3;
+
+    span {
+      font-size: tokens.$font-size-sm;
+      font-weight: tokens.$font-weight-semibold;
+      color: var(--text-primary);
+    }
+  }
+
+  .nurse-thumbnails {
+    display: flex;
+    gap: tokens.$spacing-3;
+    overflow-x: auto;
+    padding-bottom: tokens.$spacing-1;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .thumbnail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: tokens.$spacing-1;
+      cursor: pointer;
+
+      ion-avatar {
+        width: tokens.$touch-target-comfortable;
+        height: tokens.$touch-target-comfortable;
+        border: 2px solid tokens.$color-success;
+      }
+
+      .distance {
+        font-size: tokens.$font-size-xs;
+        color: var(--text-tertiary);
+      }
+    }
+  }
+}
+
+// CTA Banner for non-authenticated users
+.cta-banner {
+  position: absolute;
+  bottom: calc(var(--ion-safe-area-bottom, 0) + tokens.$spacing-3);
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
+  z-index: 1000;
+  background: $primary-gradient;
+  border-radius: tokens.$radius-lg;
+  padding: tokens.$spacing-3 tokens.$spacing-4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: tokens.$shadow-lg;
+
+  p {
+    margin: 0;
+    color: white;
+    font-size: tokens.$font-size-sm;
+    font-weight: tokens.$font-weight-medium;
+  }
+
+  ion-button {
+    --background: white;
+    --color: #{tokens.$color-brand-secondary};
+    --border-radius: #{tokens.$radius-md};
+    text-transform: none;
+    font-weight: tokens.$font-weight-semibold;
+  }
+}
+
+// Custom Mapbox Markers
+:host ::ng-deep {
+  .user-marker {
+    position: relative;
+    width: 40px;
+    height: 40px;
+
+    .user-marker-pulse {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: rgba(102, 126, 234, 0.3);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .user-marker-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: tokens.$spacing-8;
+      height: tokens.$spacing-8;
+      background: $primary-gradient;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+      border: 3px solid white;
+
+      ion-icon {
+        font-size: tokens.$font-size-base;
+        color: white;
+      }
+    }
+  }
+
+  .nurse-map-marker {
+    cursor: pointer;
+
+    .nurse-marker-avatar {
+      position: relative;
+      width: tokens.$touch-target-min;
+      height: tokens.$touch-target-min;
+      border-radius: 50%;
+      border: 3px solid tokens.$color-neutral-400;
+      box-shadow: tokens.$shadow-md;
+      transition: transform tokens.$duration-normal tokens.$easing-standard;
+      background: white;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .availability-dot {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 14px;
+        height: 14px;
+        background: tokens.$color-success;
+        border: 2px solid white;
+        border-radius: 50%;
+        z-index: 1;
+      }
+
+      &.available {
+        border-color: tokens.$color-success;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+      }
+
+      &:hover {
+        transform: scale(1.15);
+      }
+    }
+  }
+
+  .mapboxgl-popup-content {
+    border-radius: 10px;
+    box-shadow: tokens.$shadow-md;
+    padding: 10px tokens.$spacing-3;
+    font-size: 13px;
+  }
+
+  .mapboxgl-popup-close-button {
+    font-size: tokens.$font-size-lg;
+    padding: tokens.$spacing-1 tokens.$spacing-2;
+  }
+
+  .nurse-popup {
+    strong {
+      color: var(--text-primary);
+      font-size: tokens.$font-size-sm;
+    }
+
+    p {
+      margin: tokens.$spacing-1 0 0;
+      color: var(--text-tertiary);
+      font-size: tokens.$font-size-xs;
+    }
+  }
+
+  .mapboxgl-ctrl-logo {
+    display: none !important;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+// Dark mode
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  ion-toolbar {
+    --background: #{tokens.$surface-dark-primary};
+
+    ion-title {
+      color: tokens.$text-dark-primary;
+    }
+  }
+
+  .search-overlay .search-bar {
+    background: tokens.$surface-dark-secondary;
+
+    ion-item {
+      --background: #{tokens.$surface-dark-primary};
+      --color: #{tokens.$text-dark-primary};
+    }
+  }
+
+  .map-controls .control-btn {
+    --background: #{tokens.$surface-dark-secondary};
+    --color: #{tokens.$text-dark-primary};
+  }
+
+  .loading-overlay {
+    background: tokens.$surface-dark-secondary;
+
+    p {
+      color: tokens.$text-dark-secondary;
+    }
+  }
+
+  .nurse-card {
+    background: tokens.$surface-dark-secondary;
+
+    .nurse-header .nurse-info {
+      h3 {
+        color: tokens.$text-dark-primary !important;
+      }
+
+      .nurse-meta {
+        color: tokens.$text-dark-tertiary;
+      }
+    }
+
+    .nurse-specialties ion-chip {
+      --background: #{tokens.$surface-dark-tertiary};
+      --color: #{tokens.$text-dark-secondary};
+    }
+
+    .nurse-services {
+      h4 {
+        color: tokens.$text-dark-tertiary;
+      }
+
+      .service-item .service-name {
+        color: tokens.$text-dark-primary;
+      }
+    }
+
+    .availability-badge {
+      &.available {
+        background: #064e3b;
+        color: #6ee7b7;
+      }
+
+      &:not(.available) {
+        background: #450a0a;
+        color: #fca5a5;
+      }
+    }
+  }
+
+  .bottom-list {
+    background: tokens.$surface-dark-secondary;
+
+    .list-header span {
+      color: tokens.$text-dark-primary;
+    }
+
+    .nurse-thumbnails .thumbnail .distance {
+      color: tokens.$text-dark-tertiary;
+    }
+  }
+
+  .cta-banner {
+    background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+  }
+
+  :host ::ng-deep {
+    .mapboxgl-popup-content {
+      background: tokens.$surface-dark-secondary;
+      color: tokens.$text-dark-primary;
+    }
+
+    .nurse-popup {
+      strong {
+        color: tokens.$text-dark-primary;
+      }
+
+      p {
+        color: tokens.$text-dark-tertiary;
+      }
+    }
+
+    .nurse-map-marker .nurse-marker-avatar {
+      border-color: tokens.$color-neutral-500;
+      background: tokens.$surface-dark-secondary;
+
+      &.available {
+        border-color: tokens.$color-success;
+      }
+    }
+
+    .user-marker .user-marker-icon {
+      border-color: tokens.$surface-dark-secondary;
+    }
+  }
+}
