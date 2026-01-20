@@ -89,15 +89,19 @@ $primary-gradient: var(--histora-gradient);
 
     .verified-badge {
       position: absolute;
-      bottom: 0;
-      right: calc(50% - 50px - 30px); // Offset from edit badge
+      top: 0;
+      right: calc(50% - 50px); // Top-right corner of avatar
       background: tokens.$color-success;
       border-radius: 50%;
-      padding: tokens.$spacing-1;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border: 2px solid white;
 
       ion-icon {
-        font-size: tokens.$font-size-xl;
+        font-size: tokens.$font-size-base;
         color: white;
         display: block;
       }
