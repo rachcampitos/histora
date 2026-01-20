@@ -1,4 +1,4 @@
-@use '../../theme/design-tokens' as tokens;
+@use '../../../theme/design-tokens' as tokens;
 
 .notification-settings-content {
   --background: var(--surface-secondary);
