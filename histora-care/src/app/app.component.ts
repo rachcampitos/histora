@@ -1,3 +1,4 @@
+// Histora Care - NurseLite v1.0.0
 import { Component, OnInit, inject } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { AuthService } from './core/services/auth.service';
