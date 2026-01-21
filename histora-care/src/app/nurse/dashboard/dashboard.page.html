@@ -47,9 +47,10 @@
       <ion-toggle
         [checked]="isAvailable()"
         (ionChange)="toggleAvailability()"
-        [disabled]="isTogglingAvailability()"
+        [disabled]="isTogglingAvailability() || !isVerified()"
         color="success">
       </ion-toggle>
+      <p class="toggle-hint" *ngIf="!isVerified()">Verifica tu identidad para activar</p>
     </div>
   </div>
 

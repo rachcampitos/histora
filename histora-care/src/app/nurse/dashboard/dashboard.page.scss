@@ -124,11 +124,26 @@ $primary-gradient: var(--histora-gradient);
   }
 
   .availability-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
     ion-toggle {
       --background: rgba(255, 255, 255, 0.3);
       --background-checked: #{tokens.$color-success};
       --handle-background: white;
       --handle-background-checked: white;
+
+      &[disabled] {
+        opacity: 0.5;
+      }
+    }
+
+    .toggle-hint {
+      margin: tokens.$spacing-1 0 0;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: right;
     }
   }
 }
