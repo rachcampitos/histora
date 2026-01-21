@@ -1,0 +1,56 @@
+# Actualización automática de dependencias
+version: 2
+updates:
+  # histora-care (Ionic/Angular)
+  - package-ecosystem: "npm"
+    directory: "/histora-care"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "histora-care"
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+      ionic:
+        patterns:
+          - "@ionic/*"
+          - "@capacitor/*"
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # histora-back (NestJS)
+  - package-ecosystem: "npm"
+    directory: "/histora-back"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "histora-back"
+    groups:
+      nestjs:
+        patterns:
+          - "@nestjs/*"
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # histora-front (Angular)
+  - package-ecosystem: "npm"
+    directory: "/histora-front"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "histora-front"
