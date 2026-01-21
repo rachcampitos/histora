@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { driver, DriveStep, Config, Driver } from 'driver.js';
+import { AuthService } from './auth.service';
 
 export type TourType =
   | 'patient_home'
@@ -27,7 +28,7 @@ interface TourConfig {
  *
  * Features:
  * - Multi-page tour support with navigation prompts
- * - Tours are shown once per user per section
+ * - Tours are shown once per user per section (user-specific keys)
  * - Can be replayed from settings
  * - Chained tours for comprehensive onboarding
  */
@@ -37,6 +38,7 @@ interface TourConfig {
 export class ProductTourService {
   private readonly STORAGE_KEY_PREFIX = 'nurselite-tour-completed-';
   private readonly PENDING_TOUR_KEY = 'nurselite-pending-tour';
+  private authService = inject(AuthService);
 
   // Active driver instance
   private driverInstance: Driver | null = null;
@@ -45,11 +47,24 @@ export class ProductTourService {
   isTourActive = signal(false);
 
   /**
+   * Get user-specific storage key for a tour
+   * This ensures each user has their own tour completion state
+   */
+  private getStorageKey(tourType: TourType): string {
+    const userId = this.authService.user()?.id;
+    if (userId) {
+      return `${this.STORAGE_KEY_PREFIX}${userId}-${tourType}`;
+    }
+    // Fallback for cases where user is not yet loaded (shouldn't happen in practice)
+    return `${this.STORAGE_KEY_PREFIX}${tourType}`;
+  }
+
+  /**
    * Check if a specific tour has been completed
    */
   async isTourCompleted(tourType: TourType): Promise<boolean> {
     const { value } = await Preferences.get({
-      key: this.STORAGE_KEY_PREFIX + tourType,
+      key: this.getStorageKey(tourType),
     });
     return value === 'true';
   }
@@ -59,7 +74,7 @@ export class ProductTourService {
    */
   async markTourCompleted(tourType: TourType): Promise<void> {
     await Preferences.set({
-      key: this.STORAGE_KEY_PREFIX + tourType,
+      key: this.getStorageKey(tourType),
       value: 'true',
     });
   }
@@ -69,12 +84,12 @@ export class ProductTourService {
    */
   async resetTour(tourType: TourType): Promise<void> {
     await Preferences.remove({
-      key: this.STORAGE_KEY_PREFIX + tourType,
+      key: this.getStorageKey(tourType),
     });
   }
 
   /**
-   * Reset all tours for a specific role
+   * Reset all tours for a specific role (for current user)
    */
   async resetToursByRole(role: 'patient' | 'nurse' | 'admin'): Promise<void> {
     const tourTypes: Record<string, TourType[]> = {
@@ -85,13 +100,13 @@ export class ProductTourService {
 
     for (const type of tourTypes[role] || []) {
       await Preferences.remove({
-        key: this.STORAGE_KEY_PREFIX + type,
+        key: this.getStorageKey(type),
       });
     }
   }
 
   /**
-   * Reset all tours
+   * Reset all tours (for current user)
    */
   async resetAllTours(): Promise<void> {
     const tourTypes: TourType[] = [
@@ -107,7 +122,7 @@ export class ProductTourService {
     ];
     for (const type of tourTypes) {
       await Preferences.remove({
-        key: this.STORAGE_KEY_PREFIX + type,
+        key: this.getStorageKey(type),
       });
     }
   }
