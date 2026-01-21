@@ -1168,3 +1168,58 @@ body.dark .histora-tour-popover {
     transition: none !important;
   }
 }
+
+/* ==========================================================================
+   PWA Camera Elements Styles (@ionic/pwa-elements)
+   ========================================================================== */
+
+/* Fix close button position to respect safe area */
+pwa-camera-modal,
+pwa-camera-modal-instance {
+  /* Ensure the modal respects safe areas on notched phones */
+  --pwa-camera-modal-close-top: env(safe-area-inset-top, 20px);
+}
+
+pwa-camera {
+  /* Camera container should respect safe areas */
+  padding-top: env(safe-area-inset-top, 0) !important;
+}
+
+/* Style the close button to be below the notch */
+pwa-camera-modal-instance .close {
+  top: calc(env(safe-area-inset-top, 20px) + 16px) !important;
+  right: 16px !important;
+  z-index: 10001 !important;
+}
+
+/* Fallback for older iOS/Android */
+@supports not (padding-top: env(safe-area-inset-top)) {
+  pwa-camera-modal-instance .close {
+    top: 44px !important;
+  }
+}
+
+/* Ensure camera UI has proper z-index */
+pwa-camera-modal {
+  z-index: 10000 !important;
+}
+
+/* Dark mode for camera action sheet */
+body.ion-palette-dark pwa-action-sheet,
+body.dark pwa-action-sheet {
+  --background: #1e293b;
+  --color: #f1f5f9;
+
+  .action-sheet-container {
+    background: #1e293b !important;
+  }
+
+  .action-sheet-button {
+    color: #f1f5f9 !important;
+    background: transparent !important;
+
+    &:hover {
+      background: #334155 !important;
+    }
+  }
+}
