@@ -233,6 +233,7 @@ ion-item-option {
     --background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
     --background-hover: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
     --background-activated: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+    --color: white;
     --border-radius: 12px;
     --box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
     font-weight: 600;
@@ -242,6 +243,7 @@ ion-item-option {
 
     ion-icon {
       font-size: 20px;
+      color: white;
     }
   }
 }
@@ -456,9 +458,18 @@ ion-toggle {
       color: #94a3b8;
     }
 
+    ion-icon {
+      color: #64748b;
+    }
+
     ion-button {
       --background: linear-gradient(135deg, #2d5f8a 0%, #4a9d9a 100%);
+      --color: white;
       --box-shadow: 0 4px 12px rgba(74, 157, 154, 0.3);
+
+      ion-icon {
+        color: white;
+      }
     }
   }
 
@@ -472,11 +483,32 @@ ion-toggle {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
         ion-label {
-          color: #94a3b8;
+          color: #94a3b8 !important;
         }
 
-        ion-input, ion-textarea, ion-select {
+        ion-input, ion-textarea {
           --color: #f1f5f9;
+          --placeholder-color: #64748b;
+          color: #f1f5f9;
+        }
+
+        ion-select {
+          --color: #f1f5f9;
+          --placeholder-color: #64748b;
+          color: #f1f5f9;
+
+          &::part(text) {
+            color: #f1f5f9;
+          }
+
+          &::part(icon) {
+            color: #94a3b8;
+          }
+        }
+
+        ion-toggle {
+          --track-background: #475569;
+          --track-background-checked: #10b981;
         }
       }
     }
@@ -493,9 +525,14 @@ ion-toggle {
     ion-header {
       ion-toolbar {
         --background: #1e293b;
+        --border-color: #334155;
 
         ion-title {
           color: #f1f5f9;
+        }
+
+        ion-button {
+          --color: #6bb5b3;
         }
       }
     }
