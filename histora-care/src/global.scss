@@ -1223,3 +1223,138 @@ body.dark pwa-action-sheet {
     }
   }
 }
+
+/* ==========================================================================
+   Service Modal Dark Mode (Nurse Services Page)
+   ========================================================================== */
+
+ion-modal.service-modal {
+  // Light mode defaults
+  --background: #f4f5f8;
+
+  ion-header ion-toolbar {
+    --background: #ffffff;
+    --border-color: #e5e7eb;
+
+    ion-title {
+      color: #1a1a1a;
+    }
+
+    ion-button {
+      --color: #1e3a5f;
+    }
+  }
+
+  ion-content {
+    --background: #f4f5f8;
+  }
+
+  .modal-content {
+    --background: #f4f5f8;
+
+    ion-list {
+      background: transparent;
+
+      ion-item {
+        --background: #ffffff;
+        --color: #1a1a1a;
+        --border-color: #e5e7eb;
+
+        ion-label {
+          color: #6b7280 !important;
+        }
+
+        ion-input, ion-textarea {
+          --color: #1a1a1a;
+          --placeholder-color: #9ca3af;
+        }
+
+        ion-select {
+          --color: #1a1a1a;
+          --placeholder-color: #9ca3af;
+        }
+      }
+    }
+
+    .helper-text p {
+      color: #6b7280;
+    }
+  }
+}
+
+// Dark mode for service modal
+body.ion-palette-dark ion-modal.service-modal,
+body.dark ion-modal.service-modal {
+  --background: #0f172a;
+
+  ion-header ion-toolbar {
+    --background: #1e293b;
+    --border-color: #334155;
+
+    ion-title {
+      color: #f1f5f9;
+    }
+
+    ion-button {
+      --color: #6bb5b3;
+    }
+  }
+
+  ion-content {
+    --background: #0f172a;
+  }
+
+  .modal-content {
+    --background: #0f172a;
+
+    ion-list {
+      background: transparent !important;
+
+      ion-item {
+        --background: #1e293b !important;
+        --color: #f1f5f9;
+        --border-color: #334155;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+        ion-label {
+          color: #94a3b8 !important;
+        }
+
+        ion-input, ion-textarea {
+          --color: #f1f5f9 !important;
+          --placeholder-color: #64748b !important;
+          color: #f1f5f9 !important;
+        }
+
+        ion-select {
+          --color: #f1f5f9 !important;
+          --placeholder-color: #64748b !important;
+          color: #f1f5f9 !important;
+
+          &::part(text) {
+            color: #f1f5f9 !important;
+          }
+
+          &::part(placeholder) {
+            color: #64748b !important;
+          }
+
+          &::part(icon) {
+            color: #94a3b8 !important;
+          }
+        }
+
+        ion-toggle {
+          --track-background: #475569;
+          --track-background-checked: #10b981;
+          --handle-background: #ffffff;
+          --handle-background-checked: #ffffff;
+        }
+      }
+    }
+
+    .helper-text p {
+      color: #64748b !important;
+    }
+  }
+}
