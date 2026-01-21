@@ -1,0 +1,41 @@
+name: Deploy Histora Care to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'histora-care/**'
+      - '.github/workflows/deploy-histora-care.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Pages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: histora-care/package-lock.json
+
+      - name: Install dependencies
+        working-directory: histora-care
+        run: npm ci
+
+      - name: Build
+        working-directory: histora-care
+        run: npm run build -- --configuration=production
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy www --project-name=histora-care --branch=main
+          workingDirectory: histora-care
