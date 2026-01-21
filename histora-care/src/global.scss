@@ -1287,16 +1287,23 @@ body.ion-palette-dark ion-modal.service-modal,
 body.dark ion-modal.service-modal {
   --background: #0f172a;
 
-  ion-header ion-toolbar {
-    --background: #1e293b;
-    --border-color: #334155;
+  ion-header {
+    ion-toolbar {
+      --background: #1e293b !important;
+      --border-color: #334155 !important;
+      --color: #f1f5f9 !important;
+      background: #1e293b !important;
 
-    ion-title {
-      color: #f1f5f9;
-    }
+      ion-title {
+        color: #f1f5f9 !important;
+      }
 
-    ion-button {
-      --color: #6bb5b3;
+      ion-buttons {
+        ion-button {
+          --color: #6bb5b3 !important;
+          color: #6bb5b3 !important;
+        }
+      }
     }
   }
 
