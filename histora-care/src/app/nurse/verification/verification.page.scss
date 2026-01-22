@@ -725,18 +725,32 @@ $border-radius: 12px;
 .waiting-header {
   text-align: center;
   margin-bottom: 24px;
+  transition: all 0.3s ease;
 
   h1 {
     font-size: 22px;
     font-weight: 700;
     color: $text-dark;
     margin: 0 0 8px;
+    transition: color 0.3s ease;
   }
 
   .waiting-subtitle {
     font-size: 14px;
     color: $text-muted;
     margin: 0;
+    transition: color 0.3s ease;
+  }
+
+  // Approval transition state
+  &.approved-transition {
+    h1 {
+      color: $success-color;
+    }
+
+    .waiting-subtitle {
+      color: $success-color;
+    }
   }
 }
 
@@ -754,6 +768,14 @@ $border-radius: 12px;
     color: $warning-color;
     z-index: 2;
     animation: hourglassRotate 2s ease-in-out infinite;
+    transition: all 0.3s ease;
+
+    // Success state during approval transition
+    &.success-icon {
+      color: $success-color;
+      font-size: 48px;
+      animation: successPop 0.5s ease forwards;
+    }
   }
 
   .waiting-pulse {
@@ -775,6 +797,20 @@ $border-radius: 12px;
   }
   75% {
     transform: rotate(-10deg);
+  }
+}
+
+@keyframes successPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -1092,6 +1128,25 @@ $border-radius: 12px;
         font-weight: 500;
       }
     }
+  }
+}
+
+.refresh-section {
+  text-align: center;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+
+  ion-button {
+    --color: #{$text-muted};
+    font-size: 14px;
+    text-transform: none;
+  }
+
+  .auto-refresh-note {
+    font-size: 11px;
+    color: $text-muted;
+    margin: 4px 0 0;
+    opacity: 0.7;
   }
 }
 
@@ -1457,6 +1512,12 @@ $border-radius: 12px;
       .author span {
         color: #94a3b8;
       }
+    }
+  }
+
+  .refresh-section {
+    .auto-refresh-note {
+      color: #64748b;
     }
   }
 

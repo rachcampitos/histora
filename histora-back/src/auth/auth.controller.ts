@@ -13,7 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto, RegisterPatientDto, RegisterNurseDto, CompleteGoogleRegistrationDto, ValidateNurseCepDto, CompleteNurseRegistrationDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResetPasswordDto, RequestPasswordOtpDto, VerifyPasswordOtpDto, ResetPasswordWithOtpDto } from './dto/reset-password.dto';
 import { UpdateProfileDto, ChangePasswordDto } from './dto/update-profile.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
@@ -192,17 +192,49 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Email de recuperación enviado' })
   @ApiResponse({ status: 404, description: 'Email no registrado' })
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto.email);
+    return this.authService.forgotPassword(forgotPasswordDto.email, forgotPasswordDto.platform);
   }
 
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Restablecer contraseña con token' })
+  @ApiOperation({ summary: 'Restablecer contraseña con token (método link)' })
   @ApiResponse({ status: 200, description: 'Contraseña actualizada exitosamente' })
   @ApiResponse({ status: 401, description: 'Token inválido o expirado' })
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.newPassword);
+  }
+
+  // ============= OTP-based Password Recovery =============
+
+  @Public()
+  @Post('password-reset/request-otp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar código OTP para recuperar contraseña' })
+  @ApiResponse({ status: 200, description: 'Código OTP enviado al email' })
+  @ApiResponse({ status: 404, description: 'Email no registrado' })
+  requestPasswordOtp(@Body() dto: RequestPasswordOtpDto) {
+    return this.authService.requestPasswordResetOtp(dto.email, dto.platform);
+  }
+
+  @Public()
+  @Post('password-reset/verify-otp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verificar código OTP' })
+  @ApiResponse({ status: 200, description: 'Código verificado correctamente' })
+  @ApiResponse({ status: 401, description: 'Código inválido o expirado' })
+  verifyPasswordOtp(@Body() dto: VerifyPasswordOtpDto) {
+    return this.authService.verifyPasswordResetOtp(dto.email, dto.otp);
+  }
+
+  @Public()
+  @Post('password-reset/reset-with-otp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Restablecer contraseña con código OTP' })
+  @ApiResponse({ status: 200, description: 'Contraseña actualizada exitosamente' })
+  @ApiResponse({ status: 401, description: 'Código inválido o expirado' })
+  resetPasswordWithOtp(@Body() dto: ResetPasswordWithOtpDto) {
+    return this.authService.resetPasswordWithOtp(dto.email, dto.otp, dto.newPassword);
   }
 
   @Public()

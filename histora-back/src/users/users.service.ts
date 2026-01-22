@@ -153,6 +153,50 @@ export class UsersService {
     });
   }
 
+  // OTP methods for password recovery
+  async setPasswordResetOtp(
+    email: string,
+    otp: string,
+    expires: Date,
+  ): Promise<void> {
+    await this.userModel.findOneAndUpdate(
+      { email: email.toLowerCase() },
+      {
+        passwordResetOtp: otp,
+        passwordResetOtpExpires: expires,
+        passwordResetOtpAttempts: 0,
+      },
+    );
+  }
+
+  async findByPasswordResetOtp(email: string, otp: string): Promise<UserDocument | null> {
+    return this.userModel
+      .findOne({
+        email: email.toLowerCase(),
+        passwordResetOtp: otp,
+        passwordResetOtpExpires: { $gt: new Date() },
+        isDeleted: false,
+      })
+      .exec();
+  }
+
+  async incrementOtpAttempts(email: string): Promise<number> {
+    const result = await this.userModel.findOneAndUpdate(
+      { email: email.toLowerCase() },
+      { $inc: { passwordResetOtpAttempts: 1 } },
+      { new: true },
+    );
+    return result?.passwordResetOtpAttempts || 0;
+  }
+
+  async clearPasswordResetOtp(id: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(id, {
+      passwordResetOtp: null,
+      passwordResetOtpExpires: null,
+      passwordResetOtpAttempts: 0,
+    });
+  }
+
   async verifyEmail(id: string): Promise<void> {
     await this.userModel.findByIdAndUpdate(id, { isEmailVerified: true });
   }
