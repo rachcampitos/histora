@@ -151,8 +151,8 @@ export class ServicesPage implements OnInit {
       this.showToast('El precio debe ser mayor a 0', 'warning');
       return;
     }
-    if (!form.durationMinutes || form.durationMinutes <= 0) {
-      this.showToast('La duracion debe ser mayor a 0', 'warning');
+    if (!form.durationMinutes || form.durationMinutes < 15) {
+      this.showToast('La duracion debe ser minimo 15 minutos', 'warning');
       return;
     }
 
@@ -169,7 +169,8 @@ export class ServicesPage implements OnInit {
         },
         error: (err) => {
           console.error('Error updating service:', err);
-          this.showToast('Error al actualizar servicio', 'danger');
+          const message = err?.error?.message || 'Error al actualizar servicio';
+          this.showToast(Array.isArray(message) ? message[0] : message, 'danger');
           this.isSaving.set(false);
         },
       });
@@ -194,7 +195,8 @@ export class ServicesPage implements OnInit {
         },
         error: (err) => {
           console.error('Error adding service:', err);
-          this.showToast('Error al agregar servicio', 'danger');
+          const message = err?.error?.message || 'Error al agregar servicio';
+          this.showToast(Array.isArray(message) ? message[0] : message, 'danger');
           this.isSaving.set(false);
         },
       });
