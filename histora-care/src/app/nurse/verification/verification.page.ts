@@ -54,6 +54,7 @@ export class VerificationPage implements OnInit, OnDestroy {
   waitingTimeElapsed = signal('');
   waitingProgressPercent = signal(0);
   private waitingTimeInterval: ReturnType<typeof setInterval> | null = null;
+  private statusPollingInterval: ReturnType<typeof setInterval> | null = null;
 
   // Tasks to complete while waiting
   waitingTasks = signal<WaitingTask[]>([
@@ -155,10 +156,15 @@ export class VerificationPage implements OnInit, OnDestroy {
 
   cepNumber = computed(() => this.nurse()?.cepNumber || '');
   verificationStatus = computed(() => this.verification()?.status || this.nurse()?.verificationStatus || 'pending');
-  isApproved = computed(() => this.verificationStatus() === 'approved');
+  isApproved = computed(() => this.verificationStatus() === 'approved' && !this.showApprovalTransition());
   isPending = computed(() => this.verificationStatus() === 'pending');
-  isUnderReview = computed(() => this.verificationStatus() === 'under_review');
+  isUnderReview = computed(() => this.verificationStatus() === 'under_review' || this.showApprovalTransition());
   isRejected = computed(() => this.verificationStatus() === 'rejected');
+
+  // Transition state to show checklist completing before approved card
+  showApprovalTransition = signal(false);
+  // Track if all checklist items should show as completed
+  allChecklistCompleted = computed(() => this.verificationStatus() === 'approved' || this.showApprovalTransition());
 
   // CEP data from validation
   cepPhotoUrl = computed(() => this.cepValidation()?.photoUrl || null);
@@ -189,6 +195,7 @@ export class VerificationPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopWaitingTimer();
+    this.stopStatusPolling();
   }
 
   // ============= Waiting Screen Methods =============
@@ -205,6 +212,102 @@ export class VerificationPage implements OnInit, OnDestroy {
       clearInterval(this.waitingTimeInterval);
       this.waitingTimeInterval = null;
     }
+  }
+
+  // ============= Status Polling (auto-refresh when admin approves) =============
+
+  private startStatusPolling() {
+    // Poll every 15 seconds to check if status changed (faster for better UX)
+    this.statusPollingInterval = setInterval(() => {
+      this.checkVerificationStatus();
+    }, 15000);
+  }
+
+  private stopStatusPolling() {
+    if (this.statusPollingInterval) {
+      clearInterval(this.statusPollingInterval);
+      this.statusPollingInterval = null;
+    }
+  }
+
+  async checkVerificationStatus() {
+    const nurse = this.nurse();
+    if (!nurse) return;
+
+    try {
+      // Fetch both verification and nurse profile to ensure we get the latest status
+      const [verification, updatedNurse] = await Promise.all([
+        this.nurseApi.getVerificationStatus(nurse._id).toPromise(),
+        this.nurseApi.getMyProfile().toPromise()
+      ]);
+
+      // Update nurse profile
+      if (updatedNurse) {
+        this.nurse.set(updatedNurse);
+      }
+
+      if (verification) {
+        const previousStatus = this.verification()?.status;
+        this.verification.set(verification);
+
+        // If status changed to approved, show success and stop polling
+        if (verification.status === 'approved' && previousStatus !== 'approved') {
+          this.stopStatusPolling();
+          this.stopWaitingTimer();
+          this.showApprovalSuccess();
+        }
+        // If status changed to rejected, stop polling
+        else if (verification.status === 'rejected' && previousStatus !== 'rejected') {
+          this.stopStatusPolling();
+          this.stopWaitingTimer();
+          this.showRejectionAlert(verification.rejectionReason);
+        }
+      } else if (updatedNurse?.verificationStatus === 'approved') {
+        // Fallback: check nurse profile status if verification document not found
+        this.stopStatusPolling();
+        this.stopWaitingTimer();
+        this.showApprovalSuccess();
+      }
+    } catch (error) {
+      // Silently fail on polling errors
+      console.error('Error polling verification status:', error);
+    }
+  }
+
+  private async showApprovalSuccess() {
+    // First, show the transition state (checklist items completing)
+    this.showApprovalTransition.set(true);
+
+    // Wait 2 seconds for user to see the checklist complete
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Hide transition and show approved card
+    this.showApprovalTransition.set(false);
+
+    // Show success alert
+    const alert = await this.alertCtrl.create({
+      header: '¡Felicitaciones!',
+      message: 'Tu cuenta ha sido verificada. Ya puedes activar tu disponibilidad y comenzar a recibir solicitudes de pacientes.',
+      buttons: [
+        {
+          text: 'Ir al Dashboard',
+          handler: () => {
+            this.router.navigate(['/nurse/dashboard']);
+          }
+        }
+      ],
+      backdropDismiss: false
+    });
+    await alert.present();
+  }
+
+  private async showRejectionAlert(reason?: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Verificación Rechazada',
+      message: reason || 'Tu verificación fue rechazada. Por favor revisa los documentos e intenta nuevamente.',
+      buttons: ['Entendido']
+    });
+    await alert.present();
   }
 
   private updateWaitingTime() {
@@ -312,9 +415,10 @@ export class VerificationPage implements OnInit, OnDestroy {
             if (verification.cepIdentityConfirmed) {
               this.currentStep.set('upload_documents');
             }
-            // Start waiting timer if under review
+            // Start waiting timer and status polling if under review
             if (verification.status === 'under_review') {
               this.startWaitingTimer();
+              this.startStatusPolling();
             }
           }
         } catch {
@@ -543,6 +647,11 @@ export class VerificationPage implements OnInit, OnDestroy {
 
       if (verification) {
         this.verification.set(verification);
+        // Start polling for status updates
+        if (verification.status === 'under_review') {
+          this.startWaitingTimer();
+          this.startStatusPolling();
+        }
       }
 
       await loading.dismiss();

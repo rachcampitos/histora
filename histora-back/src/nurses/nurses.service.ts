@@ -2,21 +2,25 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Nurse } from './schema/nurse.schema';
+import { NurseReview, NurseReviewDocument } from './schema/nurse-review.schema';
 import {
   CreateNurseDto,
   UpdateNurseDto,
   SearchNurseDto,
   NurseServiceDto,
 } from './dto';
+import { CreateNurseReviewDto } from './dto/nurse-review.dto';
 
 @Injectable()
 export class NursesService {
   constructor(
     @InjectModel(Nurse.name) private nurseModel: Model<Nurse>,
+    @InjectModel(NurseReview.name) private nurseReviewModel: Model<NurseReviewDocument>,
   ) {}
 
   async create(userId: string, createNurseDto: CreateNurseDto): Promise<Nurse> {
@@ -432,5 +436,154 @@ export class NursesService {
     }
 
     return nurse;
+  }
+
+  // ============= Nurse Review Methods =============
+
+  /**
+   * Create a review for a nurse
+   */
+  async createReview(
+    nurseId: string,
+    patientId: string,
+    createReviewDto: CreateNurseReviewDto,
+  ): Promise<NurseReview> {
+    // Check if nurse exists
+    const nurse = await this.nurseModel.findById(nurseId);
+    if (!nurse) {
+      throw new NotFoundException('Enfermera no encontrada');
+    }
+
+    // Check if patient already reviewed this nurse
+    const existingReview = await this.nurseReviewModel.findOne({
+      nurseId: new Types.ObjectId(nurseId),
+      patientId: new Types.ObjectId(patientId),
+      isDeleted: false,
+    });
+
+    if (existingReview) {
+      throw new ConflictException('Ya has dejado una resena para esta enfermera');
+    }
+
+    // Determine if review is verified (linked to a completed service)
+    let isVerified = false;
+    if (createReviewDto.serviceRequestId) {
+      // TODO: Check if service request exists and is completed
+      isVerified = true;
+    }
+
+    const review = new this.nurseReviewModel({
+      nurseId: new Types.ObjectId(nurseId),
+      patientId: new Types.ObjectId(patientId),
+      serviceRequestId: createReviewDto.serviceRequestId
+        ? new Types.ObjectId(createReviewDto.serviceRequestId)
+        : undefined,
+      rating: createReviewDto.rating,
+      comment: createReviewDto.comment || '',
+      isVerified,
+    });
+
+    const savedReview = await review.save();
+
+    // Update nurse's average rating and total reviews
+    await this.recalculateNurseRating(nurseId);
+
+    return savedReview;
+  }
+
+  /**
+   * Get reviews for a nurse
+   */
+  async getNurseReviews(
+    nurseId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<{
+    reviews: NurseReview[];
+    total: number;
+    page: number;
+    limit: number;
+    averageRating: number;
+    totalReviews: number;
+  }> {
+    const skip = (page - 1) * limit;
+
+    const [reviews, total, stats] = await Promise.all([
+      this.nurseReviewModel
+        .find({ nurseId: new Types.ObjectId(nurseId), isDeleted: false })
+        .populate('patientId', 'firstName lastName avatar')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+      this.nurseReviewModel.countDocuments({
+        nurseId: new Types.ObjectId(nurseId),
+        isDeleted: false,
+      }),
+      this.nurseReviewModel.aggregate([
+        { $match: { nurseId: new Types.ObjectId(nurseId), isDeleted: false } },
+        { $group: { _id: null, avgRating: { $avg: '$rating' }, count: { $sum: 1 } } },
+      ]),
+    ]);
+
+    // Map reviews to include patient name but respect anonymity
+    const mappedReviews = reviews.map((review) => {
+      const r = review as Record<string, unknown>;
+      if (r.isAnonymous) {
+        return {
+          ...r,
+          patientId: { firstName: 'Paciente', lastName: 'Anonimo' },
+        };
+      }
+      return r;
+    });
+
+    return {
+      reviews: mappedReviews as unknown as NurseReview[],
+      total,
+      page,
+      limit,
+      averageRating: stats[0]?.avgRating || 0,
+      totalReviews: stats[0]?.count || 0,
+    };
+  }
+
+  /**
+   * Recalculate nurse's average rating based on all reviews
+   */
+  private async recalculateNurseRating(nurseId: string): Promise<void> {
+    const stats = await this.nurseReviewModel.aggregate([
+      { $match: { nurseId: new Types.ObjectId(nurseId), isDeleted: false } },
+      { $group: { _id: null, avgRating: { $avg: '$rating' }, count: { $sum: 1 } } },
+    ]);
+
+    const averageRating = Math.round((stats[0]?.avgRating || 0) * 10) / 10;
+    const totalReviews = stats[0]?.count || 0;
+
+    await this.nurseModel.findByIdAndUpdate(nurseId, {
+      $set: { averageRating, totalReviews },
+    });
+  }
+
+  /**
+   * Delete a review (soft delete)
+   */
+  async deleteReview(reviewId: string, patientId: string): Promise<void> {
+    const review = await this.nurseReviewModel.findOne({
+      _id: new Types.ObjectId(reviewId),
+      patientId: new Types.ObjectId(patientId),
+      isDeleted: false,
+    });
+
+    if (!review) {
+      throw new NotFoundException('Resena no encontrada o no tienes permisos para eliminarla');
+    }
+
+    review.isDeleted = true;
+    await review.save();
+
+    // Recalculate nurse's rating
+    await this.recalculateNurseRating(review.nurseId.toString());
   }
 }

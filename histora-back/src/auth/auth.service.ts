@@ -68,6 +68,8 @@ export class AuthService {
   ) {}
 
   private readonly RESET_TOKEN_EXPIRY_HOURS = 24;
+  private readonly OTP_EXPIRY_MINUTES = 10;
+  private readonly MAX_OTP_ATTEMPTS = 5;
 
   private generateRefreshToken(): string {
     return randomBytes(64).toString('hex');
@@ -561,7 +563,7 @@ export class AuthService {
     };
   }
 
-  async forgotPassword(email: string): Promise<{ message: string }> {
+  async forgotPassword(email: string, platform?: 'histora-front' | 'histora-care'): Promise<{ message: string }> {
     const user = await this.usersService.findByEmail(email);
 
     if (!user) {
@@ -583,9 +585,21 @@ export class AuthService {
     // Save token to database
     await this.usersService.setPasswordResetToken(email, hashedToken, expiresAt);
 
-    // Build reset link (using hash routing for Angular)
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:4200');
-    const resetLink = `${frontendUrl}/#/authentication/reset-password?token=${resetToken}`;
+    // Build reset link based on platform
+    let resetLink: string;
+    let appName: string;
+
+    if (platform === 'histora-care') {
+      // Histora Care (NurseLite) uses regular routing
+      const careUrl = this.configService.get<string>('CARE_FRONTEND_URL', 'https://care.historahealth.com');
+      resetLink = `${careUrl}/auth/reset-password?token=${resetToken}`;
+      appName = 'NurseLite';
+    } else {
+      // Histora Front uses hash routing
+      const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:4200');
+      resetLink = `${frontendUrl}/#/authentication/reset-password?token=${resetToken}`;
+      appName = 'Histora';
+    }
 
     // Send email
     const emailHtml = this.emailProvider.getPasswordResetTemplate({
@@ -596,7 +610,7 @@ export class AuthService {
 
     await this.emailProvider.send({
       to: email,
-      subject: 'Recuperar Contraseña - Histora',
+      subject: `Recuperar Contraseña - ${appName}`,
       html: emailHtml,
     });
 
@@ -622,6 +636,162 @@ export class AuthService {
     return {
       message: 'Tu contraseña ha sido actualizada exitosamente',
     };
+  }
+
+  // ============= OTP-based Password Recovery =============
+
+  private generateOtp(): string {
+    // Generate a 6-digit numeric OTP
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  async requestPasswordResetOtp(email: string, platform?: 'histora-front' | 'histora-care'): Promise<{ message: string }> {
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException('No existe una cuenta con este correo electrónico');
+    }
+
+    if (!user.isActive) {
+      throw new UnauthorizedException('La cuenta está desactivada');
+    }
+
+    // Generate 6-digit OTP
+    const otp = this.generateOtp();
+
+    // Set expiry time (10 minutes)
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + this.OTP_EXPIRY_MINUTES);
+
+    // Save OTP to database (stored as plain text since it's short-lived)
+    await this.usersService.setPasswordResetOtp(email, otp, expiresAt);
+
+    // Determine app name based on platform
+    const appName = platform === 'histora-care' ? 'NurseLite' : 'Histora';
+
+    // Send email with OTP
+    const emailHtml = this.getOtpEmailTemplate({
+      userName: `${user.firstName} ${user.lastName}`,
+      otp,
+      expiresIn: `${this.OTP_EXPIRY_MINUTES} minutos`,
+      appName,
+    });
+
+    await this.emailProvider.send({
+      to: email,
+      subject: `Código de Verificación - ${appName}`,
+      html: emailHtml,
+    });
+
+    this.logger.log(`Password reset OTP sent to ${email}`);
+
+    return {
+      message: 'Se ha enviado un código de verificación a tu correo electrónico',
+    };
+  }
+
+  async verifyPasswordResetOtp(email: string, otp: string): Promise<{ valid: boolean; message: string }> {
+    const user = await this.usersService.findByPasswordResetOtp(email, otp);
+
+    if (!user) {
+      // Increment failed attempts
+      const attempts = await this.usersService.incrementOtpAttempts(email);
+
+      if (attempts >= this.MAX_OTP_ATTEMPTS) {
+        // Clear OTP after too many attempts
+        const userToBlock = await this.usersService.findByEmail(email);
+        if (userToBlock) {
+          await this.usersService.clearPasswordResetOtp(userToBlock['_id'].toString());
+        }
+        throw new UnauthorizedException('Demasiados intentos fallidos. Solicita un nuevo código.');
+      }
+
+      throw new UnauthorizedException(`Código inválido o expirado. ${this.MAX_OTP_ATTEMPTS - attempts} intentos restantes.`);
+    }
+
+    return {
+      valid: true,
+      message: 'Código verificado correctamente',
+    };
+  }
+
+  async resetPasswordWithOtp(email: string, otp: string, newPassword: string): Promise<{ message: string }> {
+    const user = await this.usersService.findByPasswordResetOtp(email, otp);
+
+    if (!user) {
+      throw new UnauthorizedException('Código inválido o expirado');
+    }
+
+    // Update password
+    await this.usersService.updatePassword(user['_id'].toString(), newPassword);
+
+    // Clear OTP
+    await this.usersService.clearPasswordResetOtp(user['_id'].toString());
+
+    this.logger.log(`Password reset via OTP for ${email}`);
+
+    return {
+      message: 'Tu contraseña ha sido actualizada exitosamente',
+    };
+  }
+
+  private getOtpEmailTemplate(data: { userName: string; otp: string; expiresIn: string; appName: string }): string {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Código de Verificación</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 0;">
+        <table role="presentation" style="width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 20px 40px; text-align: center;">
+              <h1 style="margin: 0; color: #6366f1; font-size: 28px; font-weight: 700;">${data.appName}</h1>
+            </td>
+          </tr>
+          <!-- Content -->
+          <tr>
+            <td style="padding: 20px 40px;">
+              <h2 style="margin: 0 0 20px 0; color: #333333; font-size: 24px; font-weight: 600;">Código de Verificación</h2>
+              <p style="margin: 0 0 20px 0; color: #666666; font-size: 16px; line-height: 1.5;">
+                Hola ${data.userName},
+              </p>
+              <p style="margin: 0 0 30px 0; color: #666666; font-size: 16px; line-height: 1.5;">
+                Has solicitado restablecer tu contraseña. Usa el siguiente código para continuar:
+              </p>
+              <!-- OTP Code Box -->
+              <div style="background-color: #f8f9fa; border-radius: 8px; padding: 30px; text-align: center; margin: 0 0 30px 0;">
+                <span style="font-size: 40px; font-weight: 700; letter-spacing: 8px; color: #6366f1; font-family: 'Courier New', monospace;">${data.otp}</span>
+              </div>
+              <p style="margin: 0 0 20px 0; color: #666666; font-size: 14px; line-height: 1.5;">
+                Este código expirará en <strong>${data.expiresIn}</strong>.
+              </p>
+              <p style="margin: 0; color: #999999; font-size: 14px; line-height: 1.5;">
+                Si no solicitaste restablecer tu contraseña, puedes ignorar este correo de forma segura.
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 40px; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
+              <p style="margin: 0; color: #999999; font-size: 12px; text-align: center;">
+                © ${new Date().getFullYear()} ${data.appName}. Todos los derechos reservados.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `;
   }
 
   async googleLogin(googleUser: {

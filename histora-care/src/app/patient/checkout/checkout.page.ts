@@ -54,6 +54,9 @@ export class CheckoutPage implements OnInit, OnDestroy {
   // Simulation mode indicator
   isSimulationMode = signal(environment.paymentSimulationMode);
 
+  // Beta mode - only cash payments enabled
+  betaMode = signal(true);
+
   // Computed signals
   canProceed = computed(() => {
     const method = this.selectedMethod();

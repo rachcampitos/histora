@@ -188,6 +188,9 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     this.isBroadcastingLocation.set(true);
 
+    // Join the tracking room so patient can receive updates
+    this.wsService.joinTrackingRoom(request._id);
+
     // Broadcast immediately
     await this.broadcastCurrentLocation();
 
@@ -205,6 +208,13 @@ export class DashboardPage implements OnInit, OnDestroy {
       clearInterval(this.locationBroadcastInterval);
       this.locationBroadcastInterval = null;
     }
+
+    // Leave the tracking room
+    const request = this.currentActiveRequest();
+    if (request) {
+      this.wsService.leaveTrackingRoom(request._id);
+    }
+
     this.isBroadcastingLocation.set(false);
   }
 

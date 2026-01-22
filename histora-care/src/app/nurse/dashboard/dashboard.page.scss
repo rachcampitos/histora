@@ -129,10 +129,14 @@ $primary-gradient: var(--histora-gradient);
     align-items: flex-end;
 
     ion-toggle {
+      // Ionic 7+ uses --track-background instead of --background
+      --track-background: rgba(255, 255, 255, 0.3);
+      --track-background-checked: #{tokens.$color-success};
+      --handle-background: #ffffff;
+      --handle-background-checked: #ffffff;
+      // Legacy support for older Ionic versions
       --background: rgba(255, 255, 255, 0.3);
       --background-checked: #{tokens.$color-success};
-      --handle-background: white;
-      --handle-background-checked: white;
 
       &[disabled] {
         opacity: 0.5;

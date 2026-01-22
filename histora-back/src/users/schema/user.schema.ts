@@ -73,6 +73,16 @@ export class User {
   @Prop()
   passwordResetExpires?: Date;
 
+  // OTP for password recovery
+  @Prop()
+  passwordResetOtp?: string;
+
+  @Prop()
+  passwordResetOtpExpires?: Date;
+
+  @Prop({ default: 0 })
+  passwordResetOtpAttempts?: number;
+
   @Prop()
   refreshToken?: string;
 

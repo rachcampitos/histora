@@ -38,29 +38,24 @@ export class WebSocketService {
   connectionError = this._connectionError.asReadonly();
 
   /**
-   * Connect to WebSocket server
-   * Note: WebSocket is optional - app works without it using HTTP polling
+   * Connect to WebSocket server for real-time tracking
+   * Connects to the /tracking namespace
    */
   connect(token: string): void {
     if (this.socket?.connected) {
       return;
     }
 
-    // Skip WebSocket in production if not configured
-    // This prevents console errors when WebSocket server is not available
-    if (environment.production) {
-      return;
-    }
-
     const wsUrl = environment.wsUrl || environment.apiUrl.replace('/api', '');
 
-    this.socket = io(wsUrl, {
+    // Connect to the /tracking namespace
+    this.socket = io(`${wsUrl}/tracking`, {
       auth: { token },
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'], // Allow fallback to polling
       reconnection: true,
-      reconnectionAttempts: 3,
+      reconnectionAttempts: 5,
       reconnectionDelay: 2000,
-      timeout: 5000
+      timeout: 10000
     });
 
     this.setupListeners();

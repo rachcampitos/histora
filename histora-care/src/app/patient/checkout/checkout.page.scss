@@ -197,6 +197,54 @@
     font-size: 20px;
     font-weight: 700;
   }
+
+  &.disabled {
+    background: linear-gradient(135deg, #9ca3af, #d1d5db);
+    opacity: 0.6;
+  }
+}
+
+// Beta mode disabled payment options
+.payment-option {
+  &.beta-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+
+    ion-label {
+      h3, p {
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+
+  &.cash-recommended {
+    border: 2px solid var(--ion-color-success);
+    --background: var(--ion-color-success-tint);
+  }
+}
+
+// Beta info banner
+.beta-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: var(--ion-color-primary-tint);
+  border-radius: 12px;
+  margin-top: 8px;
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ion-color-primary-shade);
+    line-height: 1.5;
+  }
 }
 
 // Card form
@@ -494,6 +542,10 @@
     &.selected {
       --background: var(--ion-color-primary-shade);
     }
+
+    &.cash-recommended {
+      --background: rgba(var(--ion-color-success-rgb), 0.15);
+    }
   }
 
   .yape-instructions {
@@ -502,5 +554,13 @@
 
   .security-note {
     background: rgba(var(--ion-color-success-rgb), 0.15);
+  }
+
+  .beta-info {
+    background: rgba(var(--ion-color-primary-rgb), 0.15);
+
+    p {
+      color: var(--ion-color-primary-tint);
+    }
   }
 }

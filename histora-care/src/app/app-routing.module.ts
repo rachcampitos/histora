@@ -133,6 +133,18 @@ const routes: Routes = [
     loadChildren: () => import('./auth/google-callback/google-callback.module').then(m => m.GoogleCallbackPageModule),
   },
 
+  // Password reset (no auth guard - accessed via email link)
+  {
+    path: 'auth/reset-password',
+    loadChildren: () => import('./auth/reset-password/reset-password.module').then(m => m.ResetPasswordPageModule),
+  },
+
+  // Forgot password with OTP (no auth guard - public page)
+  {
+    path: 'auth/forgot-password',
+    loadChildren: () => import('./auth/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule),
+  },
+
   // Complete registration (requires auth but no specific role - for new Google users)
   {
     path: 'auth/complete-registration',

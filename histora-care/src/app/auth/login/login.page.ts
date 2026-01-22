@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { LoadingController, ToastController, AlertController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -16,7 +16,6 @@ export class LoginPage implements OnInit {
   private route = inject(ActivatedRoute);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
-  private alertCtrl = inject(AlertController);
   private authService = inject(AuthService);
 
   loginForm: FormGroup;
@@ -113,54 +112,8 @@ export class LoginPage implements OnInit {
     });
   }
 
-  async forgotPassword() {
-    const alert = await this.alertCtrl.create({
-      header: 'Recuperar Contraseña',
-      message: 'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.',
-      inputs: [
-        {
-          name: 'email',
-          type: 'email',
-          placeholder: 'correo@ejemplo.com'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Enviar',
-          handler: (data) => {
-            if (data.email) {
-              this.sendPasswordReset(data.email);
-            }
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  private async sendPasswordReset(email: string) {
-    const loading = await this.loadingCtrl.create({
-      message: 'Enviando correo...',
-      spinner: 'crescent'
-    });
-    await loading.present();
-
-    // TODO: Implement forgot password API call
-    setTimeout(async () => {
-      await loading.dismiss();
-      const toast = await this.toastCtrl.create({
-        message: 'Si el correo existe, recibirás un enlace de recuperación.',
-        duration: 4000,
-        position: 'bottom',
-        color: 'success',
-        icon: 'mail-outline'
-      });
-      await toast.present();
-    }, 1500);
+  forgotPassword() {
+    this.router.navigate(['/auth/forgot-password']);
   }
 
   goToRegister() {

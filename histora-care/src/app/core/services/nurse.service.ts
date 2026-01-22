@@ -143,9 +143,12 @@ export class NurseApiService {
     return this.api.post(`/nurses/${nurseId}/verification`, data);
   }
 
-  // Get verification status
+  // Get verification status (with cache-busting)
   getVerificationStatus(nurseId: string): Observable<NurseVerification | null> {
-    return this.api.get(`/nurses/${nurseId}/verification/status`);
+    // Add timestamp to prevent browser/CDN caching
+    return this.api.get(`/nurses/${nurseId}/verification/status`, {
+      _t: Date.now()
+    });
   }
 
   // Get official CEP photo URL

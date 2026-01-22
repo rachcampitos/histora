@@ -32,6 +32,7 @@ import {
   AddNurseServiceDto,
   UpdateNurseServiceDto,
 } from './dto';
+import { CreateNurseReviewDto } from './dto/nurse-review.dto';
 
 @ApiTags('Nurses')
 @Controller('nurses')
@@ -206,6 +207,36 @@ export class NursesController {
       new Date(startDate),
       new Date(endDate),
     );
+  }
+
+  // ============= Nurse Reviews =============
+
+  // Public endpoint: Get reviews for a nurse
+  @Get(':nurseId/reviews')
+  @ApiOperation({ summary: 'Get reviews for a nurse' })
+  @ApiResponse({ status: 200, description: 'List of reviews with pagination' })
+  async getNurseReviews(
+    @Param('nurseId') nurseId: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.nursesService.getNurseReviews(nurseId, Number(page), Number(limit));
+  }
+
+  // Protected: Submit a review for a nurse (patients only)
+  @Post(':nurseId/reviews')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PATIENT)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Submit a review for a nurse' })
+  @ApiResponse({ status: 201, description: 'Review created' })
+  @ApiResponse({ status: 409, description: 'Already reviewed this nurse' })
+  async createNurseReview(
+    @Param('nurseId') nurseId: string,
+    @Body() createReviewDto: CreateNurseReviewDto,
+    @Request() req: { user: { userId: string } },
+  ) {
+    return this.nursesService.createReview(nurseId, req.user.userId, createReviewDto);
   }
 
   // Admin: Get RENIEC API usage statistics

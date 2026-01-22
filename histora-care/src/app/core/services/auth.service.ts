@@ -300,4 +300,65 @@ export class AuthService {
       this.userSignal.set(updatedUser);
     }
   }
+
+  // ============= Password Recovery Methods =============
+
+  /**
+   * Request password reset email (legacy - magic link)
+   * @param email User's email address
+   */
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.api.post<{ message: string }>('/auth/forgot-password', {
+      email,
+      platform: 'histora-care'
+    });
+  }
+
+  /**
+   * Reset password with token from email (legacy - magic link)
+   * @param token Reset token from email
+   * @param newPassword New password
+   */
+  resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
+    return this.api.post<{ message: string }>('/auth/reset-password', { token, newPassword });
+  }
+
+  // ============= OTP-based Password Recovery =============
+
+  /**
+   * Request OTP for password reset
+   * @param email User's email address
+   */
+  requestPasswordOtp(email: string): Observable<{ message: string }> {
+    return this.api.post<{ message: string }>('/auth/password-reset/request-otp', {
+      email,
+      platform: 'histora-care'
+    });
+  }
+
+  /**
+   * Verify OTP code
+   * @param email User's email
+   * @param otp 6-digit OTP code
+   */
+  verifyPasswordOtp(email: string, otp: string): Observable<{ valid: boolean; message: string }> {
+    return this.api.post<{ valid: boolean; message: string }>('/auth/password-reset/verify-otp', {
+      email,
+      otp
+    });
+  }
+
+  /**
+   * Reset password with OTP
+   * @param email User's email
+   * @param otp 6-digit OTP code
+   * @param newPassword New password
+   */
+  resetPasswordWithOtp(email: string, otp: string, newPassword: string): Observable<{ message: string }> {
+    return this.api.post<{ message: string }>('/auth/password-reset/reset-with-otp', {
+      email,
+      otp,
+      newPassword
+    });
+  }
 }

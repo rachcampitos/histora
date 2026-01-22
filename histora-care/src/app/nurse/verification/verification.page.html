@@ -32,14 +32,16 @@
 
     <!-- Under Review State - Enhanced Waiting Screen -->
     <div class="waiting-screen" *ngIf="isUnderReview()">
-      <!-- Header with animation -->
-      <div class="waiting-header">
+      <!-- Header with animation - changes during approval transition -->
+      <div class="waiting-header" [class.approved-transition]="showApprovalTransition()">
         <div class="waiting-icon-container">
-          <div class="waiting-pulse"></div>
-          <ion-icon name="hourglass-outline" class="waiting-icon"></ion-icon>
+          <div class="waiting-pulse" *ngIf="!showApprovalTransition()"></div>
+          <ion-icon [name]="showApprovalTransition() ? 'checkmark-circle' : 'hourglass-outline'"
+                    class="waiting-icon"
+                    [class.success-icon]="showApprovalTransition()"></ion-icon>
         </div>
-        <h1>Tu verificación está en proceso</h1>
-        <p class="waiting-subtitle">Nuestro equipo está revisando tus documentos</p>
+        <h1>{{ showApprovalTransition() ? '¡Verificación Completada!' : 'Tu verificación está en proceso' }}</h1>
+        <p class="waiting-subtitle">{{ showApprovalTransition() ? 'Tu cuenta ha sido aprobada' : 'Nuestro equipo está revisando tus documentos' }}</p>
       </div>
 
       <!-- Progress Section -->
@@ -56,7 +58,7 @@
         </div>
       </div>
 
-      <!-- Status Checklist -->
+      <!-- Status Checklist - Dynamic based on verification status -->
       <div class="status-checklist">
         <div class="checklist-item completed">
           <ion-icon name="checkmark-circle"></ion-icon>
@@ -70,12 +72,12 @@
           <ion-icon name="checkmark-circle"></ion-icon>
           <span>Documentos recibidos</span>
         </div>
-        <div class="checklist-item in-progress">
-          <ion-icon name="sync-circle"></ion-icon>
+        <div class="checklist-item" [class.in-progress]="!allChecklistCompleted()" [class.completed]="allChecklistCompleted()">
+          <ion-icon [name]="allChecklistCompleted() ? 'checkmark-circle' : 'sync-circle'"></ion-icon>
           <span>En revisión por el equipo</span>
         </div>
-        <div class="checklist-item pending">
-          <ion-icon name="ellipse-outline"></ion-icon>
+        <div class="checklist-item" [class.pending]="!allChecklistCompleted()" [class.completed]="allChecklistCompleted()">
+          <ion-icon [name]="allChecklistCompleted() ? 'checkmark-circle' : 'ellipse-outline'"></ion-icon>
           <span>Aprobación final</span>
         </div>
       </div>
@@ -121,6 +123,15 @@
             <span>Carmen L., Lic. Enfermería</span>
           </div>
         </div>
+      </div>
+
+      <!-- Refresh Status Button -->
+      <div class="refresh-section">
+        <ion-button fill="clear" size="small" (click)="checkVerificationStatus()" [disabled]="isLoading()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Actualizar estado
+        </ion-button>
+        <p class="auto-refresh-note">Se actualiza automáticamente cada 15 segundos</p>
       </div>
 
       <!-- Contact Support -->
