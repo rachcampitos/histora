@@ -184,13 +184,23 @@ export class NurseVerificationService {
    * Get verification status for a nurse
    */
   async getVerificationStatus(userId: string, nurseId: string): Promise<NurseVerification | null> {
-    return this.verificationModel
+    this.logger.debug(`[VERIFICATION STATUS] Querying for nurseId=${nurseId}, userId=${userId}`);
+
+    const verification = await this.verificationModel
       .findOne({
         nurseId: new Types.ObjectId(nurseId),
         userId: new Types.ObjectId(userId),
       })
       .sort({ createdAt: -1 })
       .exec();
+
+    if (verification) {
+      this.logger.debug(`[VERIFICATION STATUS] Found verification id=${verification._id}, status=${verification.status}`);
+    } else {
+      this.logger.debug(`[VERIFICATION STATUS] No verification found`);
+    }
+
+    return verification;
   }
 
   /**
@@ -291,6 +301,7 @@ export class NurseVerificationService {
     }
 
     // Update verification
+    const previousStatus = verification.status;
     verification.status = dto.status;
     verification.reviewedBy = new Types.ObjectId(adminUserId);
     verification.reviewedAt = new Date();
@@ -301,16 +312,23 @@ export class NurseVerificationService {
     }
 
     await verification.save();
+    this.logger.log(
+      `[REVIEW] Verification ${verificationId} status updated: ${previousStatus} -> ${dto.status}`,
+    );
 
     // Update nurse verification status
     const nurse = await this.nurseModel.findById(verification.nurseId);
     if (nurse) {
+      const previousNurseStatus = nurse.verificationStatus;
       nurse.verificationStatus = dto.status;
       if (dto.status === VerificationStatus.APPROVED) {
         nurse.cepVerified = true;
         nurse.cepVerifiedAt = new Date();
       }
       await nurse.save();
+      this.logger.log(
+        `[REVIEW] Nurse ${nurse._id} verificationStatus updated: ${previousNurseStatus} -> ${dto.status}`,
+      );
     }
 
     this.logger.log(
