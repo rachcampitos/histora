@@ -63,12 +63,8 @@ export class AuthService {
   }
 
   registerNurse(data: RegisterNurseRequest): Observable<AuthResponse> {
-    console.log('[AUTH SERVICE] registerNurse called with:', data.email);
     return this.api.post<AuthResponse>('/auth/register/nurse', data).pipe(
-      switchMap(response => {
-        console.log('[AUTH SERVICE] API returned success, calling handleAuthResponse');
-        return from(this.handleAuthResponse(response));
-      })
+      switchMap(response => from(this.handleAuthResponse(response)))
     );
   }
 
