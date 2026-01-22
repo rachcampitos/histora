@@ -23,7 +23,6 @@ export class ApiService {
   }
 
   post<T>(endpoint: string, body: unknown): Observable<T> {
-    console.log('[API SERVICE] POST request to:', `${this.baseUrl}${endpoint}`);
     return this.http.post<T>(`${this.baseUrl}${endpoint}`, body);
   }
 
