@@ -459,7 +459,9 @@ export class VerificationPage implements OnInit, OnDestroy {
         source,
         width: 1200,
         height: 1600,
-        correctOrientation: true
+        correctOrientation: true,
+        // Force file input on web to avoid video mode from getUserMedia
+        webUseInput: true
       });
 
       if (image.base64String) {

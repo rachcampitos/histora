@@ -42,7 +42,8 @@ export class UploadsService {
         source: CameraSource.Camera,
         width: 500,
         height: 500,
-        correctOrientation: true
+        correctOrientation: true,
+        webUseInput: true
       });
 
       if (image.base64String) {
@@ -71,7 +72,8 @@ export class UploadsService {
         source: CameraSource.Photos,
         width: 500,
         height: 500,
-        correctOrientation: true
+        correctOrientation: true,
+        webUseInput: true
       });
 
       if (image.base64String) {
@@ -104,7 +106,8 @@ export class UploadsService {
         promptLabelCancel: 'Cancelar',
         width: 500,
         height: 500,
-        correctOrientation: true
+        correctOrientation: true,
+        webUseInput: true
       });
 
       if (image.base64String) {

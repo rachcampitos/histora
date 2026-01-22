@@ -20,6 +20,10 @@ const config: CapacitorConfig = {
     Keyboard: {
       resize: 'body',
       resizeOnFullScreen: true
+    },
+    Camera: {
+      // Force using file input on web instead of getUserMedia (which may open video)
+      webUseInput: true
     }
   },
   // Deep link configuration for OAuth callback
