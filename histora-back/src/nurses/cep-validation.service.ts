@@ -423,8 +423,8 @@ export class CepValidationService {
     if (cepResult.data?.dni && cepResult.data.dni !== cleanDni) {
       return {
         isValid: false,
-        error: `El DNI no coincide con el registro CEP. DNI en registro: ${cepResult.data.dni}`,
-        data: cepResult.data,
+        error: 'El DNI ingresado no coincide con el registrado en el CEP. Por favor verifica el número e intenta nuevamente.',
+        // Note: Not exposing cepResult.data to protect privacy
       };
     }
 
