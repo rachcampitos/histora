@@ -5,6 +5,7 @@ import { Browser } from '@capacitor/browser';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
+import { SessionGuardService } from './session-guard.service';
 import { environment } from '../../../environments/environment';
 import {
   AuthUser,
@@ -26,6 +27,7 @@ export class AuthService {
   private storage = inject(StorageService);
   private router = inject(Router);
   private ngZone = inject(NgZone);
+  private sessionGuard = inject(SessionGuardService);
 
   // Signals for reactive state
   private userSignal = signal<AuthUser | null>(null);
@@ -48,6 +50,12 @@ export class AuthService {
 
       if (token && user) {
         this.userSignal.set(user);
+
+        // Set up session guard callback for token refresh
+        this.sessionGuard.setRefreshTokenCallback(() => this.refreshToken());
+
+        // Initialize session monitoring (will load session info from storage)
+        await this.sessionGuard.initializeSession();
       }
     } catch (error) {
       console.error('Error initializing auth:', error);
@@ -117,10 +125,20 @@ export class AuthService {
     await this.storage.set(REFRESH_TOKEN_KEY, response.refresh_token);
     await this.storage.set(USER_KEY, response.user);
     this.userSignal.set(response.user);
+
+    // Initialize session monitoring with session info from server
+    if (response.session) {
+      this.sessionGuard.setRefreshTokenCallback(() => this.refreshToken());
+      await this.sessionGuard.initializeSession(response.session);
+    }
+
     return response;
   }
 
   private async clearSession(): Promise<void> {
+    // Stop session monitoring
+    this.sessionGuard.stopMonitoring();
+
     await this.storage.remove(TOKEN_KEY);
     await this.storage.remove(REFRESH_TOKEN_KEY);
     await this.storage.remove(USER_KEY);

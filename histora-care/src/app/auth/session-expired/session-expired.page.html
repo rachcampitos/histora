@@ -1,0 +1,32 @@
+<ion-content class="ion-padding">
+  <div class="session-expired-container">
+    <!-- Icon -->
+    <div class="icon-container">
+      <ion-icon [name]="reasonConfig.icon"></ion-icon>
+    </div>
+
+    <!-- Title and Message -->
+    <h1>{{ reasonConfig.title }}</h1>
+    <p class="message">{{ reasonConfig.message }}</p>
+
+    <!-- Security Info -->
+    <div class="security-info" *ngIf="reason === 'inactivity' || reason === 'timeout'">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>Esta medida protege tu informacion personal y datos de salud.</span>
+    </div>
+
+    <!-- Login Button -->
+    <ion-button expand="block" class="login-button" (click)="goToLogin()">
+      <ion-icon slot="start" name="log-in-outline"></ion-icon>
+      Iniciar sesion
+    </ion-button>
+
+    <!-- Help Link -->
+    <div class="help-section">
+      <p>
+        <ion-icon name="help-circle-outline"></ion-icon>
+        <a routerLink="/legal/help">Necesitas ayuda?</a>
+      </p>
+    </div>
+  </div>
+</ion-content>

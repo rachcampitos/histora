@@ -145,6 +145,12 @@ const routes: Routes = [
     loadChildren: () => import('./auth/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule),
   },
 
+  // Session expired (no auth guard - shown after session timeout)
+  {
+    path: 'auth/session-expired',
+    loadChildren: () => import('./auth/session-expired/session-expired.module').then(m => m.SessionExpiredPageModule),
+  },
+
   // Complete registration (requires auth but no specific role - for new Google users)
   {
     path: 'auth/complete-registration',
