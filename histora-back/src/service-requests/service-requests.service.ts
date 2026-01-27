@@ -113,7 +113,8 @@ export class ServiceRequestsService {
         firstName: userData.firstName,
         lastName: userData.lastName,
         phone: userData.phone,
-        avatar: userData.avatar,
+        // Use official CEP photo as primary avatar, fallback to user avatar
+        avatar: nurseData.officialCepPhotoUrl || userData.avatar,
         cepNumber: nurseData.cepNumber,
       };
     }
@@ -172,7 +173,8 @@ export class ServiceRequestsService {
             firstName: userData.firstName,
             lastName: userData.lastName,
             phone: userData.phone,
-            avatar: userData.avatar,
+            // Use official CEP photo as primary avatar, fallback to user avatar
+            avatar: nurseData.officialCepPhotoUrl || userData.avatar,
             cepNumber: nurseData.cepNumber,
           },
         };

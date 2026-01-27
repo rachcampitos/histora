@@ -252,7 +252,8 @@ export class NursesService {
           user: {
             firstName: '$user.firstName',
             lastName: '$user.lastName',
-            avatar: '$user.avatar',
+            // Prefer official CEP photo, fallback to user avatar
+            avatar: { $ifNull: ['$officialCepPhotoUrl', '$user.avatar'] },
             phone: '$user.phone',
           },
         },
