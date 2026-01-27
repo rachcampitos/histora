@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { StorageService } from './storage.service';
+import { AuthService } from './auth.service';
 
 /**
  * Status for the pre-auth landing page
@@ -20,8 +21,10 @@ export interface OnboardingStatus {
   skipped: boolean;
 }
 
+// Landing is global (pre-auth, same for all users)
 const LANDING_KEY = 'histora_care_landing_status';
-const ONBOARDING_KEY = 'histora_care_onboarding_status';
+// Onboarding prefix - will be combined with user ID
+const ONBOARDING_KEY_PREFIX = 'histora_care_onboarding_';
 // Version 2.0: Differentiated onboarding for nurses and patients
 const CURRENT_VERSION = '2.0';
 
@@ -50,13 +53,28 @@ const CURRENT_VERSION = '2.0';
   providedIn: 'root',
 })
 export class OnboardingService {
+  private authService = inject(AuthService);
+
   // Cache for sync access (loaded on init)
   private landingStatus: LandingStatus | null = null;
   private onboardingStatus: OnboardingStatus | null = null;
+  private onboardingStatusUserId: string | null = null; // Track which user's status is cached
   private initialized = false;
 
   constructor(private storage: StorageService) {
     this.init();
+  }
+
+  /**
+   * Get user-specific onboarding key
+   */
+  private getOnboardingKey(): string {
+    const userId = this.authService.user()?.id;
+    if (userId) {
+      return `${ONBOARDING_KEY_PREFIX}${userId}`;
+    }
+    // Fallback for edge cases (shouldn't happen for authenticated routes)
+    return `${ONBOARDING_KEY_PREFIX}anonymous`;
   }
 
   /**
@@ -66,16 +84,25 @@ export class OnboardingService {
     if (this.initialized) return;
 
     this.landingStatus = await this.storage.get<LandingStatus>(LANDING_KEY);
-    this.onboardingStatus = await this.storage.get<OnboardingStatus>(ONBOARDING_KEY);
+    // Onboarding status is loaded per-user in ensureInitialized
     this.initialized = true;
   }
 
   /**
    * Ensure service is initialized before operations
+   * Also ensures onboarding status is loaded for current user
    */
   async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
       await this.init();
+    }
+
+    // Check if we need to load onboarding status for current user
+    const currentUserId = this.authService.user()?.id;
+    if (currentUserId && currentUserId !== this.onboardingStatusUserId) {
+      const key = this.getOnboardingKey();
+      this.onboardingStatus = await this.storage.get<OnboardingStatus>(key);
+      this.onboardingStatusUserId = currentUserId;
     }
   }
 
@@ -207,8 +234,10 @@ export class OnboardingService {
       version: CURRENT_VERSION,
       skipped,
     };
-    await this.storage.set(ONBOARDING_KEY, status);
+    const key = this.getOnboardingKey();
+    await this.storage.set(key, status);
     this.onboardingStatus = status;
+    this.onboardingStatusUserId = this.authService.user()?.id || null;
   }
 
   // ============================================================
@@ -227,8 +256,10 @@ export class OnboardingService {
    * Reset onboarding status (for testing or re-showing)
    */
   async resetOnboarding(): Promise<void> {
-    await this.storage.remove(ONBOARDING_KEY);
+    const key = this.getOnboardingKey();
+    await this.storage.remove(key);
     this.onboardingStatus = null;
+    this.onboardingStatusUserId = null;
   }
 
   /**
