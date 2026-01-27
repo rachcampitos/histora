@@ -21,25 +21,25 @@ ion-header {
 .review-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 8px 0;
+  gap: 16px;
+  padding: 0;
 }
 
 // Nurse info section
 .nurse-info {
   text-align: center;
-  padding-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--ion-color-light);
 
   .nurse-label {
-    margin: 0 0 4px;
-    font-size: 14px;
+    margin: 0 0 2px;
+    font-size: 13px;
     color: $text-muted;
   }
 
   .nurse-name {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
     color: $text-dark;
   }
@@ -50,8 +50,8 @@ ion-header {
   text-align: center;
 
   .rating-instruction {
-    margin: 0 0 16px;
-    font-size: 16px;
+    margin: 0 0 10px;
+    font-size: 15px;
     color: $text-dark;
     font-weight: 500;
   }
@@ -59,13 +59,13 @@ ion-header {
   .stars-container {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 4px;
   }
 
   .star-button {
     background: transparent;
     border: none;
-    padding: 8px;
+    padding: 6px;
     cursor: pointer;
     transition: transform 0.2s ease;
     border-radius: 50%;
@@ -83,7 +83,7 @@ ion-header {
     }
 
     ion-icon {
-      font-size: 40px;
+      font-size: 36px;
       color: $star-empty-color;
       transition: color 0.2s ease, transform 0.2s ease;
     }
@@ -99,8 +99,8 @@ ion-header {
   }
 
   .rating-label {
-    margin: 16px 0 0;
-    font-size: 16px;
+    margin: 10px 0 0;
+    font-size: 15px;
     font-weight: 600;
     color: $primary-color;
     animation: fadeIn 0.3s ease;
@@ -111,22 +111,23 @@ ion-header {
 .comment-section {
   .comment-label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 16px;
+    margin-bottom: 6px;
+    font-size: 14px;
     font-weight: 500;
     color: $text-dark;
   }
 
   .comment-textarea {
     --background: var(--histora-surface, #f8fafc);
-    --border-radius: 12px;
-    --padding-start: 16px;
-    --padding-end: 16px;
-    --padding-top: 12px;
-    --padding-bottom: 12px;
+    --border-radius: 10px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
     border: 1px solid var(--ion-color-light);
-    border-radius: 12px;
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 14px;
+    min-height: 80px;
 
     &:focus-within {
       border-color: $primary-color;
@@ -142,21 +143,22 @@ ion-footer {
 
   .footer-buttons {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 
     ion-button {
       flex: 1;
-      --border-radius: 12px;
+      --border-radius: 10px;
       font-weight: 600;
-      height: 48px;
+      height: 44px;
+      font-size: 15px;
 
       &[fill="outline"] {
         --border-width: 2px;
       }
 
       ion-spinner {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
       }
     }
   }
@@ -232,14 +234,60 @@ ion-footer {
 }
 
 // Responsive adjustments for smaller screens
-@media (max-width: 360px) {
+@media (max-width: 400px) {
+  .review-container {
+    gap: 12px;
+  }
+
+  .nurse-info {
+    padding-bottom: 8px;
+
+    .nurse-label {
+      font-size: 12px;
+    }
+
+    .nurse-name {
+      font-size: 16px;
+    }
+  }
+
   .rating-section {
+    .rating-instruction {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
     .star-button {
       padding: 4px;
 
       ion-icon {
         font-size: 32px;
       }
+    }
+
+    .rating-label {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+  }
+
+  .comment-section {
+    .comment-label {
+      font-size: 13px;
+    }
+
+    .comment-textarea {
+      font-size: 13px;
+      min-height: 70px;
+    }
+  }
+
+  ion-footer .footer-buttons {
+    gap: 8px;
+
+    ion-button {
+      height: 42px;
+      font-size: 14px;
     }
   }
 }
