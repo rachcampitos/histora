@@ -84,7 +84,7 @@ export class ServiceRequestsService {
     return serviceRequest.save();
   }
 
-  async findById(id: string): Promise<ServiceRequest> {
+  async findById(id: string): Promise<any> {
     const request = await this.serviceRequestModel
       .findById(id)
       .populate('patientId', 'firstName lastName phone avatar')
@@ -94,13 +94,44 @@ export class ServiceRequestsService {
           path: 'userId',
           select: 'firstName lastName phone avatar',
         },
-      });
+      })
+      .lean()
+      .exec();
 
     if (!request) {
       throw new NotFoundException('Service request not found');
     }
 
-    return request;
+    // Transform to keep nurseId as string and add nurse as populated object
+    const result: any = { ...request };
+    if (request.nurseId && typeof request.nurseId === 'object') {
+      const nurseData = request.nurseId as any;
+      const userData = nurseData.userId || {};
+      result.nurseId = nurseData._id?.toString() || null;
+      result.nurse = {
+        _id: nurseData._id?.toString(),
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: userData.phone,
+        avatar: userData.avatar,
+        cepNumber: nurseData.cepNumber,
+      };
+    }
+
+    // Transform patientId similarly
+    if (request.patientId && typeof request.patientId === 'object') {
+      const patientData = request.patientId as any;
+      result.patientId = patientData._id?.toString() || null;
+      result.patient = {
+        _id: patientData._id?.toString(),
+        firstName: patientData.firstName,
+        lastName: patientData.lastName,
+        phone: patientData.phone,
+        avatar: patientData.avatar,
+      };
+    }
+
+    return result;
   }
 
   async findByPatient(
@@ -115,7 +146,7 @@ export class ServiceRequestsService {
       query.status = status;
     }
 
-    return this.serviceRequestModel
+    const requests = await this.serviceRequestModel
       .find(query)
       .populate({
         path: 'nurseId',
@@ -124,7 +155,30 @@ export class ServiceRequestsService {
           select: 'firstName lastName phone avatar',
         },
       })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    // Transform to keep nurseId as string and add nurse as populated object
+    return requests.map((request: any) => {
+      if (request.nurseId && typeof request.nurseId === 'object') {
+        const nurseData = request.nurseId;
+        const userData = nurseData.userId || {};
+        return {
+          ...request,
+          nurseId: nurseData._id?.toString() || null,
+          nurse: {
+            _id: nurseData._id?.toString(),
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            phone: userData.phone,
+            avatar: userData.avatar,
+            cepNumber: nurseData.cepNumber,
+          },
+        };
+      }
+      return request;
+    });
   }
 
   async findByNurse(

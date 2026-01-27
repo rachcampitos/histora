@@ -43,13 +43,13 @@
 
     <!-- Comment Section -->
     <div class="comment-section">
-      <ion-label class="comment-label">Cuentanos tu experiencia</ion-label>
+      <ion-label class="comment-label">Cuentanos tu experiencia (opcional)</ion-label>
       <ion-textarea
         class="comment-textarea"
         [value]="comment()"
         (ionInput)="updateComment($event)"
-        placeholder="Escribe tu comentario aqui (opcional)..."
-        [rows]="4"
+        placeholder="Escribe tu comentario aqui..."
+        [rows]="3"
         [maxlength]="500"
         [counter]="true"
         [disabled]="isSubmitting()">
