@@ -23,6 +23,11 @@ import { UserRole } from '../users/schema/user.schema';
 import { JwtPayload } from './strategies/jwt.strategy';
 import { EmailProvider } from '../notifications/providers/email.provider';
 import { randomBytes, createHash } from 'crypto';
+import {
+  getTokenExpiration,
+  generateSessionInfo,
+  SessionInfo,
+} from './config/session.config';
 
 export interface AuthResponse {
   access_token: string;
@@ -36,6 +41,7 @@ export interface AuthResponse {
     clinicId?: string;
     avatar?: string;
   };
+  session?: SessionInfo;
 }
 
 export interface GoogleAuthResponse extends AuthResponse {
@@ -46,11 +52,12 @@ export interface GoogleAuthResponse extends AuthResponse {
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
-  // Token expiry durations
-  private readonly SHORT_REFRESH_TOKEN_DAYS = 1; // Sin "Recordarme": 1 día
-  private readonly LONG_REFRESH_TOKEN_DAYS = 30; // Con "Recordarme": 30 días
-  private readonly SHORT_ACCESS_TOKEN_EXPIRY = '1h'; // Sin "Recordarme": 1 hora
-  private readonly LONG_ACCESS_TOKEN_EXPIRY = '7d'; // Con "Recordarme": 7 días
+  // Legacy token expiry durations (kept for backwards compatibility)
+  // Now using role-based configuration from session.config.ts
+  private readonly SHORT_REFRESH_TOKEN_DAYS = 1;
+  private readonly LONG_REFRESH_TOKEN_DAYS = 30;
+  private readonly SHORT_ACCESS_TOKEN_EXPIRY = '1h';
+  private readonly LONG_ACCESS_TOKEN_EXPIRY = '7d';
 
   constructor(
     private usersService: UsersService,
@@ -79,11 +86,23 @@ export class AuthService {
     return createHash('sha256').update(token).digest('hex');
   }
 
-  private async saveRefreshToken(userId: string, refreshToken: string, rememberMe = false): Promise<void> {
+  private async saveRefreshToken(
+    userId: string,
+    refreshToken: string,
+    expiryDays: number | boolean = this.SHORT_REFRESH_TOKEN_DAYS,
+  ): Promise<void> {
     const hashedToken = this.hashToken(refreshToken);
     const expiresAt = new Date();
-    const expiryDays = rememberMe ? this.LONG_REFRESH_TOKEN_DAYS : this.SHORT_REFRESH_TOKEN_DAYS;
-    expiresAt.setDate(expiresAt.getDate() + expiryDays);
+
+    // Handle backwards compatibility: if boolean is passed, convert to days
+    let days: number;
+    if (typeof expiryDays === 'boolean') {
+      days = expiryDays ? this.LONG_REFRESH_TOKEN_DAYS : this.SHORT_REFRESH_TOKEN_DAYS;
+    } else {
+      days = expiryDays;
+    }
+
+    expiresAt.setDate(expiresAt.getDate() + days);
 
     await this.usersService.update(userId, {
       refreshToken: hashedToken,
@@ -215,16 +234,26 @@ export class AuthService {
       termsVersion: '1.0',
     });
 
-    // Generate JWT token
+    // Get role-based token expiration
+    const tokenExpiration = getTokenExpiration(UserRole.PATIENT, false);
+
+    // Generate JWT token with role-based expiration
     const payload: JwtPayload = {
       sub: user['_id'].toString(),
       email: user.email,
       role: user.role,
     };
 
-    // Generate and save refresh token
+    // Generate and save refresh token with role-based expiration
     const refreshToken = this.generateRefreshToken();
-    await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+    await this.saveRefreshToken(
+      user['_id'].toString(),
+      refreshToken,
+      tokenExpiration.refreshTokenDays,
+    );
+
+    // Generate session info for frontend
+    const sessionInfo = generateSessionInfo(UserRole.PATIENT, false);
 
     // Notify admins about new patient registration (async, don't block)
     this.notificationsService.notifyAdminNewPatientRegistered({
@@ -237,7 +266,7 @@ export class AuthService {
     });
 
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: tokenExpiration.accessTokenExpiry as any }),
       refresh_token: refreshToken,
       user: {
         id: user['_id'].toString(),
@@ -247,6 +276,7 @@ export class AuthService {
         role: user.role,
         avatar: user.avatar,
       },
+      session: sessionInfo,
     };
   }
 
@@ -309,7 +339,10 @@ export class AuthService {
       nurseProfileId,
     });
 
-    // Generate JWT token
+    // Get role-based token expiration
+    const tokenExpiration = getTokenExpiration(UserRole.NURSE, false);
+
+    // Generate JWT token with role-based expiration
     const payload: JwtPayload = {
       sub: user['_id'].toString(),
       email: user.email,
@@ -317,9 +350,16 @@ export class AuthService {
       nurseId: nurseProfileId.toString(),
     };
 
-    // Generate and save refresh token
+    // Generate and save refresh token with role-based expiration
     const refreshToken = this.generateRefreshToken();
-    await this.saveRefreshToken(user['_id'].toString(), refreshToken);
+    await this.saveRefreshToken(
+      user['_id'].toString(),
+      refreshToken,
+      tokenExpiration.refreshTokenDays,
+    );
+
+    // Generate session info for frontend
+    const sessionInfo = generateSessionInfo(UserRole.NURSE, false);
 
     this.logger.log(`Nurse registered: ${user.email} with CEP: ${registerDto.cepNumber}`);
 
@@ -335,7 +375,7 @@ export class AuthService {
     });
 
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: tokenExpiration.accessTokenExpiry as any }),
       refresh_token: refreshToken,
       user: {
         id: user['_id'].toString(),
@@ -345,6 +385,7 @@ export class AuthService {
         role: user.role,
         avatar: user.avatar,
       },
+      session: sessionInfo,
     };
   }
 
@@ -409,7 +450,10 @@ export class AuthService {
       nurseId = user.nurseProfileId.toString();
     }
 
-    // Generate JWT token with appropriate expiry
+    // Get role-based token expiration
+    const tokenExpiration = getTokenExpiration(user.role, rememberMe);
+
+    // Generate JWT token with role-based expiry
     const payload: JwtPayload = {
       sub: user['_id'].toString(),
       email: user.email,
@@ -418,16 +462,25 @@ export class AuthService {
       nurseId,
     };
 
-    const accessTokenExpiry = rememberMe
-      ? this.LONG_ACCESS_TOKEN_EXPIRY
-      : this.SHORT_ACCESS_TOKEN_EXPIRY;
-
-    // Generate and save refresh token with appropriate expiry
+    // Generate and save refresh token with role-based expiry
     const refreshToken = this.generateRefreshToken();
-    await this.saveRefreshToken(user['_id'].toString(), refreshToken, rememberMe);
+    await this.saveRefreshToken(
+      user['_id'].toString(),
+      refreshToken,
+      tokenExpiration.refreshTokenDays,
+    );
+
+    // Generate session info for frontend
+    const sessionInfo = generateSessionInfo(user.role, rememberMe);
+
+    this.logger.log(
+      `Login successful for ${user.email} (${user.role}), ` +
+      `access token expires in ${tokenExpiration.accessTokenExpiry}, ` +
+      `refresh token expires in ${tokenExpiration.refreshTokenDays} days`,
+    );
 
     return {
-      access_token: this.jwtService.sign(payload, { expiresIn: accessTokenExpiry }),
+      access_token: this.jwtService.sign(payload, { expiresIn: tokenExpiration.accessTokenExpiry as any }),
       refresh_token: refreshToken,
       user: {
         id: user['_id'].toString(),
@@ -438,6 +491,7 @@ export class AuthService {
         clinicId: user.clinicId?.toString(),
         avatar: user.avatar,
       },
+      session: sessionInfo,
     };
   }
 
@@ -460,19 +514,41 @@ export class AuthService {
       throw new UnauthorizedException('La cuenta está desactivada');
     }
 
-    // Generate new tokens
+    // Get role-based token expiration (default to no rememberMe for refresh)
+    const tokenExpiration = getTokenExpiration(user.role, false);
+
+    // Get nurseId if user is a nurse
+    let nurseId: string | undefined;
+    if (user.role === UserRole.NURSE && user.nurseProfileId) {
+      nurseId = user.nurseProfileId.toString();
+    }
+
+    // Generate new tokens with role-based expiration
     const payload: JwtPayload = {
       sub: user['_id'].toString(),
       email: user.email,
       role: user.role,
       clinicId: user.clinicId?.toString(),
+      nurseId,
     };
 
     const newRefreshToken = this.generateRefreshToken();
-    await this.saveRefreshToken(user['_id'].toString(), newRefreshToken);
+    await this.saveRefreshToken(
+      user['_id'].toString(),
+      newRefreshToken,
+      tokenExpiration.refreshTokenDays,
+    );
+
+    // Generate session info for frontend
+    const sessionInfo = generateSessionInfo(user.role, false);
+
+    this.logger.log(
+      `Token refreshed for ${user.email} (${user.role}), ` +
+      `new access token expires in ${tokenExpiration.accessTokenExpiry}`,
+    );
 
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn: tokenExpiration.accessTokenExpiry as any }),
       refresh_token: newRefreshToken,
       user: {
         id: user['_id'].toString(),
@@ -483,6 +559,7 @@ export class AuthService {
         clinicId: user.clinicId?.toString(),
         avatar: user.avatar,
       },
+      session: sessionInfo,
     };
   }
 

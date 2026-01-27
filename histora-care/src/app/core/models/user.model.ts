@@ -24,10 +24,19 @@ export interface AuthUser {
   avatar?: string;
 }
 
+// Session information returned by auth endpoints
+export interface SessionInfo {
+  expiresAt: number;           // Timestamp when access token expires
+  refreshExpiresAt: number;    // Timestamp when refresh token expires
+  inactivityTimeout: number;   // Milliseconds of inactivity before logout
+  warningBefore: number;       // Milliseconds before expiry to show warning
+}
+
 export interface AuthResponse {
   access_token: string;
   refresh_token: string;
   user: AuthUser;
+  session?: SessionInfo;
 }
 
 export interface LoginRequest {
