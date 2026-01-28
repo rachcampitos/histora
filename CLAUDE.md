@@ -12,10 +12,9 @@ histora/
 ## Despliegue
 
 ### Frontend (histora-care)
-- **Hosting:** Vercel
+- **Hosting:** Cloudflare Pages
 - **URL:** https://care.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
-- **NO ejecutar:** `vercel --prod` manualmente
 
 ### Backend (histora-back)
 - **Hosting:** Railway
@@ -23,7 +22,7 @@ histora/
 - **Despliegue:** AUTOMATICO con git push a main
 - **NO ejecutar:** `railway up` manualmente
 
-> **IMPORTANTE:** Ambos servicios (Vercel y Railway) están conectados a GitHub.
+> **IMPORTANTE:** Ambos servicios (Cloudflare y Railway) están conectados a GitHub.
 > Solo hacer `git push origin main` y el despliegue es automático.
 
 ## APIs Externas
@@ -87,8 +86,8 @@ cd histora-care && npm run test
 1. **NO crear archivos .md innecesarios** - Solo documentacion esencial
 2. **NO usar emojis en codigo** - A menos que el usuario lo pida
 3. **Commits en español** - El proyecto es para Peru
-4. **Push = Deploy** - El push automaticamente despliega en Vercel
+4. **Push = Deploy** - El push automaticamente despliega en Cloudflare (frontend) y Railway (backend)
 5. **NO incluir coautoria en commits** - No agregar "Co-Authored-By" en los mensajes de commit
 
 ---
-Ultima actualizacion: 2026-01-18
+Ultima actualizacion: 2026-01-27
