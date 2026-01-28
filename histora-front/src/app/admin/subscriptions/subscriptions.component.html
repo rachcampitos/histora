@@ -103,7 +103,7 @@
           <!-- Filters -->
           <div class="filters-row">
             <mat-form-field appearance="outline" class="filter-field search-field">
-              <mat-label>Buscar clínica</mat-label>
+              <mat-label>Buscar enfermera</mat-label>
               <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()">
               <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
@@ -139,12 +139,12 @@
           <div class="table-responsive">
             <table mat-table [dataSource]="dataSource" matSort class="advance-table">
               <!-- Clinic Column -->
-              <ng-container matColumnDef="clinic">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Clínica</th>
+              <ng-container matColumnDef="nurse">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Enfermera</th>
                 <td mat-cell *matCellDef="let row">
-                  <div class="clinic-name">
-                    <mat-icon class="clinic-icon">business</mat-icon>
-                    {{ row.clinicName }}
+                  <div class="nurse-name">
+                    <mat-icon class="nurse-icon">medical_services</mat-icon>
+                    {{ row.nurseName }}
                   </div>
                 </td>
               </ng-container>

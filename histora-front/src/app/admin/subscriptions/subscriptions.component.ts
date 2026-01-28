@@ -18,7 +18,7 @@ import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.co
 
 interface Subscription {
   id: string;
-  clinicName: string;
+  nurseName: string;
   plan: string;
   status: string;
   amount: number;
@@ -66,7 +66,7 @@ export class SubscriptionsComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   isLoading = true;
-  displayedColumns = ['clinic', 'plan', 'status', 'amount', 'nextBilling', 'paymentMethod', 'actions'];
+  displayedColumns = ['nurse', 'plan', 'status', 'amount', 'nextBilling', 'paymentMethod', 'actions'];
   dataSource = new MatTableDataSource<Subscription>([]);
 
   searchTerm = '';
@@ -74,7 +74,7 @@ export class SubscriptionsComponent implements OnInit {
   statusFilter = '';
 
   plans: Plan[] = [];
-  planOptions = ['Basic', 'Professional', 'Premium', 'Enterprise'];
+  planOptions = ['Basico', 'Profesional', 'Premium'];
   statusOptions = ['active', 'cancelled', 'past_due', 'trial'];
 
   // Summary stats
@@ -96,46 +96,38 @@ export class SubscriptionsComponent implements OnInit {
     setTimeout(() => {
       this.plans = [
         {
-          name: 'Basic',
-          price: 299,
+          name: 'Basico',
+          price: 0,
           billingCycle: 'mes',
-          features: ['Hasta 2 doctores', '100 pacientes', 'Soporte email'],
-          activeSubscriptions: 25,
+          features: ['Perfil visible en mapa', 'Hasta 10 servicios/mes', 'Soporte email'],
+          activeSubscriptions: 45,
           color: '#42a5f5',
         },
         {
-          name: 'Professional',
-          price: 599,
+          name: 'Profesional',
+          price: 29,
           billingCycle: 'mes',
-          features: ['Hasta 5 doctores', '500 pacientes', 'Soporte prioritario', 'Reportes avanzados'],
-          activeSubscriptions: 15,
-          color: '#66bb6a',
+          features: ['Servicios ilimitados', 'Posicion destacada', 'Badge verificado', 'Estadisticas'],
+          activeSubscriptions: 23,
+          color: '#4a9d9a',
         },
         {
           name: 'Premium',
-          price: 999,
+          price: 59,
           billingCycle: 'mes',
-          features: ['Hasta 15 doctores', 'Pacientes ilimitados', 'Soporte 24/7', 'API access'],
-          activeSubscriptions: 6,
-          color: '#ffca28',
-        },
-        {
-          name: 'Enterprise',
-          price: 1999,
-          billingCycle: 'mes',
-          features: ['Doctores ilimitados', 'Pacientes ilimitados', 'Soporte dedicado', 'Custom features'],
-          activeSubscriptions: 2,
-          color: '#7c4dff',
+          features: ['Todo Profesional', 'Prioridad en busquedas', 'Soporte 24/7', 'Promociones'],
+          activeSubscriptions: 8,
+          color: '#1e3a5f',
         },
       ];
 
       const subscriptions: Subscription[] = [
         {
           id: '1',
-          clinicName: 'Clínica San Rafael',
+          nurseName: 'Maria Claudia Chavez',
           plan: 'Premium',
           status: 'active',
-          amount: 999,
+          amount: 59,
           billingCycle: 'monthly',
           startDate: new Date('2023-06-15'),
           nextBillingDate: new Date('2024-02-15'),
@@ -143,65 +135,65 @@ export class SubscriptionsComponent implements OnInit {
         },
         {
           id: '2',
-          clinicName: 'Centro Médico Aurora',
-          plan: 'Professional',
+          nurseName: 'Ana Rosa Gutierrez',
+          plan: 'Profesional',
           status: 'active',
-          amount: 599,
+          amount: 29,
           billingCycle: 'monthly',
           startDate: new Date('2023-08-20'),
           nextBillingDate: new Date('2024-02-20'),
-          paymentMethod: 'Mastercard ****5555',
+          paymentMethod: 'Yape',
         },
         {
           id: '3',
-          clinicName: 'Hospital del Valle',
-          plan: 'Enterprise',
+          nurseName: 'Carmen Elena Torres',
+          plan: 'Profesional',
           status: 'trial',
           amount: 0,
           billingCycle: 'monthly',
           startDate: new Date('2024-01-08'),
           nextBillingDate: new Date('2024-02-08'),
-          paymentMethod: 'Pending',
+          paymentMethod: 'Pendiente',
         },
         {
           id: '4',
-          clinicName: 'Clínica Familiar',
-          plan: 'Basic',
+          nurseName: 'Lucia Fernanda Ramos',
+          plan: 'Basico',
           status: 'active',
-          amount: 299,
+          amount: 0,
           billingCycle: 'monthly',
           startDate: new Date('2023-11-05'),
           nextBillingDate: new Date('2024-02-05'),
-          paymentMethod: 'PayPal',
+          paymentMethod: 'Gratis',
         },
         {
           id: '5',
-          clinicName: 'Centro Dental Plus',
-          plan: 'Professional',
+          nurseName: 'Patricia Morales Silva',
+          plan: 'Profesional',
           status: 'trial',
           amount: 0,
           billingCycle: 'monthly',
           startDate: new Date('2024-01-02'),
           nextBillingDate: new Date('2024-02-02'),
-          paymentMethod: 'Pending',
+          paymentMethod: 'Pendiente',
         },
         {
           id: '6',
-          clinicName: 'Clínica Vida Sana',
+          nurseName: 'Rosa Isabel Mendez',
           plan: 'Premium',
           status: 'active',
-          amount: 999,
+          amount: 59,
           billingCycle: 'monthly',
           startDate: new Date('2023-04-10'),
           nextBillingDate: new Date('2024-02-10'),
-          paymentMethod: 'Visa ****1234',
+          paymentMethod: 'Plin',
         },
         {
           id: '7',
-          clinicName: 'Centro Pediátrico Feliz',
-          plan: 'Professional',
+          nurseName: 'Gloria Martinez Lopez',
+          plan: 'Profesional',
           status: 'past_due',
-          amount: 599,
+          amount: 29,
           billingCycle: 'monthly',
           startDate: new Date('2023-02-28'),
           nextBillingDate: new Date('2024-01-28'),
@@ -209,8 +201,8 @@ export class SubscriptionsComponent implements OnInit {
         },
         {
           id: '8',
-          clinicName: 'Dermaclínica Estética',
-          plan: 'Basic',
+          nurseName: 'Sofia Diaz Vargas',
+          plan: 'Basico',
           status: 'cancelled',
           amount: 0,
           billingCycle: 'monthly',
@@ -238,7 +230,7 @@ export class SubscriptionsComponent implements OnInit {
     this.dataSource.filterPredicate = (data: Subscription, filter: string) => {
       const searchStr = filter.toLowerCase();
       const matchesSearch = !this.searchTerm ||
-        data.clinicName.toLowerCase().includes(searchStr);
+        data.nurseName.toLowerCase().includes(searchStr);
       const matchesPlan = !this.planFilter || data.plan === this.planFilter;
       const matchesStatus = !this.statusFilter || data.status === this.statusFilter;
       return matchesSearch && matchesPlan && matchesStatus;
@@ -255,10 +247,9 @@ export class SubscriptionsComponent implements OnInit {
 
   getPlanClass(plan: string): string {
     const classes: Record<string, string> = {
-      Basic: 'badge-plan-basic',
-      Professional: 'badge-plan-professional',
+      Basico: 'badge-plan-basic',
+      Profesional: 'badge-plan-professional',
       Premium: 'badge-plan-premium',
-      Enterprise: 'badge-plan-enterprise',
     };
     return classes[plan] || 'badge-plan-basic';
   }

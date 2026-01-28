@@ -53,7 +53,6 @@ export class HeaderComponent
   userImg?: string;
   userName?: string;
   homePage?: string;
-  isNavbarCollapsed = true;
   flagvalue: string | string[] | undefined;
   countryName: string | string[] = [];
   langStoreValue?: string;
