@@ -194,15 +194,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         color: this.stats.ratings.averageRating >= 4 ? 'success' : 'warning',
         subtitle: `${this.stats.ratings.totalReviews} resenas totales`,
       },
-      {
-        title: 'API RENIEC',
-        value: `${this.stats.reniec.used}/${this.stats.reniec.limit}`,
-        icon: 'api',
-        color: this.stats.reniec.remaining < 20 ? 'warning' : 'info',
-        subtitle: `${this.stats.reniec.remaining} consultas restantes`,
-        progress: this.stats.reniec.used,
-        progressMax: this.stats.reniec.limit,
-      },
     ];
   }
 
