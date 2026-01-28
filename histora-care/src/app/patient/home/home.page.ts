@@ -25,6 +25,10 @@ export class HomePage implements OnInit {
   isLoading = signal(false);
 
   ngOnInit() {
+    // Clear previous data before loading (in case user switched accounts)
+    this.activeRequest.set(null);
+    this.recentNurses.set([]);
+
     this.loadActiveRequest();
     this.loadRecentNurses();
   }
@@ -32,6 +36,7 @@ export class HomePage implements OnInit {
   ionViewWillEnter() {
     // Refresh data when returning to this page
     this.loadActiveRequest();
+    this.loadRecentNurses();
   }
 
   ionViewDidEnter() {
@@ -68,10 +73,16 @@ export class HomePage implements OnInit {
 
   async loadRecentNurses() {
     try {
+      const currentUser = this.authService.user();
+      console.log('[HOME] Loading recent nurses for user:', currentUser?.id, currentUser?.email);
+
       // Get completed requests to find recent nurses
       const requests = await this.serviceRequestService.getMyRequests('completed').toPromise();
 
+      console.log('[HOME] Completed requests received:', requests?.length || 0);
       if (requests && requests.length > 0) {
+        console.log('[HOME] First request patientId:', (requests[0] as any).patientId);
+
         // Extract unique nurses using nurseId as key
         const nursesMap = new Map<string, { nurseId: string; firstName: string; lastName: string; avatar?: string }>();
         requests.forEach((req: ServiceRequest) => {
@@ -85,6 +96,9 @@ export class HomePage implements OnInit {
           }
         });
         this.recentNurses.set(Array.from(nursesMap.values()).slice(0, 4));
+      } else {
+        console.log('[HOME] No completed requests found - recentNurses should be empty');
+        this.recentNurses.set([]);
       }
     } catch (error) {
       console.error('Error loading recent nurses:', error);
