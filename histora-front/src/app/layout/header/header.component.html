@@ -1,11 +1,6 @@
 <nav #navbar class="navbar active" role="banner" aria-label="Barra de navegación principal">
   <div class="container-fluid">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed"
-        (click)="isNavbarCollapsed = !isNavbarCollapsed"
-        [attr.aria-expanded]="!isNavbarCollapsed"
-        aria-controls="navbar-collapse"
-        aria-label="Alternar menú de navegación"></button>
       <button type="button" class="bars"
         (click)="mobileMenuSidebarOpen($event,'overlay-open')"
         aria-label="Abrir menú lateral"

@@ -218,12 +218,12 @@
   }
 }
 
-.clinic-name {
+.nurse-name {
   display: flex;
   align-items: center;
   gap: 10px;
 
-  .clinic-icon {
+  .nurse-icon {
     color: #667eea;
     font-size: 24px;
     width: 24px;
@@ -409,8 +409,8 @@
     }
   }
 
-  .clinic-name {
-    .clinic-icon {
+  .nurse-name {
+    .nurse-icon {
       color: #818cf8;
     }
 
