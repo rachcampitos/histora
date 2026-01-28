@@ -90,8 +90,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'ngsw-bypass'],
   });
 
-  // Global API prefix with versioning
-  app.setGlobalPrefix('api/v1');
+  // Global API prefix
+  app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
     new ValidationPipe({
