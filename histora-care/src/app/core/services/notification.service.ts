@@ -325,7 +325,7 @@ export class NotificationService {
     await this.storage.set(STORAGE_KEYS.PREFERENCES, updated);
 
     // Sync with backend
-    this.api.put('/notifications/preferences', updated).pipe(
+    this.api.patch('/notifications/preferences', updated).pipe(
       catchError(error => {
         console.error('Failed to save preferences to server:', error);
         return of(null);
