@@ -4,10 +4,9 @@ import { AuthGuard } from '@core/guard/auth.guard';
 import { AuthLayoutComponent } from './layout/app-layout/auth-layout/auth-layout.component';
 import { Page404Component } from './authentication/page404/page404.component';
 import { Role } from '@core';
-import { roleRedirectGuard } from '@core/guard/role-redirect.guard';
 
 export const APP_ROUTE: Route[] = [
-  // Main application (requires auth)
+  // Histora Care Admin - Dashboard principal
   {
     path: '',
     component: MainLayoutComponent,
@@ -16,8 +15,7 @@ export const APP_ROUTE: Route[] = [
       {
         path: '',
         pathMatch: 'full',
-        canActivate: [roleRedirectGuard],
-        children: [],
+        redirectTo: 'admin/dashboard',
       },
       {
         path: 'admin',
@@ -27,24 +25,6 @@ export const APP_ROUTE: Route[] = [
         },
         loadChildren: () =>
           import('./admin/admin.routes').then((m) => m.ADMIN_ROUTE),
-      },
-      {
-        path: 'doctor',
-        canActivate: [AuthGuard],
-        data: {
-          role: [Role.Admin, Role.Doctor],
-        },
-        loadChildren: () =>
-          import('./doctor/doctor.routes').then((m) => m.DOCTOR_ROUTE),
-      },
-      {
-        path: 'patient',
-        canActivate: [AuthGuard],
-        data: {
-          role: [Role.Admin, Role.Patient],
-        },
-        loadChildren: () =>
-          import('./patient/patient.routes').then((m) => m.PATIENT_ROUTE),
       },
     ],
   },

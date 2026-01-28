@@ -109,12 +109,11 @@ export class SigninComponent
 
             if (roleName === Role.PlatformAdminUI || roleName === Role.PlatformAdmin) {
               this.router.navigate(['/admin/dashboard']);
-            } else if (roleName === Role.Admin || roleName === Role.Doctor) {
-              this.router.navigate(['/doctor/dashboard']);
-            } else if (roleName === Role.Patient) {
-              this.router.navigate(['/patient/dashboard']);
             } else {
-              this.router.navigate(['/doctor/dashboard']);
+              // Non-admin users should use the mobile app
+              this.error = 'Acceso restringido. Este panel es solo para administradores.';
+              this.authService.logout().subscribe();
+              this.submitted = false;
             }
           } else {
             // Handle error response

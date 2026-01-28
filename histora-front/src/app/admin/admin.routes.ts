@@ -1,6 +1,5 @@
 import { Route } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { ClinicsComponent } from './clinics/clinics.component';
 import { UsersComponent } from './users/users.component';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 import { ReportsComponent } from './reports/reports.component';
@@ -11,41 +10,50 @@ import { PatientsComponent } from './patients/patients.component';
 import { Page404Component } from '../authentication/page404/page404.component';
 
 export const ADMIN_ROUTE: Route[] = [
+  // Dashboard principal - Centro de control
   {
     path: 'dashboard',
     component: DashboardComponent,
   },
-  {
-    path: 'clinics',
-    component: ClinicsComponent,
-  },
-  {
-    path: 'users',
-    component: UsersComponent,
-  },
+  // Gestión de enfermeras
   {
     path: 'nurses',
     component: NursesComponent,
   },
   {
+    path: 'nurse-verifications',
+    component: NurseVerificationsComponent,
+  },
+  // Gestión de pacientes
+  {
     path: 'patients',
     component: PatientsComponent,
   },
+  // Usuarios admin y roles
+  {
+    path: 'users',
+    component: UsersComponent,
+  },
+  // Finanzas y suscripciones
   {
     path: 'subscriptions',
     component: SubscriptionsComponent,
   },
+  // Reportes y analytics
   {
     path: 'reports',
     component: ReportsComponent,
   },
-  {
-    path: 'nurse-verifications',
-    component: NurseVerificationsComponent,
-  },
+  // Configuración del sistema
   {
     path: 'settings',
     component: SettingsComponent,
+  },
+  // Redirect root to dashboard
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full',
   },
   { path: '**', component: Page404Component },
 ];

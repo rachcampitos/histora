@@ -4,15 +4,14 @@
       "TEXT": "Main"
     },
     "ADMIN": {
-      "TEXT": "Administration",
+      "TEXT": "Histora Care",
       "DASHBOARD": "Dashboard",
-      "CLINICS": "Clinics",
       "USERS": "Users",
       "NURSES": "Nurses",
       "PATIENTS": "Patients",
       "SUBSCRIPTIONS": "Subscriptions",
       "REPORTS": "Reports",
-      "NURSE_VERIFICATIONS": "Nurse Verifications",
+      "NURSE_VERIFICATIONS": "Verifications",
       "SETTINGS": "Settings"
     },
     "DASHBOARD": {
