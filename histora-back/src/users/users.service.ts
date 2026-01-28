@@ -270,4 +270,31 @@ export class UsersService {
       .select('-password')
       .exec();
   }
+
+  async completeOnboarding(userId: string, version: string): Promise<User | null> {
+    return this.userModel
+      .findByIdAndUpdate(
+        userId,
+        {
+          onboardingCompleted: true,
+          onboardingCompletedAt: new Date(),
+          onboardingVersion: version,
+        },
+        { new: true },
+      )
+      .select('-password')
+      .exec();
+  }
+
+  async getOnboardingStatus(userId: string): Promise<{ completed: boolean; version?: string }> {
+    const user = await this.userModel
+      .findById(userId)
+      .select('onboardingCompleted onboardingVersion')
+      .exec();
+
+    return {
+      completed: user?.onboardingCompleted || false,
+      version: user?.onboardingVersion,
+    };
+  }
 }

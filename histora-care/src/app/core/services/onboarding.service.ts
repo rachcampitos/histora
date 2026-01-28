@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { StorageService } from './storage.service';
 import { AuthService } from './auth.service';
+import { ApiService } from './api.service';
 
 /**
  * Status for the pre-auth landing page
@@ -54,12 +56,14 @@ const CURRENT_VERSION = '2.0';
 })
 export class OnboardingService {
   private authService = inject(AuthService);
+  private api = inject(ApiService);
 
   // Cache for sync access (loaded on init)
   private landingStatus: LandingStatus | null = null;
   private onboardingStatus: OnboardingStatus | null = null;
   private onboardingStatusUserId: string | null = null; // Track which user's status is cached
   private initialized = false;
+  private serverSyncAttempted = false;
 
   constructor(private storage: StorageService) {
     this.init();
@@ -91,6 +95,7 @@ export class OnboardingService {
   /**
    * Ensure service is initialized before operations
    * Also ensures onboarding status is loaded for current user
+   * Syncs with server to survive cache clear
    */
   async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
@@ -100,9 +105,36 @@ export class OnboardingService {
     // Check if we need to load onboarding status for current user
     const currentUserId = this.authService.user()?.id;
     if (currentUserId && currentUserId !== this.onboardingStatusUserId) {
+      // First, try to get from local storage
       const key = this.getOnboardingKey();
       this.onboardingStatus = await this.storage.get<OnboardingStatus>(key);
       this.onboardingStatusUserId = currentUserId;
+
+      // If not in local storage, check server (survives cache clear)
+      if (!this.onboardingStatus && !this.serverSyncAttempted) {
+        this.serverSyncAttempted = true;
+        try {
+          const serverStatus = await firstValueFrom(
+            this.api.get<{ completed: boolean; version?: string }>('/users/me/onboarding')
+          );
+
+          if (serverStatus?.completed) {
+            // Server says completed, restore local status
+            this.onboardingStatus = {
+              completed: true,
+              completedAt: '',
+              version: serverStatus.version || CURRENT_VERSION,
+              skipped: false,
+            };
+            // Save to local storage for faster access next time
+            await this.storage.set(key, this.onboardingStatus);
+            console.log('[ONBOARDING] Restored status from server - already completed');
+          }
+        } catch (error) {
+          console.error('[ONBOARDING] Failed to sync with server:', error);
+          // Continue with local-only status
+        }
+      }
     }
   }
 
@@ -226,6 +258,7 @@ export class OnboardingService {
   /**
    * Mark onboarding as completed
    * Called when user finishes or skips onboarding
+   * Saves to both local storage and server
    */
   async completeOnboarding(skipped = false): Promise<void> {
     const status: OnboardingStatus = {
@@ -234,10 +267,23 @@ export class OnboardingService {
       version: CURRENT_VERSION,
       skipped,
     };
+
+    // Save to local storage
     const key = this.getOnboardingKey();
     await this.storage.set(key, status);
     this.onboardingStatus = status;
     this.onboardingStatusUserId = this.authService.user()?.id || null;
+
+    // Save to server (survives cache clear)
+    try {
+      await firstValueFrom(
+        this.api.patch('/users/me/onboarding/complete', { version: CURRENT_VERSION })
+      );
+      console.log('[ONBOARDING] Status saved to server');
+    } catch (error) {
+      console.error('[ONBOARDING] Failed to save to server:', error);
+      // Continue anyway - local storage will work
+    }
   }
 
   // ============================================================
@@ -260,6 +306,7 @@ export class OnboardingService {
     await this.storage.remove(key);
     this.onboardingStatus = null;
     this.onboardingStatusUserId = null;
+    this.serverSyncAttempted = false;
   }
 
   /**

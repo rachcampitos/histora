@@ -114,6 +114,16 @@ export class User {
 
   @Prop()
   professionalDisclaimerAcceptedAt?: Date;
+
+  // Onboarding status (persisted on server to survive cache clear)
+  @Prop({ default: false })
+  onboardingCompleted: boolean;
+
+  @Prop()
+  onboardingCompletedAt?: Date;
+
+  @Prop()
+  onboardingVersion?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

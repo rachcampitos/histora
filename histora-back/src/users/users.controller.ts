@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -21,12 +22,39 @@ import { UserRole } from './schema/user.schema';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // ============================================================
+  // ONBOARDING ENDPOINTS (available to all authenticated users)
+  // ============================================================
+
+  @Get('me/onboarding')
+  @ApiOperation({ summary: 'Get current user onboarding status' })
+  @ApiResponse({ status: 200, description: 'Onboarding status' })
+  async getMyOnboardingStatus(@Request() req: { user: { userId: string } }) {
+    return this.usersService.getOnboardingStatus(req.user.userId);
+  }
+
+  @Patch('me/onboarding/complete')
+  @ApiOperation({ summary: 'Mark onboarding as completed' })
+  @ApiResponse({ status: 200, description: 'Onboarding marked as completed' })
+  async completeMyOnboarding(
+    @Request() req: { user: { userId: string } },
+    @Body() body: { version: string },
+  ) {
+    await this.usersService.completeOnboarding(req.user.userId, body.version);
+    return { success: true };
+  }
+
+  // ============================================================
+  // ADMIN ENDPOINTS (require specific roles)
+  // ============================================================
+
   @Post()
+  @UseGuards(RolesGuard)
   @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
   @ApiOperation({ summary: 'Crear nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario creado exitosamente' })
@@ -36,6 +64,7 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(RolesGuard)
   @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
   @ApiOperation({ summary: 'Listar usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios' })
@@ -44,6 +73,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @UseGuards(RolesGuard)
   @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado' })
@@ -53,6 +83,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(RolesGuard)
   @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
   @ApiOperation({ summary: 'Actualizar usuario' })
   @ApiResponse({ status: 200, description: 'Usuario actualizado' })
@@ -64,6 +95,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard)
   @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
   @ApiOperation({ summary: 'Eliminar usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
