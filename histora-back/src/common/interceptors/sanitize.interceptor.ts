@@ -5,7 +5,7 @@ import {
   CallHandler,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { escapeHtml, stripHtmlTags } from '../utils/security.util';
+import { escapeHtml, stripHtmlTags, sanitizeMongoQuery } from '../utils/security.util';
 
 /**
  * Interceptor that sanitizes incoming request body to prevent XSS attacks
@@ -57,7 +57,15 @@ export class SanitizeInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
 
     if (request.body && typeof request.body === 'object') {
+      // First sanitize NoSQL injection attempts (remove $ operators)
+      request.body = sanitizeMongoQuery(request.body);
+      // Then sanitize XSS
       request.body = this.sanitizeObject(request.body);
+    }
+
+    // Also sanitize query parameters
+    if (request.query && typeof request.query === 'object') {
+      request.query = sanitizeMongoQuery(request.query);
     }
 
     return next.handle();

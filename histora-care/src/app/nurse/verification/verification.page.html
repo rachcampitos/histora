@@ -11,8 +11,8 @@
 
 <ion-content class="verification-content">
   <!-- Loading State -->
-  <div class="loading-container" *ngIf="isLoading()">
-    <ion-spinner name="crescent"></ion-spinner>
+  <div class="loading-container" *ngIf="isLoading()" role="status" aria-live="polite">
+    <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
     <p>Cargando...</p>
   </div>
 

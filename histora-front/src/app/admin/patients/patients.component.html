@@ -172,13 +172,14 @@
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #actionsMenu="matMenu">
-                    <button mat-menu-item>
-                      <mat-icon>visibility</mat-icon>
-                      <span>{{ 'ADMIN.PATIENTS.ACTIONS.VIEW' | translate }}</span>
+                    <button mat-menu-item (click)="toggleStatus(patient)">
+                      <mat-icon>{{ patient.isActive ? 'person_off' : 'person' }}</mat-icon>
+                      <span>{{ patient.isActive ? 'Desactivar' : 'Activar' }}</span>
                     </button>
-                    <button mat-menu-item>
-                      <mat-icon>history</mat-icon>
-                      <span>{{ 'ADMIN.PATIENTS.ACTIONS.SERVICE_HISTORY' | translate }}</span>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="deletePatient(patient)" class="delete-action">
+                      <mat-icon color="warn">delete_forever</mat-icon>
+                      <span>Eliminar</span>
                     </button>
                   </mat-menu>
                 </td>

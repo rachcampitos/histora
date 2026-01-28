@@ -1368,4 +1368,69 @@ export class AdminService {
       }),
     };
   }
+
+  /**
+   * Toggle patient active status
+   */
+  async togglePatientStatus(id: string) {
+    const patient = await this.userModel.findOne({
+      _id: id,
+      role: UserRole.PATIENT,
+      isDeleted: { $ne: true },
+    });
+
+    if (!patient) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+
+    patient.isActive = !patient.isActive;
+    await patient.save();
+
+    this.logger.log(`Admin toggled patient status: ${patient.email} -> ${patient.isActive ? 'active' : 'inactive'}`);
+
+    return {
+      id: patient._id.toString(),
+      isActive: patient.isActive,
+      status: patient.isActive ? 'active' : 'inactive',
+      message: `Paciente ${patient.isActive ? 'activado' : 'desactivado'} exitosamente`,
+    };
+  }
+
+  /**
+   * Delete patient (soft delete)
+   */
+  async deletePatient(id: string) {
+    const patient = await this.userModel.findOne({
+      _id: id,
+      role: UserRole.PATIENT,
+      isDeleted: { $ne: true },
+    });
+
+    if (!patient) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+
+    // Check for active services
+    const activeServices = await this.serviceRequestModel.countDocuments({
+      patientId: id,
+      status: { $in: ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress'] },
+    });
+
+    if (activeServices > 0) {
+      throw new ConflictException(`No se puede eliminar: tiene ${activeServices} servicio(s) activo(s)`);
+    }
+
+    // Soft delete user
+    await this.userModel.findByIdAndUpdate(id, {
+      isDeleted: true,
+      isActive: false,
+      email: `deleted_${Date.now()}_${patient.email}`, // Free up email for reuse
+    });
+
+    this.logger.log(`Admin deleted patient: ${patient.email}`);
+
+    return {
+      message: 'Paciente eliminado exitosamente',
+    };
+  }
 }

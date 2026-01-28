@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, DestroyRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -23,6 +23,7 @@ interface RequestWithDistance extends ServiceRequest {
   templateUrl: './requests.page.html',
   standalone: false,
   styleUrls: ['./requests.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequestsPage implements OnInit, OnDestroy {
   private requestService = inject(ServiceRequestService);

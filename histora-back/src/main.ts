@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { SanitizeInterceptor } from './common/interceptors/sanitize.interceptor';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -89,8 +90,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'ngsw-bypass'],
   });
 
-  // Global API prefix
-  app.setGlobalPrefix('api');
+  // Global API prefix with versioning
+  app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -99,6 +100,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Global exception filter to prevent information leakage
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Global XSS sanitization interceptor
   app.useGlobalInterceptors(new SanitizeInterceptor());

@@ -705,4 +705,21 @@ export class AdminService implements OnDestroy {
   getPatient(id: string): Observable<AdminPatient> {
     return this.http.get<AdminPatient>(`${this.apiUrl}/patients/${id}`);
   }
+
+  /**
+   * Toggle patient active status
+   */
+  togglePatientStatus(id: string): Observable<{ id: string; isActive: boolean; status: string; message: string }> {
+    return this.http.patch<{ id: string; isActive: boolean; status: string; message: string }>(
+      `${this.apiUrl}/patients/${id}/toggle-status`,
+      {}
+    );
+  }
+
+  /**
+   * Delete patient (soft delete)
+   */
+  deletePatient(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/patients/${id}`);
+  }
 }

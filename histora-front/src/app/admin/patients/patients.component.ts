@@ -12,12 +12,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { AdminService, AdminPatient, PatientQueryParams } from '@core/service/admin.service';
+import { ConfirmDialogComponent } from '../users/dialogs/confirm-dialog.component';
 import { FeatherModule } from 'angular-feather';
 
 @Component({
@@ -40,6 +42,7 @@ import { FeatherModule } from 'angular-feather';
     MatProgressSpinnerModule,
     MatMenuModule,
     MatTooltipModule,
+    MatDividerModule,
     MatDialogModule,
     MatSnackBarModule,
     FormsModule,
@@ -164,5 +167,59 @@ export class PatientsComponent implements OnInit {
       default:
         return 'Registrado con email';
     }
+  }
+
+  toggleStatus(patient: AdminPatient): void {
+    const action = patient.isActive ? 'desactivar' : 'activar';
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: `${patient.isActive ? 'Desactivar' : 'Activar'} Paciente`,
+        message: `¿Deseas ${action} a ${patient.firstName} ${patient.lastName}?`,
+        confirmText: patient.isActive ? 'Desactivar' : 'Activar',
+        confirmColor: patient.isActive ? 'warn' : 'primary',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.adminService.togglePatientStatus(patient.id).subscribe({
+          next: (response) => {
+            this.loadPatients();
+            this.snackBar.open(response.message, 'Cerrar', { duration: 3000 });
+          },
+          error: () => {
+            this.snackBar.open('Error al cambiar estado', 'Cerrar', { duration: 3000 });
+          },
+        });
+      }
+    });
+  }
+
+  deletePatient(patient: AdminPatient): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '420px',
+      data: {
+        title: 'Eliminar Paciente',
+        message: `¿Eliminar a ${patient.firstName} ${patient.lastName}? Esta accion desactivara la cuenta.`,
+        confirmText: 'Eliminar',
+        confirmColor: 'warn',
+        icon: 'delete_forever',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.adminService.deletePatient(patient.id).subscribe({
+          next: (response) => {
+            this.loadPatients();
+            this.snackBar.open(response.message, 'Cerrar', { duration: 3000 });
+          },
+          error: (err) => {
+            this.snackBar.open(err.error?.message || 'Error al eliminar paciente', 'Cerrar', { duration: 3000 });
+          },
+        });
+      }
+    });
   }
 }
