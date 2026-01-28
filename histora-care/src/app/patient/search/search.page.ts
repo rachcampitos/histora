@@ -9,6 +9,7 @@ import { Nurse, NurseReview } from '../../core/models';
   templateUrl: './search.page.html',
   standalone: false,
   styleUrls: ['./search.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchPage implements OnInit {
   private route = inject(ActivatedRoute);

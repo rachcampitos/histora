@@ -34,6 +34,8 @@ import { TrackingModule } from './tracking/tracking.module';
 import { AIAssistantModule } from './ai-assistant/ai-assistant.module';
 import { ChatModule } from './chat/chat.module';
 import { ServicePaymentsModule } from './service-payments/service-payments.module';
+import { HealthModule } from './health/health.module';
+import { CacheModule } from './common/cache';
 
 @Module({
   imports: [
@@ -89,6 +91,8 @@ import { ServicePaymentsModule } from './service-payments/service-payments.modul
     AIAssistantModule,
     ChatModule,
     ServicePaymentsModule,
+    HealthModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [

@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { createHash } from 'crypto';
 import { User, UserDocument } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -154,15 +155,21 @@ export class UsersService {
   }
 
   // OTP methods for password recovery
+  // OTPs are hashed with SHA-256 before storage for security (GDPR/HIPAA compliance)
+  private hashOtp(otp: string): string {
+    return createHash('sha256').update(otp).digest('hex');
+  }
+
   async setPasswordResetOtp(
     email: string,
     otp: string,
     expires: Date,
   ): Promise<void> {
+    const hashedOtp = this.hashOtp(otp);
     await this.userModel.findOneAndUpdate(
       { email: email.toLowerCase() },
       {
-        passwordResetOtp: otp,
+        passwordResetOtp: hashedOtp,
         passwordResetOtpExpires: expires,
         passwordResetOtpAttempts: 0,
       },
@@ -170,10 +177,11 @@ export class UsersService {
   }
 
   async findByPasswordResetOtp(email: string, otp: string): Promise<UserDocument | null> {
+    const hashedOtp = this.hashOtp(otp);
     return this.userModel
       .findOne({
         email: email.toLowerCase(),
-        passwordResetOtp: otp,
+        passwordResetOtp: hashedOtp,
         passwordResetOtpExpires: { $gt: new Date() },
         isDeleted: false,
       })

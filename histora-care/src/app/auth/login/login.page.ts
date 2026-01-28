@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.page.html',
   standalone: false,
   styleUrls: ['./login.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage implements OnInit {
   private fb = inject(FormBuilder);

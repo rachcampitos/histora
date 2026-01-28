@@ -218,4 +218,22 @@ export class AdminController {
   async getPatient(@Param('id') id: string) {
     return this.adminService.getPatient(id);
   }
+
+  @Patch('patients/:id/toggle-status')
+  @ApiOperation({ summary: 'Activar/Desactivar paciente' })
+  @ApiResponse({ status: 200, description: 'Estado del paciente actualizado' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
+  async togglePatientStatus(@Param('id') id: string) {
+    return this.adminService.togglePatientStatus(id);
+  }
+
+  @Delete('patients/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Eliminar paciente (soft delete)' })
+  @ApiResponse({ status: 200, description: 'Paciente eliminado' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
+  @ApiResponse({ status: 409, description: 'Tiene servicios activos' })
+  async deletePatient(@Param('id') id: string) {
+    return this.adminService.deletePatient(id);
+  }
 }

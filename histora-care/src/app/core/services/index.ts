@@ -14,3 +14,6 @@ export * from './onboarding.service';
 export * from './product-tour.service';
 export * from './payment.service';
 export * from './notification.service';
+export * from './logger.service';
+export * from './toast.service';
+export * from './haptics.service';

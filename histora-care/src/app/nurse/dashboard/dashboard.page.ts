@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, effect, DestroyRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { RefresherCustomEvent, ToastController, AlertController } from '@ionic/angular';
@@ -15,6 +15,7 @@ import { Nurse, ServiceRequest } from '../../core/models';
   templateUrl: './dashboard.page.html',
   standalone: false,
   styleUrls: ['./dashboard.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage implements OnInit, OnDestroy {
   private nurseApi = inject(NurseApiService);

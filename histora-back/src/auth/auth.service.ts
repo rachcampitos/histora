@@ -393,7 +393,7 @@ export class AuthService {
     const email = loginDto.email.toLowerCase();
 
     // Check if account is locked due to too many failed attempts
-    const lockStatus = this.accountLockoutService.isLocked(email);
+    const lockStatus = await this.accountLockoutService.isLocked(email);
     if (lockStatus.isLocked) {
       const minutes = Math.ceil(lockStatus.remainingTime / 60);
       throw new UnauthorizedException(
@@ -405,7 +405,7 @@ export class AuthService {
 
     if (!user) {
       // Record failed attempt even for non-existent users (prevents user enumeration)
-      this.accountLockoutService.recordFailedAttempt(email);
+      await this.accountLockoutService.recordFailedAttempt(email);
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
@@ -425,7 +425,7 @@ export class AuthService {
 
     if (!isPasswordValid) {
       // Record failed attempt
-      const result = this.accountLockoutService.recordFailedAttempt(email);
+      const result = await this.accountLockoutService.recordFailedAttempt(email);
       if (result.isLocked) {
         throw new UnauthorizedException(
           `Demasiados intentos fallidos. Cuenta bloqueada por ${Math.ceil(result.lockoutDuration / 60)} minutos.`,
@@ -437,7 +437,7 @@ export class AuthService {
     }
 
     // Clear lockout on successful login
-    this.accountLockoutService.recordSuccessfulLogin(email);
+    await this.accountLockoutService.recordSuccessfulLogin(email);
 
     // Update last login
     await this.usersService.updateLastLogin(user['_id'].toString());
