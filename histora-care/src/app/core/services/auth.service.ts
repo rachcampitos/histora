@@ -77,8 +77,12 @@ export class AuthService {
   }
 
   registerPatient(data: RegisterPatientRequest): Observable<AuthResponse> {
+    console.log('[AUTH] registerPatient called');
     return this.api.post<AuthResponse>('/auth/register/patient', data).pipe(
-      switchMap(response => from(this.handleAuthResponse(response)))
+      switchMap(response => {
+        console.log('[AUTH] API response received, handling auth response...');
+        return from(this.handleAuthResponse(response));
+      })
     );
   }
 
@@ -121,15 +125,26 @@ export class AuthService {
   }
 
   private async handleAuthResponse(response: AuthResponse): Promise<AuthResponse> {
-    await this.storage.set(TOKEN_KEY, response.access_token);
-    await this.storage.set(REFRESH_TOKEN_KEY, response.refresh_token);
-    await this.storage.set(USER_KEY, response.user);
-    this.userSignal.set(response.user);
+    console.log('[AUTH] handleAuthResponse - storing tokens...');
 
-    // Initialize session monitoring with session info from server
-    if (response.session) {
-      this.sessionGuard.setRefreshTokenCallback(() => this.refreshToken());
-      await this.sessionGuard.initializeSession(response.session);
+    try {
+      await this.storage.set(TOKEN_KEY, response.access_token);
+      await this.storage.set(REFRESH_TOKEN_KEY, response.refresh_token);
+      await this.storage.set(USER_KEY, response.user);
+      this.userSignal.set(response.user);
+      console.log('[AUTH] Tokens and user stored successfully');
+
+      // Initialize session monitoring with session info from server
+      if (response.session) {
+        console.log('[AUTH] Initializing session monitoring...');
+        this.sessionGuard.setRefreshTokenCallback(() => this.refreshToken());
+        await this.sessionGuard.initializeSession(response.session);
+        console.log('[AUTH] Session monitoring initialized');
+      }
+    } catch (error) {
+      console.error('[AUTH] Error in handleAuthResponse:', error);
+      // Re-throw to let the caller handle it
+      throw error;
     }
 
     return response;
