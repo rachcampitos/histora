@@ -46,6 +46,12 @@ export class ProductTourService {
   // Signal to track if a tour is currently active
   isTourActive = signal(false);
 
+  // Track which tour is currently active (to prevent duplicates)
+  private activeTourType: TourType | null = null;
+
+  // Flag to track if the app is initializing (first load after registration)
+  private isFirstLoad = true;
+
   /**
    * Get user-specific storage key for a tour
    * This ensures each user has their own tour completion state
@@ -167,6 +173,12 @@ export class ProductTourService {
    * @param forceShow - Force show even if already completed
    */
   async startTour(tourType: TourType, forceShow = false): Promise<void> {
+    // Guard: Don't start if another tour is already active
+    if (this.isTourActive() || this.activeTourType !== null) {
+      console.log(`Tour ${tourType}: Another tour (${this.activeTourType}) is already active, skipping`);
+      return;
+    }
+
     if (!forceShow) {
       const completed = await this.isTourCompleted(tourType);
       if (completed) {
@@ -179,14 +191,24 @@ export class ProductTourService {
       return;
     }
 
+    // On first load after registration, wait longer for UI to stabilize
+    const timeout = this.isFirstLoad ? 5000 : 3000;
+    this.isFirstLoad = false;
+
     // Wait for DOM to be ready
-    const elementsReady = await this.waitForElements(tourConfig.steps, 3000);
+    const elementsReady = await this.waitForElements(tourConfig.steps, timeout);
     if (!elementsReady) {
       console.warn(`Tour ${tourType}: Some elements not found, skipping tour`);
       return;
     }
 
+    // Double-check we're still not in an active tour (race condition guard)
+    if (this.isTourActive() || this.activeTourType !== null) {
+      return;
+    }
+
     this.isTourActive.set(true);
+    this.activeTourType = tourType;
 
     this.driverInstance = driver({
       showProgress: true,
@@ -202,10 +224,12 @@ export class ProductTourService {
       animate: true,
       smoothScroll: true,
       allowClose: true,
-      disableActiveInteraction: false,
+      // Disable interaction with highlighted elements to prevent accidental navigation
+      disableActiveInteraction: true,
       onDestroyStarted: async () => {
         await this.markTourCompleted(tourType);
         this.isTourActive.set(false);
+        this.activeTourType = null;
         this.driverInstance?.destroy();
         this.driverInstance = null;
       },
@@ -217,14 +241,32 @@ export class ProductTourService {
   }
 
   /**
-   * Stop current tour
+   * Stop current tour without marking it as completed
    */
   stopTour(): void {
     if (this.driverInstance) {
+      // Destroy without triggering onDestroyStarted (which marks as completed)
       this.driverInstance.destroy();
       this.driverInstance = null;
-      this.isTourActive.set(false);
     }
+    this.isTourActive.set(false);
+    this.activeTourType = null;
+  }
+
+  /**
+   * Force stop and cleanup any active tour - use when navigating away
+   */
+  forceStop(): void {
+    if (this.driverInstance) {
+      try {
+        this.driverInstance.destroy();
+      } catch {
+        // Ignore errors during force stop
+      }
+      this.driverInstance = null;
+    }
+    this.isTourActive.set(false);
+    this.activeTourType = null;
   }
 
   /**

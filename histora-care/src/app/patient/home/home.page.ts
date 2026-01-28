@@ -41,13 +41,20 @@ export class HomePage implements OnInit {
   }
 
   ionViewDidEnter() {
-    // Start product tour if not completed (after a slight delay for smooth transition)
+    // Start product tour if not completed
+    // Use a longer delay (1 second) to ensure UI is fully rendered
+    // This is especially important on first app load after registration
     setTimeout(async () => {
       // First check if there's a pending tour (from replay)
       await this.productTourService.checkAndStartPendingTour();
       // Then try to start the regular tour if not already completed
       this.productTourService.startTour('patient_home');
-    }, 500);
+    }, 1000);
+  }
+
+  ionViewWillLeave() {
+    // Stop any active tour when leaving this page to prevent freezing
+    this.productTourService.forceStop();
   }
 
   async loadActiveRequest() {

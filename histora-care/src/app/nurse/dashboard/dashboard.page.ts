@@ -83,12 +83,18 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.refreshNurseProfile();
 
     // Start tour after page is fully visible
+    // Use a longer delay (1 second) to ensure UI is fully rendered
     setTimeout(async () => {
       // First check if there's a pending tour (from replay)
       await this.productTour.checkAndStartPendingTour();
       // Then try to start the regular tour if not already completed
       this.productTour.startTour('nurse_dashboard');
-    }, 500);
+    }, 1000);
+  }
+
+  ionViewWillLeave() {
+    // Stop any active tour when leaving this page to prevent freezing
+    this.productTour.forceStop();
   }
 
   /**
