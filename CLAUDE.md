@@ -6,24 +6,29 @@
 histora/
 ├── histora-back/     # Backend NestJS
 ├── histora-care/     # Frontend Ionic/Angular (enfermeria a domicilio)
-└── histora-front/    # Frontend Angular (plataforma medica original)
+└── histora-front/    # Frontend Angular (admin panel)
 ```
 
 ## Despliegue
 
-### Frontend (histora-care)
+### Admin Panel (histora-front)
+- **Hosting:** Railway (proyecto: fulfilling-victory)
+- **URL:** https://histora-front.up.railway.app (o dominio custom)
+- **Despliegue:** AUTOMATICO con git push a main
+
+### App Movil/PWA (histora-care)
 - **Hosting:** Cloudflare Pages
 - **URL:** https://care.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
 
-### Backend (histora-back)
-- **Hosting:** Railway
+### Backend API (histora-back)
+- **Hosting:** Railway (proyecto: merry-perfection)
 - **URL:** https://api.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
-- **NO ejecutar:** `railway up` manualmente
 
-> **IMPORTANTE:** Ambos servicios (Cloudflare y Railway) están conectados a GitHub.
+> **IMPORTANTE:** Los 3 servicios están conectados a GitHub.
 > Solo hacer `git push origin main` y el despliegue es automático.
+> **NO ejecutar:** `railway up` o `wrangler pages deploy` manualmente.
 
 ## APIs Externas
 
@@ -86,8 +91,8 @@ cd histora-care && npm run test
 1. **NO crear archivos .md innecesarios** - Solo documentacion esencial
 2. **NO usar emojis en codigo** - A menos que el usuario lo pida
 3. **Commits en español** - El proyecto es para Peru
-4. **Push = Deploy** - El push automaticamente despliega en Cloudflare (frontend) y Railway (backend)
-5. **NO incluir coautoria en commits** - No agregar "Co-Authored-By" en los mensajes de commit
+4. **Push = Deploy** - El push automaticamente despliega en Railway (front+back) y Cloudflare (care)
+5. **Vercel NO se usa** - Legacy, ignorar la carpeta .vercel
 
 ---
-Ultima actualizacion: 2026-01-27
+Ultima actualizacion: 2026-01-28
