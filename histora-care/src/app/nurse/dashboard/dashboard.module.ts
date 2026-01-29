@@ -8,6 +8,7 @@ import { DashboardPageRoutingModule } from './dashboard-routing.module';
 
 import { DashboardPage } from './dashboard.page';
 import { PanicButtonComponent } from '../../shared/components/panic-button/panic-button.component';
+import { ProfileChecklistComponent } from './components/profile-checklist/profile-checklist.component';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { PanicButtonComponent } from '../../shared/components/panic-button/panic
     FormsModule,
     IonicModule,
     DashboardPageRoutingModule,
-    PanicButtonComponent
+    PanicButtonComponent,
+    ProfileChecklistComponent
   ],
   declarations: [DashboardPage]
 })

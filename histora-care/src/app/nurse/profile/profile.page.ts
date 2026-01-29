@@ -63,6 +63,9 @@ export class ProfilePage implements OnInit {
   avatar = computed(() => this.user()?.avatar || null);
   cepNumber = computed(() => this.nurse()?.cepNumber || '');
   cepVerified = computed(() => this.nurse()?.cepVerified || false);
+  hasPaymentMethod = computed(() => {
+    return !!(this.yapeNumber() || this.plinNumber() || this.acceptsCash());
+  });
 
   // Day options for availability
   dayOptions: DayOption[] = [
@@ -367,6 +370,11 @@ export class ProfilePage implements OnInit {
 
   goBack() {
     this.router.navigate(['/nurse/dashboard']);
+  }
+
+  scrollToPaymentMethods() {
+    const element = document.querySelector('.payment-methods-section');
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   formatTime(time: string): string {

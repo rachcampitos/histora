@@ -11,6 +11,7 @@ export * from './theme.service';
 export * from './uploads.service';
 export * from './safety.service';
 export * from './onboarding.service';
+export * from './nurse-onboarding.service';
 export * from './product-tour.service';
 export * from './payment.service';
 export * from './notification.service';

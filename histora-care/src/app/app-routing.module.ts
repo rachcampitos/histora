@@ -166,6 +166,10 @@ const routes: Routes = [
     canActivate: [authGuard, postAuthOnboardingGuard, nurseGuard],
     children: [
       {
+        path: 'onboarding',
+        loadChildren: () => import('./nurse/onboarding/onboarding.module').then(m => m.OnboardingPageModule),
+      },
+      {
         path: 'dashboard',
         loadChildren: () => import('./nurse/dashboard/dashboard.module').then(m => m.DashboardPageModule),
       },
