@@ -199,6 +199,63 @@ $primary-gradient: var(--histora-gradient);
   }
 }
 
+// Payment Methods Banner
+.payment-banner {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-3;
+  margin: tokens.$spacing-4;
+  padding: tokens.$spacing-4;
+  background: linear-gradient(135deg, rgba(74, 157, 154, 0.1) 0%, rgba(45, 95, 138, 0.1) 100%);
+  border: 1px solid rgba(74, 157, 154, 0.3);
+  border-radius: tokens.$radius-lg;
+  cursor: pointer;
+  transition: all tokens.$duration-normal tokens.$easing-standard;
+
+  &:active {
+    transform: scale(0.98);
+    background: linear-gradient(135deg, rgba(74, 157, 154, 0.15) 0%, rgba(45, 95, 138, 0.15) 100%);
+  }
+
+  .banner-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: tokens.$radius-md;
+    background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 24px;
+      color: white;
+    }
+  }
+
+  .banner-content {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 2px;
+      font-size: 15px;
+      font-weight: tokens.$font-weight-semibold;
+      color: #2d5f8a;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: #4a9d9a;
+    }
+  }
+
+  .banner-arrow {
+    font-size: 20px;
+    color: #4a9d9a;
+  }
+}
+
 // Bio Section
 .bio-textarea {
   --background: #{tokens.$surface-secondary};
@@ -722,6 +779,34 @@ ion-modal {
 
     .cep-note {
       color: tokens.$text-dark-tertiary;
+    }
+  }
+
+  // Payment Banner
+  .payment-banner {
+    background: linear-gradient(135deg, rgba(74, 157, 154, 0.15) 0%, rgba(45, 95, 138, 0.15) 100%);
+    border-color: rgba(107, 181, 179, 0.3);
+
+    &:active {
+      background: linear-gradient(135deg, rgba(74, 157, 154, 0.2) 0%, rgba(45, 95, 138, 0.2) 100%);
+    }
+
+    .banner-icon {
+      background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    }
+
+    .banner-content {
+      h4 {
+        color: #6bb5b3;
+      }
+
+      p {
+        color: #94a3b8;
+      }
+    }
+
+    .banner-arrow {
+      color: #6bb5b3;
     }
   }
 

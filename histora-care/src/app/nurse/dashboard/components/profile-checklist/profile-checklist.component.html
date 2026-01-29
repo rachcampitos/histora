@@ -1,0 +1,66 @@
+@if (isVisible() && !isAllCompleted()) {
+<div class="checklist-card" [class.minimized]="isMinimized()">
+  <!-- Header -->
+  <div class="checklist-header" (click)="toggleMinimize()">
+    <div class="header-content">
+      <div class="header-icon">
+        <ion-icon [name]="isAllCompleted() ? 'checkmark-circle' : 'clipboard-outline'"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h3>Completa tu perfil</h3>
+        <span class="progress-text">{{ completedCount() }} de {{ totalCount() }} completados</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <ion-icon [name]="isMinimized() ? 'chevron-down' : 'chevron-up'"></ion-icon>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="progress()"></div>
+  </div>
+
+  <!-- Items -->
+  @if (!isMinimized()) {
+  <div class="checklist-items">
+    @for (item of checklistItems(); track item.id) {
+    <div class="checklist-item" [class.completed]="item.completed" (click)="goToItem(item)">
+      <div class="item-status">
+        @if (item.completed) {
+        <ion-icon name="checkmark-circle" color="success"></ion-icon>
+        } @else {
+        <div class="status-circle"></div>
+        }
+      </div>
+      <div class="item-content">
+        <ion-icon [name]="item.icon"></ion-icon>
+        <span>{{ item.label }}</span>
+      </div>
+      @if (!item.completed) {
+      <ion-icon name="chevron-forward" class="item-arrow"></ion-icon>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Motivational Message -->
+  <div class="motivational-message">
+    <ion-icon name="bulb-outline"></ion-icon>
+    <span>Perfiles completos reciben 3x mas solicitudes</span>
+  </div>
+  }
+</div>
+}
+
+@if (isVisible() && isAllCompleted()) {
+<div class="checklist-card completed-state">
+  <div class="completed-content">
+    <ion-icon name="checkmark-circle" color="success"></ion-icon>
+    <div class="completed-text">
+      <h3>Perfil completado</h3>
+      <span>Estas lista para recibir solicitudes</span>
+    </div>
+  </div>
+</div>
+}

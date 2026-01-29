@@ -1,0 +1,303 @@
+@use '../../../../../theme/design-tokens' as tokens;
+
+$nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+
+.checklist-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+
+  &.minimized {
+    .checklist-header {
+      border-bottom: none;
+    }
+  }
+
+  &.completed-state {
+    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+}
+
+.checklist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: $nurselite-gradient;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 22px;
+      color: white;
+    }
+  }
+
+  .header-text {
+    h3 {
+      margin: 0 0 2px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      color: #666;
+    }
+  }
+
+  .header-actions {
+    ion-icon {
+      font-size: 20px;
+      color: #999;
+    }
+  }
+}
+
+.progress-bar {
+  height: 4px;
+  background: #e5e7eb;
+
+  .progress-fill {
+    height: 100%;
+    background: $nurselite-gradient;
+    transition: width 0.3s ease;
+    border-radius: 0 2px 2px 0;
+  }
+}
+
+.checklist-items {
+  padding: 8px 0;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f9fafb;
+  }
+
+  &:active {
+    background: #f0f0f0;
+  }
+
+  &.completed {
+    opacity: 0.7;
+
+    .item-content span {
+      text-decoration: line-through;
+      color: #999;
+    }
+  }
+
+  .item-status {
+    margin-right: 12px;
+
+    ion-icon {
+      font-size: 22px;
+    }
+
+    .status-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #d1d5db;
+      background: white;
+    }
+  }
+
+  .item-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    ion-icon {
+      font-size: 18px;
+      color: #667eea;
+    }
+
+    span {
+      font-size: 14px;
+      color: #333;
+    }
+  }
+
+  .item-arrow {
+    font-size: 18px;
+    color: #ccc;
+  }
+}
+
+.motivational-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fffbeb;
+  border-top: 1px solid #fef3c7;
+
+  ion-icon {
+    font-size: 18px;
+    color: #f59e0b;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 12px;
+    color: #92400e;
+  }
+}
+
+.completed-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+
+  > ion-icon {
+    font-size: 32px;
+  }
+
+  .completed-text {
+    h3 {
+      margin: 0 0 2px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #047857;
+    }
+
+    span {
+      font-size: 13px;
+      color: #059669;
+    }
+  }
+}
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .checklist-card {
+    background: tokens.$surface-dark-secondary;
+    border-color: #334155;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+
+    &.completed-state {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+  }
+
+  .checklist-header {
+    border-bottom-color: #334155;
+
+    .header-icon {
+      background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    }
+
+    .header-text {
+      h3 {
+        color: #f1f5f9;
+      }
+
+      .progress-text {
+        color: #94a3b8;
+      }
+    }
+
+    .header-actions ion-icon {
+      color: #64748b;
+    }
+  }
+
+  .progress-bar {
+    background: #334155;
+
+    .progress-fill {
+      background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+    }
+  }
+
+  .checklist-item {
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    &:active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &.completed {
+      .item-content span {
+        color: #64748b;
+      }
+    }
+
+    .item-status {
+      .status-circle {
+        border-color: #475569;
+        background: tokens.$surface-dark-tertiary;
+      }
+    }
+
+    .item-content {
+      ion-icon {
+        color: #6bb5b3;
+      }
+
+      span {
+        color: #e2e8f0;
+      }
+    }
+
+    .item-arrow {
+      color: #475569;
+    }
+  }
+
+  .motivational-message {
+    background: rgba(245, 158, 11, 0.1);
+    border-top-color: rgba(245, 158, 11, 0.2);
+
+    span {
+      color: #fbbf24;
+    }
+  }
+
+  .completed-content {
+    .completed-text {
+      h3 {
+        color: #34d399;
+      }
+
+      span {
+        color: #6ee7b7;
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { GeolocationService } from '../../core/services/geolocation.service';
 import { WebSocketService } from '../../core/services/websocket.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
+import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
 import { Nurse, ServiceRequest } from '../../core/models';
 
 @Component({
@@ -24,6 +25,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   private geoService = inject(GeolocationService);
   private wsService = inject(WebSocketService);
   private productTour = inject(ProductTourService);
+  private nurseOnboarding = inject(NurseOnboardingService);
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
@@ -73,7 +75,14 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Check if nurse has completed business onboarding
+    await this.nurseOnboarding.init();
+    if (!this.nurseOnboarding.isCompleted()) {
+      this.router.navigate(['/nurse/onboarding'], { replaceUrl: true });
+      return;
+    }
+
     this.initializeWebSocket();
     this.loadData();
   }

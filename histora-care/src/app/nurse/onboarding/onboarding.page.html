@@ -1,0 +1,288 @@
+<ion-content class="onboarding-content" [fullscreen]="true">
+  <!-- Progress Dots -->
+  <div class="progress-dots">
+    @for (slide of slides; track slide.id; let i = $index) {
+      <div class="dot" [class.active]="i === currentIndex()" [class.completed]="i < currentIndex()"></div>
+    }
+  </div>
+
+  <!-- Swiper Slides -->
+  <swiper-container
+    #swiperRef
+    [pagination]="false"
+    [allowTouchMove]="false"
+    (swiperslidechange)="onSlideChange()"
+    (swiperinit)="onSwiperInit($event)">
+
+    <!-- SLIDE 1: Welcome -->
+    <swiper-slide>
+      <div class="slide-content welcome-slide">
+        <div class="illustration">
+          <div class="icon-container">
+            <ion-icon name="heart-circle"></ion-icon>
+          </div>
+        </div>
+
+        <h1>Bienvenida a NurseLite, {{ userName() }}</h1>
+        <p class="subtitle">La plataforma que conecta tu experiencia profesional con familias que necesitan cuidados de calidad</p>
+
+        <div class="features">
+          <div class="feature">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Tu defines tus horarios y tarifas</span>
+          </div>
+          <div class="feature">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Las familias te solicitan directamente</span>
+          </div>
+          <div class="feature">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Tu cobras el 100% de tus servicios</span>
+          </div>
+        </div>
+
+        <div class="slide-actions">
+          <ion-button expand="block" (click)="nextSlide()" class="primary-btn">
+            Continuar
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </swiper-slide>
+
+    <!-- SLIDE 2: Payment Model (CRITICAL) -->
+    <swiper-slide>
+      <div class="slide-content payment-model-slide">
+        <div class="illustration">
+          <div class="icon-container money">
+            <ion-icon name="wallet"></ion-icon>
+          </div>
+        </div>
+
+        <h1>Cobra directamente, sin intermediarios</h1>
+        <p class="subtitle">El dinero de tus servicios es 100% tuyo</p>
+
+        <!-- Payment Flow Diagram -->
+        <div class="payment-flow">
+          <div class="flow-step">
+            <div class="flow-icon patient">
+              <ion-icon name="person"></ion-icon>
+            </div>
+            <span>Paciente</span>
+          </div>
+          <div class="flow-arrow">
+            <ion-icon name="arrow-forward"></ion-icon>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon payment">
+              <span class="yape-plin">Y/P</span>
+            </div>
+            <span>Yape, Plin o Efectivo</span>
+          </div>
+          <div class="flow-arrow">
+            <ion-icon name="arrow-forward"></ion-icon>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon nurse">
+              <ion-icon name="medkit"></ion-icon>
+            </div>
+            <span>Tu</span>
+          </div>
+        </div>
+
+        <div class="benefits-box">
+          <div class="benefit">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Sin comisiones por servicio</span>
+          </div>
+          <div class="benefit">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>El dinero es 100% tuyo</span>
+          </div>
+          <div class="benefit">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Cobro inmediato al terminar</span>
+          </div>
+        </div>
+
+        <div class="subscription-note">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>Solo pagas una suscripcion mensual a NurseLite para recibir solicitudes</span>
+        </div>
+
+        <div class="slide-actions">
+          <ion-button expand="block" (click)="nextSlide()" class="primary-btn">
+            Entendido
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </swiper-slide>
+
+    <!-- SLIDE 3: Payment Setup -->
+    <swiper-slide>
+      <div class="slide-content payment-setup-slide">
+        <div class="illustration small">
+          <div class="icon-container setup">
+            <ion-icon name="card"></ion-icon>
+          </div>
+        </div>
+
+        <h1>Como quieres recibir tus pagos?</h1>
+        <p class="subtitle">Configura tus metodos de pago para que las familias sepan como pagarte</p>
+
+        <div class="payment-form">
+          <!-- Yape -->
+          <div class="payment-option">
+            <div class="payment-header">
+              <div class="payment-logo yape">
+                <span>Y</span>
+              </div>
+              <span class="payment-name">Yape</span>
+            </div>
+            <ion-input
+              [value]="yapeNumber()"
+              (ionInput)="onYapeNumberChange($event)"
+              type="tel"
+              inputmode="numeric"
+              maxlength="9"
+              placeholder="987654321"
+              class="payment-input">
+            </ion-input>
+          </div>
+
+          <!-- Plin -->
+          <div class="payment-option">
+            <div class="payment-header">
+              <div class="payment-logo plin">
+                <span>P</span>
+              </div>
+              <span class="payment-name">Plin</span>
+            </div>
+            <ion-input
+              [value]="plinNumber()"
+              (ionInput)="onPlinNumberChange($event)"
+              type="tel"
+              inputmode="numeric"
+              maxlength="9"
+              placeholder="987654321"
+              class="payment-input">
+            </ion-input>
+          </div>
+
+          <!-- Cash -->
+          <div class="payment-option cash-option">
+            <div class="payment-header">
+              <div class="payment-logo cash">
+                <ion-icon name="cash"></ion-icon>
+              </div>
+              <div class="cash-info">
+                <span class="payment-name">Acepto efectivo</span>
+                <span class="payment-hint">Recibes el pago al finalizar</span>
+              </div>
+            </div>
+            <ion-toggle [checked]="acceptsCash()" (ionChange)="onAcceptsCashChange($event)"></ion-toggle>
+          </div>
+        </div>
+
+        <p class="recommendation">
+          <ion-icon name="bulb-outline"></ion-icon>
+          Recomendamos habilitar al menos 2 metodos. Las enfermeras con mas opciones reciben 40% mas solicitudes.
+        </p>
+
+        <div class="slide-actions">
+          <ion-button
+            expand="block"
+            (click)="savePaymentMethods()"
+            [disabled]="isLoading() || !hasAnyPaymentMethod()"
+            class="primary-btn">
+            <ion-spinner *ngIf="isLoading()" name="crescent" slot="start"></ion-spinner>
+            {{ isLoading() ? 'Guardando...' : 'Guardar y continuar' }}
+          </ion-button>
+          <ion-button expand="block" fill="clear" (click)="skipPaymentSetup()" class="skip-btn">
+            Lo hare despues
+          </ion-button>
+        </div>
+      </div>
+    </swiper-slide>
+
+    <!-- SLIDE 4: Plans -->
+    <swiper-slide>
+      <div class="slide-content plans-slide">
+        <h1>Elige tu plan de inicio</h1>
+        <p class="subtitle">Comienza gratis y actualiza cuando estes lista</p>
+
+        <div class="plans-container">
+          <!-- Basic Plan -->
+          <div class="plan-card basic active">
+            <div class="plan-header">
+              <span class="plan-name">Basico</span>
+              <span class="plan-price">Gratis</span>
+            </div>
+            <div class="plan-features">
+              <div class="feature">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Hasta 5 solicitudes/mes</span>
+              </div>
+              <div class="feature">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Perfil verificado con CEP</span>
+              </div>
+              <div class="feature">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Notificaciones de solicitudes</span>
+              </div>
+            </div>
+            <div class="plan-badge">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <span>Plan actual</span>
+            </div>
+          </div>
+
+          <!-- Pro Plan -->
+          <div class="plan-card pro">
+            <div class="popular-badge">Mas popular</div>
+            <div class="plan-header">
+              <span class="plan-name">Pro</span>
+              <span class="plan-price">S/ 29<small>/mes</small></span>
+            </div>
+            <div class="plan-features">
+              <div class="feature">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Solicitudes ilimitadas</span>
+              </div>
+              <div class="feature">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Prioridad en busquedas</span>
+              </div>
+              <div class="feature">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Estadisticas de perfil</span>
+              </div>
+              <div class="feature">
+                <ion-icon name="checkmark"></ion-icon>
+                <span>Soporte por WhatsApp</span>
+              </div>
+            </div>
+            <ion-button fill="outline" size="small" (click)="goToSubscription()">
+              Actualizar a Pro
+            </ion-button>
+          </div>
+        </div>
+
+        <p class="change-note">
+          <ion-icon name="sync-outline"></ion-icon>
+          Puedes cambiar tu plan en cualquier momento desde Configuracion
+        </p>
+
+        <div class="slide-actions">
+          <ion-button expand="block" (click)="completeOnboarding()" class="primary-btn">
+            Continuar con plan Basico
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </swiper-slide>
+
+  </swiper-container>
+</ion-content>

@@ -59,6 +59,18 @@
       <p class="cep-note">Colegio de Enfermeros del Peru</p>
     </div>
 
+    <!-- Payment Methods Banner (when not configured) -->
+    <div class="payment-banner" *ngIf="!yapeNumber() && !plinNumber()" (click)="scrollToPaymentMethods()">
+      <div class="banner-icon">
+        <ion-icon name="wallet-outline"></ion-icon>
+      </div>
+      <div class="banner-content">
+        <h4>Configura tus metodos de pago</h4>
+        <p>Agrega Yape o Plin para recibir pagos de pacientes</p>
+      </div>
+      <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>
+    </div>
+
     <!-- Bio Section -->
     <div class="section" id="tour-bio-section">
       <div class="section-header">
