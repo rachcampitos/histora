@@ -155,6 +155,84 @@
       </div>
     </div>
 
+    <!-- Location Section -->
+    <div class="section" id="tour-location-section">
+      <div class="section-header">
+        <ion-icon name="location-outline"></ion-icon>
+        <h2>Ubicacion de Servicio</h2>
+      </div>
+
+      <!-- Current Location Display -->
+      <div class="location-display" *ngIf="locationDistrict()">
+        <ion-icon name="checkmark-circle" color="success"></ion-icon>
+        <span>{{ locationDistrict() }}, {{ locationCity() }}</span>
+      </div>
+      <p class="empty-text" *ngIf="!locationDistrict()">
+        Indica tu ubicacion para que los pacientes cercanos puedan encontrarte
+      </p>
+
+      <!-- Location Form -->
+      <div class="location-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Departamento</label>
+            <ion-select
+              [value]="selectedDepartamento()"
+              (ionChange)="onDepartamentoChange($event)"
+              interface="popover"
+              placeholder="Selecciona"
+              class="location-select">
+              <ion-select-option *ngFor="let dept of departamentos()" [value]="dept.id">
+                {{ dept.nombre }}
+              </ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Distrito</label>
+            <div class="search-container">
+              <ion-input
+                [value]="distritoSearch()"
+                (ionInput)="onDistritoSearchInput($event)"
+                (ionFocus)="onDistritoSearchFocus()"
+                (ionBlur)="onDistritoSearchBlur()"
+                placeholder="Buscar distrito..."
+                class="distrito-input"
+                [class.has-value]="locationDistrict()">
+                <ion-icon slot="start" name="search-outline"></ion-icon>
+              </ion-input>
+
+              <ion-button *ngIf="locationDistrict()" fill="clear" size="small" (click)="clearDistrito()" class="clear-btn">
+                <ion-icon name="close-circle"></ion-icon>
+              </ion-button>
+
+              <div class="search-results" *ngIf="showDistritoResults() && filteredDistritos().length > 0">
+                <div class="result-item"
+                     *ngFor="let distrito of filteredDistritos()"
+                     (mousedown)="selectDistrito(distrito); $event.preventDefault()"
+                     (touchend)="selectDistrito(distrito); $event.preventDefault()">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span>{{ distrito.nombre }}</span>
+                  <small *ngIf="distrito.zona">{{ distrito.zona | titlecase }}</small>
+                </div>
+              </div>
+
+              <div class="search-results empty" *ngIf="showDistritoResults() && distritoSearch().length >= 2 && filteredDistritos().length === 0">
+                <p>No se encontraron distritos</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="helper-text">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        Tu ubicacion exacta solo se comparte cuando aceptas un servicio
+      </p>
+    </div>
+
     <!-- Service Radius Section -->
     <div class="section" id="tour-radius-section">
       <div class="section-header">
