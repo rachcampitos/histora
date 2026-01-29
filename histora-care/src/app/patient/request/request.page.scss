@@ -21,6 +21,11 @@
 // Request Form Container
 .request-form {
   padding-bottom: 20px;
+
+  // Add consistent spacing between cards
+  ion-card {
+    margin: 0 0 16px 0;
+  }
 }
 
 // Nurse Summary Card
@@ -358,53 +363,68 @@ ion-textarea {
   margin-top: 8px;
 }
 
-// Summary Card
+// Summary Card - Neutral background with accent border (UX recommendation)
 .summary-card {
-  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
-  color: white;
+  background: #f8f9fa;
+  border: 2px solid #2d5f8a;
+  border-radius: 12px;
 
   ion-card-header {
+    padding-bottom: 8px;
+
     ion-card-title {
-      color: white;
+      color: #2d5f8a;
 
       ion-icon {
-        color: white;
+        color: #4a9d9a;
       }
     }
   }
 
   ion-card-content {
+    ion-list {
+      background: transparent;
+      padding: 0;
+    }
+
     ion-item {
       --background: transparent;
-      --color: white;
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      --min-height: 44px;
 
       ion-label {
         p {
-          color: rgba(255, 255, 255, 0.7);
+          color: #64748b;
           font-size: 12px;
+          margin-bottom: 2px;
         }
 
         h3 {
-          color: white;
+          color: #1a1a2e;
           font-weight: 500;
+          font-size: 15px;
+          margin: 0;
         }
       }
     }
 
     .total-item {
       margin-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 12px;
 
       ion-label h3 {
         font-weight: 600;
+        font-size: 16px;
+        color: #2d5f8a;
       }
     }
 
     .total-price {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: white !important;
+      color: #4a9d9a !important;
     }
   }
 }
@@ -422,11 +442,20 @@ ion-footer {
     height: 52px;
     font-weight: 600;
     font-size: 16px;
+    --background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+    --background-hover: linear-gradient(135deg, #3d8580 0%, #244b6e 100%);
+    --background-activated: linear-gradient(135deg, #3d8580 0%, #244b6e 100%);
+    --color: white;
+    --box-shadow: 0 4px 12px rgba(45, 95, 138, 0.25);
 
     ion-spinner {
       width: 20px;
       height: 20px;
       margin-right: 8px;
+    }
+
+    ion-icon {
+      font-size: 20px;
     }
   }
 }
@@ -609,16 +638,51 @@ ion-content {
 
   // Summary card in dark mode
   .summary-card {
-    background: linear-gradient(
-      135deg,
-      var(--ion-color-primary-shade),
-      var(--ion-color-primary-tint)
-    );
+    background: #1a1a2e;
+    border-color: #4a9d9a;
+
+    ion-card-header {
+      ion-card-title {
+        color: #6bb5b3;
+
+        ion-icon {
+          color: #6bb5b3;
+        }
+      }
+    }
 
     ion-card-content {
-      .total-item {
-        border-top-color: rgba(255, 255, 255, 0.15);
+      ion-item {
+        ion-label {
+          p {
+            color: #94a3b8;
+          }
+
+          h3 {
+            color: #f1f5f9;
+          }
+        }
       }
+
+      .total-item {
+        border-top-color: #334155;
+
+        ion-label h3 {
+          color: #6bb5b3;
+        }
+      }
+
+      .total-price {
+        color: #6bb5b3 !important;
+      }
+    }
+  }
+
+  // Footer button in dark mode
+  ion-footer {
+    ion-button {
+      --background: linear-gradient(135deg, #5fb3af 0%, #3d7aa8 100%);
+      --box-shadow: 0 4px 12px rgba(95, 179, 175, 0.3);
     }
   }
 

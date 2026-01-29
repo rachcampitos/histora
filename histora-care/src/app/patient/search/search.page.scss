@@ -460,4 +460,14 @@ ion-content {
       }
     }
   }
+
+  .no-data {
+    color: #64748b;
+  }
+}
+
+// Utility classes
+.no-data {
+  color: var(--ion-color-medium);
+  font-style: italic;
 }

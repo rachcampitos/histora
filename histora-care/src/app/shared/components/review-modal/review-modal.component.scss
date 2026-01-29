@@ -23,6 +23,8 @@ ion-header {
   flex-direction: column;
   gap: 16px;
   padding: 0;
+  padding-bottom: 16px;
+  min-height: calc(100% - 32px);
 }
 
 // Nurse info section

@@ -57,7 +57,7 @@
               <h3>{{ service.name }}</h3>
               <p class="category">{{ getCategoryLabel(service.category) }}</p>
               <div class="service-details">
-                <span class="price">S/. {{ service.price | number:'1.2-2' }}</span>
+                <span class="price">S/ {{ service.price | number:'1.2-2' }}</span>
                 <span class="duration">
                   <ion-icon name="time-outline"></ion-icon>
                   {{ formatDuration(service.durationMinutes) }}
@@ -102,7 +102,7 @@
               <h3>{{ service.name }}</h3>
               <p class="category">{{ getCategoryLabel(service.category) }}</p>
               <div class="service-details">
-                <span class="price">S/. {{ service.price | number:'1.2-2' }}</span>
+                <span class="price">S/ {{ service.price | number:'1.2-2' }}</span>
                 <span class="duration">
                   <ion-icon name="time-outline"></ion-icon>
                   {{ formatDuration(service.durationMinutes) }}
@@ -214,7 +214,7 @@
 
         <!-- Price -->
         <ion-item>
-          <ion-label position="stacked">Precio (S/.) *</ion-label>
+          <ion-label position="stacked">Precio (S/) *</ion-label>
           <ion-input
             type="number"
             placeholder="0.00"
