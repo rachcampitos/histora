@@ -59,7 +59,7 @@ export class ProfileChecklistComponent implements OnInit {
       {
         id: 'bio',
         label: 'Completa tu biografia',
-        completed: !!(nurse?.bio && nurse.bio.length > 20),
+        completed: !!(nurse?.bio && nurse.bio.trim().length > 0),
         route: '/nurse/profile',
         icon: 'document-text-outline',
       },
