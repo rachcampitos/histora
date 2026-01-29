@@ -123,22 +123,16 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.nurseApi.getMyProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (nurse) => {
         const currentNurse = this.nurse();
-        // Only update if verification status changed
-        if (!currentNurse || currentNurse.verificationStatus !== nurse.verificationStatus) {
-          this.nurse.set(nurse);
-          // If newly approved, show celebration (unless already shown by verification page)
-          if (nurse.verificationStatus === 'approved' && currentNurse?.verificationStatus !== 'approved') {
-            this.stopVerificationPolling(); // Stop polling once approved
-            // Only show celebration if not already shown (verification page sets this flag)
-            const celebrationKey = `verification_celebration_${nurse._id}`;
-            if (!localStorage.getItem(celebrationKey)) {
-              localStorage.setItem(celebrationKey, 'shown');
-              this.showVerificationCelebration();
-            }
-          }
-        } else {
-          // Still update the nurse data for other potential changes
-          this.nurse.set(nurse);
+        const previousStatus = currentNurse?.verificationStatus;
+
+        // Update nurse data
+        this.nurse.set(nurse);
+
+        // If status changed to approved, stop polling
+        // Note: The verification page handles showing the celebration modal
+        // We don't show it here to prevent duplicates
+        if (nurse.verificationStatus === 'approved' && previousStatus !== 'approved') {
+          this.stopVerificationPolling();
         }
       },
       error: (err) => {
