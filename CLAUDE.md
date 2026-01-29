@@ -42,11 +42,39 @@ histora/
 - **Token:** En variables de entorno `RENIEC_API_TOKEN`
 - **Uso:** Backup para obtener nombre por DNI (ya no necesario con CEP)
 
+## GitHub Projects (Seguimiento de Tareas)
+
+### URL del Proyecto
+- **Repo:** https://github.com/rachcampitos/histora
+- **Issues:** https://github.com/rachcampitos/histora/issues
+
+### Proceso de Despliegue
+1. Implementar la feature
+2. Crear commit con conventional commits (`feat:`, `fix:`, `docs:`)
+3. Crear/actualizar Issue en GitHub con checklist de lo implementado
+4. Cerrar Issue con comentario de version
+5. Actualizar `docs/CHANGELOG.md` con la nueva version
+6. Push a main (despliegue automatico)
+
+### Labels Usados
+- `feature` - Nueva funcionalidad
+- `bug` - Correccion de error
+- `epic` - Feature grande con multiples sub-tareas
+- `frontend` / `backend` - Area afectada
+- `priority-high/medium/low` - Prioridad
+- `tech-debt` - Mejoras tecnicas
+- `ux-ui` - Diseño y experiencia
+
 ## Flujos Importantes
 
 ### Verificacion de Enfermeras
 - **Documentacion:** `histora-back/docs/NURSE-VERIFICATION-FLOW.md`
 - **Flujo:** CEP + DNI → valida en cep.org.pe → foto + nombre + HABIL → confirma → documentos
+
+### Onboarding de Enfermeras (Modelo P2P)
+- **Documentacion:** `histora-back/docs/NURSE-ONBOARDING-FLOW.md`
+- **Flujo:** Welcome → Modelo P2P → Config Yape/Plin → Planes → Dashboard
+- **Checklist:** Metodos de pago, Servicios, Disponibilidad, Biografia
 
 ## Datos de Prueba
 
@@ -95,4 +123,4 @@ cd histora-care && npm run test
 5. **Vercel NO se usa** - Legacy, ignorar la carpeta .vercel
 
 ---
-Ultima actualizacion: 2026-01-28
+Ultima actualizacion: 2026-01-29
