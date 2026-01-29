@@ -50,7 +50,106 @@
       </div>
     </swiper-slide>
 
-    <!-- SLIDE 2: Payment Model (CRITICAL) -->
+    <!-- SLIDE 2: Location Selection -->
+    <swiper-slide>
+      <div class="slide-content location-slide">
+        <div class="illustration">
+          <div class="icon-container location">
+            <ion-icon name="location"></ion-icon>
+          </div>
+        </div>
+
+        <h1>Encuentra pacientes cerca de ti</h1>
+        <p class="subtitle">Tu ubicacion nos ayuda a conectarte con familias en tu zona que necesitan tus servicios</p>
+
+        <div class="location-form">
+          <!-- Departamento Selector -->
+          <div class="form-group">
+            <label>Departamento</label>
+            <ion-select
+              [value]="selectedDepartamento()"
+              (ionChange)="onDepartamentoChange($event)"
+              interface="popover"
+              class="location-select">
+              @for (dept of departamentos(); track dept.id) {
+                <ion-select-option [value]="dept.id">{{ dept.nombre }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+
+          <!-- Distrito Search -->
+          <div class="form-group">
+            <label>Distrito</label>
+            <div class="search-container">
+              <ion-input
+                [value]="distritoSearch()"
+                (ionInput)="onDistritoSearchInput($event)"
+                (ionFocus)="onDistritoSearchFocus()"
+                (ionBlur)="onDistritoSearchBlur()"
+                placeholder="Escribe para buscar tu distrito..."
+                class="distrito-input"
+                [class.has-value]="selectedDistrito()">
+                <ion-icon slot="start" name="search-outline"></ion-icon>
+              </ion-input>
+
+              @if (selectedDistrito()) {
+                <ion-button fill="clear" size="small" (click)="clearDistrito()" class="clear-btn">
+                  <ion-icon name="close-circle"></ion-icon>
+                </ion-button>
+              }
+
+              <!-- Search Results Dropdown -->
+              @if (showDistritoResults() && filteredDistritos().length > 0) {
+                <div class="search-results">
+                  @for (distrito of filteredDistritos(); track distrito.id) {
+                    <div class="result-item" (click)="selectDistrito(distrito)">
+                      <ion-icon name="location-outline"></ion-icon>
+                      <span>{{ distrito.nombre }}</span>
+                      @if (distrito.zona) {
+                        <small>{{ distrito.zona | titlecase }}</small>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (showDistritoResults() && distritoSearch().length >= 2 && filteredDistritos().length === 0) {
+                <div class="search-results empty">
+                  <p>No se encontraron distritos</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Selected Location Display -->
+        @if (selectedDistrito()) {
+          <div class="selected-location">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>{{ selectedDistrito()?.nombre }}, {{ selectedDepartamentoNombre() }}</span>
+          </div>
+        }
+
+        <div class="privacy-note">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <span>Tu ubicacion solo se comparte con pacientes cuando aceptas un servicio</span>
+        </div>
+
+        <div class="slide-actions">
+          <ion-button
+            expand="block"
+            (click)="saveLocation()"
+            [disabled]="isLoading() || !hasValidLocation()"
+            class="primary-btn">
+            <ion-spinner *ngIf="isLoading()" name="crescent" slot="start"></ion-spinner>
+            {{ isLoading() ? 'Guardando...' : 'Continuar' }}
+            <ion-icon slot="end" name="arrow-forward" *ngIf="!isLoading()"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </swiper-slide>
+
+    <!-- SLIDE 3: Payment Model (CRITICAL) -->
     <swiper-slide>
       <div class="slide-content payment-model-slide">
         <div class="illustration">
@@ -119,7 +218,7 @@
       </div>
     </swiper-slide>
 
-    <!-- SLIDE 3: Payment Setup -->
+    <!-- SLIDE 4: Payment Setup -->
     <swiper-slide>
       <div class="slide-content payment-setup-slide">
         <div class="illustration small">
@@ -206,7 +305,7 @@
       </div>
     </swiper-slide>
 
-    <!-- SLIDE 4: Plans -->
+    <!-- SLIDE 5: Plans -->
     <swiper-slide>
       <div class="slide-content plans-slide">
         <h1>Elige tu plan de inicio</h1>

@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PeruLocationsService, Departamento, Distrito } from '../../core/services/peru-locations.service';
 
-type OnboardingStep = 'welcome' | 'payment-model' | 'payment-setup' | 'plans';
+type OnboardingStep = 'welcome' | 'location' | 'payment-model' | 'payment-setup' | 'plans';
 
 interface SlideConfig {
   id: OnboardingStep;
@@ -26,10 +27,12 @@ export class OnboardingPage implements OnInit {
   private onboardingService = inject(NurseOnboardingService);
   private nurseApi = inject(NurseApiService);
   private authService = inject(AuthService);
+  private peruLocations = inject(PeruLocationsService);
 
   // Slides configuration
   readonly slides: SlideConfig[] = [
     { id: 'welcome', mandatory: true },
+    { id: 'location', mandatory: true },
     { id: 'payment-model', mandatory: true },
     { id: 'payment-setup', mandatory: false },
     { id: 'plans', mandatory: false },
@@ -47,6 +50,26 @@ export class OnboardingPage implements OnInit {
   // User info
   userName = signal('');
 
+  // Location selection
+  departamentos = signal<Departamento[]>([]);
+  selectedDepartamento = signal<string>('15'); // Lima pre-selected
+  selectedDistrito = signal<Distrito | null>(null);
+  distritoSearch = signal('');
+  showDistritoResults = signal(false);
+
+  // Computed: filtered distritos based on search
+  filteredDistritos = computed(() => {
+    const search = this.distritoSearch();
+    const deptId = this.selectedDepartamento();
+    if (!search || search.length < 2) return [];
+    return this.peruLocations.buscarDistritos(search, deptId);
+  });
+
+  // Computed: selected department name
+  selectedDepartamentoNombre = computed(() => {
+    return this.peruLocations.getDepartamentoNombre(this.selectedDepartamento());
+  });
+
   private swiper?: any;
 
   ngOnInit() {
@@ -55,6 +78,9 @@ export class OnboardingPage implements OnInit {
     if (user) {
       this.userName.set(user.firstName || 'Enfermera');
     }
+
+    // Load departamentos
+    this.departamentos.set(this.peruLocations.getDepartamentos(true));
   }
 
   onSwiperInit(event: any) {
@@ -86,6 +112,76 @@ export class OnboardingPage implements OnInit {
   prevSlide() {
     if (this.swiper && this.currentIndex() > 0) {
       this.swiper.slidePrev();
+    }
+  }
+
+  // Location handlers
+  onDepartamentoChange(event: CustomEvent) {
+    this.selectedDepartamento.set(event.detail.value);
+    this.selectedDistrito.set(null);
+    this.distritoSearch.set('');
+  }
+
+  onDistritoSearchInput(event: CustomEvent) {
+    const value = event.detail.value || '';
+    this.distritoSearch.set(value);
+    this.showDistritoResults.set(value.length >= 2);
+  }
+
+  onDistritoSearchFocus() {
+    if (this.distritoSearch().length >= 2) {
+      this.showDistritoResults.set(true);
+    }
+  }
+
+  onDistritoSearchBlur() {
+    // Delay to allow click on result
+    setTimeout(() => this.showDistritoResults.set(false), 200);
+  }
+
+  selectDistrito(distrito: Distrito) {
+    this.selectedDistrito.set(distrito);
+    this.distritoSearch.set(distrito.nombre);
+    this.showDistritoResults.set(false);
+  }
+
+  clearDistrito() {
+    this.selectedDistrito.set(null);
+    this.distritoSearch.set('');
+  }
+
+  hasValidLocation(): boolean {
+    return this.selectedDistrito() !== null;
+  }
+
+  async saveLocation() {
+    const distrito = this.selectedDistrito();
+    if (!distrito) {
+      this.showToast('Selecciona tu distrito', 'warning');
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    try {
+      await this.nurseApi.updateMyProfile({
+        location: {
+          type: 'Point',
+          city: this.selectedDepartamentoNombre(),
+          district: distrito.nombre,
+          coordinates: distrito.coordenadas
+            ? [distrito.coordenadas.lng, distrito.coordenadas.lat]
+            : [-77.0428, -12.0464], // Lima centro default
+        }
+      }).toPromise();
+
+      this.showToast('Ubicacion guardada', 'success');
+      this.nextSlide();
+    } catch (error) {
+      console.error('Error saving location:', error);
+      this.showToast('Error al guardar ubicacion', 'danger');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
