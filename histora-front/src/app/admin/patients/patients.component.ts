@@ -22,6 +22,13 @@ import { AdminService, AdminPatient, PatientQueryParams } from '@core/service/ad
 import { ConfirmDialogComponent } from '../users/dialogs/confirm-dialog.component';
 import { FeatherModule } from 'angular-feather';
 
+interface PatientsSummary {
+  total: number;
+  active: number;
+  inactive: number;
+  newThisMonth: number;
+}
+
 @Component({
   standalone: true,
   selector: 'app-admin-patients',
@@ -59,8 +66,16 @@ export class PatientsComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   isLoading = true;
-  displayedColumns = ['patient', 'email', 'phone', 'status', 'services', 'lastService', 'actions'];
+  displayedColumns = ['patient', 'email', 'status', 'services', 'lastService', 'actions'];
   dataSource = new MatTableDataSource<AdminPatient>([]);
+
+  // Summary stats
+  summary: PatientsSummary = {
+    total: 0,
+    active: 0,
+    inactive: 0,
+    newThisMonth: 0,
+  };
 
   // Pagination
   totalPatients = 0;
@@ -103,6 +118,7 @@ export class PatientsComponent implements OnInit {
       next: (response) => {
         this.dataSource.data = response.data;
         this.totalPatients = response.pagination.total;
+        this.updateSummary();
         this.isLoading = false;
       },
       error: (err) => {
@@ -110,6 +126,52 @@ export class PatientsComponent implements OnInit {
         this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 3000 });
         this.isLoading = false;
       },
+    });
+  }
+
+  updateSummary(): void {
+    const patients = this.dataSource.data;
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    this.summary = {
+      total: this.totalPatients,
+      active: patients.filter(p => p.isActive).length,
+      inactive: patients.filter(p => !p.isActive).length,
+      newThisMonth: patients.filter(p => new Date(p.createdAt) >= startOfMonth).length,
+    };
+  }
+
+  viewServiceHistory(patient: AdminPatient): void {
+    this.snackBar.open(`Historial de ${patient.firstName}: ${patient.totalServicesCompleted} servicios completados`, 'Ver', {
+      duration: 4000,
+    });
+  }
+
+  blockPatient(patient: AdminPatient): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '450px',
+      data: {
+        title: 'Bloquear Paciente',
+        message: `¿Bloquear a ${patient.firstName} ${patient.lastName}? No podra solicitar servicios hasta ser desbloqueado.`,
+        confirmText: 'Bloquear',
+        confirmColor: 'warn',
+        icon: 'block',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.adminService.togglePatientStatus(patient.id).subscribe({
+          next: () => {
+            this.loadPatients();
+            this.snackBar.open('Paciente bloqueado', 'Cerrar', { duration: 3000 });
+          },
+          error: (err) => {
+            this.snackBar.open(err.error?.message || 'Error al bloquear paciente', 'Cerrar', { duration: 3000 });
+          },
+        });
+      }
     });
   }
 

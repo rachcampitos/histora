@@ -11,6 +11,86 @@
   border: 0;
 }
 
+// ==================== SUMMARY STATS ====================
+.summary-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .summary-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+  }
+
+  .summary-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .summary-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+  }
+
+  .summary-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  &.total .summary-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  &.active .summary-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  &.verified .summary-icon {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  &.pending .summary-icon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  &.at-risk .summary-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+}
+
 // Main Card
 .main-card {
   .mat-mdc-card-header {
@@ -187,37 +267,112 @@
   margin-left: 4px;
 }
 
-// Rating
-.rating-cell {
+// Quality Score
+.quality-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+
+  &.at-risk {
+    .quality-score {
+      animation: pulse-warning 2s infinite;
+    }
+  }
+}
+
+.quality-score {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .score-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+  }
+
+  &.quality-excellent {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  &.quality-good {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  &.quality-average {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  &.quality-low {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+}
+
+.quality-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quality-rating {
   display: flex;
   align-items: center;
   gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
 
-  .star-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
     color: #f59e0b;
   }
+}
 
-  .rating-value {
-    font-weight: 600;
-    color: #2d3748;
-  }
+.quality-meta {
+  font-size: 11px;
+  color: #9ca3af;
+}
 
-  .rating-count {
-    font-size: 12px;
-    color: #718096;
-  }
+.risk-indicator {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #ef4444;
+  animation: pulse-warning 1.5s infinite;
+}
+
+@keyframes pulse-warning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+// Services
+.services-cell {
+  display: flex;
+  flex-direction: column;
 }
 
 .services-count {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 16px;
   color: #2d3748;
 }
 
-.district-name {
-  color: #4a5568;
+.services-label {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+// Action styles
+.suspend-action {
+  color: #f59e0b;
 }
 
 // Actions
@@ -251,6 +406,35 @@ mat-paginator {
 
 // Dark mode
 :host-context(body.dark) {
+  .summary-card {
+    background: #1a202e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+
+    .summary-value {
+      color: #ffffff;
+    }
+
+    .summary-label {
+      color: #9ca3af;
+    }
+
+    &:hover {
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  .quality-rating {
+    color: #e5e7eb;
+  }
+
+  .quality-meta {
+    color: #6b7280;
+  }
+
+  .services-count {
+    color: #ffffff;
+  }
+
   .main-card {
     background: #1a202e;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);

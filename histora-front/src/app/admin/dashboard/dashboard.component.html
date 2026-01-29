@@ -9,7 +9,35 @@
         <mat-progress-spinner color="primary" mode="indeterminate" [diameter]="50"></mat-progress-spinner>
       </div>
     } @else {
-      <!-- Critical Alerts Banner -->
+      <!-- Semaphore Alert System -->
+      @if (semaphoreAlerts.length > 0) {
+        <div class="semaphore-container">
+          @for (alert of semaphoreAlerts.slice(0, 4); track alert.id) {
+            <div class="semaphore-alert" [ngClass]="getSemaphoreClass(alert.level)">
+              <div class="semaphore-indicator">
+                @if (alert.level === 'critical') {
+                  <mat-icon>error</mat-icon>
+                } @else if (alert.level === 'important') {
+                  <mat-icon>warning</mat-icon>
+                } @else {
+                  <mat-icon>info</mat-icon>
+                }
+              </div>
+              <div class="semaphore-content">
+                <span class="semaphore-title">{{ alert.title }}</span>
+                <span class="semaphore-description">{{ alert.description }}</span>
+              </div>
+              @if (alert.actionRoute) {
+                <button mat-flat-button [routerLink]="alert.actionRoute" class="semaphore-action">
+                  {{ alert.actionLabel }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Critical Alerts Banner (Panic Alerts) -->
       @if (panicAlerts.length > 0) {
         <div class="alerts-banner" [class.has-emergency]="hasEmergencyAlerts()">
           <div class="alerts-header">
@@ -55,38 +83,78 @@
         </div>
       }
 
-      <!-- KPI Cards -->
-      <div class="row">
-        @for (kpi of kpiCards; track kpi.title) {
-          <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
-            <div class="card kpi-card" [ngClass]="'kpi-' + kpi.color" [routerLink]="kpi.route" [class.clickable]="kpi.route">
-              <div class="card-body">
-                <div class="kpi-content">
-                  <div class="kpi-icon-wrapper">
-                    <mat-icon>{{ kpi.icon }}</mat-icon>
-                    @if (kpi.badge) {
-                      <span class="kpi-badge" [class.badge-warn]="kpi.badgeColor === 'warn'">{{ kpi.badge }}</span>
-                    }
-                  </div>
-                  <div class="kpi-info">
-                    <h3 class="kpi-value">{{ kpi.value }}</h3>
-                    <span class="kpi-title">{{ kpi.title }}</span>
-                    @if (kpi.subtitle) {
-                      <span class="kpi-subtitle">{{ kpi.subtitle }}</span>
-                    }
-                    @if (kpi.progress !== undefined && kpi.progressMax) {
-                      <mat-progress-bar
-                        mode="determinate"
-                        [value]="(kpi.progress / kpi.progressMax) * 100"
-                        [color]="getProgressColor(kpi.progress, kpi.progressMax)"
-                      ></mat-progress-bar>
-                    }
+      <!-- Business KPIs - Main Metrics -->
+      <div class="kpi-section">
+        <h3 class="section-title">
+          <mat-icon>insights</mat-icon>
+          Metricas del Negocio
+        </h3>
+        <div class="row">
+          @for (kpi of businessKpis; track kpi.title) {
+            <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+              <div class="card kpi-card" [ngClass]="'kpi-' + kpi.color" [routerLink]="kpi.route" [class.clickable]="kpi.route">
+                <div class="card-body">
+                  <div class="kpi-content">
+                    <div class="kpi-icon-wrapper">
+                      <mat-icon>{{ kpi.icon }}</mat-icon>
+                      @if (kpi.badge) {
+                        <span class="kpi-badge" [class.badge-warn]="kpi.badgeColor === 'warn'">{{ kpi.badge }}</span>
+                      }
+                    </div>
+                    <div class="kpi-info">
+                      <h3 class="kpi-value">{{ kpi.value }}</h3>
+                      <span class="kpi-title">{{ kpi.title }}</span>
+                      @if (kpi.trend !== undefined) {
+                        <span class="kpi-trend" [ngClass]="getTrendClass(kpi.trend)">
+                          <mat-icon>{{ getTrendIcon(kpi.trend) }}</mat-icon>
+                          {{ kpi.trend > 0 ? '+' : '' }}{{ kpi.trend }}%
+                          @if (kpi.trendLabel) {
+                            <small>{{ kpi.trendLabel }}</small>
+                          }
+                        </span>
+                      } @else if (kpi.subtitle) {
+                        <span class="kpi-subtitle">{{ kpi.subtitle }}</span>
+                      }
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        }
+          }
+        </div>
+      </div>
+
+      <!-- Operational KPIs - Require Attention -->
+      <div class="kpi-section operational">
+        <h3 class="section-title">
+          <mat-icon>assignment_late</mat-icon>
+          Atencion Requerida
+        </h3>
+        <div class="row">
+          @for (kpi of operationalKpis; track kpi.title) {
+            <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
+              <div class="card kpi-card operational-card" [ngClass]="'kpi-' + kpi.color" [routerLink]="kpi.route" [class.clickable]="kpi.route">
+                <div class="card-body">
+                  <div class="kpi-content horizontal">
+                    <div class="kpi-icon-wrapper">
+                      <mat-icon>{{ kpi.icon }}</mat-icon>
+                      @if (kpi.badge) {
+                        <span class="kpi-badge" [class.badge-warn]="kpi.badgeColor === 'warn'">{{ kpi.badge }}</span>
+                      }
+                    </div>
+                    <div class="kpi-info">
+                      <h3 class="kpi-value">{{ kpi.value }}</h3>
+                      <span class="kpi-title">{{ kpi.title }}</span>
+                      @if (kpi.subtitle) {
+                        <span class="kpi-subtitle">{{ kpi.subtitle }}</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Main Content Row -->
@@ -207,8 +275,47 @@
           </div>
         </div>
 
-        <!-- Right Column: Activity & Warnings -->
+        <!-- Right Column: Activity, At Risk & Warnings -->
         <div class="col-xl-4 col-lg-12">
+          <!-- At Risk Users -->
+          @if (atRiskUsers.length > 0) {
+            <div class="card at-risk-card">
+              <div class="header d-flex justify-content-between align-items-center">
+                <h2>
+                  <mat-icon class="header-icon danger">gavel</mat-icon>
+                  Usuarios en Riesgo
+                </h2>
+                <button mat-stroked-button color="warn" routerLink="/admin/moderation">
+                  Ver Todos
+                </button>
+              </div>
+              <div class="body">
+                @for (user of atRiskUsers.slice(0, 4); track user.id) {
+                  <div class="at-risk-item">
+                    <div class="at-risk-avatar">
+                      <img [src]="user.avatar || 'assets/images/user/usrbig1.jpg'" alt="">
+                      <span class="at-risk-type" [class.nurse]="user.type === 'nurse'" [class.patient]="user.type === 'patient'">
+                        {{ user.type === 'nurse' ? 'E' : 'P' }}
+                      </span>
+                    </div>
+                    <div class="at-risk-info">
+                      <span class="at-risk-name">{{ user.name }}</span>
+                      <div class="at-risk-reasons">
+                        @for (reason of user.riskReasons.slice(0, 2); track reason) {
+                          <span class="risk-reason">{{ reason }}</span>
+                        }
+                      </div>
+                    </div>
+                    <div class="at-risk-score" [ngClass]="getRiskScoreClass(user.riskScore)">
+                      <span class="score-value">{{ user.riskScore }}</span>
+                      <span class="score-label">riesgo</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
           <!-- Recent Activity Timeline -->
           <div class="card activity-card">
             <div class="header">
@@ -225,7 +332,7 @@
                 </div>
               } @else {
                 <div class="activity-timeline">
-                  @for (item of recentActivity.slice(0, 10); track item.id) {
+                  @for (item of recentActivity.slice(0, 8); track item.id) {
                     <div class="activity-item" [ngClass]="getSeverityClass(item.severity)">
                       <div class="activity-icon">
                         <mat-icon [color]="getActivityColor(item.severity)">{{ getActivityIcon(item.type) }}</mat-icon>
@@ -247,7 +354,7 @@
             <div class="header">
               <h2>
                 <mat-icon class="header-icon">report_problem</mat-icon>
-                Atencion Requerida
+                Monitoreo
               </h2>
             </div>
             <div class="body">

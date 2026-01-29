@@ -7,6 +7,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { NurseVerificationsComponent } from './nurse-verifications/nurse-verifications.component';
 import { NursesComponent } from './nurses/nurses.component';
 import { PatientsComponent } from './patients/patients.component';
+import { ModerationComponent } from './moderation/moderation.component';
 import { Page404Component } from '../authentication/page404/page404.component';
 
 export const ADMIN_ROUTE: Route[] = [
@@ -28,6 +29,11 @@ export const ADMIN_ROUTE: Route[] = [
   {
     path: 'patients',
     component: PatientsComponent,
+  },
+  // Moderación y usuarios en riesgo
+  {
+    path: 'moderation',
+    component: ModerationComponent,
   },
   // Usuarios admin y roles
   {

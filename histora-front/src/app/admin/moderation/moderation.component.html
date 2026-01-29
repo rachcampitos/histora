@@ -1,0 +1,279 @@
+<section class="content">
+  <div class="content-block">
+    <div class="block-header">
+      <app-breadcrumb [title]="'Moderacion'" [items]="['Admin']" [active_item]="'Moderacion'"></app-breadcrumb>
+    </div>
+
+    @if (isLoading) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+    } @else {
+      <!-- Summary Stats -->
+      <div class="summary-row">
+        <div class="summary-card danger">
+          <div class="summary-icon">
+            <mat-icon>gavel</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ stats.totalAtRisk }}</span>
+            <span class="summary-label">En Riesgo Total</span>
+          </div>
+        </div>
+        <div class="summary-card warning">
+          <div class="summary-icon">
+            <mat-icon>medical_services</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ stats.nursesAtRisk }}</span>
+            <span class="summary-label">Enfermeras</span>
+          </div>
+        </div>
+        <div class="summary-card warning">
+          <div class="summary-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ stats.patientsAtRisk }}</span>
+            <span class="summary-label">Pacientes</span>
+          </div>
+        </div>
+        <div class="summary-card info">
+          <div class="summary-icon">
+            <mat-icon>rate_review</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ stats.pendingReviews }}</span>
+            <span class="summary-label">Resenas Pendientes</span>
+          </div>
+        </div>
+        <div class="summary-card neutral">
+          <div class="summary-icon">
+            <mat-icon>report</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ stats.recentComplaints }}</span>
+            <span class="summary-label">Quejas Recientes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <mat-card class="moderation-card">
+        <mat-tab-group [(selectedIndex)]="selectedTabIndex" animationDuration="200ms">
+          <!-- Tab: Enfermeras en Riesgo -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>medical_services</mat-icon>
+              <span class="tab-label">Enfermeras ({{ atRiskNurses.length }})</span>
+            </ng-template>
+
+            <div class="tab-content">
+              @if (atRiskNurses.length === 0) {
+                <div class="empty-state">
+                  <mat-icon>check_circle</mat-icon>
+                  <p>No hay enfermeras en riesgo</p>
+                </div>
+              } @else {
+                <div class="risk-list">
+                  @for (user of atRiskNurses; track user.id) {
+                    <div class="risk-card">
+                      <div class="risk-header">
+                        <div class="risk-avatar">
+                          <img [src]="user.avatar || 'assets/images/user/usrbig1.jpg'" alt="">
+                          <span class="risk-badge nurse">E</span>
+                        </div>
+                        <div class="risk-info">
+                          <span class="risk-name">{{ user.name }}</span>
+                          <div class="risk-meta">
+                            @if (user.averageRating) {
+                              <span class="rating">
+                                <mat-icon>star</mat-icon>
+                                {{ user.averageRating | number:'1.1-1' }}
+                              </span>
+                            }
+                            <span class="complaints">{{ user.totalComplaints }} quejas</span>
+                            @if (user.lastIncidentAt) {
+                              <span class="last-incident">Ultimo: {{ formatDate(user.lastIncidentAt) }}</span>
+                            }
+                          </div>
+                        </div>
+                        <div class="risk-score" [ngClass]="getRiskScoreClass(user.riskScore)">
+                          <span class="score-value">{{ user.riskScore }}</span>
+                          <span class="score-label">{{ getRiskLabel(user.riskScore) }}</span>
+                        </div>
+                      </div>
+                      <div class="risk-reasons">
+                        <span class="reasons-label">Razones:</span>
+                        <div class="reason-chips">
+                          @for (reason of user.riskReasons; track reason) {
+                            <mat-chip>{{ reason }}</mat-chip>
+                          }
+                        </div>
+                      </div>
+                      <div class="risk-actions">
+                        <button mat-stroked-button (click)="viewUserProfile(user)">
+                          <mat-icon>visibility</mat-icon>
+                          Ver Perfil
+                        </button>
+                        <button mat-stroked-button color="accent" (click)="warnUser(user)">
+                          <mat-icon>warning</mat-icon>
+                          Advertir
+                        </button>
+                        <button mat-flat-button color="warn" (click)="suspendUser(user)">
+                          <mat-icon>block</mat-icon>
+                          Suspender
+                        </button>
+                        <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="Mas opciones">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #userMenu="matMenu">
+                          <button mat-menu-item class="danger-action" (click)="banUser(user)">
+                            <mat-icon color="warn">delete_forever</mat-icon>
+                            <span>Bloquear Permanente</span>
+                          </button>
+                        </mat-menu>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </mat-tab>
+
+          <!-- Tab: Pacientes en Riesgo -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>people</mat-icon>
+              <span class="tab-label">Pacientes ({{ atRiskPatients.length }})</span>
+            </ng-template>
+
+            <div class="tab-content">
+              @if (atRiskPatients.length === 0) {
+                <div class="empty-state">
+                  <mat-icon>check_circle</mat-icon>
+                  <p>No hay pacientes en riesgo</p>
+                </div>
+              } @else {
+                <div class="risk-list">
+                  @for (user of atRiskPatients; track user.id) {
+                    <div class="risk-card">
+                      <div class="risk-header">
+                        <div class="risk-avatar">
+                          <img [src]="user.avatar || 'assets/images/user/usrbig1.jpg'" alt="">
+                          <span class="risk-badge patient">P</span>
+                        </div>
+                        <div class="risk-info">
+                          <span class="risk-name">{{ user.name }}</span>
+                          <div class="risk-meta">
+                            <span class="complaints">{{ user.totalComplaints }} quejas</span>
+                            @if (user.lastIncidentAt) {
+                              <span class="last-incident">Ultimo: {{ formatDate(user.lastIncidentAt) }}</span>
+                            }
+                          </div>
+                        </div>
+                        <div class="risk-score" [ngClass]="getRiskScoreClass(user.riskScore)">
+                          <span class="score-value">{{ user.riskScore }}</span>
+                          <span class="score-label">{{ getRiskLabel(user.riskScore) }}</span>
+                        </div>
+                      </div>
+                      <div class="risk-reasons">
+                        <span class="reasons-label">Razones:</span>
+                        <div class="reason-chips">
+                          @for (reason of user.riskReasons; track reason) {
+                            <mat-chip>{{ reason }}</mat-chip>
+                          }
+                        </div>
+                      </div>
+                      <div class="risk-actions">
+                        <button mat-stroked-button (click)="viewUserProfile(user)">
+                          <mat-icon>visibility</mat-icon>
+                          Ver Perfil
+                        </button>
+                        <button mat-stroked-button color="accent" (click)="warnUser(user)">
+                          <mat-icon>warning</mat-icon>
+                          Advertir
+                        </button>
+                        <button mat-flat-button color="warn" (click)="suspendUser(user)">
+                          <mat-icon>block</mat-icon>
+                          Suspender
+                        </button>
+                        <button mat-icon-button [matMenuTriggerFor]="patientMenu" matTooltip="Mas opciones">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #patientMenu="matMenu">
+                          <button mat-menu-item class="danger-action" (click)="banUser(user)">
+                            <mat-icon color="warn">delete_forever</mat-icon>
+                            <span>Bloquear Permanente</span>
+                          </button>
+                        </mat-menu>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </mat-tab>
+
+          <!-- Tab: Resenas Negativas -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon>star_border</mat-icon>
+              <span class="tab-label">Resenas ({{ lowRatedReviews.length }})</span>
+            </ng-template>
+
+            <div class="tab-content">
+              @if (lowRatedReviews.length === 0) {
+                <div class="empty-state">
+                  <mat-icon>check_circle</mat-icon>
+                  <p>No hay resenas negativas pendientes</p>
+                </div>
+              } @else {
+                <div class="reviews-list">
+                  @for (review of lowRatedReviews; track review.id) {
+                    <div class="review-card" [class.critical]="review.rating <= 2">
+                      <div class="review-header">
+                        <div class="review-rating">
+                          @for (star of [1,2,3,4,5]; track star) {
+                            <mat-icon [class.filled]="star <= review.rating">star</mat-icon>
+                          }
+                        </div>
+                        <span class="review-date">{{ formatDate(review.reviewedAt) }}</span>
+                      </div>
+                      <div class="review-parties">
+                        <span class="review-from">
+                          <mat-icon>person</mat-icon>
+                          {{ review.patientName }}
+                        </span>
+                        <mat-icon class="arrow">arrow_forward</mat-icon>
+                        <span class="review-to">
+                          <mat-icon>medical_services</mat-icon>
+                          {{ review.nurseName }}
+                        </span>
+                      </div>
+                      @if (review.review) {
+                        <div class="review-text">
+                          "{{ review.review }}"
+                        </div>
+                      }
+                      <div class="review-actions">
+                        <button mat-stroked-button (click)="investigateReview(review)">
+                          <mat-icon>search</mat-icon>
+                          Investigar
+                        </button>
+                        <button mat-stroked-button color="primary" (click)="dismissReview(review)">
+                          <mat-icon>check</mat-icon>
+                          Marcar Revisada
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+    }
+  </div>
+</section>

@@ -4,6 +4,57 @@
       <app-breadcrumb [title]="'Enfermeras'" [items]="['Admin']" [active_item]="'Enfermeras'"></app-breadcrumb>
     </div>
 
+    <!-- Summary Stats -->
+    @if (!isLoading) {
+      <div class="summary-row">
+        <div class="summary-card total">
+          <div class="summary-icon">
+            <mat-icon>medical_services</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.total }}</span>
+            <span class="summary-label">Total Enfermeras</span>
+          </div>
+        </div>
+        <div class="summary-card active">
+          <div class="summary-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.active }}</span>
+            <span class="summary-label">Activas</span>
+          </div>
+        </div>
+        <div class="summary-card verified">
+          <div class="summary-icon">
+            <mat-icon>verified</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.verified }}</span>
+            <span class="summary-label">Verificadas</span>
+          </div>
+        </div>
+        <div class="summary-card pending">
+          <div class="summary-icon">
+            <mat-icon>pending</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.pendingVerification }}</span>
+            <span class="summary-label">Pendientes</span>
+          </div>
+        </div>
+        <div class="summary-card at-risk">
+          <div class="summary-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.atRisk }}</span>
+            <span class="summary-label">En Riesgo</span>
+          </div>
+        </div>
+      </div>
+    }
+
     <mat-card class="main-card">
       <mat-card-header>
         <mat-card-title>Gestion de Enfermeras</mat-card-title>
@@ -124,14 +175,26 @@
                 </td>
               </ng-container>
 
-              <!-- Rating Column -->
-              <ng-container matColumnDef="rating">
-                <th mat-header-cell *matHeaderCellDef>Rating</th>
+              <!-- Quality Score Column -->
+              <ng-container matColumnDef="quality">
+                <th mat-header-cell *matHeaderCellDef>Calidad</th>
                 <td mat-cell *matCellDef="let row">
-                  <div class="rating-cell">
-                    <mat-icon class="star-icon">star</mat-icon>
-                    <span class="rating-value">{{ row.averageRating | number:'1.1-1' }}</span>
-                    <span class="rating-count">({{ row.totalReviews }})</span>
+                  <div class="quality-cell" [class.at-risk]="isAtRisk(row)">
+                    <div class="quality-score" [ngClass]="getQualityClass(calculateQualityScore(row))">
+                      <span class="score-value">{{ calculateQualityScore(row) }}</span>
+                    </div>
+                    <div class="quality-details">
+                      <div class="quality-rating">
+                        <mat-icon>star</mat-icon>
+                        {{ row.averageRating | number:'1.1-1' }}
+                      </div>
+                      <span class="quality-meta">
+                        {{ row.totalReviews }} resenas
+                      </span>
+                    </div>
+                    @if (isAtRisk(row)) {
+                      <mat-icon class="risk-indicator" matTooltip="Enfermera en riesgo - Requiere atencion">warning</mat-icon>
+                    }
                   </div>
                 </td>
               </ng-container>
@@ -140,15 +203,10 @@
               <ng-container matColumnDef="services">
                 <th mat-header-cell *matHeaderCellDef>Servicios</th>
                 <td mat-cell *matCellDef="let row">
-                  <span class="services-count">{{ row.totalServicesCompleted }}</span>
-                </td>
-              </ng-container>
-
-              <!-- District Column -->
-              <ng-container matColumnDef="district">
-                <th mat-header-cell *matHeaderCellDef>Distrito</th>
-                <td mat-cell *matCellDef="let row">
-                  <span class="district-name">{{ row.location?.district || '-' }}</span>
+                  <div class="services-cell">
+                    <span class="services-count">{{ row.totalServicesCompleted }}</span>
+                    <span class="services-label">completados</span>
+                  </div>
                 </td>
               </ng-container>
 
@@ -160,6 +218,11 @@
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #actionsMenu="matMenu">
+                    <button mat-menu-item (click)="viewReviews(row)">
+                      <mat-icon>rate_review</mat-icon>
+                      <span>Ver Resenas ({{ row.totalReviews }})</span>
+                    </button>
+                    <mat-divider></mat-divider>
                     <button mat-menu-item (click)="toggleStatus(row)">
                       <mat-icon>{{ row.isActive ? 'person_off' : 'person' }}</mat-icon>
                       <span>{{ row.isActive ? 'Desactivar' : 'Activar' }}</span>
@@ -168,6 +231,12 @@
                       <button mat-menu-item (click)="toggleAvailability(row)">
                         <mat-icon>{{ row.isAvailable ? 'event_busy' : 'event_available' }}</mat-icon>
                         <span>{{ row.isAvailable ? 'Marcar No Disponible' : 'Marcar Disponible' }}</span>
+                      </button>
+                    }
+                    @if (row.isActive && isAtRisk(row)) {
+                      <button mat-menu-item class="suspend-action" (click)="suspendNurse(row)">
+                        <mat-icon color="warn">block</mat-icon>
+                        <span>Suspender</span>
                       </button>
                     }
                     <mat-divider></mat-divider>

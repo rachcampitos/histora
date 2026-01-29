@@ -1,0 +1,528 @@
+// Loading
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+// ==================== SUMMARY STATS ====================
+.summary-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .summary-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+  }
+
+  .summary-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .summary-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
+  }
+
+  .summary-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  &.danger .summary-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  &.warning .summary-icon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  &.info .summary-icon {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  &.neutral .summary-icon {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  }
+}
+
+// ==================== MODERATION CARD ====================
+.moderation-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tab-label {
+  margin-left: 8px;
+}
+
+.tab-content {
+  padding: 24px;
+  min-height: 400px;
+}
+
+// ==================== RISK LIST ====================
+.risk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.risk-card {
+  background: #fef2f2;
+  border-radius: 12px;
+  padding: 20px;
+  border-left: 4px solid #fca5a5;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #fee2e2;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+  }
+}
+
+.risk-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.risk-avatar {
+  position: relative;
+  flex-shrink: 0;
+
+  img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #fca5a5;
+  }
+
+  .risk-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    border: 2px solid white;
+
+    &.nurse {
+      background: #667eea;
+    }
+
+    &.patient {
+      background: #10b981;
+    }
+  }
+}
+
+.risk-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.risk-name {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.risk-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: #6b7280;
+
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #f59e0b;
+    }
+  }
+
+  .complaints {
+    color: #ef4444;
+    font-weight: 500;
+  }
+}
+
+.risk-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  .score-value {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  &.risk-high {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #b91c1c;
+  }
+
+  &.risk-medium {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+  }
+
+  &.risk-low {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+  }
+}
+
+.risk-reasons {
+  margin-bottom: 16px;
+
+  .reasons-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-right: 8px;
+  }
+
+  .reason-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+
+    mat-chip {
+      font-size: 12px;
+      background: #fecaca;
+      color: #991b1b;
+    }
+  }
+}
+
+.risk-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+// ==================== REVIEWS LIST ====================
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-card {
+  background: #fff8e1;
+  border-radius: 12px;
+  padding: 20px;
+  border-left: 4px solid #fbbf24;
+
+  &.critical {
+    background: #fef2f2;
+    border-color: #ef4444;
+  }
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.review-rating {
+  display: flex;
+  gap: 2px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #e5e7eb;
+
+    &.filled {
+      color: #f59e0b;
+    }
+  }
+}
+
+.review-date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.review-parties {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .review-from,
+  .review-to {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #6b7280;
+    }
+  }
+
+  .arrow {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #9ca3af;
+  }
+}
+
+.review-text {
+  font-size: 14px;
+  color: #4b5563;
+  font-style: italic;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.review-actions {
+  display: flex;
+  gap: 12px;
+}
+
+// ==================== EMPTY STATE ====================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: #10b981;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: #6b7280;
+  }
+}
+
+// ==================== ACTIONS ====================
+.danger-action {
+  color: #dc2626;
+}
+
+// ==================== RESPONSIVE ====================
+@media (max-width: 768px) {
+  .summary-row {
+    flex-direction: column;
+  }
+
+  .summary-card {
+    min-width: 100%;
+  }
+
+  .risk-header {
+    flex-wrap: wrap;
+  }
+
+  .risk-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// ==================== DARK MODE ====================
+:host-context(body.dark) {
+  .summary-card {
+    background: #1a202e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+
+    .summary-value {
+      color: #ffffff;
+    }
+
+    .summary-label {
+      color: #9ca3af;
+    }
+  }
+
+  .moderation-card {
+    background: #1a202e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .risk-card {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+  }
+
+  .risk-name {
+    color: #ffffff;
+  }
+
+  .risk-meta {
+    color: #9ca3af;
+
+    .complaints {
+      color: #f87171;
+    }
+  }
+
+  .risk-avatar img {
+    border-color: rgba(252, 165, 165, 0.5);
+  }
+
+  .risk-reasons {
+    .reasons-label {
+      color: #9ca3af;
+    }
+
+    .reason-chips mat-chip {
+      background: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+  }
+
+  .risk-score {
+    &.risk-high {
+      background: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    &.risk-medium {
+      background: rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+    }
+
+    &.risk-low {
+      background: rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+  }
+
+  .review-card {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+
+    &.critical {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+  }
+
+  .review-rating mat-icon {
+    color: #4b5563;
+
+    &.filled {
+      color: #fbbf24;
+    }
+  }
+
+  .review-parties {
+    .review-from,
+    .review-to {
+      color: #e5e7eb;
+    }
+  }
+
+  .review-text {
+    background: rgba(0, 0, 0, 0.2);
+    color: #d1d5db;
+  }
+
+  .empty-state {
+    mat-icon {
+      color: #4ade80;
+    }
+
+    p {
+      color: #9ca3af;
+    }
+  }
+}

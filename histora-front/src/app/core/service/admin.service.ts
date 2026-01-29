@@ -46,12 +46,45 @@ export interface ReniecStats {
   provider: string;
 }
 
+export interface BusinessMetrics {
+  mrr: number;
+  mrrGrowth: number;
+  gmv: number;
+  gmvGrowth: number;
+  totalUsers: number;
+  newUsersThisMonth: number;
+  churnRate: number;
+  arpu: number;
+}
+
+export interface ModerationStats {
+  atRiskNurses: number;
+  atRiskPatients: number;
+  pendingReports: number;
+  suspendedUsers: number;
+  recentComplaints: number;
+}
+
+export interface AtRiskUser {
+  id: string;
+  type: 'nurse' | 'patient';
+  name: string;
+  avatar?: string;
+  riskScore: number;
+  riskReasons: string[];
+  lastIncidentAt?: Date;
+  totalComplaints: number;
+  averageRating?: number;
+}
+
 export interface DashboardStats {
   nurses: NurseStats;
   services: ServiceStats;
   safety: SafetyStats;
   ratings: RatingsStats;
   reniec: ReniecStats;
+  business?: BusinessMetrics;
+  moderation?: ModerationStats;
 }
 
 export interface PanicAlert {
@@ -383,6 +416,29 @@ export class AdminService implements OnDestroy {
    */
   getExpiringVerifications(): Observable<ExpiringVerification[]> {
     return this.http.get<ExpiringVerification[]>(`${this.apiUrl}/dashboard/verifications/expiring`);
+  }
+
+  /**
+   * Get business metrics (MRR, GMV, churn, etc.)
+   */
+  getBusinessMetrics(): Observable<BusinessMetrics> {
+    return this.http.get<BusinessMetrics>(`${this.apiUrl}/dashboard/metrics/business`);
+  }
+
+  /**
+   * Get moderation statistics
+   */
+  getModerationStats(): Observable<ModerationStats> {
+    return this.http.get<ModerationStats>(`${this.apiUrl}/dashboard/moderation/stats`);
+  }
+
+  /**
+   * Get users at risk for moderation
+   */
+  getAtRiskUsers(limit = 10): Observable<AtRiskUser[]> {
+    return this.http.get<AtRiskUser[]>(`${this.apiUrl}/dashboard/moderation/at-risk`, {
+      params: { limit: limit.toString() }
+    });
   }
 
   // ============= POLLING METHODS =============

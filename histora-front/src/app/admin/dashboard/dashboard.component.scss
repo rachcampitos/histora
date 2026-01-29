@@ -14,6 +14,178 @@
   }
 }
 
+// ==================== SECTION TITLES ====================
+.section-title {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6c757d;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    color: #667eea;
+  }
+}
+
+.kpi-section {
+  margin-bottom: 24px;
+
+  &.operational {
+    .section-title mat-icon {
+      color: #ff9800;
+    }
+  }
+}
+
+// ==================== SEMAPHORE ALERTS ====================
+.semaphore-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.semaphore-alert {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border-left: 4px solid;
+
+  .semaphore-indicator {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+      color: white;
+    }
+  }
+
+  .semaphore-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .semaphore-title {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+
+  .semaphore-description {
+    display: block;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  .semaphore-action {
+    flex-shrink: 0;
+    font-size: 13px;
+    padding: 6px 16px;
+    height: auto;
+    line-height: 1.4;
+  }
+
+  // Critical - Red
+  &.semaphore-critical {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: #ef4444;
+
+    .semaphore-indicator {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      animation: pulse-urgent 1s infinite;
+    }
+
+    .semaphore-title {
+      color: #b91c1c;
+    }
+
+    .semaphore-description {
+      color: #991b1b;
+    }
+
+    .semaphore-action {
+      background: #ef4444;
+      color: white;
+
+      &:hover {
+        background: #dc2626;
+      }
+    }
+  }
+
+  // Important - Orange/Yellow
+  &.semaphore-important {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #f59e0b;
+
+    .semaphore-indicator {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .semaphore-title {
+      color: #92400e;
+    }
+
+    .semaphore-description {
+      color: #78350f;
+    }
+
+    .semaphore-action {
+      background: #f59e0b;
+      color: white;
+
+      &:hover {
+        background: #d97706;
+      }
+    }
+  }
+
+  // Informative - Blue
+  &.semaphore-informative {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: #3b82f6;
+
+    .semaphore-indicator {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .semaphore-title {
+      color: #1e40af;
+    }
+
+    .semaphore-description {
+      color: #1e3a8a;
+    }
+
+    .semaphore-action {
+      background: #3b82f6;
+      color: white;
+
+      &:hover {
+        background: #2563eb;
+      }
+    }
+  }
+}
+
 // ==================== ALERTS BANNER ====================
 .alerts-banner {
   background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
@@ -244,10 +416,66 @@
     display: block;
   }
 
+  .kpi-trend {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+
+    small {
+      font-weight: 400;
+      margin-left: 4px;
+      opacity: 0.7;
+    }
+
+    &.trend-up {
+      color: #10b981;
+    }
+
+    &.trend-down {
+      color: #ef4444;
+    }
+  }
+
   mat-progress-bar {
     margin-top: 8px;
     border-radius: 4px;
     height: 6px;
+  }
+
+  // Horizontal layout for operational cards
+  .kpi-content.horizontal {
+    flex-direction: row;
+    align-items: center;
+
+    .kpi-icon-wrapper {
+      margin-bottom: 0;
+      margin-right: 16px;
+    }
+
+    .kpi-info {
+      flex: 1;
+    }
+
+    .kpi-value {
+      font-size: 22px;
+    }
+  }
+
+  &.operational-card {
+    min-height: auto;
+
+    .card-body {
+      padding: 14px 16px;
+    }
   }
 
   // Color variants
@@ -403,10 +631,145 @@
   }
 }
 
+// ==================== AT RISK USERS ====================
+.at-risk-card {
+  .header {
+    .header-icon.danger {
+      color: #ef4444;
+    }
+  }
+
+  .body {
+    padding: 12px 16px;
+  }
+}
+
+.at-risk-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #fef2f2;
+  border-radius: 10px;
+  border-left: 3px solid #fca5a5;
+  transition: all 0.2s ease;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    background: #fee2e2;
+    transform: translateX(4px);
+  }
+}
+
+.at-risk-avatar {
+  position: relative;
+  flex-shrink: 0;
+
+  img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fca5a5;
+  }
+
+  .at-risk-type {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+
+    &.nurse {
+      background: #667eea;
+    }
+
+    &.patient {
+      background: #10b981;
+    }
+  }
+}
+
+.at-risk-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.at-risk-name {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.at-risk-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.risk-reason {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: #fecaca;
+  color: #991b1b;
+  border-radius: 4px;
+}
+
+.at-risk-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  .score-value {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  &.risk-high {
+    background: #fecaca;
+    color: #b91c1c;
+  }
+
+  &.risk-medium {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  &.risk-low {
+    background: #d1fae5;
+    color: #065f46;
+  }
+}
+
 // ==================== ACTIVITY TIMELINE ====================
 .activity-card {
   .body {
-    max-height: 400px;
+    max-height: 350px;
     overflow-y: auto;
   }
 }
@@ -701,6 +1064,97 @@
 
 // ==================== DARK MODE ====================
 :host-context(body.dark) {
+  .section-title {
+    color: #b8c5d6;
+
+    mat-icon {
+      color: #818cf8;
+    }
+  }
+
+  .kpi-section.operational .section-title mat-icon {
+    color: #fb923c;
+  }
+
+  // Semaphore alerts dark
+  .semaphore-alert {
+    &.semaphore-critical {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.25) 100%);
+
+      .semaphore-title {
+        color: #fca5a5;
+      }
+
+      .semaphore-description {
+        color: #f87171;
+      }
+    }
+
+    &.semaphore-important {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.25) 100%);
+
+      .semaphore-title {
+        color: #fcd34d;
+      }
+
+      .semaphore-description {
+        color: #fbbf24;
+      }
+    }
+
+    &.semaphore-informative {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.25) 100%);
+
+      .semaphore-title {
+        color: #93c5fd;
+      }
+
+      .semaphore-description {
+        color: #60a5fa;
+      }
+    }
+  }
+
+  // At risk dark
+  .at-risk-item {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+  }
+
+  .at-risk-avatar img {
+    border-color: rgba(252, 165, 165, 0.5);
+  }
+
+  .at-risk-name {
+    color: #ffffff;
+  }
+
+  .risk-reason {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+
+  .at-risk-score {
+    &.risk-high {
+      background: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+
+    &.risk-medium {
+      background: rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+    }
+
+    &.risk-low {
+      background: rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+  }
+
   .alerts-banner {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
@@ -721,6 +1175,16 @@
       color: #6b7280;
     }
 
+    .kpi-trend {
+      &.trend-up {
+        color: #34d399;
+      }
+
+      &.trend-down {
+        color: #f87171;
+      }
+    }
+
     &:hover {
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     }
@@ -738,6 +1202,10 @@
 
         .header-icon {
           color: #818cf8;
+
+          &.danger {
+            color: #f87171;
+          }
         }
       }
     }
