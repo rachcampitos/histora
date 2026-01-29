@@ -340,6 +340,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
 
   private async confirmCashPayment() {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Pago en Efectivo',
       message: 'Pagara al finalizar el servicio. La enfermera confirmara el pago en persona.',
       buttons: [
@@ -438,6 +439,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
   // Cancel checkout
   async cancelCheckout() {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Cancelar Pago',
       message: 'Esta seguro que desea cancelar? Su solicitud quedara pendiente de pago.',
       buttons: [

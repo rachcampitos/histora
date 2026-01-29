@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -21,7 +21,8 @@ interface ChecklistItem {
   imports: [CommonModule, IonicModule],
 })
 export class ProfileChecklistComponent implements OnInit {
-  @Input() nurse: Nurse | null = null;
+  // Use signal-based input for reactivity with computed()
+  nurse = input<Nurse | null>(null);
   @Output() dismissed = new EventEmitter<void>();
 
   private router = inject(Router);
@@ -31,7 +32,7 @@ export class ProfileChecklistComponent implements OnInit {
   isVisible = signal(true);
 
   checklistItems = computed<ChecklistItem[]>(() => {
-    const nurse = this.nurse;
+    const nurse = this.nurse();
     return [
       {
         id: 'paymentMethods',

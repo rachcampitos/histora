@@ -319,6 +319,7 @@ export class VerificationPage implements OnInit, OnDestroy {
 
     // Show success alert
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-success',
       header: '¡Felicitaciones!',
       message: 'Tu cuenta ha sido verificada. Ya puedes activar tu disponibilidad y comenzar a recibir solicitudes de pacientes.',
       buttons: [
@@ -336,6 +337,7 @@ export class VerificationPage implements OnInit, OnDestroy {
 
   private async showRejectionAlert(reason?: string) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-warning',
       header: 'Verificación Rechazada',
       message: reason || 'Tu verificación fue rechazada. Por favor revisa los documentos e intenta nuevamente.',
       buttons: ['Entendido']
@@ -655,6 +657,7 @@ export class VerificationPage implements OnInit, OnDestroy {
     if (!this.canSubmitDocuments() || !this.nurse()) return;
 
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Confirmar envio',
       message: 'Una vez enviados los documentos, seran revisados por nuestro equipo. Este proceso puede tomar de 24 a 48 horas. Deseas continuar?',
       buttons: [

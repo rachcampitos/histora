@@ -235,6 +235,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     event.stopPropagation();
 
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Aceptar solicitud',
       message: `¿Deseas aceptar el servicio de ${request.service.name} para ${request.patient?.firstName || 'el paciente'}?`,
       buttons: [
@@ -283,6 +284,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     event.stopPropagation();
 
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Rechazar solicitud',
       message: '¿Estas segura de rechazar esta solicitud?',
       inputs: [
@@ -299,7 +301,7 @@ export class RequestsPage implements OnInit, OnDestroy {
         },
         {
           text: 'Rechazar',
-          cssClass: 'danger',
+          role: 'destructive',
           handler: (data) => this.doRejectRequest(request, data.reason)
         }
       ]
@@ -349,6 +351,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     };
 
     const alert = await this.alertCtrl.create({
+      cssClass: newStatus === 'completed' ? 'histora-alert histora-alert-success' : 'histora-alert histora-alert-primary',
       header: statusLabels[newStatus],
       message: confirmMessages[newStatus],
       buttons: [

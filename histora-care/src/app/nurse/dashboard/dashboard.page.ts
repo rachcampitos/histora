@@ -268,6 +268,7 @@ export class DashboardPage implements OnInit, OnDestroy {
    */
   async startService(request: ServiceRequest) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Iniciar Servicio',
       message: '¿Confirmas que vas en camino al paciente?',
       buttons: [
@@ -295,6 +296,7 @@ export class DashboardPage implements OnInit, OnDestroy {
    */
   async markArrival(request: ServiceRequest) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Llegada',
       message: '¿Confirmas que llegaste al domicilio del paciente?',
       buttons: [
@@ -323,6 +325,7 @@ export class DashboardPage implements OnInit, OnDestroy {
    */
   async beginService(request: ServiceRequest) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Iniciar Procedimiento',
       message: '¿Confirmas que inicias el procedimiento?',
       buttons: [
@@ -351,6 +354,7 @@ export class DashboardPage implements OnInit, OnDestroy {
    */
   async completeService(request: ServiceRequest) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-success',
       header: 'Completar Servicio',
       message: '¿Confirmas que completaste el servicio?',
       buttons: [

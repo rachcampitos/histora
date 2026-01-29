@@ -186,6 +186,7 @@ export class RequestPage implements OnInit {
 
     // Confirm submission
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Confirmar Solicitud',
       message: `Va a solicitar el servicio "${this.selectedService()?.name}" a ${nurseData.user?.firstName}. El costo es ${this.formatPrice(this.selectedService()?.price || 0, this.selectedService()?.currency || 'PEN')}. ¿Desea continuar?`,
       buttons: [

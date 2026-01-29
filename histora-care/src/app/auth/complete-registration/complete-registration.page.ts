@@ -662,6 +662,7 @@ export class CompleteRegistrationPage {
 
       // Show success alert
       const alert = await this.alertCtrl.create({
+        cssClass: 'histora-alert histora-alert-success',
         header: 'Registro Completado',
         message:
           'Tu solicitud de verificacion ha sido enviada. Te notificaremos cuando sea aprobada. Mientras tanto, puedes configurar tu perfil.',
