@@ -2,6 +2,29 @@
 /* Updated with WCAG 2.1 AA compliance fixes */
 
 // =============================================================================
+// UNIFIED DIALOG SYSTEM - Consistent with NurseLite
+// =============================================================================
+
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 16px;
+
+  .mdc-dialog__surface {
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    max-width: 380px;
+  }
+}
+
+// Dark mode dialog
+body.dark .mat-mdc-dialog-container {
+  .mdc-dialog__surface {
+    background: #1e293b !important;
+    border: 1px solid #475569;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+// =============================================================================
 // WCAG COLOR CONTRAST FIXES
 // =============================================================================
 

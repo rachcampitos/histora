@@ -17,7 +17,7 @@ export interface ConfirmDialogData {
   selector: 'app-confirm-dialog',
   template: `
     <div class="confirm-dialog">
-      <div class="dialog-header" [class.warn]="data.confirmColor === 'warn'">
+      <div class="dialog-header">
         <div class="icon-container" [class.warn]="data.confirmColor === 'warn'">
           <mat-icon>{{ data.icon || getDefaultIcon() }}</mat-icon>
         </div>
@@ -26,13 +26,13 @@ export interface ConfirmDialogData {
       <mat-dialog-content>
         <p>{{ data.message }}</p>
       </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-stroked-button (click)="onCancel()">Cancelar</button>
+      <mat-dialog-actions>
+        <button class="cancel-btn" (click)="onCancel()">Cancelar</button>
         <button
-          mat-flat-button
-          [color]="data.confirmColor"
-          (click)="onConfirm()"
-          [class.delete-btn]="data.confirmColor === 'warn'">
+          class="confirm-btn"
+          [class.warn]="data.confirmColor === 'warn'"
+          [class.primary]="data.confirmColor === 'primary'"
+          (click)="onConfirm()">
           {{ data.confirmText }}
         </button>
       </mat-dialog-actions>
@@ -40,113 +40,124 @@ export interface ConfirmDialogData {
   `,
   styles: [`
     .confirm-dialog {
-      padding: 8px;
+      padding: 12px 12px 4px;
     }
 
     .dialog-header {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 8px;
+      padding: 8px 8px 0;
 
       h2 {
         margin: 0;
         font-size: 20px;
-        font-weight: 500;
-        color: #2c3e50;
-      }
-
-      &.warn h2 {
-        color: #c62828;
+        font-weight: 700;
+        color: #1e293b;
+        text-align: center;
       }
     }
 
     .icon-container {
-      width: 48px;
-      height: 48px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #e3f2fd;
+      background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
 
       mat-icon {
         font-size: 28px;
         width: 28px;
         height: 28px;
-        color: #1976d2;
+        color: #ffffff;
       }
 
       &.warn {
-        background: #ffebee;
-
-        mat-icon {
-          color: #c62828;
-        }
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       }
     }
 
     mat-dialog-content {
-      min-width: 320px;
-      padding: 0 !important;
+      padding: 8px 8px 12px !important;
 
       p {
         margin: 0;
-        font-size: 14px;
-        color: #666;
+        font-size: 15px;
+        color: #64748b;
         line-height: 1.5;
+        text-align: center;
       }
     }
 
     mat-dialog-actions {
-      padding: 24px 0 0 0 !important;
+      padding: 8px !important;
       margin-bottom: 0 !important;
-      gap: 12px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
 
       button {
-        min-width: 100px;
-        height: 40px;
-        border-radius: 8px;
-        font-weight: 500;
+        flex: 1;
+        min-height: 48px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 15px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
 
-      .delete-btn {
-        background-color: #c62828 !important;
-        color: white !important;
+      .cancel-btn {
+        background: #f1f5f9;
+        color: #475569;
 
         &:hover {
-          background-color: #b71c1c !important;
+          background: #e2e8f0;
+        }
+      }
+
+      .confirm-btn {
+        color: #ffffff;
+
+        &.primary {
+          background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+
+          &:hover {
+            box-shadow: 0 4px 12px rgba(74, 157, 154, 0.4);
+          }
+        }
+
+        &.warn {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+
+          &:hover {
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+          }
         }
       }
     }
 
+    /* Dark mode */
     :host-context(body.dark) {
       .dialog-header h2 {
-        color: #ffffff;
-      }
-
-      .dialog-header.warn h2 {
-        color: #ef5350;
-      }
-
-      .icon-container {
-        background: rgba(25, 118, 210, 0.15);
-
-        mat-icon {
-          color: #64b5f6;
-        }
-
-        &.warn {
-          background: rgba(198, 40, 40, 0.15);
-
-          mat-icon {
-            color: #ef5350;
-          }
-        }
+        color: #f1f5f9;
       }
 
       mat-dialog-content p {
-        color: #b0b0b0;
+        color: #94a3b8;
+      }
+
+      .cancel-btn {
+        background: #334155;
+        color: #f1f5f9;
+
+        &:hover {
+          background: #475569;
+        }
       }
     }
   `],
