@@ -102,7 +102,9 @@
               @if (showDistritoResults() && filteredDistritos().length > 0) {
                 <div class="search-results">
                   @for (distrito of filteredDistritos(); track distrito.id) {
-                    <div class="result-item" (click)="selectDistrito(distrito)">
+                    <div class="result-item"
+                         (mousedown)="selectDistrito(distrito); $event.preventDefault()"
+                         (touchend)="selectDistrito(distrito); $event.preventDefault()">
                       <ion-icon name="location-outline"></ion-icon>
                       <span>{{ distrito.nombre }}</span>
                       @if (distrito.zona) {

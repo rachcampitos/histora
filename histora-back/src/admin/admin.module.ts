@@ -9,6 +9,7 @@ import { NurseVerification, NurseVerificationSchema } from '../nurses/schema/nur
 import { ReniecUsage, ReniecUsageSchema } from '../nurses/schema/reniec-usage.schema';
 import { ServiceRequest, ServiceRequestSchema } from '../service-requests/schema/service-request.schema';
 import { PanicAlert, PanicAlertSchema } from '../safety/schema/panic-alert.schema';
+import { UploadsModule } from '../uploads/uploads.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PanicAlert, PanicAlertSchema } from '../safety/schema/panic-alert.schem
       { name: ServiceRequest.name, schema: ServiceRequestSchema },
       { name: PanicAlert.name, schema: PanicAlertSchema },
     ]),
+    UploadsModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

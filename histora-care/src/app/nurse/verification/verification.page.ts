@@ -345,6 +345,25 @@ export class VerificationPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
+  private async showDocumentsSubmittedAlert() {
+    const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-success',
+      header: '¡Documentos enviados!',
+      message: 'Tu solicitud de verificación está en revisión. Te notificaremos en 24-48 horas cuando esté lista.<br><br>Mientras tanto, puedes completar tu perfil profesional y configurar tus servicios.',
+      buttons: [
+        {
+          text: 'Ir al inicio',
+          cssClass: 'alert-button-primary',
+          handler: () => {
+            this.router.navigate(['/nurse/dashboard'], { replaceUrl: true });
+          }
+        }
+      ],
+      backdropDismiss: false
+    });
+    await alert.present();
+  }
+
   private updateWaitingTime() {
     const verification = this.verification();
     if (!verification?.createdAt) {
@@ -710,7 +729,9 @@ export class VerificationPage implements OnInit, OnDestroy {
       }
 
       await loading.dismiss();
-      this.showToast('Documentos enviados correctamente', 'success');
+
+      // Show success modal with next steps
+      await this.showDocumentsSubmittedAlert();
     } catch (error: unknown) {
       await loading.dismiss();
       console.error('Error submitting verification:', error);
