@@ -4,6 +4,48 @@
       <app-breadcrumb [title]="'Pacientes'" [items]="['Admin']" [active_item]="'Pacientes'"></app-breadcrumb>
     </div>
 
+    <!-- Summary Stats -->
+    @if (!isLoading) {
+      <div class="summary-row">
+        <div class="summary-card total">
+          <div class="summary-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.total }}</span>
+            <span class="summary-label">Total Pacientes</span>
+          </div>
+        </div>
+        <div class="summary-card active">
+          <div class="summary-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.active }}</span>
+            <span class="summary-label">Activos</span>
+          </div>
+        </div>
+        <div class="summary-card inactive">
+          <div class="summary-icon">
+            <mat-icon>person_off</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.inactive }}</span>
+            <span class="summary-label">Inactivos</span>
+          </div>
+        </div>
+        <div class="summary-card new">
+          <div class="summary-icon">
+            <mat-icon>person_add</mat-icon>
+          </div>
+          <div class="summary-info">
+            <span class="summary-value">{{ summary.newThisMonth }}</span>
+            <span class="summary-label">Nuevos este mes</span>
+          </div>
+        </div>
+      </div>
+    }
+
     <mat-card class="main-card">
       <mat-card-header>
         <mat-card-title>{{ 'ADMIN.PATIENTS.CARD_TITLE' | translate }}</mat-card-title>
@@ -171,10 +213,21 @@
                     <mat-icon>more_vert</mat-icon>
                   </button>
                   <mat-menu #actionsMenu="matMenu">
+                    <button mat-menu-item (click)="viewServiceHistory(patient)">
+                      <mat-icon>history</mat-icon>
+                      <span>Ver Historial ({{ patient.totalServicesCompleted || 0 }})</span>
+                    </button>
+                    <mat-divider></mat-divider>
                     <button mat-menu-item (click)="toggleStatus(patient)">
                       <mat-icon>{{ patient.isActive ? 'person_off' : 'person' }}</mat-icon>
                       <span>{{ patient.isActive ? 'Desactivar' : 'Activar' }}</span>
                     </button>
+                    @if (patient.isActive) {
+                      <button mat-menu-item class="block-action" (click)="blockPatient(patient)">
+                        <mat-icon color="warn">block</mat-icon>
+                        <span>Bloquear</span>
+                      </button>
+                    }
                     <mat-divider></mat-divider>
                     <button mat-menu-item (click)="deletePatient(patient)" class="delete-action">
                       <mat-icon color="warn">delete_forever</mat-icon>

@@ -61,6 +61,18 @@
       "submenu": []
     },
     {
+      "path": "/admin/moderation",
+      "title": "MENUITEMS.ADMIN.MODERATION",
+      "iconType": "material-icons-outlined",
+      "icon": "gavel",
+      "class": "",
+      "groupTitle": false,
+      "badge": "",
+      "badgeClass": "",
+      "role": ["PLATFORM_ADMIN", "platform_admin"],
+      "submenu": []
+    },
+    {
       "path": "/admin/users",
       "title": "MENUITEMS.ADMIN.USERS",
       "iconType": "material-icons-outlined",

@@ -22,6 +22,14 @@ import { AdminService, AdminNurse, NurseQueryParams } from '@core/service/admin.
 import { ConfirmDialogComponent } from '../users/dialogs/confirm-dialog.component';
 import { FeatherModule } from 'angular-feather';
 
+interface NursesSummary {
+  total: number;
+  active: number;
+  verified: number;
+  atRisk: number;
+  pendingVerification: number;
+}
+
 @Component({
   standalone: true,
   selector: 'app-admin-nurses',
@@ -59,8 +67,17 @@ export class NursesComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   isLoading = true;
-  displayedColumns = ['nurse', 'cep', 'status', 'verification', 'rating', 'services', 'district', 'actions'];
+  displayedColumns = ['nurse', 'cep', 'status', 'verification', 'quality', 'services', 'actions'];
   dataSource = new MatTableDataSource<AdminNurse>([]);
+
+  // Summary stats
+  summary: NursesSummary = {
+    total: 0,
+    active: 0,
+    verified: 0,
+    atRisk: 0,
+    pendingVerification: 0,
+  };
 
   // Pagination
   totalNurses = 0;
@@ -123,6 +140,7 @@ export class NursesComponent implements OnInit {
       next: (response) => {
         this.dataSource.data = response.data;
         this.totalNurses = response.pagination.total;
+        this.updateSummary();
         this.isLoading = false;
       },
       error: (err) => {
@@ -185,6 +203,83 @@ export class NursesComponent implements OnInit {
     const first = firstName?.charAt(0) || '';
     const last = lastName?.charAt(0) || '';
     return (first + last).toUpperCase() || '??';
+  }
+
+  // Quality Score: Combines rating (50%), review count (25%), services count (25%)
+  calculateQualityScore(nurse: AdminNurse): number {
+    // Rating component: 0-5 -> 0-50 points
+    const ratingScore = (nurse.averageRating / 5) * 50;
+
+    // Reviews component: More reviews = better, max at 50 reviews
+    const reviewsScore = Math.min(nurse.totalReviews / 50, 1) * 25;
+
+    // Services component: More services = better, max at 100 services
+    const servicesScore = Math.min(nurse.totalServicesCompleted / 100, 1) * 25;
+
+    return Math.round(ratingScore + reviewsScore + servicesScore);
+  }
+
+  getQualityClass(score: number): string {
+    if (score >= 70) return 'quality-excellent';
+    if (score >= 50) return 'quality-good';
+    if (score >= 30) return 'quality-average';
+    return 'quality-low';
+  }
+
+  getQualityLabel(score: number): string {
+    if (score >= 70) return 'Excelente';
+    if (score >= 50) return 'Bueno';
+    if (score >= 30) return 'Regular';
+    return 'Bajo';
+  }
+
+  isAtRisk(nurse: AdminNurse): boolean {
+    return nurse.averageRating < 3 || this.calculateQualityScore(nurse) < 30;
+  }
+
+  updateSummary(): void {
+    const nurses = this.dataSource.data;
+    this.summary = {
+      total: this.totalNurses,
+      active: nurses.filter(n => n.isActive).length,
+      verified: nurses.filter(n => n.verificationStatus === 'approved').length,
+      atRisk: nurses.filter(n => this.isAtRisk(n)).length,
+      pendingVerification: nurses.filter(n => n.verificationStatus === 'pending').length,
+    };
+  }
+
+  viewReviews(nurse: AdminNurse): void {
+    // TODO: Navigate to reviews for this nurse
+    this.snackBar.open(`Resenas de ${nurse.user?.firstName}: ${nurse.totalReviews} resenas`, 'Ver', {
+      duration: 3000,
+    });
+  }
+
+  suspendNurse(nurse: AdminNurse): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '450px',
+      data: {
+        title: 'Suspender Enfermera',
+        message: `¿Suspender temporalmente a ${nurse.user?.firstName} ${nurse.user?.lastName}? Esto desactivara su cuenta y no podra recibir servicios.`,
+        confirmText: 'Suspender',
+        confirmColor: 'warn',
+        icon: 'block',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.adminService.toggleNurseStatus(nurse.id).subscribe({
+          next: (response) => {
+            this.loadNurses();
+            this.snackBar.open('Enfermera suspendida temporalmente', 'Cerrar', { duration: 3000 });
+          },
+          error: (err) => {
+            this.snackBar.open(err.error?.message || 'Error al suspender enfermera', 'Cerrar', { duration: 3000 });
+          },
+        });
+      }
+    });
   }
 
   toggleStatus(nurse: AdminNurse): void {
