@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed, ViewChild, DestroyRef } fr
 import { AlertController, ToastController, IonModal, RefresherCustomEvent } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NurseApiService } from '../../core/services/nurse.service';
+import { ProductTourService } from '../../core/services/product-tour.service';
 import { Nurse, NurseService, ServiceCategory } from '../../core/models';
 
 interface CategoryOption {
@@ -22,6 +23,7 @@ export class ServicesPage implements OnInit {
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
   private destroyRef = inject(DestroyRef);
+  private productTour = inject(ProductTourService);
 
   // State signals
   nurse = signal<Nurse | null>(null);
@@ -63,6 +65,11 @@ export class ServicesPage implements OnInit {
 
   ngOnInit() {
     this.loadProfile();
+  }
+
+  ionViewWillLeave() {
+    // Stop any active tour when leaving to prevent freezing
+    this.productTour.forceStop();
   }
 
   loadProfile() {
