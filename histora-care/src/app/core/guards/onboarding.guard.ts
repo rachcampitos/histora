@@ -73,6 +73,10 @@ export const landingAccessGuard: CanActivateFn = async () => {
  *
  * IMPORTANT: This guard should be used AFTER authGuard
  * It checks if the authenticated user needs to complete onboarding
+ *
+ * NOTE: Nurses skip the general tutorial because they have their own
+ * specific onboarding at /nurse/onboarding which is more relevant
+ * for their business needs (payment setup, plans, etc.)
  */
 export const postAuthOnboardingGuard: CanActivateFn = async () => {
   const onboardingService = inject(OnboardingService);
@@ -86,6 +90,11 @@ export const postAuthOnboardingGuard: CanActivateFn = async () => {
 
   await onboardingService.ensureInitialized();
 
+  // Nurses skip general tutorial - they have specific onboarding at /nurse/onboarding
+  if (authService.isNurse()) {
+    return true;
+  }
+
   // Only show tutorial if user is authenticated AND hasn't completed it
   if (authService.isAuthenticated() && await onboardingService.shouldShowOnboarding()) {
     router.navigate(['/onboarding/tutorial']);
@@ -98,6 +107,9 @@ export const postAuthOnboardingGuard: CanActivateFn = async () => {
 /**
  * Guard that prevents accessing tutorial if already completed
  * Also ensures user is authenticated before showing tutorial
+ *
+ * NOTE: Nurses are redirected to their specific onboarding instead
+ * of the general tutorial
  */
 export const tutorialAccessGuard: CanActivateFn = async () => {
   const onboardingService = inject(OnboardingService);
@@ -121,12 +133,16 @@ export const tutorialAccessGuard: CanActivateFn = async () => {
     return false;
   }
 
+  // Nurses go to their specific onboarding, not the general tutorial
+  if (authService.isNurse()) {
+    router.navigate(['/nurse/onboarding']);
+    return false;
+  }
+
   // If already completed, redirect to dashboard based on role
   if (!(await onboardingService.shouldShowOnboarding())) {
     if (authService.isAdmin()) {
       router.navigate(['/admin/verifications']);
-    } else if (authService.isNurse()) {
-      router.navigate(['/nurse/dashboard']);
     } else {
       router.navigate(['/patient/tabs/home']);
     }
