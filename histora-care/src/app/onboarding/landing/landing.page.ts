@@ -37,7 +37,7 @@ export class LandingPage implements OnInit {
     patient: {
       headline: 'Atencion profesional',
       headlineSecond: 'en la puerta de tu casa',
-      subheadline: 'Enfermeras colegiadas y verificadas. Sin filas, sin esperas. Desde S/50.',
+      subheadline: 'Enfermeras colegiadas y verificadas. Sin filas, sin esperas.',
       ctaText: 'Encontrar enfermera cerca',
       ctaIcon: 'search',
       features: [
