@@ -107,31 +107,35 @@
         Agrega tus especialidades para que los pacientes puedan encontrarte
       </p>
 
-      <!-- Add New Specialty -->
-      <div class="add-specialty">
-        <ion-input
-          [value]="newSpecialty()"
-          (ionInput)="onNewSpecialtyChange($event)"
-          placeholder="Agregar especialidad..."
-          (keyup.enter)="addSpecialty()">
-        </ion-input>
-        <ion-button fill="clear" (click)="addSpecialty()" [disabled]="!newSpecialty()">
-          <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
-        </ion-button>
-      </div>
-
       <!-- Common Specialties Suggestions -->
       <div class="suggestions" *ngIf="getAvailableCommonSpecialties().length > 0">
-        <p class="suggestions-label">Sugerencias:</p>
+        <p class="suggestions-label">Toca para agregar:</p>
         <div class="suggestions-chips">
           <ion-chip
             *ngFor="let specialty of getAvailableCommonSpecialties()"
+            color="primary"
             outline
-            color="medium"
             (click)="addCommonSpecialty(specialty)">
-            <ion-icon name="add-outline"></ion-icon>
+            <ion-icon name="add-circle-outline"></ion-icon>
             <ion-label>{{ specialty }}</ion-label>
           </ion-chip>
+        </div>
+      </div>
+
+      <!-- Add Custom Specialty -->
+      <div class="add-specialty-section">
+        <p class="add-specialty-label">O escribe una especialidad personalizada:</p>
+        <div class="add-specialty">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <ion-input
+            [value]="newSpecialty()"
+            (ionInput)="onNewSpecialtyChange($event)"
+            placeholder="Buscar o escribir especialidad..."
+            (keyup.enter)="addSpecialty()">
+          </ion-input>
+          <ion-button fill="solid" size="small" (click)="addSpecialty()" [disabled]="!newSpecialty()" class="add-btn">
+            Agregar
+          </ion-button>
         </div>
       </div>
     </div>

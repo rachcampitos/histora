@@ -762,6 +762,12 @@ export class VerificationPage implements OnInit, OnDestroy {
   // ============= Navigation =============
 
   goBack() {
+    // If under review or approved, always go back to dashboard
+    if (this.isUnderReview() || this.isApproved()) {
+      this.router.navigate(['/nurse/dashboard']);
+      return;
+    }
+
     if (this.currentStep() === 'confirm_identity') {
       this.currentStep.set('validate_cep');
     } else if (this.currentStep() === 'upload_documents' && !this.verification()?.cepIdentityConfirmed) {

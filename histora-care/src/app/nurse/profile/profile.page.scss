@@ -131,13 +131,15 @@ $primary-gradient: var(--histora-gradient);
     margin: 0;
     font-size: tokens.$font-size-2xl;
     font-weight: tokens.$font-weight-bold;
-    color: #ffffff !important; // Force white to override any Ionic defaults
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
   }
 
   .nurse-role {
     margin: tokens.$spacing-1 0 0;
     font-size: tokens.$font-size-sm;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.9) !important;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
   }
 }
 
@@ -303,33 +305,13 @@ $primary-gradient: var(--histora-gradient);
   border-radius: tokens.$radius-md;
 }
 
-.add-specialty {
-  display: flex;
-  align-items: center;
-  gap: tokens.$spacing-2;
-  background: tokens.$surface-secondary;
-  border-radius: tokens.$radius-md;
-  padding: tokens.$spacing-1 tokens.$spacing-1 tokens.$spacing-1 tokens.$spacing-3;
-
-  ion-input {
-    --padding-start: 0;
-    --padding-end: 0;
-    font-size: tokens.$font-size-sm;
-  }
-
-  ion-button {
-    margin: 0;
-    --padding-start: #{tokens.$spacing-2};
-    --padding-end: #{tokens.$spacing-2};
-  }
-}
-
+// Suggestions Section (Primary way to add specialties)
 .suggestions {
-  margin-top: tokens.$spacing-4;
+  margin-bottom: tokens.$spacing-4;
 
   .suggestions-label {
-    margin: 0 0 tokens.$spacing-2;
-    font-size: tokens.$font-size-xs;
+    margin: 0 0 tokens.$spacing-3;
+    font-size: tokens.$font-size-sm;
     color: var(--text-secondary);
     font-weight: tokens.$font-weight-medium;
   }
@@ -337,19 +319,72 @@ $primary-gradient: var(--histora-gradient);
   .suggestions-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
 
     ion-chip {
       margin: 0;
       cursor: pointer;
-      font-size: tokens.$font-size-xs;
-      height: 28px;
+      font-size: tokens.$font-size-sm;
+      height: 36px;
+      --background: rgba(74, 157, 154, 0.1);
+      --color: #4a9d9a;
+      border: 1px solid rgba(74, 157, 154, 0.3);
+      transition: all tokens.$duration-normal tokens.$easing-standard;
+
+      &:active {
+        transform: scale(0.95);
+        --background: rgba(74, 157, 154, 0.2);
+      }
 
       ion-icon {
-        font-size: tokens.$font-size-sm;
+        font-size: 18px;
         margin-right: tokens.$spacing-1;
+        color: #4a9d9a;
       }
     }
+  }
+}
+
+// Add Custom Specialty Section
+.add-specialty-section {
+  margin-top: tokens.$spacing-4;
+  padding-top: tokens.$spacing-4;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  .add-specialty-label {
+    margin: 0 0 tokens.$spacing-3;
+    font-size: tokens.$font-size-xs;
+    color: var(--text-tertiary);
+  }
+}
+
+.add-specialty {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-2;
+  background: tokens.$surface-secondary;
+  border-radius: tokens.$radius-md;
+  padding: tokens.$spacing-2 tokens.$spacing-2 tokens.$spacing-2 tokens.$spacing-3;
+
+  .search-icon {
+    font-size: 20px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  ion-input {
+    --padding-start: #{tokens.$spacing-2};
+    --padding-end: 0;
+    font-size: tokens.$font-size-sm;
+    flex: 1;
+  }
+
+  .add-btn {
+    margin: 0;
+    --border-radius: #{tokens.$radius-md};
+    font-weight: tokens.$font-weight-semibold;
+    font-size: 13px;
+    height: 36px;
   }
 }
 
@@ -457,21 +492,27 @@ ion-range {
   .location-select {
     --background: #{tokens.$surface-secondary};
     --padding-start: 16px;
-    --padding-end: 40px;
-    --padding-top: 12px;
-    --padding-bottom: 12px;
+    --padding-end: 48px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
     border-radius: tokens.$radius-md;
     font-size: tokens.$font-size-base;
     width: 100%;
-    min-height: 48px;
+    min-height: 52px;
+
+    &::part(container) {
+      padding-inline-end: 16px;
+    }
 
     &::part(icon) {
-      margin-inline-start: 12px;
-      opacity: 0.6;
+      margin-inline-start: 16px;
+      opacity: 0.7;
+      font-size: 20px;
     }
 
     &::part(text) {
-      padding-inline-end: 8px;
+      padding-inline-end: 12px;
+      flex: 1;
     }
   }
 
@@ -1000,18 +1041,44 @@ ion-modal {
     background: tokens.$surface-dark-tertiary;
   }
 
+  .suggestions {
+    .suggestions-label {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    .suggestions-chips ion-chip {
+      --background: rgba(107, 181, 179, 0.15);
+      --color: #6bb5b3;
+      border-color: rgba(107, 181, 179, 0.3);
+
+      ion-icon {
+        color: #6bb5b3;
+      }
+
+      &:active {
+        --background: rgba(107, 181, 179, 0.25);
+      }
+    }
+  }
+
+  .add-specialty-section {
+    border-top-color: rgba(255, 255, 255, 0.1);
+
+    .add-specialty-label {
+      color: tokens.$color-neutral-500;
+    }
+  }
+
   .add-specialty {
     background: tokens.$surface-dark-tertiary;
+
+    .search-icon {
+      color: #64748b;
+    }
 
     ion-input {
       --color: #{tokens.$text-dark-primary};
       --placeholder-color: #{tokens.$color-neutral-500};
-    }
-  }
-
-  .suggestions {
-    .suggestions-label {
-      color: tokens.$text-dark-tertiary;
     }
   }
 
@@ -1046,6 +1113,89 @@ ion-modal {
 
   .helper-text {
     color: tokens.$color-neutral-500;
+  }
+
+  // Location Section
+  .location-display {
+    background: rgba(16, 185, 129, 0.15);
+
+    span {
+      color: #34d399;
+    }
+  }
+
+  .location-form {
+    .form-row .form-group label {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    .location-select {
+      --background: #{tokens.$surface-dark-tertiary};
+      --color: #{tokens.$text-dark-primary};
+      --placeholder-color: #{tokens.$color-neutral-500};
+      color: tokens.$text-dark-primary;
+
+      &::part(icon) {
+        color: #6bb5b3;
+        opacity: 1;
+      }
+
+      &::part(text) {
+        color: tokens.$text-dark-primary;
+      }
+    }
+
+    .search-container {
+      .distrito-input {
+        --background: #{tokens.$surface-dark-tertiary};
+        --color: #{tokens.$text-dark-primary};
+        --placeholder-color: #{tokens.$color-neutral-500};
+
+        ion-icon[slot="start"] {
+          color: #64748b;
+        }
+
+        &.has-value {
+          --background: rgba(107, 181, 179, 0.15);
+        }
+      }
+
+      .clear-btn ion-icon {
+        color: #64748b;
+      }
+
+      .search-results {
+        background: tokens.$surface-dark-secondary;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+        .result-item {
+          &:hover {
+            background: tokens.$surface-dark-tertiary;
+          }
+
+          &:not(:last-child) {
+            border-bottom-color: #334155;
+          }
+
+          ion-icon {
+            color: #6bb5b3;
+          }
+
+          span {
+            color: tokens.$text-dark-primary;
+          }
+
+          small {
+            background: #334155;
+            color: #94a3b8;
+          }
+        }
+
+        &.empty p {
+          color: #64748b;
+        }
+      }
+    }
   }
 
   // Availability Section
