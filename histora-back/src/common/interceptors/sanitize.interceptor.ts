@@ -63,9 +63,18 @@ export class SanitizeInterceptor implements NestInterceptor {
       request.body = this.sanitizeObject(request.body);
     }
 
-    // Also sanitize query parameters
+    // Also sanitize query parameters (in-place to avoid read-only property error)
     if (request.query && typeof request.query === 'object') {
-      request.query = sanitizeMongoQuery(request.query);
+      const sanitizedQuery = sanitizeMongoQuery(request.query);
+      // Modify in place instead of reassigning (request.query is read-only in newer Express)
+      for (const key of Object.keys(request.query)) {
+        if (!(key in sanitizedQuery)) {
+          delete request.query[key];
+        }
+      }
+      for (const [key, value] of Object.entries(sanitizedQuery)) {
+        request.query[key] = value;
+      }
     }
 
     return next.handle();
