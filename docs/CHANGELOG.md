@@ -2,6 +2,35 @@
 
 Historial de cambios del proyecto Histora.
 
+## [v0.12.0] - 2026-01-29
+
+### Onboarding y Perfil de Enfermeras (NurseLite)
+
+#### Onboarding de Enfermeras
+- **Flujo de 4 pantallas**: Welcome, Payment Model, Payment Setup, Plans
+- **Modelo P2P explicado**: Los pacientes pagan directamente a las enfermeras
+- **Metodos de pago**: Configuracion de Yape, Plin y Efectivo
+- **Planes de suscripcion**: Basico (gratis), Pro (S/29), Premium (S/99)
+- **Estado persistente**: localStorage para trackear completitud
+
+#### Profile Checklist Component
+- **Checklist gamificado**: Muestra progreso de completitud del perfil
+- **4 items trackeados**: Metodos de pago, Servicios, Disponibilidad, Biografia
+- **UI minimizable**: Se puede colapsar y se oculta al completar todo
+- **Integracion con dashboard**: Visible despues del banner de verificacion
+
+#### Banner Contextual de Pagos
+- **Deteccion inteligente**: Aparece cuando no hay Yape/Plin configurado
+- **Scroll automatico**: Navega a la seccion de metodos de pago
+- **Soporte dark mode**: Colores adaptados al tema NurseLite
+
+#### Mejoras de UX
+- Redireccion automatica al onboarding si no esta completo
+- Dark mode completo en todos los componentes nuevos
+- Gradientes NurseLite (teal/navy) consistentes
+
+---
+
 ## [v0.11.0] - 2026-01-06
 
 ### Seguridad y Documentación
@@ -240,12 +269,13 @@ Historial de cambios del proyecto Histora.
 
 ## Próximas Versiones
 
-### v0.12.0 (Planificado)
-- [ ] Google Sign-In
-- [ ] Rediseño página de login
-- [ ] Integración completa WhatsApp Business
+### v0.13.0 (Planificado)
+- [ ] Google Sign-In para NurseLite
+- [ ] Notificaciones push para enfermeras
+- [ ] Historial de ganancias detallado
 
 ### v1.0.0 (Planificado)
 - [ ] App móvil con Capacitor
-- [ ] Exportación PDF
+- [ ] Exportación PDF de reportes
 - [ ] Sistema de videoconsultas
+- [ ] Integración WhatsApp Business completa
