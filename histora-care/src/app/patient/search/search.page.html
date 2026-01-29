@@ -155,7 +155,13 @@
             <ion-icon name="navigate-outline" slot="start" color="medium"></ion-icon>
             <ion-label>
               <p>Ubicacion</p>
-              <h3>{{ nurse()!.location.district }}, {{ nurse()!.location.city }}</h3>
+              <h3>
+                @if (nurse()!.location?.district || nurse()!.location?.city) {
+                  {{ nurse()!.location?.district }}{{ nurse()!.location?.city ? ', ' + nurse()!.location.city : '' }}
+                } @else {
+                  <span class="no-data">No especificada</span>
+                }
+              </h3>
             </ion-label>
           </ion-item>
           <ion-item lines="none">

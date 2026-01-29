@@ -56,10 +56,11 @@
   <!-- Bottom Sheet -->
   <div class="bottom-sheet">
     <!-- Status Progress -->
-    <div class="status-progress">
+    <div class="status-progress" #statusProgressContainer>
       <div class="progress-track">
         @for (step of statusSteps; track step.key; let i = $index) {
         <div class="progress-step"
+             [id]="'step-' + step.key"
              [class.completed]="isStepCompleted(step.key)"
              [class.active]="isStepActive(step.key)">
           <div class="step-dot">
@@ -120,7 +121,7 @@
           <span>{{ request()?.service?.name }}</span>
         </div>
         <div class="service-price">
-          S/. {{ request()?.service?.price }}
+          S/ {{ request()?.service?.price }}
         </div>
       </div>
 
@@ -246,7 +247,7 @@
 
         <div class="payment-amount">
           <span class="amount-label">Monto a pagar:</span>
-          <span class="amount-value">S/. {{ request()?.service?.price }}</span>
+          <span class="amount-value">S/ {{ request()?.service?.price }}</span>
         </div>
       </div>
       }

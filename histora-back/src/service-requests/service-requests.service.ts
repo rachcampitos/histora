@@ -195,10 +195,29 @@ export class ServiceRequestsService {
       query.status = status;
     }
 
-    return this.serviceRequestModel
+    const requests = await this.serviceRequestModel
       .find(query)
       .populate('patientId', 'firstName lastName phone avatar')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    // Transform patientId to patient for frontend compatibility
+    return requests.map((request: any) => {
+      const result = { ...request };
+      if (request.patientId && typeof request.patientId === 'object') {
+        const patientData = request.patientId as any;
+        result.patientId = patientData._id?.toString() || null;
+        result.patient = {
+          _id: patientData._id?.toString(),
+          firstName: patientData.firstName,
+          lastName: patientData.lastName,
+          phone: patientData.phone,
+          avatar: patientData.avatar,
+        };
+      }
+      return result;
+    });
   }
 
   async findPendingNearby(

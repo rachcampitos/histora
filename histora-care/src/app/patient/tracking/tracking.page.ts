@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService } from '../../core/services';
@@ -76,6 +76,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     { key: 'in_progress', label: 'En servicio', icon: 'medical' },
     { key: 'completed', label: 'Completado', icon: 'checkmark-done' }
   ];
+
+  @ViewChild('statusProgressContainer') statusProgressContainer!: ElementRef<HTMLDivElement>;
 
   private mapInitialized = false;
 
@@ -182,6 +184,27 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     if (currentStatus !== newStatus) {
       this.previousStatus.set(currentStatus);
       this.currentStatus.set(newStatus);
+      // Auto-scroll to the active step
+      setTimeout(() => this.scrollToActiveStep(newStatus), 100);
+    }
+  }
+
+  /**
+   * Scroll the status progress to show the active step
+   */
+  private scrollToActiveStep(status: TrackingStatus) {
+    const stepElement = document.getElementById(`step-${status}`);
+    if (stepElement && this.statusProgressContainer?.nativeElement) {
+      const container = this.statusProgressContainer.nativeElement;
+      const stepRect = stepElement.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      // Calculate scroll position to center the active step
+      const scrollLeft = stepElement.offsetLeft - (containerRect.width / 2) + (stepRect.width / 2);
+      container.scrollTo({
+        left: Math.max(0, scrollLeft),
+        behavior: 'smooth'
+      });
     }
   }
 

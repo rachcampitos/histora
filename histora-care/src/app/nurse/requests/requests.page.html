@@ -72,7 +72,7 @@
                 </div>
               </div>
               <div class="price-badge">
-                <span class="currency">S/.</span>
+                <span class="currency">S/</span>
                 <span class="amount">{{ request.service.price }}</span>
               </div>
             </div>
@@ -157,7 +157,7 @@
               </div>
             </div>
             <div class="price-badge">
-              <span class="currency">S/.</span>
+              <span class="currency">S/</span>
               <span class="amount">{{ request.service.price }}</span>
             </div>
           </div>
@@ -196,7 +196,7 @@
           <div class="card-actions" *ngIf="getNextStatus(request.status)">
             <ion-button
               expand="block"
-              [color]="request.status === 'in_progress' ? 'success' : 'primary'"
+              [color]="getNextStatusButtonColor(request.status)"
               (click)="updateStatus(request, getNextStatus(request.status)!, $event)">
               <ion-icon slot="start" [name]="getNextStatusIcon(request.status)"></ion-icon>
               {{ getNextStatusButtonLabel(request.status) }}
@@ -250,7 +250,7 @@
             </div>
             <div class="detail-row price">
               <ion-icon name="cash-outline"></ion-icon>
-              <span>S/. {{ request.service.price }}</span>
+              <span>S/ {{ request.service.price }}</span>
             </div>
           </div>
 

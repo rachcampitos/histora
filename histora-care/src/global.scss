@@ -381,17 +381,26 @@ ion-alert {
 
   .alert-button {
     border-radius: 10px;
-    font-weight: 500;
+    font-weight: 600;
     margin: 4px;
     min-height: 44px;
+    text-transform: none;
 
     &.alert-button-role-cancel {
       background: var(--histora-surface-secondary, #f5f4f2);
       color: var(--histora-text-secondary, #52525b);
+      border: 1px solid #e2e8f0;
     }
 
-    &.alert-button-role-destructive {
-      background: var(--ion-color-danger);
+    &.alert-button-role-destructive,
+    &.danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+    }
+
+    // Primary/confirm button - NurseLite gradient
+    &:not(.alert-button-role-cancel):not(.alert-button-role-destructive):not(.danger) {
+      background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
       color: #fff;
     }
   }
@@ -417,6 +426,19 @@ body.dark ion-alert {
     &.alert-button-role-cancel {
       background: #334155;
       color: #e2e8f0;
+      border: 1px solid #475569;
+    }
+
+    &.alert-button-role-destructive,
+    &.danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+    }
+
+    // Primary button in dark mode - slightly brighter gradient
+    &:not(.alert-button-role-cancel):not(.alert-button-role-destructive):not(.danger) {
+      background: linear-gradient(135deg, #5fb3af 0%, #3d7aa8 100%);
+      color: #fff;
     }
   }
 }

@@ -529,15 +529,21 @@ export class NursesService {
     ]);
 
     // Map reviews to include patient name but respect anonymity
+    // Also map patientId to patient for frontend compatibility
     const mappedReviews = reviews.map((review) => {
       const r = review as Record<string, unknown>;
       if (r.isAnonymous) {
+        const anonymousPatient = { firstName: 'Paciente', lastName: 'Anonimo' };
         return {
           ...r,
-          patientId: { firstName: 'Paciente', lastName: 'Anonimo' },
+          patientId: anonymousPatient,
+          patient: anonymousPatient,
         };
       }
-      return r;
+      return {
+        ...r,
+        patient: r.patientId, // Map patientId to patient for frontend
+      };
     });
 
     return {

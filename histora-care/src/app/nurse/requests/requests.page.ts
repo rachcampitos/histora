@@ -438,6 +438,20 @@ export class RequestsPage implements OnInit, OnDestroy {
     return icons[nextStatus] || 'arrow-forward';
   }
 
+  // Get button color based on next status
+  getNextStatusButtonColor(currentStatus: ServiceRequestStatus): string {
+    const nextStatus = this.getNextStatus(currentStatus);
+    if (!nextStatus) return 'primary';
+
+    const colors: Record<string, string> = {
+      on_the_way: 'success',      // Green for "Ir en camino"
+      arrived: 'warning',          // Orange/warning for "He llegado"
+      in_progress: 'primary',      // Primary for "Iniciar servicio"
+      completed: 'success'         // Green for "Completar"
+    };
+    return colors[nextStatus] || 'primary';
+  }
+
   // View request details - details are already shown in the cards
   // This is kept as a no-op since clicking the card shows all info
   viewRequest(_request: ServiceRequest) {
