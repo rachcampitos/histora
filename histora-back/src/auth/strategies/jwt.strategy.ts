@@ -2,7 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Request } from 'express';
 import { UsersService } from '../../users/users.service';
+import { CookieService } from '../services/cookie.service';
 
 export interface JwtPayload {
   sub: string;
@@ -11,6 +13,26 @@ export interface JwtPayload {
   clinicId?: string;
   nurseId?: string;
 }
+
+/**
+ * Custom extractor that tries cookies first, then falls back to Authorization header
+ * This provides backwards compatibility while prioritizing secure HttpOnly cookies
+ */
+const cookieOrHeaderExtractor = (req: Request): string | null => {
+  // First, try to extract from HttpOnly cookie (more secure)
+  const tokenFromCookie = req.cookies?.[CookieService.ACCESS_TOKEN_COOKIE];
+  if (tokenFromCookie) {
+    return tokenFromCookie;
+  }
+
+  // Fallback to Authorization header for mobile apps and backwards compatibility
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7);
+  }
+
+  return null;
+};
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,7 +45,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new Error('JWT_SECRET must be defined in environment variables');
     }
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: cookieOrHeaderExtractor,
       ignoreExpiration: false,
       secretOrKey: secret,
     });

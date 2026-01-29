@@ -1,10 +1,11 @@
-// Build version: 2026-01-18-security
+// Build version: 2026-01-29-security-cookies
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { SanitizeInterceptor } from './common/interceptors/sanitize.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
@@ -63,6 +64,9 @@ async function bootstrap() {
   // 5 verification images in base64 can be ~50MB total
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
+
+  // Cookie parser for HttpOnly cookie authentication
+  app.use(cookieParser());
 
   // Enable graceful shutdown
   app.enableShutdownHooks();

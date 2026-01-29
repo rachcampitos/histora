@@ -19,7 +19,7 @@ import {
   PaymentSummaryResponse,
   PaymentResponse,
 } from './dto/service-payment.dto';
-import { CulqiProvider } from '../payments/providers/culqi.provider';
+import { CulqiProvider } from './providers/culqi.provider';
 import { ServiceRequest, ServiceRequestDocument } from '../service-requests/schema/service-request.schema';
 
 // Commission rates

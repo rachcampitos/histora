@@ -12,6 +12,7 @@ import { GeolocationService } from '../../../core/services/geolocation.service';
   styleUrls: ['./panic-button.component.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PanicButtonComponent implements OnInit, OnDestroy {
   private safetyService = inject(SafetyService);

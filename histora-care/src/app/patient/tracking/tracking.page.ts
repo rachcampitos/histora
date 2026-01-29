@@ -28,6 +28,7 @@ interface NurseInfo {
   templateUrl: './tracking.page.html',
   standalone: false,
   styleUrls: ['./tracking.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   // Request data

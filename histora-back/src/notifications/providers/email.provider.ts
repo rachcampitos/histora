@@ -142,49 +142,45 @@ export class EmailProvider implements OnModuleInit {
   }
 
   // Email templates
-  getAppointmentReminderTemplate(data: { patientName: string; doctorName: string; date: string; time: string; clinicName: string }): string {
+  getWelcomeTemplate(data: { userName: string }): string {
     return `
-      <h2>Recordatorio de Cita</h2>
-      <p>Hola ${data.patientName},</p>
-      <p>Te recordamos que tienes una cita programada:</p>
-      <ul>
-        <li><strong>Doctor:</strong> ${data.doctorName}</li>
-        <li><strong>Fecha:</strong> ${data.date}</li>
-        <li><strong>Hora:</strong> ${data.time}</li>
-        <li><strong>Clínica:</strong> ${data.clinicName}</li>
-      </ul>
-      <p>Por favor, llega 10 minutos antes de tu cita.</p>
-      <p>Saludos,<br>${data.clinicName}</p>
-    `;
-  }
-
-  getAppointmentConfirmationTemplate(data: { patientName: string; doctorName: string; date: string; time: string; clinicName: string }): string {
-    return `
-      <h2>Cita Confirmada</h2>
-      <p>Hola ${data.patientName},</p>
-      <p>Tu cita ha sido confirmada:</p>
-      <ul>
-        <li><strong>Doctor:</strong> ${data.doctorName}</li>
-        <li><strong>Fecha:</strong> ${data.date}</li>
-        <li><strong>Hora:</strong> ${data.time}</li>
-        <li><strong>Clínica:</strong> ${data.clinicName}</li>
-      </ul>
-      <p>Saludos,<br>${data.clinicName}</p>
-    `;
-  }
-
-  getWelcomeTemplate(data: { userName: string; clinicName?: string }): string {
-    return `
-      <h2>Bienvenido a Histora</h2>
+      <h2>Bienvenido a Histora Care</h2>
       <p>Hola ${data.userName},</p>
-      <p>Tu cuenta ha sido creada exitosamente${data.clinicName ? ` en ${data.clinicName}` : ''}.</p>
-      <p>Ahora puedes acceder a tu portal para:</p>
+      <p>Tu cuenta ha sido creada exitosamente.</p>
+      <p>Ahora puedes acceder a la plataforma para:</p>
       <ul>
-        <li>Ver tus citas programadas</li>
-        <li>Revisar tu historial clínico</li>
-        <li>Descargar resultados de laboratorio</li>
+        <li>Solicitar servicios de enfermería a domicilio</li>
+        <li>Ver el estado de tus solicitudes</li>
+        <li>Calificar el servicio recibido</li>
       </ul>
-      <p>Saludos,<br>Equipo Histora</p>
+      <p>Saludos,<br>Equipo Histora Care</p>
+    `;
+  }
+
+  getServiceAcceptedTemplate(data: { patientName: string; nurseName: string; serviceName: string; date: string; time: string }): string {
+    return `
+      <h2>Servicio Aceptado</h2>
+      <p>Hola ${data.patientName},</p>
+      <p>Tu solicitud de servicio ha sido aceptada:</p>
+      <ul>
+        <li><strong>Enfermera:</strong> ${data.nurseName}</li>
+        <li><strong>Servicio:</strong> ${data.serviceName}</li>
+        <li><strong>Fecha:</strong> ${data.date}</li>
+        <li><strong>Hora:</strong> ${data.time}</li>
+      </ul>
+      <p>La enfermera se pondrá en contacto contigo pronto.</p>
+      <p>Saludos,<br>Equipo Histora Care</p>
+    `;
+  }
+
+  getServiceCompletedTemplate(data: { patientName: string; nurseName: string; serviceName: string }): string {
+    return `
+      <h2>Servicio Completado</h2>
+      <p>Hola ${data.patientName},</p>
+      <p>El servicio de <strong>${data.serviceName}</strong> con <strong>${data.nurseName}</strong> ha sido completado.</p>
+      <p>¡Gracias por confiar en Histora Care!</p>
+      <p>Por favor, tómate un momento para calificar tu experiencia.</p>
+      <p>Saludos,<br>Equipo Histora Care</p>
     `;
   }
 

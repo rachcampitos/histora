@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, DestroyRef } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { RefresherCustomEvent, ToastController } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NurseApiService } from '../../core/services/nurse.service';
@@ -23,6 +23,7 @@ type PeriodType = 'week' | 'month' | 'all';
   templateUrl: './earnings.page.html',
   standalone: false,
   styleUrls: ['./earnings.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EarningsPage implements OnInit {
   private nurseApi = inject(NurseApiService);

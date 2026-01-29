@@ -18,6 +18,7 @@ interface TabOption {
   templateUrl: './history.page.html',
   standalone: false,
   styleUrls: ['./history.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryPage implements OnInit {
   private router = inject(Router);

@@ -8,18 +8,16 @@ describe('NotificationsController', () => {
   let controller: NotificationsController;
 
   const mockUserId = new Types.ObjectId().toString();
-  const mockClinicId = new Types.ObjectId().toString();
 
   const mockUser = {
     userId: mockUserId,
-    clinicId: mockClinicId,
-    role: 'clinic_owner',
+    role: 'platform_admin',
   };
 
   const mockNotification = {
     _id: new Types.ObjectId(),
     userId: mockUserId,
-    type: NotificationType.APPOINTMENT_REMINDER,
+    type: NotificationType.GENERAL,
     channel: NotificationChannel.EMAIL,
     title: 'Test',
     message: 'Test message',
@@ -166,10 +164,10 @@ describe('NotificationsController', () => {
         message: 'Test message',
       };
 
-      const result = await controller.sendNotification(mockUser as any, dto);
+      const result = await controller.sendNotification(dto);
 
       expect(result).toHaveLength(1);
-      expect(mockNotificationsService.send).toHaveBeenCalledWith(dto, mockClinicId);
+      expect(mockNotificationsService.send).toHaveBeenCalledWith(dto);
     });
   });
 
@@ -185,11 +183,11 @@ describe('NotificationsController', () => {
         message: 'Test message',
       };
 
-      const result = await controller.sendBulkNotification(mockUser as any, dto);
+      const result = await controller.sendBulkNotification(dto);
 
       expect(result.sent).toBe(5);
       expect(result.failed).toBe(0);
-      expect(mockNotificationsService.sendBulk).toHaveBeenCalledWith(dto, mockClinicId);
+      expect(mockNotificationsService.sendBulk).toHaveBeenCalledWith(dto);
     });
   });
 });

@@ -1,11 +1,12 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, ToastController, AlertController, ActionSheetController, NavController } from '@ionic/angular';
+import { LoadingController, AlertController, ActionSheetController, NavController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
+import { ToastService } from '../../core/services/toast.service';
 import { Nurse, NurseVerification, VerificationDocumentType, VerificationStatus, CepValidationResult } from '../../core/models';
 
 type VerificationStep = 'validate_cep' | 'confirm_identity' | 'upload_documents';
@@ -35,16 +36,17 @@ interface WaitingTask {
   templateUrl: './verification.page.html',
   standalone: false,
   styleUrls: ['./verification.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VerificationPage implements OnInit, OnDestroy {
   private nurseApi = inject(NurseApiService);
   private authService = inject(AuthService);
   private nurseOnboarding = inject(NurseOnboardingService);
   private productTour = inject(ProductTourService);
+  private toast = inject(ToastService);
   private router = inject(Router);
   private navCtrl = inject(NavController);
   private loadingCtrl = inject(LoadingController);
-  private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
   private actionSheetCtrl = inject(ActionSheetController);
 
@@ -439,13 +441,13 @@ export class VerificationPage implements OnInit, OnDestroy {
       const permission = await Notification.requestPermission();
       if (permission === 'granted') {
         this.markTaskCompleted('notifications');
-        this.showToast('Notificaciones activadas', 'success');
+        this.toast.success('Notificaciones activadas');
       } else {
-        this.showToast('Por favor activa las notificaciones en la configuración de tu dispositivo', 'warning');
+        this.toast.warning('Por favor activa las notificaciones en la configuración de tu dispositivo');
       }
     } catch {
       // Fallback for devices without Notification API
-      this.showToast('Recibirás notificaciones por email', 'primary');
+      this.toast.info('Recibirás notificaciones por email');
       this.markTaskCompleted('notifications');
     }
   }
@@ -530,7 +532,7 @@ export class VerificationPage implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error('[VERIFICATION] Error loading data:', error);
-      this.showToast('Error al cargar datos', 'danger');
+      this.toast.error('Error al cargar datos');
     } finally {
       this.isLoading.set(false);
       console.log('[VERIFICATION] loadData() completed');
@@ -573,16 +575,16 @@ export class VerificationPage implements OnInit, OnDestroy {
           }
           // Move to identity confirmation step
           this.currentStep.set('confirm_identity');
-          this.showToast('CEP validado correctamente', 'success');
+          this.toast.success('CEP validado correctamente');
         } else {
-          this.showToast(result.message || 'No se pudo validar el CEP', 'warning');
+          this.toast.warning(result.message || 'No se pudo validar el CEP');
         }
       }
     } catch (error: unknown) {
       console.error('Error validating CEP:', error);
       const errorMessage = error instanceof Error ? error.message : 'Error al validar CEP';
       const httpError = error as { error?: { message?: string } };
-      this.showToast(httpError?.error?.message || errorMessage, 'danger');
+      this.toast.error(httpError?.error?.message || errorMessage);
     } finally {
       this.isValidatingCep.set(false);
     }
@@ -609,12 +611,12 @@ export class VerificationPage implements OnInit, OnDestroy {
       if (verification) {
         this.verification.set(verification);
         this.currentStep.set('upload_documents');
-        this.showToast('Identidad confirmada. Ahora sube tus documentos.', 'success');
+        this.toast.success('Identidad confirmada. Ahora sube tus documentos.');
       }
     } catch (error: unknown) {
       console.error('Error confirming identity:', error);
       const httpError = error as { error?: { message?: string } };
-      this.showToast(httpError?.error?.message || 'Error al confirmar identidad', 'danger');
+      this.toast.error(httpError?.error?.message || 'Error al confirmar identidad');
     } finally {
       this.isSubmitting.set(false);
     }
@@ -625,7 +627,7 @@ export class VerificationPage implements OnInit, OnDestroy {
     this.cepValidation.set(null);
     this.cepValidationMessage.set('');
     this.currentStep.set('validate_cep');
-    this.showToast('Por favor verifica tu numero de DNI', 'warning');
+    this.toast.warning('Por favor verifica tu numero de DNI');
   }
 
   // ============= STEP 3: Upload Documents =============
@@ -772,7 +774,7 @@ export class VerificationPage implements OnInit, OnDestroy {
       if (httpError.status === 400) {
         message = httpError?.error?.message || 'Documentos invalidos o ya verificado';
       }
-      this.showToast(message, 'danger');
+      this.toast.error(message);
     } finally {
       this.isSubmitting.set(false);
     }
@@ -829,15 +831,5 @@ export class VerificationPage implements OnInit, OnDestroy {
       rejected: 'danger'
     };
     return colors[status] || 'medium';
-  }
-
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 3000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
   }
 }

@@ -4,7 +4,7 @@ import { ServicePaymentsController } from './service-payments.controller';
 import { ServicePaymentsService } from './service-payments.service';
 import { ServicePayment, ServicePaymentSchema } from './schema/service-payment.schema';
 import { ServiceRequest, ServiceRequestSchema } from '../service-requests/schema/service-request.schema';
-import { PaymentsModule } from '../payments/payments.module';
+import { CulqiProvider } from './providers/culqi.provider';
 
 @Module({
   imports: [
@@ -12,10 +12,9 @@ import { PaymentsModule } from '../payments/payments.module';
       { name: ServicePayment.name, schema: ServicePaymentSchema },
       { name: ServiceRequest.name, schema: ServiceRequestSchema },
     ]),
-    PaymentsModule, // Import to use CulqiProvider
   ],
   controllers: [ServicePaymentsController],
-  providers: [ServicePaymentsService],
+  providers: [ServicePaymentsService, CulqiProvider],
   exports: [ServicePaymentsService],
 })
 export class ServicePaymentsModule {}

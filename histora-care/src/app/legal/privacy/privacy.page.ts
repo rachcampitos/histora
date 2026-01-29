@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 
 interface Section {
@@ -12,6 +12,7 @@ interface Section {
   templateUrl: './privacy.page.html',
   standalone: false,
   styleUrls: ['./privacy.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrivacyPage implements OnInit {
   private location = inject(Location);

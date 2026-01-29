@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingController, ToastController, AlertController } from '@ionic/angular';
@@ -23,6 +23,7 @@ type PaymentFlow = 'online' | 'cash';
   templateUrl: './checkout.page.html',
   standalone: false,
   styleUrls: ['./checkout.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheckoutPage implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);

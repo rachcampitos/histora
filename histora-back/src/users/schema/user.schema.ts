@@ -5,9 +5,6 @@ export type UserDocument = User & Document;
 
 export enum UserRole {
   PLATFORM_ADMIN = 'platform_admin',
-  CLINIC_OWNER = 'clinic_owner',
-  CLINIC_DOCTOR = 'clinic_doctor',
-  CLINIC_STAFF = 'clinic_staff',
   PATIENT = 'patient',
   NURSE = 'nurse',
 }
@@ -45,15 +42,6 @@ export class User {
     default: UserRole.PATIENT,
   })
   role: UserRole;
-
-  @Prop({ type: Types.ObjectId, ref: 'Clinic' })
-  clinicId?: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Doctor' })
-  doctorProfileId?: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'Patient' })
-  patientProfileId?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Nurse' })
   nurseProfileId?: Types.ObjectId;
@@ -129,5 +117,7 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // Additional indexes (email already indexed via unique: true)
-UserSchema.index({ clinicId: 1 });
 UserSchema.index({ role: 1 });
+UserSchema.index({ role: 1, isActive: 1, isDeleted: 1 }); // For admin user listing
+UserSchema.index({ nurseProfileId: 1 }); // For nurse lookups
+UserSchema.index({ isDeleted: 1, createdAt: -1 }); // For user listing

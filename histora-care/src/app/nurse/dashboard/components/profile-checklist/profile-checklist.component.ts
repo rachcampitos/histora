@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, input, Output, EventEmitter, effect } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, input, Output, EventEmitter, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -19,6 +19,7 @@ interface ChecklistItem {
   styleUrls: ['./profile-checklist.component.scss'],
   standalone: true,
   imports: [CommonModule, IonicModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileChecklistComponent implements OnInit {
   // Use signal-based input for reactivity with computed()

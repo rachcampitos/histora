@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -82,6 +82,7 @@ declare global {
   imports: [CommonModule, FormsModule, IonicModule],
   templateUrl: './ai-assistant.component.html',
   styleUrls: ['./ai-assistant.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AIAssistantComponent implements OnInit, OnDestroy {
   @ViewChild('chatContent') chatContent!: ElementRef;

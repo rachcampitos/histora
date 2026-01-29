@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
@@ -18,6 +18,7 @@ interface SlideConfig {
   templateUrl: './onboarding.page.html',
   standalone: false,
   styleUrls: ['./onboarding.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnboardingPage implements OnInit {
   @ViewChild('swiperRef') swiperRef!: ElementRef;

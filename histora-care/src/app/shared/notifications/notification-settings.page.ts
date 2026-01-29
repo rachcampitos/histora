@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 import { AlertController, ToastController } from '@ionic/angular';
 import { NotificationService, NotificationPreferences } from '../../core/services/notification.service';
@@ -9,6 +9,7 @@ import { Capacitor } from '@capacitor/core';
   templateUrl: './notification-settings.page.html',
   standalone: false,
   styleUrls: ['./notification-settings.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotificationSettingsPage implements OnInit {
   private location = inject(Location);

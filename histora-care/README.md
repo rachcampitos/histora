@@ -285,20 +285,32 @@ npm run start:dev
 
 ### Endpoints Principales
 
-- `POST /auth/login` - Login
-- `POST /auth/register` - Registro
+- `POST /auth/login` - Iniciar sesión
+- `POST /auth/register/patient` - Registro de paciente
+- `POST /auth/register/nurse/validate-cep` - Validar CEP enfermera
+- `POST /auth/register/nurse/complete` - Completar registro enfermera
 - `GET /nurses/nearby?lat=x&lng=y` - Enfermeras cercanas
 - `POST /service-requests` - Crear solicitud
 - `PATCH /service-requests/:id/status` - Actualizar estado
-- `GET /service-requests/active` - Solicitud activa del usuario
+- `GET /service-payments/:id/summary` - Resumen de pago
+- `POST /service-payments` - Procesar pago
 
-## Proximos Pasos
+## Funcionalidades Implementadas
 
-- [ ] Chat en tiempo real entre paciente y enfermera
-- [ ] Sistema de calificaciones y resenas
-- [ ] Pagos integrados (Stripe/MercadoPago)
-- [ ] Notificaciones push
-- [ ] Modo offline con sincronizacion
+- [x] Chat en tiempo real entre paciente y enfermera
+- [x] Sistema de calificaciones y reseñas
+- [x] Pagos integrados (Culqi - tarjetas y Yape)
+- [x] Notificaciones push con FCM
+- [x] Tracking GPS en tiempo real
+- [x] Botón de pánico para emergencias
+- [x] Verificación CEP de enfermeras
+- [x] Panel de administración
+
+## Próximos Pasos
+
+- [ ] Modo offline con sincronización
+- [ ] Soporte multi-idioma
+- [ ] Historial médico del paciente
 
 ## Contribuir
 

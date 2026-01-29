@@ -9,8 +9,9 @@ import {
 } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { AuthService, AuthResponse } from './auth.service';
+import { CookieService } from './services/cookie.service';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto, RegisterPatientDto, RegisterNurseDto, CompleteGoogleRegistrationDto, ValidateNurseCepDto, CompleteNurseRegistrationDto } from './dto/register.dto';
+import { RegisterPatientDto, RegisterNurseDto, CompleteGoogleRegistrationDto, ValidateNurseCepDto, CompleteNurseRegistrationDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto, RequestPasswordOtpDto, VerifyPasswordOtpDto, ResetPasswordWithOtpDto } from './dto/reset-password.dto';
@@ -20,6 +21,7 @@ import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-us
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { GoogleUser } from './strategies/google.strategy';
+import { getTokenExpiration } from './config/session.config';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -30,20 +32,37 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly cookieService: CookieService,
   ) {
     this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:4200';
     this.mobileScheme = this.configService.get<string>('MOBILE_APP_SCHEME') || 'historacare';
   }
 
-  @Public()
-  @Post('register')
-  @ApiOperation({ summary: 'Registrar nuevo médico/clínica' })
-  @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos' })
-  @ApiResponse({ status: 409, description: 'Email ya registrado' })
-  register(@Body() registerDto: RegisterDto): Promise<AuthResponse> {
-    return this.authService.register(registerDto);
+  /**
+   * Helper to set auth cookies and return response
+   * Tokens are sent both in cookies (for web) and body (for mobile)
+   */
+  private setAuthCookiesAndRespond(
+    res: Response,
+    authResponse: AuthResponse,
+    role: string,
+    rememberMe = false,
+  ): AuthResponse {
+    const tokenExpiration = getTokenExpiration(role as any, rememberMe);
+    const accessTokenMs = this.cookieService.parseExpiryToMs(tokenExpiration.accessTokenExpiry);
+
+    this.cookieService.setAuthCookies(
+      res,
+      authResponse.access_token,
+      authResponse.refresh_token,
+      accessTokenMs,
+      tokenExpiration.refreshTokenDays,
+    );
+
+    return authResponse;
   }
+
+  // Note: Legacy doctor/clinic registration endpoint removed - Histora Care only supports patient and nurse registration
 
   @Public()
   @Post('register/patient')
@@ -51,8 +70,12 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Paciente registrado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email ya registrado' })
-  registerPatient(@Body() registerDto: RegisterPatientDto): Promise<AuthResponse> {
-    return this.authService.registerPatient(registerDto);
+  async registerPatient(
+    @Body() registerDto: RegisterPatientDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthResponse> {
+    const authResponse = await this.authService.registerPatient(registerDto);
+    return this.setAuthCookiesAndRespond(res, authResponse, authResponse.user.role);
   }
 
   @Public()
@@ -61,8 +84,12 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Enfermera registrada exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 409, description: 'Email o CEP ya registrado' })
-  registerNurse(@Body() registerDto: RegisterNurseDto): Promise<AuthResponse> {
-    return this.authService.registerNurse(registerDto);
+  async registerNurse(
+    @Body() registerDto: RegisterNurseDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthResponse> {
+    const authResponse = await this.authService.registerNurse(registerDto);
+    return this.setAuthCookiesAndRespond(res, authResponse, authResponse.user.role);
   }
 
   // ============= SIMPLIFIED NURSE REGISTRATION (2-Step Flow) =============
@@ -107,8 +134,12 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Enfermera registrada exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos o no confirmó identidad' })
   @ApiResponse({ status: 409, description: 'Email, DNI o CEP ya registrado' })
-  completeNurseRegistration(@Body() dto: CompleteNurseRegistrationDto) {
-    return this.authService.completeNurseRegistration(dto);
+  async completeNurseRegistration(
+    @Body() dto: CompleteNurseRegistrationDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const authResponse = await this.authService.completeNurseRegistration(dto);
+    return this.setAuthCookiesAndRespond(res, authResponse, authResponse.user.role);
   }
 
   @Public()
@@ -117,8 +148,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Iniciar sesión' })
   @ApiResponse({ status: 200, description: 'Login exitoso, retorna JWT token' })
   @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
-  login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
-    return this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthResponse> {
+    const authResponse = await this.authService.login(loginDto);
+    return this.setAuthCookiesAndRespond(res, authResponse, authResponse.user.role, loginDto.rememberMe);
   }
 
   @Public()
@@ -127,8 +162,19 @@ export class AuthController {
   @ApiOperation({ summary: 'Refrescar token de acceso' })
   @ApiResponse({ status: 200, description: 'Token refrescado exitosamente' })
   @ApiResponse({ status: 401, description: 'Refresh token inválido o expirado' })
-  refresh(@Body() refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {
-    return this.authService.refresh(refreshTokenDto);
+  async refresh(
+    @Body() refreshTokenDto: RefreshTokenDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthResponse> {
+    // Try to get refresh token from cookie if not provided in body
+    const refreshToken = refreshTokenDto.refresh_token || this.cookieService.getRefreshTokenFromCookies(req);
+    if (!refreshToken) {
+      throw new Error('Refresh token is required');
+    }
+
+    const authResponse = await this.authService.refresh({ refresh_token: refreshToken });
+    return this.setAuthCookiesAndRespond(res, authResponse, authResponse.user.role);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -181,7 +227,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Cerrar sesión (invalidar refresh token)' })
   @ApiResponse({ status: 200, description: 'Sesión cerrada exitosamente' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  logout(@CurrentUser() user: CurrentUserPayload) {
+  async logout(
+    @CurrentUser() user: CurrentUserPayload,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // Clear HttpOnly cookies
+    this.cookieService.clearAuthCookies(res);
     return this.authService.logout(user.userId);
   }
 
@@ -350,19 +401,22 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('google/complete-registration')
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Completar registro de usuario de Google (seleccionar tipo)' })
+  @ApiOperation({ summary: 'Completar registro de usuario de Google (seleccionar tipo: patient o nurse)' })
   @ApiResponse({ status: 200, description: 'Registro completado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   async completeGoogleRegistration(
     @CurrentUser() user: CurrentUserPayload,
     @Body() dto: CompleteGoogleRegistrationDto,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<AuthResponse> {
-    return this.authService.completeGoogleRegistration(
+    // Only patient and nurse registration supported in Histora Care
+    const userType = dto.userType === 'nurse' ? 'nurse' : 'patient';
+
+    const authResponse = await this.authService.completeGoogleRegistration(
       user.userId,
-      dto.userType,
-      dto.userType === 'doctor' ? { clinicName: dto.clinicName!, clinicPhone: dto.clinicPhone } : undefined,
-      dto.userType === 'nurse'
+      userType,
+      userType === 'nurse'
         ? {
             cepNumber: dto.cepNumber!,
             specialties: dto.specialties,
@@ -372,5 +426,6 @@ export class AuthController {
         : undefined,
       { termsAccepted: dto.termsAccepted, professionalDisclaimerAccepted: dto.professionalDisclaimerAccepted },
     );
+    return this.setAuthCookiesAndRespond(res, authResponse, authResponse.user.role);
   }
 }

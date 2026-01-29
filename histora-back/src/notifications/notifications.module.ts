@@ -2,11 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
-import { ReminderSchedulerService } from './reminder-scheduler.service';
+import { NotificationQueueService } from './notification-queue.service';
 import { Notification, NotificationSchema } from './schema/notification.schema';
 import { NotificationPreferences, NotificationPreferencesSchema } from './schema/notification-preferences.schema';
 import { DeviceToken, DeviceTokenSchema } from './schema/device-token.schema';
-import { Appointment, AppointmentSchema } from '../appointments/schema/appointment.schema';
 import { User, UserSchema } from '../users/schema/user.schema';
 import { EmailProvider } from './providers/email.provider';
 import { SmsProvider } from './providers/sms.provider';
@@ -19,19 +18,18 @@ import { PushProvider } from './providers/push.provider';
       { name: Notification.name, schema: NotificationSchema },
       { name: NotificationPreferences.name, schema: NotificationPreferencesSchema },
       { name: DeviceToken.name, schema: DeviceTokenSchema },
-      { name: Appointment.name, schema: AppointmentSchema },
       { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [NotificationsController],
   providers: [
     NotificationsService,
-    ReminderSchedulerService,
+    NotificationQueueService,
     EmailProvider,
     SmsProvider,
     WhatsAppProvider,
     PushProvider,
   ],
-  exports: [NotificationsService],
+  exports: [NotificationsService, NotificationQueueService],
 })
 export class NotificationsModule {}

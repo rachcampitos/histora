@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { OnboardingService } from '../../core/services/onboarding.service';
 
@@ -24,6 +24,7 @@ const INTRO_CONFIG = {
   templateUrl: './landing.page.html',
   styleUrls: ['./landing.page.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage implements OnInit {
   activeTab = signal<UserType>('patient');

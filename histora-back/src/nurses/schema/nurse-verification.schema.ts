@@ -136,6 +136,6 @@ export class NurseVerification extends Document {
 export const NurseVerificationSchema = SchemaFactory.createForClass(NurseVerification);
 
 // Index for efficient queries
+// Note: nurseId already has index via unique: true in @Prop decorator
 NurseVerificationSchema.index({ status: 1, createdAt: -1 });
-NurseVerificationSchema.index({ nurseId: 1 });
 NurseVerificationSchema.index({ userId: 1 });

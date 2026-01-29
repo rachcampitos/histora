@@ -9,6 +9,7 @@ import { NurseVerification, VerificationStatus } from '../../core/models';
   templateUrl: './verifications.page.html',
   standalone: false,
   styleUrls: ['./verifications.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VerificationsPage implements OnInit {
   private adminService = inject(AdminService);

@@ -180,8 +180,11 @@ export class Nurse extends Document {
 
 export const NurseSchema = SchemaFactory.createForClass(Nurse);
 
-// Create 2dsphere index for geospatial queries
-NurseSchema.index({ location: '2dsphere' });
+// Create compound indexes for efficient queries
+// Note: location, cepNumber, userId already have indexes via @Prop decorators
+NurseSchema.index({ isActive: 1, verificationStatus: 1, isDeleted: 1 });
+NurseSchema.index({ verificationStatus: 1, createdAt: -1 });
+NurseSchema.index({ averageRating: -1, totalReviews: -1 });
 
 // Virtual for populating user
 NurseSchema.virtual('user', {

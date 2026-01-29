@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './reset-password.page.html',
   standalone: false,
   styleUrls: ['./reset-password.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordPage implements OnInit {
   private fb = inject(FormBuilder);

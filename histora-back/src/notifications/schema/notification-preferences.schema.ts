@@ -27,9 +27,6 @@ export class NotificationPreferences {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, unique: true })
   userId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Clinic' })
-  clinicId?: Types.ObjectId;
-
   // Channel preferences
   @Prop({ type: Object, default: { enabled: true } })
   email: ChannelPreference;
@@ -46,21 +43,9 @@ export class NotificationPreferences {
   @Prop({ type: Object, default: { enabled: true } })
   inApp: ChannelPreference;
 
-  // Notification type preferences
-  @Prop({ type: Object, default: { enabled: true, channels: ['email', 'push', 'in_app'] } })
-  appointmentReminders: TypePreference;
-
-  @Prop({ type: Object, default: { enabled: true, channels: ['email', 'in_app'] } })
-  appointmentConfirmations: TypePreference;
-
-  @Prop({ type: Object, default: { enabled: true, channels: ['email', 'push', 'in_app'] } })
-  appointmentCancellations: TypePreference;
-
-  @Prop({ type: Object, default: { enabled: true, channels: ['email', 'in_app'] } })
-  consultationUpdates: TypePreference;
-
-  @Prop({ type: Object, default: { enabled: true, channels: ['email', 'push', 'in_app'] } })
-  labResults: TypePreference;
+  // Notification type preferences (Histora Care)
+  @Prop({ type: Object, default: { enabled: true, channels: ['push', 'in_app'] } })
+  serviceNotifications: TypePreference;
 
   @Prop({ type: Object, default: { enabled: true, channels: ['email', 'in_app'] } })
   paymentNotifications: TypePreference;

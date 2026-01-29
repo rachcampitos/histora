@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController, AlertController, ActionSheetController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -33,6 +33,7 @@ type FlowStep = 'plans' | 'payment' | 'proof' | 'pending' | 'success';
   templateUrl: './subscription.page.html',
   standalone: false,
   styleUrls: ['./subscription.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SubscriptionPage implements OnInit {
   private router = inject(Router);

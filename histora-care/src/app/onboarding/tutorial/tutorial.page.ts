@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -28,6 +28,7 @@ interface OnboardingSlide {
   templateUrl: './tutorial.page.html',
   styleUrls: ['./tutorial.page.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TutorialPage implements OnInit {
   @ViewChild('introVideo') introVideoRef!: ElementRef<HTMLVideoElement>;

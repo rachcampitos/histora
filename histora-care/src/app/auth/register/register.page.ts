@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
@@ -21,6 +21,7 @@ const CEP_LOADING_MESSAGES = [
   templateUrl: './register.page.html',
   standalone: false,
   styleUrls: ['./register.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterPage implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
