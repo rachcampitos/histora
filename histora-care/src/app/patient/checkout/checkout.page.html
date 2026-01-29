@@ -322,14 +322,33 @@
       </div>
     }
 
-    <!-- Step: Success -->
+    <!-- Step: Success (for card/yape payments) -->
     @if (currentStep() === 'success') {
       <div class="status-container">
         <div class="status-icon success">
           <ion-icon name="checkmark-circle"></ion-icon>
         </div>
         <h2>Pago exitoso</h2>
-        <p>Tu servicio ha sido confirmado</p>
+        <p>Tu servicio ha sido confirmado y pagado</p>
+        <p class="redirect-text">Redirigiendo al seguimiento...</p>
+      </div>
+    }
+
+    <!-- Step: Confirmed (for cash payments) -->
+    @if (currentStep() === 'confirmed') {
+      <div class="status-container">
+        <div class="status-icon confirmed">
+          <ion-icon name="calendar-check-outline"></ion-icon>
+        </div>
+        <h2>Solicitud confirmada</h2>
+        <p>Estamos buscando una enfermera disponible</p>
+        <div class="cash-reminder">
+          <ion-icon name="cash-outline"></ion-icon>
+          <div class="reminder-content">
+            <span class="reminder-title">Recuerda</span>
+            <span class="reminder-text">Pagaras {{ formattedTotal() }} en efectivo al finalizar el servicio</span>
+          </div>
+        </div>
         <p class="redirect-text">Redirigiendo al seguimiento...</p>
       </div>
     }

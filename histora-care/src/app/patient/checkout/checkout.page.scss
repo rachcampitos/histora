@@ -480,6 +480,48 @@
         color: var(--ion-color-danger);
       }
     }
+
+    &.confirmed {
+      background: var(--ion-color-primary-tint);
+
+      ion-icon {
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  .cash-reminder {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--ion-color-warning-tint);
+    border-radius: 12px;
+    margin: 16px 0;
+    text-align: left;
+
+    > ion-icon {
+      font-size: 28px;
+      color: var(--ion-color-warning-shade);
+      flex-shrink: 0;
+    }
+
+    .reminder-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .reminder-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--ion-color-warning-shade);
+      }
+
+      .reminder-text {
+        font-size: 14px;
+        color: var(--ion-color-warning-shade);
+      }
+    }
   }
 
   h2 {
@@ -528,39 +570,137 @@
 // Dark mode adjustments
 :host-context(body.dark) {
   .summary-header {
-    background: var(--ion-color-dark-shade);
+    background: var(--ion-color-step-100);
+
+    .summary-row {
+      &.subtotal,
+      &.total {
+        border-color: var(--ion-color-step-200);
+      }
+    }
   }
 
   .card-input,
   .yape-input {
-    --background: var(--ion-color-dark-shade);
+    --background: var(--ion-color-step-100);
+    color: var(--ion-text-color);
   }
 
   .payment-option {
-    --background: var(--ion-color-dark-shade);
+    --background: var(--ion-color-step-100);
+
+    ion-label {
+      h3 {
+        color: var(--ion-text-color);
+      }
+      p {
+        color: var(--ion-color-medium);
+      }
+    }
 
     &.selected {
-      --background: var(--ion-color-primary-shade);
+      --background: rgba(var(--ion-color-primary-rgb), 0.2);
+      border-color: var(--ion-color-primary);
     }
 
     &.cash-recommended {
       --background: rgba(var(--ion-color-success-rgb), 0.15);
+      border-color: var(--ion-color-success);
+    }
+
+    &.beta-disabled {
+      ion-label {
+        h3, p {
+          color: var(--ion-color-step-500);
+        }
+      }
     }
   }
 
   .yape-instructions {
-    background: var(--ion-color-dark-shade);
+    background: var(--ion-color-step-100);
+
+    h4 {
+      color: var(--ion-text-color);
+    }
+
+    ol li {
+      color: var(--ion-color-medium);
+    }
   }
 
   .security-note {
     background: rgba(var(--ion-color-success-rgb), 0.15);
+
+    span {
+      color: var(--ion-color-success);
+    }
   }
 
   .beta-info {
     background: rgba(var(--ion-color-primary-rgb), 0.15);
 
+    ion-icon {
+      color: var(--ion-color-primary-tint);
+    }
+
     p {
       color: var(--ion-color-primary-tint);
+    }
+  }
+
+  .form-group {
+    ion-label {
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .status-container {
+    .status-icon {
+      &.processing {
+        background: rgba(var(--ion-color-primary-rgb), 0.2);
+      }
+
+      &.success {
+        background: rgba(var(--ion-color-success-rgb), 0.2);
+      }
+
+      &.error {
+        background: rgba(var(--ion-color-danger-rgb), 0.2);
+      }
+
+      &.confirmed {
+        background: rgba(var(--ion-color-primary-rgb), 0.2);
+      }
+    }
+
+    h2 {
+      color: var(--ion-text-color);
+    }
+  }
+
+  .cash-reminder {
+    background: rgba(var(--ion-color-warning-rgb), 0.15);
+
+    > ion-icon {
+      color: var(--ion-color-warning);
+    }
+
+    .reminder-content {
+      .reminder-title,
+      .reminder-text {
+        color: var(--ion-color-warning);
+      }
+    }
+  }
+
+  .simulation-banner {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(255, 87, 34, 0.9));
+  }
+
+  .error-container {
+    h3 {
+      color: var(--ion-text-color);
     }
   }
 }
