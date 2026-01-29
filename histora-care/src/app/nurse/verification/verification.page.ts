@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, ToastController, AlertController, ActionSheetController } from '@ionic/angular';
+import { LoadingController, ToastController, AlertController, ActionSheetController, NavController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -40,6 +40,7 @@ export class VerificationPage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private nurseOnboarding = inject(NurseOnboardingService);
   private router = inject(Router);
+  private navCtrl = inject(NavController);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
@@ -769,19 +770,26 @@ export class VerificationPage implements OnInit, OnDestroy {
   // ============= Navigation =============
 
   goBack() {
-    // If under review or approved, always go back to dashboard
-    if (this.isUnderReview() || this.isApproved()) {
-      this.router.navigate(['/nurse/dashboard']);
+    // If under review, approved, or still loading - go to dashboard
+    // This ensures the back button always works regardless of data state
+    if (this.isLoading() || this.isUnderReview() || this.isApproved()) {
+      this.navCtrl.navigateBack('/nurse/dashboard', { animated: true });
       return;
     }
 
-    if (this.currentStep() === 'confirm_identity') {
-      this.currentStep.set('validate_cep');
-    } else if (this.currentStep() === 'upload_documents' && !this.verification()?.cepIdentityConfirmed) {
-      this.currentStep.set('confirm_identity');
-    } else {
-      this.router.navigate(['/nurse/dashboard']);
+    // Only handle step navigation if we're in the pending flow
+    if (this.isPending() || this.isRejected()) {
+      if (this.currentStep() === 'confirm_identity') {
+        this.currentStep.set('validate_cep');
+        return;
+      } else if (this.currentStep() === 'upload_documents' && !this.verification()?.cepIdentityConfirmed) {
+        this.currentStep.set('confirm_identity');
+        return;
+      }
     }
+
+    // Default: go to dashboard
+    this.navCtrl.navigateBack('/nurse/dashboard', { animated: true });
   }
 
   goToProfile() {

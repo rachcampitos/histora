@@ -270,11 +270,13 @@ export class NursesService {
   }
 
   async update(userId: string, updateNurseDto: UpdateNurseDto): Promise<Nurse> {
-    const nurse = await this.nurseModel.findOneAndUpdate(
-      { userId: new Types.ObjectId(userId) },
-      { $set: updateNurseDto },
-      { new: true },
-    );
+    const nurse = await this.nurseModel
+      .findOneAndUpdate(
+        { userId: new Types.ObjectId(userId) },
+        { $set: updateNurseDto },
+        { new: true },
+      )
+      .populate('userId', 'firstName lastName email phone avatar');
 
     if (!nurse) {
       throw new NotFoundException('Nurse profile not found');

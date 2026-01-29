@@ -10,8 +10,15 @@ $text-muted: var(--histora-text-secondary, #6b7280);
 $bg-light: var(--histora-background, #f7fafc);
 $border-radius: 12px;
 
+// Ensure page has opaque background to cover previous pages during transitions
+:host {
+  --background: var(--histora-background, #f7fafc);
+  background: var(--histora-background, #f7fafc);
+}
+
 .verification-content {
   --background: var(--histora-background, #f7fafc);
+  background: var(--histora-background, #f7fafc);
 }
 
 .loading-container {
@@ -1172,6 +1179,9 @@ $border-radius: 12px;
 // Dark mode
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
+  --background: #1a202c;
+  background: #1a202c;
+
   // Toolbar dark mode
   ion-toolbar {
     --background: #1a202c;
@@ -1189,6 +1199,7 @@ $border-radius: 12px;
 
   .verification-content {
     --background: #1a202c;
+    background: #1a202c;
   }
 
   .loading-container {

@@ -3,8 +3,15 @@
 // Variables using design tokens
 $primary-gradient: var(--histora-gradient);
 
+// Ensure page has opaque background to cover previous pages during transitions
+:host {
+  --background: #{tokens.$surface-secondary};
+  background: tokens.$surface-secondary;
+}
+
 .profile-content {
   --background: #{tokens.$surface-secondary};
+  background: tokens.$surface-secondary;
 }
 
 // Loading State
@@ -23,14 +30,21 @@ $primary-gradient: var(--histora-gradient);
   }
 }
 
-// Profile Header
+// Profile Header - Force white text for gradient background in both light and dark modes
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: tokens.$spacing-8 tokens.$spacing-4 tokens.$spacing-6;
   background: $primary-gradient;
-  color: white;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+
+  // Force all text within profile-header to be white
+  * {
+    color: inherit;
+    -webkit-text-fill-color: inherit;
+  }
 
   .avatar-container {
     position: relative;
@@ -949,8 +963,12 @@ ion-modal {
 // ============================================================
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
+  --background: #{tokens.$surface-dark-primary};
+  background: tokens.$surface-dark-primary;
+
   .profile-content {
     --background: #{tokens.$surface-dark-primary};
+    background: tokens.$surface-dark-primary;
   }
 
   // Loading State
