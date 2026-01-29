@@ -43,6 +43,10 @@ export class DashboardPage implements OnInit, OnDestroy {
   private locationBroadcastInterval: ReturnType<typeof setInterval> | null = null;
   private currentActiveRequest = signal<ServiceRequest | null>(null);
 
+  // Verification polling
+  private verificationPollingInterval: ReturnType<typeof setInterval> | null = null;
+  private readonly VERIFICATION_POLL_INTERVAL = 15000; // 15 seconds
+
   // Computed values
   user = this.authService.user;
   isAvailable = computed(() => this.nurse()?.isAvailable ?? false);
@@ -91,6 +95,9 @@ export class DashboardPage implements OnInit, OnDestroy {
     // Refresh nurse profile to get latest verification status
     this.refreshNurseProfile();
 
+    // Start verification polling if not yet approved
+    this.startVerificationPolling();
+
     // Start tour after page is fully visible
     // Use a longer delay (1 second) to ensure UI is fully rendered
     setTimeout(async () => {
@@ -104,6 +111,9 @@ export class DashboardPage implements OnInit, OnDestroy {
   ionViewWillLeave() {
     // Stop any active tour when leaving this page to prevent freezing
     this.productTour.forceStop();
+
+    // Stop verification polling when leaving
+    this.stopVerificationPolling();
   }
 
   /**
@@ -116,9 +126,10 @@ export class DashboardPage implements OnInit, OnDestroy {
         // Only update if verification status changed
         if (!currentNurse || currentNurse.verificationStatus !== nurse.verificationStatus) {
           this.nurse.set(nurse);
-          // If newly approved, show a toast
+          // If newly approved, show celebration
           if (nurse.verificationStatus === 'approved' && currentNurse?.verificationStatus !== 'approved') {
-            this.showToast('¡Tu cuenta ha sido verificada!', 'success');
+            this.stopVerificationPolling(); // Stop polling once approved
+            this.showVerificationCelebration();
           }
         } else {
           // Still update the nurse data for other potential changes
@@ -131,8 +142,66 @@ export class DashboardPage implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Start polling for verification status updates
+   */
+  private startVerificationPolling() {
+    // Only poll if verification is pending or under review
+    const status = this.verificationStatus();
+    if (status === 'approved' || status === 'rejected') {
+      return;
+    }
+
+    // Clear any existing interval
+    this.stopVerificationPolling();
+
+    // Poll every 15 seconds
+    this.verificationPollingInterval = setInterval(() => {
+      const currentStatus = this.verificationStatus();
+      // Stop polling if already approved or rejected
+      if (currentStatus === 'approved' || currentStatus === 'rejected') {
+        this.stopVerificationPolling();
+        return;
+      }
+      this.refreshNurseProfile();
+    }, this.VERIFICATION_POLL_INTERVAL);
+  }
+
+  /**
+   * Stop polling for verification status
+   */
+  private stopVerificationPolling() {
+    if (this.verificationPollingInterval) {
+      clearInterval(this.verificationPollingInterval);
+      this.verificationPollingInterval = null;
+    }
+  }
+
+  /**
+   * Show celebration when verification is approved
+   */
+  private async showVerificationCelebration() {
+    const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-success verification-celebration',
+      header: '🎉 ¡Felicidades!',
+      message: 'Tu cuenta ha sido verificada. Ahora puedes recibir solicitudes de pacientes y comenzar a ofrecer tus servicios.',
+      buttons: [
+        {
+          text: '¡Empezar!',
+          handler: () => {
+            // Refresh data to show updated UI
+            this.loadData();
+          }
+        }
+      ],
+      backdropDismiss: false
+    });
+    await alert.present();
+  }
+
   ngOnDestroy() {
     this.stopLocationBroadcast();
+    this.stopVerificationPolling();
     this.wsService.disconnect();
   }
 

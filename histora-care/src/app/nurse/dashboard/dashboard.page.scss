@@ -171,7 +171,7 @@ $primary-gradient: var(--histora-gradient);
   align-items: center;
   padding: tokens.$spacing-5 tokens.$spacing-4 28px; // Extra bottom padding for overlap effect
   background: $primary-gradient;
-  color: white;
+  color: #ffffff;
   position: relative;
   z-index: 1;
 
@@ -180,12 +180,13 @@ $primary-gradient: var(--histora-gradient);
       margin: 0;
       font-size: tokens.$font-size-2xl;
       font-weight: tokens.$font-weight-bold;
+      color: #ffffff !important; // Force white to override any Ionic defaults
     }
 
     p {
       margin: tokens.$spacing-1 0 0;
       font-size: tokens.$font-size-sm;
-      opacity: 0.9;
+      color: rgba(255, 255, 255, 0.9);
     }
   }
 

@@ -54,12 +54,12 @@
 }
 
 @if (isVisible() && isAllCompleted()) {
-<div class="checklist-card completed-state">
+<div class="checklist-card completed-state" [class.verified]="isVerified()" [class.pending-verification]="!isVerified()">
   <div class="completed-content">
-    <ion-icon name="checkmark-circle" color="success"></ion-icon>
+    <ion-icon [name]="completionIcon()" [color]="completionIconColor()"></ion-icon>
     <div class="completed-text">
-      <h3>Perfil completado</h3>
-      <span>Estas lista para recibir solicitudes</span>
+      <h3>{{ completionTitle() }}</h3>
+      <span>{{ completionMessage() }}</span>
     </div>
   </div>
 </div>

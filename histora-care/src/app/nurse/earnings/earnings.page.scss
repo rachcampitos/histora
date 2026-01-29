@@ -1,4 +1,8 @@
-.earnings-content {
+@use '../../../theme/design-tokens' as tokens;
+
+$primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+
+.services-content {
   --background: #f5f7fa;
 }
 
@@ -24,82 +28,6 @@
   }
 }
 
-// Date Picker Container
-.date-picker-container {
-  padding: 0 16px 16px;
-
-  .date-picker-card {
-    margin: 0;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-    ion-card-content {
-      padding: 16px;
-    }
-
-    .date-inputs {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-
-      .date-input {
-        flex: 1;
-
-        ion-label {
-          display: block;
-          font-size: 13px;
-          color: #64748b;
-          margin-bottom: 8px;
-          font-weight: 500;
-        }
-
-        ion-datetime-button {
-          width: 100%;
-
-          &::part(native) {
-            background: #f1f5f9;
-            border-radius: 8px;
-            padding: 10px 12px;
-            font-size: 14px;
-            color: #2c3e50;
-          }
-        }
-      }
-    }
-
-    ion-button {
-      --border-radius: 10px;
-      --background: #1e3a5f;
-      font-weight: 600;
-      margin: 0;
-    }
-  }
-}
-
-// Date Range Display
-.date-range-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: white;
-  margin: 16px 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-
-  ion-icon {
-    font-size: 18px;
-    color: #1e3a5f;
-  }
-
-  span {
-    font-size: 14px;
-    color: #64748b;
-    font-weight: 500;
-  }
-}
-
 // Loading Container
 .loading-container {
   display: flex;
@@ -121,34 +49,31 @@
   }
 }
 
-// Summary Section
-.summary-section {
-  padding: 0 16px 16px;
+// Stats Section
+.stats-section {
+  padding: 16px;
 
-  .summary-grid {
+  .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 }
 
-// Summary Cards
-.summary-card {
-  margin: 0;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+// Stat Cards
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 
-  ion-card-content {
-    padding: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .card-icon {
+  .stat-icon {
     width: 44px;
     height: 44px;
-    border-radius: 10px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -158,8 +83,8 @@
       font-size: 22px;
     }
 
-    &.highlight {
-      background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+    &.rating {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
 
       ion-icon {
         color: white;
@@ -167,82 +92,71 @@
     }
   }
 
-  .card-info {
+  .stat-info {
     display: flex;
     flex-direction: column;
     min-width: 0;
     flex: 1;
 
-    .card-label {
+    .stat-label {
       font-size: 12px;
       color: #64748b;
       font-weight: 500;
-      margin-bottom: 4px;
-      white-space: nowrap;
+      margin-bottom: 2px;
     }
 
-    .card-value {
-      font-size: 18px;
+    .stat-value {
+      font-size: 24px;
       font-weight: 700;
-      color: #2c3e50;
+      color: #1e293b;
+      line-height: 1.2;
+    }
 
-      &.negative {
-        color: #ef4444;
-      }
-
-      &.highlight {
-        color: #1e3a5f;
-      }
+    .stat-change {
+      font-size: 11px;
+      color: #10b981;
+      font-weight: 500;
+      margin-top: 4px;
     }
   }
 
   // Card specific styles
-  &.total-card {
-    .card-icon {
-      background: #e0f2fe;
+  &.services-card .stat-icon {
+    background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
 
-      ion-icon {
-        color: #0ea5e9;
-      }
+    ion-icon {
+      color: white;
     }
   }
 
-  &.commission-card {
-    .card-icon {
-      background: #fee2e2;
+  &.hours-card .stat-icon {
+    background: #e0f2fe;
 
-      ion-icon {
-        color: #ef4444;
-      }
+    ion-icon {
+      color: #0ea5e9;
     }
   }
 
-  &.net-card {
-    grid-column: 1 / -1;
+  &.patients-card .stat-icon {
+    background: #fce7f3;
 
-    ion-card-content {
-      padding: 20px;
-    }
-
-    .card-value {
-      font-size: 24px;
+    ion-icon {
+      color: #ec4899;
     }
   }
 
-  &.services-card {
-    .card-icon {
-      background: #dcfce7;
+  &.rating-card .stat-icon {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
 
-      ion-icon {
-        color: #22c55e;
-      }
+    ion-icon {
+      color: white;
     }
   }
 }
 
-// History Section
-.history-section {
-  padding: 0 16px 24px;
+// Services Section
+.services-section {
+  padding: 0 16px 16px;
 
   .section-header {
     display: flex;
@@ -254,7 +168,7 @@
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #2c3e50;
+      color: #1e293b;
     }
 
     ion-badge {
@@ -267,71 +181,136 @@
 
 // Services List
 .services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Service Card
+.service-card {
   background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-  ion-item {
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --inner-padding-end: 0;
-    --min-height: 72px;
+  .service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
 
-    .service-date {
-      width: 70px;
-      text-align: center;
-      padding-right: 12px;
-      border-right: 2px solid #e2e8f0;
-      margin-right: 12px;
+    .service-type {
+      display: flex;
+      align-items: center;
+      gap: 8px;
 
-      .date-day {
-        font-size: 12px;
-        color: #64748b;
-        font-weight: 500;
-        line-height: 1.4;
+      ion-icon {
+        font-size: 20px;
+        color: #4a9d9a;
+      }
+
+      span {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1e293b;
       }
     }
 
-    ion-label {
-      h3 {
-        font-size: 14px;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 4px;
+    ion-badge {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+  }
+
+  .service-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      ion-icon {
+        font-size: 16px;
+        color: #94a3b8;
       }
 
-      .patient-name {
-        display: flex;
-        align-items: center;
-        gap: 4px;
+      span {
         font-size: 13px;
         color: #64748b;
-        margin: 0;
-
-        ion-icon {
-          font-size: 14px;
-        }
       }
     }
+  }
+
+  .service-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     .service-amount {
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
 
-      .amount {
-        font-size: 15px;
+      .amount-label {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-bottom: 2px;
+      }
+
+      .amount-value {
+        font-size: 18px;
         font-weight: 700;
-        color: #22c55e;
+        color: #1e3a5f;
+      }
+    }
+
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border-radius: 8px;
+
+      ion-icon {
+        font-size: 16px;
+        color: #64748b;
       }
 
-      ion-badge {
-        font-size: 12px;
-        padding: 2px 8px;
-        border-radius: 8px;
+      span {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
       }
+    }
+  }
+
+  .service-rating {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+
+    .rating-stars {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 6px;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+
+    .rating-text {
+      font-size: 13px;
+      color: #64748b;
+      font-style: italic;
+      line-height: 1.4;
     }
   }
 }
@@ -341,8 +320,8 @@
   text-align: center;
   padding: 48px 24px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   ion-icon {
     font-size: 64px;
@@ -365,13 +344,37 @@
   }
 }
 
+// Info Note
+.info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 16px;
+  padding: 16px;
+  background: rgba(30, 58, 95, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(30, 58, 95, 0.1);
+
+  ion-icon {
+    font-size: 20px;
+    color: #1e3a5f;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  span {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.5;
+  }
+}
+
 // ============================================================
 // DARK MODE STYLES
-// Note: ion-header/ion-toolbar dark mode handled by global.scss
 // ============================================================
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
-  .earnings-content {
+  .services-content {
     --background: #0f172a;
   }
 
@@ -389,54 +392,6 @@
     }
   }
 
-  // Date Picker
-  .date-picker-container {
-    .date-picker-card {
-      --background: #1e293b;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-
-      ion-card-content {
-        padding: 16px;
-      }
-
-      .date-inputs {
-        .date-input {
-          ion-label {
-            color: #94a3b8;
-          }
-
-          ion-datetime-button {
-            &::part(native) {
-              background: #334155;
-              color: #f1f5f9;
-            }
-          }
-        }
-      }
-
-      // Aplicar button dark mode
-      ion-button {
-        --color: white;
-        --color-hover: white;
-        --color-activated: white;
-      }
-    }
-  }
-
-  // Date Range Display
-  .date-range-display {
-    background: #1e293b;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-
-    ion-icon {
-      color: #6bb5b3;
-    }
-
-    span {
-      color: #94a3b8;
-    }
-  }
-
   // Loading
   .loading-container {
     p {
@@ -444,69 +399,97 @@
     }
   }
 
-  // Summary Cards
-  .summary-card {
-    --background: #1e293b;
+  // Stat Cards
+  .stat-card {
+    background: #1e293b;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
-    .card-info {
-      .card-label {
+    .stat-info {
+      .stat-label {
         color: #94a3b8;
       }
 
-      .card-value {
+      .stat-value {
         color: #f1f5f9;
+      }
 
-        &.highlight {
-          color: #6bb5b3;
-        }
+      .stat-change {
+        color: #6bb5b3;
       }
     }
 
-    &.total-card .card-icon {
+    &.hours-card .stat-icon {
       background: rgba(14, 165, 233, 0.2);
     }
 
-    &.commission-card .card-icon {
-      background: rgba(239, 68, 68, 0.2);
-    }
-
-    &.services-card .card-icon {
-      background: rgba(34, 197, 94, 0.2);
+    &.patients-card .stat-icon {
+      background: rgba(236, 72, 153, 0.2);
     }
   }
 
-  // History Section
-  .history-section {
+  // Services Section
+  .services-section {
     .section-header h2 {
       color: #f1f5f9;
     }
   }
 
-  // Services List
-  .services-list {
+  // Service Card
+  .service-card {
     background: #1e293b;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
-    ion-item {
-      --background: #1e293b;
+    .service-header {
+      .service-type {
+        ion-icon {
+          color: #6bb5b3;
+        }
 
-      .service-date {
-        border-right-color: #334155;
+        span {
+          color: #f1f5f9;
+        }
+      }
+    }
 
-        .date-day {
+    .service-details {
+      border-bottom-color: #334155;
+
+      .detail-row {
+        ion-icon {
+          color: #64748b;
+        }
+
+        span {
           color: #94a3b8;
         }
       }
+    }
 
-      ion-label {
-        h3 {
-          color: #f1f5f9;
+    .service-footer {
+      .service-amount {
+        .amount-label {
+          color: #64748b;
         }
 
-        .patient-name {
+        .amount-value {
+          color: #6bb5b3;
+        }
+      }
+
+      .payment-method {
+        background: #334155;
+
+        ion-icon, span {
           color: #94a3b8;
         }
+      }
+    }
+
+    .service-rating {
+      border-top-color: #334155;
+
+      .rating-text {
+        color: #94a3b8;
       }
     }
   }
@@ -526,6 +509,20 @@
 
     span {
       color: #64748b;
+    }
+  }
+
+  // Info Note
+  .info-note {
+    background: rgba(107, 181, 179, 0.1);
+    border-color: rgba(107, 181, 179, 0.2);
+
+    ion-icon {
+      color: #6bb5b3;
+    }
+
+    span {
+      color: #94a3b8;
     }
   }
 }

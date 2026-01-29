@@ -992,6 +992,29 @@ ion-alert.histora-alert-success {
   }
 }
 
+// Verification celebration alert
+ion-alert.verification-celebration {
+  .alert-head {
+    padding: 24px 20px 12px;
+  }
+
+  .alert-title {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .alert-message {
+    font-size: 15px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .alert-button:not(.alert-button-role-cancel) {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    font-size: 16px;
+  }
+}
+
 /* Dark mode for all alert variants */
 body.ion-palette-dark,
 body.dark {

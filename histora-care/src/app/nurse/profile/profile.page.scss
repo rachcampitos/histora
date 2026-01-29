@@ -131,12 +131,13 @@ $primary-gradient: var(--histora-gradient);
     margin: 0;
     font-size: tokens.$font-size-2xl;
     font-weight: tokens.$font-weight-bold;
+    color: #ffffff !important; // Force white to override any Ionic defaults
   }
 
   .nurse-role {
     margin: tokens.$spacing-1 0 0;
     font-size: tokens.$font-size-sm;
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
   }
 }
 
@@ -664,15 +665,17 @@ ion-range {
     --background: #{$primary-gradient};
     --border-radius: #{tokens.$radius-lg};
     --box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    --color: white;
-    --color-hover: white;
-    --color-activated: white;
+    --color: #ffffff !important;
+    --color-hover: #ffffff !important;
+    --color-activated: #ffffff !important;
     font-weight: tokens.$font-weight-semibold;
     font-size: tokens.$font-size-base;
     height: 52px;
+    color: #ffffff !important; // Explicit text color for light mode compatibility
 
     ion-spinner {
       margin-right: tokens.$spacing-2;
+      color: #ffffff;
     }
   }
 }
@@ -695,6 +698,13 @@ ion-range {
       display: flex;
       align-items: center;
       gap: tokens.$spacing-3;
+
+      .payment-logo-img {
+        width: 36px;
+        height: 36px;
+        border-radius: tokens.$radius-md;
+        object-fit: contain;
+      }
 
       .payment-logo {
         width: 36px;
