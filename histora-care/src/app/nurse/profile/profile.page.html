@@ -243,6 +243,68 @@
       </ion-button>
     </div>
 
+    <!-- Payment Methods Section (P2P) -->
+    <div class="section payment-methods-section">
+      <div class="section-header">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <h2>Metodos de Pago</h2>
+      </div>
+      <p class="section-description">Los pacientes veran estos datos para pagarte directamente</p>
+
+      <!-- Yape -->
+      <div class="payment-method">
+        <div class="payment-method-header">
+          <div class="payment-logo yape">
+            <span>Y</span>
+          </div>
+          <span class="payment-label">Yape</span>
+        </div>
+        <ion-input
+          [value]="yapeNumber()"
+          (ionInput)="onYapeNumberChange($event)"
+          type="tel"
+          inputmode="numeric"
+          maxlength="9"
+          placeholder="987654321"
+          class="payment-input">
+        </ion-input>
+      </div>
+
+      <!-- Plin -->
+      <div class="payment-method">
+        <div class="payment-method-header">
+          <div class="payment-logo plin">
+            <span>P</span>
+          </div>
+          <span class="payment-label">Plin</span>
+        </div>
+        <ion-input
+          [value]="plinNumber()"
+          (ionInput)="onPlinNumberChange($event)"
+          type="tel"
+          inputmode="numeric"
+          maxlength="9"
+          placeholder="987654321"
+          class="payment-input">
+        </ion-input>
+      </div>
+
+      <!-- Cash Toggle -->
+      <ion-item lines="none" class="cash-toggle">
+        <ion-icon name="cash-outline" slot="start" color="success"></ion-icon>
+        <ion-label>
+          <h3>Acepto efectivo</h3>
+          <p>Los pacientes pueden pagarte en efectivo</p>
+        </ion-label>
+        <ion-toggle [checked]="acceptsCash()" (ionChange)="onAcceptsCashChange($event)" slot="end"></ion-toggle>
+      </ion-item>
+
+      <p class="payment-note">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Debes tener al menos un metodo de pago activo
+      </p>
+    </div>
+
     <!-- Subscription Section -->
     <div class="section subscription-section">
       <div class="section-header">

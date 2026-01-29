@@ -457,6 +457,109 @@ ion-range {
   }
 }
 
+// Payment Methods Section
+.payment-methods-section {
+  .section-description {
+    margin: 0 0 tokens.$spacing-4;
+    font-size: tokens.$font-size-sm;
+    color: var(--text-secondary);
+  }
+
+  .payment-method {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.$spacing-2;
+    margin-bottom: tokens.$spacing-4;
+
+    .payment-method-header {
+      display: flex;
+      align-items: center;
+      gap: tokens.$spacing-3;
+
+      .payment-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: tokens.$radius-md;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: tokens.$font-weight-bold;
+        font-size: tokens.$font-size-lg;
+        color: white;
+
+        &.yape {
+          background: linear-gradient(135deg, #9b4dca 0%, #6b2d9b 100%);
+        }
+
+        &.plin {
+          background: linear-gradient(135deg, #00d4aa 0%, #00a88a 100%);
+        }
+      }
+
+      .payment-label {
+        font-size: tokens.$font-size-base;
+        font-weight: tokens.$font-weight-semibold;
+        color: var(--text-primary);
+      }
+    }
+
+    .payment-input {
+      --background: #{tokens.$surface-secondary};
+      --padding-start: #{tokens.$spacing-4};
+      --padding-end: #{tokens.$spacing-4};
+      --padding-top: #{tokens.$spacing-3};
+      --padding-bottom: #{tokens.$spacing-3};
+      border-radius: tokens.$radius-md;
+      font-size: tokens.$font-size-base;
+      font-weight: tokens.$font-weight-medium;
+      letter-spacing: 1px;
+    }
+  }
+
+  .cash-toggle {
+    --background: #{tokens.$surface-secondary};
+    --padding-start: #{tokens.$spacing-3};
+    --padding-end: #{tokens.$spacing-3};
+    --inner-padding-end: 0;
+    --border-radius: #{tokens.$radius-md};
+    margin-top: tokens.$spacing-2;
+
+    ion-icon[slot="start"] {
+      font-size: 24px;
+      margin-right: tokens.$spacing-3;
+    }
+
+    ion-label {
+      h3 {
+        font-size: 15px;
+        font-weight: tokens.$font-weight-semibold;
+        color: var(--text-primary);
+        margin: 0 0 2px;
+      }
+
+      p {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+    }
+  }
+
+  .payment-note {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-2;
+    margin: tokens.$spacing-4 0 0;
+    font-size: tokens.$font-size-xs;
+    color: var(--text-tertiary);
+
+    ion-icon {
+      font-size: tokens.$font-size-base;
+      flex-shrink: 0;
+    }
+  }
+}
+
 // Subscription Section
 .subscription-section {
   .subscription-item {
@@ -735,6 +838,46 @@ ion-modal {
       --color: white;
       --color-hover: white;
       --color-activated: white;
+    }
+  }
+
+  // Payment Methods Section
+  .payment-methods-section {
+    .section-description {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    .payment-method {
+      .payment-method-header {
+        .payment-label {
+          color: tokens.$text-dark-primary;
+        }
+      }
+
+      .payment-input {
+        --background: #{tokens.$surface-dark-tertiary};
+        --color: #{tokens.$text-dark-primary};
+        --placeholder-color: #{tokens.$color-neutral-500};
+      }
+    }
+
+    .cash-toggle {
+      --background: #{tokens.$surface-dark-tertiary};
+      --color: #{tokens.$text-dark-primary};
+
+      ion-label {
+        h3 {
+          color: tokens.$text-dark-primary;
+        }
+
+        p {
+          color: tokens.$text-dark-tertiary;
+        }
+      }
+    }
+
+    .payment-note {
+      color: tokens.$color-neutral-500;
     }
   }
 

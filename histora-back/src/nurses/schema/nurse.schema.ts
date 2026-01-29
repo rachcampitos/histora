@@ -156,6 +156,16 @@ export class Nurse extends Document {
   @Prop({ default: 0 })
   totalServicesCompleted: number;
 
+  // Payment Methods (P2P)
+  @Prop()
+  yapeNumber?: string;
+
+  @Prop()
+  plinNumber?: string;
+
+  @Prop({ default: true })
+  acceptsCash: boolean;
+
   // Status
   @Prop({ default: true })
   isActive: boolean;

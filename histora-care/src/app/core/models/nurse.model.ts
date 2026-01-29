@@ -38,10 +38,31 @@ export interface Nurse {
   totalReviews: number;
   totalServicesCompleted: number;
 
+  // Payment Methods (P2P)
+  yapeNumber?: string;
+  plinNumber?: string;
+  acceptsCash: boolean;
+
+  // Subscription
+  subscription?: NurseSubscription;
+
   // Status
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+// Subscription types
+export type SubscriptionPlan = 'free' | 'pro' | 'premium';
+export type SubscriptionStatus = 'active' | 'pending' | 'expired' | 'rejected';
+
+export interface NurseSubscription {
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+  expiresAt?: Date;
+  paymentProof?: string;
+  paymentDate?: Date;
+  rejectionReason?: string;
 }
 
 // Verification document types

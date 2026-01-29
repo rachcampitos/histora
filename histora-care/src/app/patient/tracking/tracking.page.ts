@@ -17,6 +17,10 @@ interface NurseInfo {
   phone?: string;
   rating: number;
   totalReviews: number;
+  // Payment methods
+  yapeNumber?: string;
+  plinNumber?: string;
+  acceptsCash?: boolean;
 }
 
 @Component({
@@ -47,6 +51,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   loadError = signal<string | null>(null);
   hasReviewed = signal(false);
   showReviewModal = signal(false);
+  copiedPayment = signal<'yape' | 'plin' | null>(null);
 
   // Development mode flag
   private isDevelopment = !environment.production;
@@ -311,7 +316,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Load nurse details for rating information
+   * Load nurse details for rating and payment information
    */
   private async loadNurseDetails(nurseId: string) {
     try {
@@ -320,7 +325,11 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         this.nurse.set({
           ...this.nurse()!,
           rating: nurseDetails.averageRating || 0,
-          totalReviews: nurseDetails.totalReviews || 0
+          totalReviews: nurseDetails.totalReviews || 0,
+          // Payment methods for P2P payments
+          yapeNumber: nurseDetails.yapeNumber,
+          plinNumber: nurseDetails.plinNumber,
+          acceptsCash: nurseDetails.acceptsCash
         });
       }
     } catch (error) {
@@ -547,6 +556,37 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     if (phone) {
       window.open(`tel:${phone}`, '_system');
     }
+  }
+
+  /**
+   * Copy payment number to clipboard
+   */
+  async copyPaymentNumber(number: string, type: 'yape' | 'plin') {
+    try {
+      await navigator.clipboard.writeText(number);
+      this.copiedPayment.set(type);
+
+      const toast = await this.toastController.create({
+        message: 'Numero copiado al portapapeles',
+        duration: 2000,
+        position: 'bottom',
+        color: 'success',
+        icon: 'checkmark-circle'
+      });
+      await toast.present();
+
+      setTimeout(() => this.copiedPayment.set(null), 2000);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+    }
+  }
+
+  /**
+   * Check if nurse has any payment method configured
+   */
+  hasPaymentMethods(): boolean {
+    const nurseInfo = this.nurse();
+    return !!(nurseInfo?.yapeNumber || nurseInfo?.plinNumber || nurseInfo?.acceptsCash);
   }
 
   /**

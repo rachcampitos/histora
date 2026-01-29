@@ -187,6 +187,70 @@
       </div>
       }
 
+      <!-- Payment Section (P2P) -->
+      @if (currentStatus() === 'completed' && hasPaymentMethods()) {
+      <div class="payment-section">
+        <div class="payment-header">
+          <ion-icon name="wallet-outline"></ion-icon>
+          <div class="payment-title">
+            <h4>Pagar a la enfermera</h4>
+            <p>Selecciona un metodo de pago</p>
+          </div>
+        </div>
+
+        <div class="payment-methods">
+          <!-- Yape -->
+          @if (nurse()?.yapeNumber) {
+          <div class="payment-method" (click)="copyPaymentNumber(nurse()!.yapeNumber!, 'yape')">
+            <div class="payment-logo yape">
+              <span>Y</span>
+            </div>
+            <div class="payment-info">
+              <span class="payment-label">Yape</span>
+              <span class="payment-number">{{ nurse()?.yapeNumber }}</span>
+            </div>
+            <ion-icon [name]="copiedPayment() === 'yape' ? 'checkmark-circle' : 'copy-outline'"
+                      [color]="copiedPayment() === 'yape' ? 'success' : 'medium'"></ion-icon>
+          </div>
+          }
+
+          <!-- Plin -->
+          @if (nurse()?.plinNumber) {
+          <div class="payment-method" (click)="copyPaymentNumber(nurse()!.plinNumber!, 'plin')">
+            <div class="payment-logo plin">
+              <span>P</span>
+            </div>
+            <div class="payment-info">
+              <span class="payment-label">Plin</span>
+              <span class="payment-number">{{ nurse()?.plinNumber }}</span>
+            </div>
+            <ion-icon [name]="copiedPayment() === 'plin' ? 'checkmark-circle' : 'copy-outline'"
+                      [color]="copiedPayment() === 'plin' ? 'success' : 'medium'"></ion-icon>
+          </div>
+          }
+
+          <!-- Cash -->
+          @if (nurse()?.acceptsCash) {
+          <div class="payment-method cash">
+            <div class="payment-logo cash-logo">
+              <ion-icon name="cash-outline"></ion-icon>
+            </div>
+            <div class="payment-info">
+              <span class="payment-label">Efectivo</span>
+              <span class="payment-hint">Paga directamente a la enfermera</span>
+            </div>
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          </div>
+          }
+        </div>
+
+        <div class="payment-amount">
+          <span class="amount-label">Monto a pagar:</span>
+          <span class="amount-value">S/. {{ request()?.service?.price }}</span>
+        </div>
+      </div>
+      }
+
       <!-- Completed Actions -->
       @if (currentStatus() === 'completed') {
       <div class="completed-actions">
