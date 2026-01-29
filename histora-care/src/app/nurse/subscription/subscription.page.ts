@@ -267,6 +267,7 @@ export class SubscriptionPage implements OnInit {
 
   async confirmPaymentSubmission() {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Confirmar envio',
       message: 'Al enviar, confirmas que realizaste el pago por Yape y que el comprobante es autentico.',
       buttons: [

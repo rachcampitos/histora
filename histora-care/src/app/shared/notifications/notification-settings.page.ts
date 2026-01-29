@@ -55,6 +55,7 @@ export class NotificationSettingsPage implements OnInit {
 
   private async showPermissionAlert() {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-warning',
       header: 'Permiso Requerido',
       message: 'Para recibir notificaciones, debes habilitar los permisos en la configuracion de tu dispositivo.',
       buttons: [

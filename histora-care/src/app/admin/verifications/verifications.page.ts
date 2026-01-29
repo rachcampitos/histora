@@ -114,6 +114,7 @@ export class VerificationsPage implements OnInit {
 
   async approveVerification(verification: NurseVerification) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-success',
       header: 'Aprobar Verificacion',
       message: `Confirmas que la enfermera ha sido verificada correctamente?`,
       inputs: [
@@ -136,6 +137,7 @@ export class VerificationsPage implements OnInit {
 
   async rejectVerification(verification: NurseVerification) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Rechazar Verificacion',
       message: 'Indica el motivo del rechazo:',
       inputs: [
@@ -149,6 +151,7 @@ export class VerificationsPage implements OnInit {
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Rechazar',
+          role: 'destructive',
           handler: (data) => {
             if (!data.reason?.trim()) {
               this.showToast('Debes indicar el motivo del rechazo', 'warning');

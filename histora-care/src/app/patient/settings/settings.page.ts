@@ -150,6 +150,7 @@ export class SettingsPage implements OnInit {
 
   async logout() {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Cerrar Sesión',
       message: '¿Estás seguro que deseas cerrar sesión?',
       buttons: [

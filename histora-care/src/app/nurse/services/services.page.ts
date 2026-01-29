@@ -225,6 +225,7 @@ export class ServicesPage implements OnInit {
   // Delete service
   async confirmDeleteService(service: NurseService) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Eliminar servicio',
       message: `¿Estas seguro de eliminar "${service.name}"? Esta accion no se puede deshacer.`,
       buttons: [

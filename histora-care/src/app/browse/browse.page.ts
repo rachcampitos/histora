@@ -310,6 +310,7 @@ export class BrowsePage implements OnInit, AfterViewInit, OnDestroy {
 
   private async promptRegistration(action: string) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Crea tu cuenta',
       message: `Para ${action}, necesitas una cuenta. El registro es rapido y gratuito.`,
       buttons: [
