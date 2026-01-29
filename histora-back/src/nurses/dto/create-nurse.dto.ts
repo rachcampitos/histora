@@ -39,6 +39,33 @@ export class GeoPointDto {
   district?: string;
 }
 
+// Required location DTO for registration (city and district are mandatory)
+export class RequiredGeoPointDto {
+  @ApiProperty({ example: 'Point' })
+  @IsString()
+  type: string = 'Point';
+
+  @ApiProperty({ example: [-77.0428, -12.0464], description: '[longitude, latitude]' })
+  @IsArray()
+  @IsNumber({}, { each: true })
+  coordinates: number[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @ApiProperty({ example: 'Lima', description: 'City is required for registration' })
+  @IsString()
+  @IsNotEmpty({ message: 'La ciudad es obligatoria' })
+  city: string;
+
+  @ApiProperty({ example: 'San Isidro', description: 'District is required for registration' })
+  @IsString()
+  @IsNotEmpty({ message: 'El distrito es obligatorio' })
+  district: string;
+}
+
 export class NurseServiceDto {
   @ApiProperty({ example: 'Inyección intramuscular' })
   @IsString()
