@@ -282,6 +282,45 @@ export class UploadsService {
     return { success: true };
   }
 
+  // Delete all files for a nurse (avatar, verification documents, etc.)
+  async deleteNurseFiles(nurseId: string): Promise<{ success: boolean; deletedCount: number }> {
+    try {
+      // Delete all files in the nurse's verification folder
+      const verificationResult = await this.cloudinaryProvider.deleteByPrefix(
+        `histora/nurses/${nurseId}`
+      );
+
+      this.logger.log(`Deleted ${verificationResult.deletedCount || 0} files for nurse ${nurseId}`);
+
+      return {
+        success: true,
+        deletedCount: verificationResult.deletedCount || 0,
+      };
+    } catch (error) {
+      this.logger.error(`Error deleting nurse files: ${error.message}`);
+      return { success: false, deletedCount: 0 };
+    }
+  }
+
+  // Delete user avatar
+  async deleteUserAvatar(avatarUrl: string): Promise<{ success: boolean }> {
+    try {
+      // Extract public ID from Cloudinary URL
+      // URL format: https://res.cloudinary.com/{cloud}/image/upload/{version}/{public_id}.{format}
+      const match = avatarUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/);
+      if (match && match[1]) {
+        const publicId = match[1];
+        await this.cloudinaryProvider.delete(publicId);
+        this.logger.log(`Deleted user avatar: ${publicId}`);
+        return { success: true };
+      }
+      return { success: false };
+    } catch (error) {
+      this.logger.error(`Error deleting user avatar: ${error.message}`);
+      return { success: false };
+    }
+  }
+
   // Get optimized URL for a file
   getOptimizedUrl(publicId: string, width?: number, height?: number): string {
     return this.cloudinaryProvider.getOptimizedUrl(publicId, {

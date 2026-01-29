@@ -169,6 +169,35 @@ export class CloudinaryProvider implements OnModuleInit {
     }
   }
 
+  // Delete all resources by prefix (e.g., all files in a folder)
+  async deleteByPrefix(prefix: string): Promise<DeleteResult & { deletedCount?: number }> {
+    if (!this.configured) {
+      this.logger.log(`[DEV] Would delete all resources with prefix: ${prefix}`);
+      return { success: true, deletedCount: 0 };
+    }
+
+    try {
+      // Delete all resources with the given prefix
+      const result = await cloudinary.api.delete_resources_by_prefix(prefix);
+      const deletedCount = Object.keys(result.deleted || {}).length;
+
+      this.logger.log(`[Cloudinary] Deleted ${deletedCount} resources with prefix: ${prefix}`);
+      return { success: true, deletedCount };
+    } catch (error) {
+      // If no resources found, that's still a success
+      if (error.message?.includes('not found')) {
+        this.logger.log(`[Cloudinary] No resources found with prefix: ${prefix}`);
+        return { success: true, deletedCount: 0 };
+      }
+
+      this.logger.error(`[Cloudinary] Delete by prefix failed: ${error.message}`);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
   // Generate optimized URL with transformations
   getOptimizedUrl(publicId: string, transformations: UploadOptions['transformation'] = {}): string {
     const {

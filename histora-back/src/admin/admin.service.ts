@@ -31,6 +31,7 @@ import {
 } from './dto/dashboard.dto';
 import { UserRole } from '../users/schema/user.schema';
 import { sanitizeRegex } from '../common/utils/security.util';
+import { UploadsService } from '../uploads/uploads.service';
 
 @Injectable()
 export class AdminService {
@@ -44,6 +45,7 @@ export class AdminService {
     @InjectModel(ReniecUsage.name) private reniecUsageModel: Model<ReniecUsage>,
     @InjectModel(ServiceRequest.name) private serviceRequestModel: Model<ServiceRequest>,
     @InjectModel(PanicAlert.name) private panicAlertModel: Model<PanicAlert>,
+    private readonly uploadsService: UploadsService,
   ) {}
 
   async getUsers(query: UserQueryDto) {
@@ -231,9 +233,29 @@ export class AdminService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
+    // Clean up Cloudinary assets for user avatar
+    if (user.avatar && user.avatar.includes('cloudinary')) {
+      try {
+        await this.uploadsService.deleteUserAvatar(user.avatar);
+        this.logger.log(`Deleted Cloudinary avatar for user ${user.email}`);
+      } catch (error) {
+        this.logger.warn(`Failed to delete avatar for user ${user.email}: ${error.message}`);
+      }
+    }
+
     // Check if user is a nurse and perform cascade delete
     const nurse = await this.nurseModel.findOne({ userId: id, isDeleted: { $ne: true } });
     if (nurse) {
+      // Clean up Cloudinary assets for nurse (verification documents, selfies, etc.)
+      try {
+        const deleteResult = await this.uploadsService.deleteNurseFiles(String(nurse._id));
+        if (deleteResult.deletedCount > 0) {
+          this.logger.log(`Deleted ${deleteResult.deletedCount} Cloudinary files for nurse ${nurse.cepNumber}`);
+        }
+      } catch (error) {
+        this.logger.warn(`Failed to delete Cloudinary files for nurse ${nurse.cepNumber}: ${error.message}`);
+      }
+
       // Cancel any pending verifications for this nurse
       const cancelledCount = await this.nurseVerificationModel.updateMany(
         {
