@@ -1,6 +1,5 @@
 @use '../../../theme/design-tokens' as tokens;
 
-$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 $nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
 
 .onboarding-content {
@@ -29,7 +28,7 @@ $nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
     transition: all 0.3s ease;
 
     &.active {
-      background: $primary-gradient;
+      background: $nurselite-gradient;
       transform: scale(1.2);
     }
 
@@ -115,8 +114,8 @@ swiper-slide {
     }
 
     &.setup {
-      background: $primary-gradient;
-      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+      background: $nurselite-gradient;
+      box-shadow: 0 8px 32px rgba(74, 157, 154, 0.3);
     }
   }
 }
@@ -250,7 +249,7 @@ swiper-slide {
   align-items: flex-start;
   gap: 8px;
   padding: 12px 16px;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(74, 157, 154, 0.1);
   border-radius: 12px;
   margin-bottom: 24px;
   width: 100%;
@@ -258,7 +257,7 @@ swiper-slide {
 
   ion-icon {
     font-size: 20px;
-    color: #667eea;
+    color: #4a9d9a;
     flex-shrink: 0;
     margin-top: 2px;
   }
@@ -408,10 +407,10 @@ swiper-slide {
   }
 
   &.pro {
-    border-color: #667eea;
+    border-color: #4a9d9a;
 
     .plan-header .plan-name {
-      color: #667eea;
+      color: #4a9d9a;
     }
   }
 
@@ -419,7 +418,7 @@ swiper-slide {
     position: absolute;
     top: -10px;
     right: 16px;
-    background: $primary-gradient;
+    background: $nurselite-gradient;
     color: white;
     font-size: 11px;
     font-weight: 600;
