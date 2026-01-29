@@ -665,12 +665,12 @@ export class CompleteRegistrationPage {
         cssClass: 'histora-alert histora-alert-success',
         header: 'Registro Completado',
         message:
-          'Tu solicitud de verificacion ha sido enviada. Te notificaremos cuando sea aprobada. Mientras tanto, puedes configurar tu perfil.',
+          'Tu solicitud de verificacion ha sido enviada. Te notificaremos cuando sea aprobada. Ahora vamos a configurar tu perfil.',
         buttons: [
           {
-            text: 'Entendido',
+            text: 'Continuar',
             handler: () => {
-              this.router.navigate(['/nurse/dashboard']);
+              this.router.navigate(['/nurse/onboarding'], { replaceUrl: true });
             },
           },
         ],
