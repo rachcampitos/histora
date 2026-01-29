@@ -146,7 +146,7 @@
           expand="block"
           type="button"
           class="submit-btn"
-          (click)="proceedToDocuments()"
+          (click)="proceedToLocation()"
           [disabled]="nurseForm.invalid">
           <ion-icon name="arrow-forward" slot="end"></ion-icon>
           Continuar
@@ -155,7 +155,195 @@
     </div>
     }
 
-    <!-- Step 3: Document Upload -->
+    <!-- Step 3: Location Selection -->
+    @if (step() === 'location' && selectedType() === 'nurse') {
+    <div class="form-section">
+      <h2 class="section-title">Zona de Servicio</h2>
+      <p class="section-subtitle">Selecciona donde ofreces tus servicios</p>
+
+      <!-- Progress indicator -->
+      <div class="progress-indicator">
+        <div class="progress-step completed">
+          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+          <span class="step-label">Datos</span>
+        </div>
+        <div class="progress-line active"></div>
+        <div class="progress-step active">
+          <span class="step-number">2</span>
+          <span class="step-label">Ubicacion</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-step">
+          <span class="step-number">3</span>
+          <span class="step-label">Documentos</span>
+        </div>
+      </div>
+
+      <!-- Use current location button -->
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="location-btn"
+        (click)="useCurrentLocation()"
+        [disabled]="loadingLocation()">
+        <ion-icon name="locate" slot="start"></ion-icon>
+        {{ loadingLocation() ? 'Detectando...' : 'Usar mi ubicacion actual' }}
+      </ion-button>
+
+      <div class="divider-text">
+        <span>o selecciona manualmente</span>
+      </div>
+
+      <!-- Departamento Select -->
+      <ion-item lines="none" class="input-item">
+        <ion-icon name="map-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-select
+          placeholder="Selecciona departamento"
+          interface="action-sheet"
+          cancelText="Cancelar"
+          (ionChange)="onDepartamentoChange($event)"
+          [value]="selectedDepartamento()?.id"
+          aria-label="Departamento">
+          @for (dept of departamentos(); track dept.id) {
+          <ion-select-option [value]="dept.id">{{ dept.nombre }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <!-- Provincia Select (for non-Lima) -->
+      @if (selectedDepartamento() && !isLima()) {
+      <ion-item lines="none" class="input-item">
+        <ion-icon name="business-outline" slot="start" class="input-icon"></ion-icon>
+        <ion-select
+          placeholder="Selecciona provincia"
+          interface="action-sheet"
+          cancelText="Cancelar"
+          (ionChange)="onProvinciaChange($event)"
+          [value]="selectedProvincia()?.id"
+          aria-label="Provincia">
+          @for (prov of provincias(); track prov.id) {
+          <ion-select-option [value]="prov.id">{{ prov.nombre }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      }
+
+      <!-- Distrito Search/Select -->
+      @if (selectedDepartamento()) {
+      <div class="distrito-section">
+        <ion-searchbar
+          placeholder="Buscar distrito..."
+          [debounce]="300"
+          (ionInput)="filterDistritos($event)"
+          [value]="distritosSearchQuery()"
+          class="distrito-search">
+        </ion-searchbar>
+
+        <!-- Lima: Show grouped by zones -->
+        @if (isLima() && distritosAgrupados()) {
+        <div class="distritos-grouped">
+          @for (entry of distritosAgrupados() | keyvalue; track entry.key) {
+          <div class="zona-group">
+            <div class="zona-header">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ entry.key }}</span>
+            </div>
+            <div class="distritos-list">
+              @for (distrito of entry.value; track distrito.id) {
+              <button
+                type="button"
+                class="distrito-chip"
+                [class.selected]="selectedDistrito()?.id === distrito.id"
+                (click)="selectDistrito(distrito)">
+                <ion-icon [name]="selectedDistrito()?.id === distrito.id ? 'checkmark-circle' : 'location-outline'"></ion-icon>
+                {{ distrito.nombre }}
+              </button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Non-Lima: Show flat list -->
+        @if (!isLima() && distritos().length > 0) {
+        <div class="distritos-list flat">
+          @for (distrito of distritos(); track distrito.id) {
+          <button
+            type="button"
+            class="distrito-chip"
+            [class.selected]="selectedDistrito()?.id === distrito.id"
+            (click)="selectDistrito(distrito)">
+            <ion-icon [name]="selectedDistrito()?.id === distrito.id ? 'checkmark-circle' : 'location-outline'"></ion-icon>
+            {{ distrito.nombre }}
+          </button>
+          }
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Service Radius Slider -->
+      @if (selectedDistrito()) {
+      <div class="radius-section">
+        <div class="radius-header">
+          <ion-icon name="radio-outline"></ion-icon>
+          <span>Radio de servicio: <strong>{{ serviceRadius() }} km</strong></span>
+        </div>
+        <ion-range
+          [min]="1"
+          [max]="50"
+          [step]="1"
+          [pin]="true"
+          [value]="serviceRadius()"
+          (ionChange)="onRadiusChange($event)"
+          color="primary">
+          <ion-label slot="start">1 km</ion-label>
+          <ion-label slot="end">50 km</ion-label>
+        </ion-range>
+        <p class="radius-hint">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          Aproximadamente {{ estimatedDistricts() }} distritos cubiertos
+        </p>
+      </div>
+
+      <!-- Selected location summary -->
+      <div class="location-summary">
+        <div class="summary-header">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Tu zona de cobertura</span>
+        </div>
+        <div class="summary-chips">
+          <ion-chip color="primary">
+            <ion-icon name="location"></ion-icon>
+            <ion-label>{{ selectedDistrito()?.nombre }}</ion-label>
+          </ion-chip>
+          <ion-chip color="secondary" outline>
+            <ion-label>{{ serviceRadius() }} km</ion-label>
+          </ion-chip>
+          @if (selectedDepartamento()) {
+          <ion-chip color="tertiary" outline>
+            <ion-label>{{ selectedDepartamento()?.nombre }}</ion-label>
+          </ion-chip>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Continue Button -->
+      <ion-button
+        expand="block"
+        type="button"
+        class="submit-btn"
+        (click)="proceedToDocuments()"
+        [disabled]="!selectedDistrito()">
+        <ion-icon name="arrow-forward" slot="end"></ion-icon>
+        Continuar
+      </ion-button>
+    </div>
+    }
+
+    <!-- Step 4: Document Upload -->
     @if (step() === 'documents' && selectedType() === 'nurse') {
     <div class="form-section">
       <h2 class="section-title">Verificacion de Identidad</h2>
@@ -167,9 +355,14 @@
           <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
           <span class="step-label">Datos</span>
         </div>
+        <div class="progress-line completed"></div>
+        <div class="progress-step completed">
+          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+          <span class="step-label">Ubicacion</span>
+        </div>
         <div class="progress-line active"></div>
         <div class="progress-step active">
-          <span class="step-number">2</span>
+          <span class="step-number">3</span>
           <span class="step-label">Documentos</span>
         </div>
       </div>
@@ -252,11 +445,16 @@
         <div class="progress-line completed"></div>
         <div class="progress-step completed">
           <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+          <span class="step-label">Ubicacion</span>
+        </div>
+        <div class="progress-line completed"></div>
+        <div class="progress-step completed">
+          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
           <span class="step-label">Documentos</span>
         </div>
         <div class="progress-line active"></div>
         <div class="progress-step active">
-          <span class="step-number">3</span>
+          <span class="step-number">4</span>
           <span class="step-label">Terminos</span>
         </div>
       </div>

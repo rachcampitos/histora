@@ -362,7 +362,14 @@ export class AuthController {
       user.userId,
       dto.userType,
       dto.userType === 'doctor' ? { clinicName: dto.clinicName!, clinicPhone: dto.clinicPhone } : undefined,
-      dto.userType === 'nurse' ? { cepNumber: dto.cepNumber!, specialties: dto.specialties } : undefined,
+      dto.userType === 'nurse'
+        ? {
+            cepNumber: dto.cepNumber!,
+            specialties: dto.specialties,
+            location: dto.location,
+            serviceRadius: dto.serviceRadius,
+          }
+        : undefined,
       { termsAccepted: dto.termsAccepted, professionalDisclaimerAccepted: dto.professionalDisclaimerAccepted },
     );
   }

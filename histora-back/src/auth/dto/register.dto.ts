@@ -5,7 +5,32 @@ import {
   IsString,
   MinLength,
   IsBoolean,
+  IsNumber,
+  IsArray,
+  ValidateNested,
+  Min,
+  Max,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+// Location DTO for nurse registration
+export class NurseLocationDto {
+  @IsArray()
+  @IsNumber({}, { each: true })
+  coordinates: number[]; // [longitude, latitude]
+
+  @IsString()
+  @IsNotEmpty({ message: 'La ciudad es obligatoria' })
+  city: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'El distrito es obligatorio' })
+  district: string;
+
+  @IsString()
+  @IsOptional()
+  address?: string;
+}
 
 export class RegisterDto {
   @IsEmail()
@@ -150,6 +175,18 @@ export class CompleteGoogleRegistrationDto {
   @IsString({ each: true })
   specialties?: string[];
 
+  // Location data (required for nurses)
+  @ValidateNested()
+  @Type(() => NurseLocationDto)
+  @IsOptional()
+  location?: NurseLocationDto;
+
+  @IsNumber()
+  @Min(1, { message: 'El radio de servicio debe ser al menos 1 km' })
+  @Max(50, { message: 'El radio de servicio no puede superar 50 km' })
+  @IsOptional()
+  serviceRadius?: number;
+
   // Terms acceptance (required for all user types)
   @IsBoolean()
   @IsNotEmpty({ message: 'Debe aceptar los términos y condiciones' })
@@ -225,6 +262,18 @@ export class CompleteNurseRegistrationDto {
   @IsOptional()
   @IsString({ each: true })
   specialties?: string[];
+
+  // Location data (REQUIRED for nurse registration)
+  @ValidateNested()
+  @Type(() => NurseLocationDto)
+  @IsNotEmpty({ message: 'La ubicación es obligatoria' })
+  location: NurseLocationDto;
+
+  @IsNumber()
+  @Min(1, { message: 'El radio de servicio debe ser al menos 1 km' })
+  @Max(50, { message: 'El radio de servicio no puede superar 50 km' })
+  @IsNotEmpty({ message: 'El radio de servicio es obligatorio' })
+  serviceRadius: number;
 
   // Terms acceptance
   @IsBoolean()

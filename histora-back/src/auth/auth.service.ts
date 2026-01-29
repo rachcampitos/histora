@@ -949,7 +949,12 @@ export class AuthService {
     userId: string,
     userType: 'doctor' | 'patient' | 'nurse',
     clinicData?: { clinicName: string; clinicPhone?: string },
-    nurseData?: { cepNumber: string; specialties?: string[] },
+    nurseData?: {
+      cepNumber: string;
+      specialties?: string[];
+      location?: { coordinates: number[]; city: string; district: string; address?: string };
+      serviceRadius?: number;
+    },
     termsData?: { termsAccepted: boolean; professionalDisclaimerAccepted?: boolean },
   ): Promise<AuthResponse> {
     this.logger.log(`Completing Google registration for user ${userId} as ${userType}`);
@@ -1074,11 +1079,36 @@ export class AuthService {
         professionalDisclaimerAcceptedAt: new Date(),
       });
 
-      // Create nurse profile
-      const nurse = await this.nursesService.create(userId, {
+      // Create nurse profile with location
+      const nurseCreateData: {
+        cepNumber: string;
+        specialties: string[];
+        location?: {
+          type: string;
+          coordinates: number[];
+          city: string;
+          district: string;
+          address?: string;
+        };
+        serviceRadius?: number;
+      } = {
         cepNumber: nurseData.cepNumber,
         specialties: nurseData.specialties || [],
-      });
+      };
+
+      // Add location if provided
+      if (nurseData.location) {
+        nurseCreateData.location = {
+          type: 'Point',
+          coordinates: nurseData.location.coordinates,
+          city: nurseData.location.city,
+          district: nurseData.location.district,
+          address: nurseData.location.address,
+        };
+        nurseCreateData.serviceRadius = nurseData.serviceRadius || 10;
+      }
+
+      const nurse = await this.nursesService.create(userId, nurseCreateData);
 
       // Generate new token with updated role
       const payload: JwtPayload = {
@@ -1340,7 +1370,7 @@ export class AuthService {
     // If no selfie, mark as requiring selfie
     const verificationStatus = dto.selfieUrl ? 'pending' : 'selfie_required';
 
-    // Create nurse profile with CEP data
+    // Create nurse profile with CEP data and location
     const nurseProfile = await this.nursesService.create(user['_id'].toString(), {
       cepNumber: cleanCep,
       specialties: dto.specialties || [],
@@ -1349,6 +1379,15 @@ export class AuthService {
       cepRegisteredName: dto.fullNameFromCep,
       selfieUrl: dto.selfieUrl,
       verificationStatus,
+      // Location data (required)
+      location: {
+        type: 'Point',
+        coordinates: dto.location.coordinates,
+        city: dto.location.city,
+        district: dto.location.district,
+        address: dto.location.address,
+      },
+      serviceRadius: dto.serviceRadius,
     });
 
     const nurseProfileId = (nurseProfile as any)._id;

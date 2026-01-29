@@ -1100,6 +1100,277 @@ $border-radius: 12px;
   }
 }
 
+// Location Step Styles
+.location-btn {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+  margin-bottom: 16px;
+  height: 48px;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+.divider-text {
+  text-align: center;
+  margin: 16px 0;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35%;
+    height: 1px;
+    background: var(--histora-border, #e7e5e4);
+  }
+
+  &::before {
+    left: 0;
+  }
+
+  &::after {
+    right: 0;
+  }
+
+  span {
+    padding: 0 12px;
+    color: $text-muted;
+    font-size: 13px;
+    background: var(--histora-background, #f7fafc);
+  }
+}
+
+.distrito-section {
+  margin: 16px 0;
+
+  .distrito-search {
+    --background: var(--histora-surface, #ffffff);
+    --border-radius: #{$border-radius};
+    padding: 0;
+    margin-bottom: 12px;
+  }
+}
+
+.distritos-grouped {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  .zona-group {
+    margin-bottom: 16px;
+
+    .zona-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.08) 0%, rgba(var(--ion-color-tertiary-rgb, 74, 157, 154), 0.08) 100%);
+      border-radius: 8px;
+      margin-bottom: 10px;
+
+      ion-icon {
+        font-size: 16px;
+        color: $primary-color;
+      }
+
+      span {
+        font-size: 13px;
+        font-weight: 600;
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+.distritos-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  &.flat {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+}
+
+.distrito-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--histora-surface, #ffffff);
+  border: 1px solid var(--histora-border, #e7e5e4);
+  border-radius: 24px;
+  font-size: 13px;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 16px;
+  }
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+  }
+
+  &.selected {
+    background: rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.1);
+    border-color: $primary-color;
+    color: $primary-color;
+    font-weight: 500;
+
+    ion-icon {
+      color: $primary-color;
+    }
+  }
+}
+
+.radius-section {
+  margin: 24px 0;
+  padding: 16px;
+  background: var(--histora-surface, #ffffff);
+  border: 1px solid var(--histora-border, #e7e5e4);
+  border-radius: 12px;
+
+  .radius-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 20px;
+      color: $primary-color;
+    }
+
+    span {
+      font-size: 14px;
+      color: $text-dark;
+
+      strong {
+        color: $primary-color;
+        font-weight: 600;
+      }
+    }
+  }
+
+  ion-range {
+    --bar-background: var(--histora-border, #e7e5e4);
+    --bar-background-active: #{$primary-gradient};
+    --knob-background: #{$primary-color};
+    padding: 8px 0;
+  }
+
+  .radius-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: $text-muted;
+    margin: 8px 0 0;
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+.location-summary {
+  margin: 16px 0 24px;
+  padding: 16px;
+  background: rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.08);
+  border: 1px solid rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.2);
+  border-radius: 12px;
+
+  .summary-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: $success-color;
+    }
+  }
+
+  .summary-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    ion-chip {
+      margin: 0;
+      height: 32px;
+      font-size: 13px;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+// Dark mode for location step
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  .divider-text {
+    &::before,
+    &::after {
+      background: #4a5568;
+    }
+
+    span {
+      background: #1a202c;
+      color: #a0aec0;
+    }
+  }
+
+  .distrito-section .distrito-search {
+    --background: #1a1a1a;
+  }
+
+  .distritos-grouped .zona-group .zona-header {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(74, 157, 154, 0.15) 100%);
+  }
+
+  .distrito-chip {
+    background: #1a1a1a;
+    border-color: #4a5568;
+    color: #a0aec0;
+
+    &.selected {
+      background: rgba(102, 126, 234, 0.2);
+    }
+  }
+
+  .radius-section {
+    background: #1a1a1a;
+    border-color: #4a5568;
+
+    .radius-header span {
+      color: #e7e5e4;
+    }
+  }
+
+  .location-summary {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+}
+
 // Responsive adjustments
 @media (min-width: 576px) {
   .registration-container {

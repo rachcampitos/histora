@@ -18,3 +18,4 @@ export * from './notification.service';
 export * from './logger.service';
 export * from './toast.service';
 export * from './haptics.service';
+export * from './peru-locations.service';
