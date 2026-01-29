@@ -124,6 +124,11 @@ export class ProfilePage implements OnInit {
     this.loadProfile();
   }
 
+  ionViewWillLeave() {
+    // Stop any active tour when leaving to prevent freezing
+    this.productTour.forceStop();
+  }
+
   loadLocations() {
     this.departamentos.set(this.peruLocations.getDepartamentos());
   }
@@ -157,8 +162,14 @@ export class ProfilePage implements OnInit {
           }
         }
         this.isLoading.set(false);
-        // Start profile tour for first-time users
-        this.productTour.startTour('nurse_profile');
+        // Only start tour after a delay and if elements are ready
+        // This prevents the tour from blocking navigation
+        setTimeout(() => {
+          // Check if still on this page before starting tour
+          if (!this.isLoading()) {
+            this.productTour.startTour('nurse_profile');
+          }
+        }, 1500);
       },
       error: (err) => {
         console.error('Error loading profile:', err);

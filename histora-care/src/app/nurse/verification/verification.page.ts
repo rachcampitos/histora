@@ -5,6 +5,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
+import { ProductTourService } from '../../core/services/product-tour.service';
 import { Nurse, NurseVerification, VerificationDocumentType, VerificationStatus, CepValidationResult } from '../../core/models';
 
 type VerificationStep = 'validate_cep' | 'confirm_identity' | 'upload_documents';
@@ -39,6 +40,7 @@ export class VerificationPage implements OnInit, OnDestroy {
   private nurseApi = inject(NurseApiService);
   private authService = inject(AuthService);
   private nurseOnboarding = inject(NurseOnboardingService);
+  private productTour = inject(ProductTourService);
   private router = inject(Router);
   private navCtrl = inject(NavController);
   private loadingCtrl = inject(LoadingController);
@@ -199,6 +201,11 @@ export class VerificationPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.stopWaitingTimer();
     this.stopStatusPolling();
+  }
+
+  ionViewWillLeave() {
+    // Stop any active tour when leaving to prevent freezing
+    this.productTour.forceStop();
   }
 
   // ============= Waiting Screen Methods =============
@@ -416,7 +423,11 @@ export class VerificationPage implements OnInit, OnDestroy {
 
   onTaskClick(task: WaitingTask) {
     if (task.route) {
-      this.router.navigate([task.route]);
+      // Stop any tours before navigating
+      this.productTour.forceStop();
+      // Use navigateForward with replaceUrl to avoid stacking verification in history
+      // This way, back button from profile/services goes to dashboard, not verification
+      this.navCtrl.navigateForward(task.route, { replaceUrl: true });
     } else if (task.action === 'enable_notifications') {
       this.requestNotificationPermission();
     }
@@ -770,10 +781,13 @@ export class VerificationPage implements OnInit, OnDestroy {
   // ============= Navigation =============
 
   goBack() {
+    // Stop any active tours first
+    this.productTour.forceStop();
+
     // If under review, approved, or still loading - go to dashboard
     // This ensures the back button always works regardless of data state
     if (this.isLoading() || this.isUnderReview() || this.isApproved()) {
-      this.navCtrl.navigateBack('/nurse/dashboard', { animated: true });
+      this.navCtrl.navigateRoot('/nurse/dashboard', { animated: true, animationDirection: 'back' });
       return;
     }
 
@@ -788,12 +802,13 @@ export class VerificationPage implements OnInit, OnDestroy {
       }
     }
 
-    // Default: go to dashboard
-    this.navCtrl.navigateBack('/nurse/dashboard', { animated: true });
+    // Default: go to dashboard using navigateRoot to clear stack
+    this.navCtrl.navigateRoot('/nurse/dashboard', { animated: true, animationDirection: 'back' });
   }
 
   goToProfile() {
-    this.router.navigate(['/nurse/profile']);
+    this.productTour.forceStop();
+    this.navCtrl.navigateForward('/nurse/profile', { replaceUrl: true });
   }
 
   getStatusLabel(status: VerificationStatus): string {
