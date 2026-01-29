@@ -449,6 +449,33 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.router.navigate(['/nurse/verification']);
   }
 
+  // Avatar helpers
+  getInitials(): string {
+    const user = this.user();
+    if (!user?.firstName) return '';
+    const first = user.firstName[0] || '';
+    const last = user.lastName?.[0] || '';
+    return (first + last).toUpperCase();
+  }
+
+  getAvatarColor(): string {
+    const colors = [
+      '#4A90E2', // Blue
+      '#7B68EE', // Purple
+      '#50C878', // Green
+      '#FF6B6B', // Coral
+      '#4ECDC4', // Turquoise
+      '#4a9d9a', // NurseLite teal
+    ];
+
+    const name = this.user()?.firstName || '';
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  }
+
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
       pending: 'Pendiente',

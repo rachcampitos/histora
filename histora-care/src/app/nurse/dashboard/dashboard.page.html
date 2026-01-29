@@ -7,8 +7,32 @@
     </ion-buttons>
     <ion-title>NurseLite</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="goToProfile()">
-        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+      <ion-button (click)="goToProfile()" class="profile-avatar-btn">
+        <div class="avatar-wrapper" [class.verified]="isVerified()">
+          <!-- Photo -->
+          <img *ngIf="nurse()?.user?.avatar"
+               [src]="nurse()?.user?.avatar"
+               [alt]="user()?.firstName"
+               class="avatar-image" />
+          <!-- Initials fallback -->
+          <div *ngIf="!nurse()?.user?.avatar && user()?.firstName"
+               class="avatar-initials"
+               [style.background-color]="getAvatarColor()">
+            {{ getInitials() }}
+          </div>
+          <!-- Icon fallback -->
+          <ion-icon *ngIf="!nurse()?.user?.avatar && !user()?.firstName"
+                    name="person-circle"
+                    class="avatar-icon"></ion-icon>
+          <!-- Verification badge -->
+          <div *ngIf="isVerified()" class="verified-badge">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          </div>
+          <!-- Profile incomplete badge -->
+          <div *ngIf="!isVerified() && nurse()" class="incomplete-badge">
+            <ion-icon name="alert-circle" color="warning"></ion-icon>
+          </div>
+        </div>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
