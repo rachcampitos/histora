@@ -125,12 +125,12 @@ export interface UserFormDialogData {
       </form>
     </mat-dialog-content>
 
-    <mat-dialog-actions align="end">
-      <button mat-stroked-button (click)="onCancel()">
+    <mat-dialog-actions>
+      <button class="dialog-btn cancel-btn" (click)="onCancel()">
         {{ data.mode === 'view' ? 'Cerrar' : 'Cancelar' }}
       </button>
       @if (data.mode !== 'view') {
-        <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="isSubmitting || form.invalid">
+        <button class="dialog-btn primary-btn" (click)="onSubmit()" [disabled]="isSubmitting || form.invalid">
           @if (isSubmitting) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
@@ -141,6 +141,13 @@ export interface UserFormDialogData {
     </mat-dialog-actions>
   `,
   styles: [`
+    h2[mat-dialog-title] {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      text-align: center;
+      margin-bottom: 8px;
+    }
     .user-form {
       min-width: 400px;
     }
@@ -158,10 +165,42 @@ export interface UserFormDialogData {
       margin-bottom: 8px;
     }
     mat-dialog-actions {
-      padding: 16px 0 0 0;
+      padding: 16px 8px 8px !important;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
     }
-    mat-dialog-actions button {
-      margin-left: 8px;
+    .dialog-btn {
+      min-height: 44px;
+      padding: 0 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .cancel-btn {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .cancel-btn:hover {
+      background: #e2e8f0;
+    }
+    .primary-btn {
+      background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+      color: #ffffff;
+    }
+    .primary-btn:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(74, 157, 154, 0.4);
+    }
+    .primary-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .info-section {
       background: var(--bg-secondary, #f5f5f5);
@@ -194,6 +233,29 @@ export interface UserFormDialogData {
     .badge-solid-gray {
       background-color: #9e9e9e;
       color: white;
+    }
+
+    /* Dark mode */
+    :host-context(body.dark) {
+      h2[mat-dialog-title] {
+        color: #f1f5f9;
+      }
+      .cancel-btn {
+        background: #334155;
+        color: #f1f5f9;
+      }
+      .cancel-btn:hover {
+        background: #475569;
+      }
+      .info-section {
+        background: #334155;
+      }
+      .info-row {
+        border-color: #475569;
+      }
+      .info-label {
+        color: #94a3b8;
+      }
     }
   `],
   imports: [

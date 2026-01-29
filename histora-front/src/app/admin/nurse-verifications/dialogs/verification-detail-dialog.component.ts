@@ -354,13 +354,14 @@ interface NurseVerificationDetail {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 16px 24px;
+        padding: 20px 24px;
         border-bottom: 1px solid #e2e8f0;
 
         h2 {
           margin: 0;
           font-size: 20px;
-          font-weight: 600;
+          font-weight: 700;
+          color: #1e293b;
         }
       }
 
@@ -828,7 +829,7 @@ interface NurseVerificationDetail {
 
         .action-buttons {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           justify-content: flex-end;
           flex-wrap: wrap;
           padding-top: 8px;
@@ -839,10 +840,13 @@ interface NurseVerificationDetail {
             justify-content: center;
             gap: 8px;
             min-width: 140px;
-            height: 44px;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 8px;
+            min-height: 48px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
 
             mat-icon {
               font-size: 20px;
@@ -855,26 +859,26 @@ interface NurseVerificationDetail {
             }
 
             &[color="warn"] {
-              background: #fee2e2;
-              color: #dc2626;
+              background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+              color: white;
 
               &:hover:not([disabled]) {
-                background: #fecaca;
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
               }
             }
 
             &[color="primary"] {
-              background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+              background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
               color: white;
-              box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+              box-shadow: 0 4px 12px rgba(74, 157, 154, 0.3);
 
               &:hover:not([disabled]) {
-                box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+                box-shadow: 0 6px 16px rgba(74, 157, 154, 0.4);
               }
             }
 
             &[disabled] {
-              opacity: 0.6;
+              opacity: 0.5;
               cursor: not-allowed;
             }
           }
@@ -1065,11 +1069,11 @@ interface NurseVerificationDetail {
 
         .action-buttons button {
           &[color="warn"] {
-            background: #7f1d1d;
-            color: #fecaca;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
 
             &:hover:not([disabled]) {
-              background: #991b1b;
+              box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
             }
           }
         }
