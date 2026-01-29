@@ -3,11 +3,11 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/nurse/dashboard"></ion-back-button>
     </ion-buttons>
-    <ion-title>Mis Ganancias</ion-title>
+    <ion-title>Mis Servicios</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="earnings-content">
+<ion-content class="services-content">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -21,158 +21,153 @@
       <ion-segment-button value="month">
         <ion-label>Este mes</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="custom">
-        <ion-label>Personalizado</ion-label>
+      <ion-segment-button value="all">
+        <ion-label>Historico</ion-label>
       </ion-segment-button>
     </ion-segment>
-  </div>
-
-  <!-- Custom Date Picker -->
-  <div class="date-picker-container" *ngIf="showDatePicker()">
-    <ion-card class="date-picker-card">
-      <ion-card-content>
-        <div class="date-inputs">
-          <div class="date-input">
-            <ion-label>Desde</ion-label>
-            <ion-datetime-button datetime="startDate"></ion-datetime-button>
-            <ion-modal [keepContentsMounted]="true">
-              <ng-template>
-                <ion-datetime
-                  id="startDate"
-                  presentation="date"
-                  [value]="customStartDate()"
-                  (ionChange)="onStartDateChange($event)"
-                  [max]="customEndDate()"
-                  locale="es-PE">
-                </ion-datetime>
-              </ng-template>
-            </ion-modal>
-          </div>
-          <div class="date-input">
-            <ion-label>Hasta</ion-label>
-            <ion-datetime-button datetime="endDate"></ion-datetime-button>
-            <ion-modal [keepContentsMounted]="true">
-              <ng-template>
-                <ion-datetime
-                  id="endDate"
-                  presentation="date"
-                  [value]="customEndDate()"
-                  (ionChange)="onEndDateChange($event)"
-                  [min]="customStartDate()"
-                  locale="es-PE">
-                </ion-datetime>
-              </ng-template>
-            </ion-modal>
-          </div>
-        </div>
-        <ion-button expand="block" (click)="applyCustomDateRange()">
-          Aplicar
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-  </div>
-
-  <!-- Date Range Display -->
-  <div class="date-range-display" *ngIf="!showDatePicker()">
-    <ion-icon name="calendar-outline"></ion-icon>
-    <span>{{ formatDisplayDate(dateRange().start) }} - {{ formatDisplayDate(dateRange().end) }}</span>
   </div>
 
   <!-- Loading State -->
   <div class="loading-container" *ngIf="isLoading()">
     <ion-spinner name="crescent"></ion-spinner>
-    <p>Cargando ganancias...</p>
+    <p>Cargando servicios...</p>
   </div>
 
-  <!-- Earnings Summary Cards -->
-  <div class="summary-section" *ngIf="!isLoading() && earnings()">
-    <div class="summary-grid">
-      <!-- Total Earned -->
-      <ion-card class="summary-card total-card">
-        <ion-card-content>
-          <div class="card-icon">
-            <ion-icon name="cash-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <span class="card-label">Total Ganado</span>
-            <span class="card-value">{{ formatCurrency(earnings()!.total) }}</span>
-          </div>
-        </ion-card-content>
-      </ion-card>
+  <!-- Stats Cards -->
+  <div class="stats-section" *ngIf="!isLoading()">
+    <div class="stats-grid">
+      <!-- Completed Services -->
+      <div class="stat-card services-card">
+        <div class="stat-icon">
+          <ion-icon name="medical-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Servicios</span>
+          <span class="stat-value">{{ stats().completedServices }}</span>
+          <span class="stat-change" *ngIf="stats().completedThisMonth > 0">
+            +{{ stats().completedThisMonth }} este mes
+          </span>
+        </div>
+      </div>
 
-      <!-- Commission -->
-      <ion-card class="summary-card commission-card">
-        <ion-card-content>
-          <div class="card-icon">
-            <ion-icon name="cut-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <span class="card-label">Comision (15%)</span>
-            <span class="card-value" [class.negative]="earnings()!.commission > 0">{{ earnings()!.commission > 0 ? '-' : '' }}{{ formatCurrency(earnings()!.commission) }}</span>
-          </div>
-        </ion-card-content>
-      </ion-card>
+      <!-- Hours Worked -->
+      <div class="stat-card hours-card">
+        <div class="stat-icon">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Horas</span>
+          <span class="stat-value">{{ stats().totalHours }}</span>
+          <span class="stat-change" *ngIf="stats().hoursThisMonth > 0">
+            +{{ stats().hoursThisMonth }} este mes
+          </span>
+        </div>
+      </div>
 
-      <!-- Net Earnings -->
-      <ion-card class="summary-card net-card">
-        <ion-card-content>
-          <div class="card-icon highlight">
-            <ion-icon name="wallet-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <span class="card-label">Ganancia Neta</span>
-            <span class="card-value highlight">{{ formatCurrency(earnings()!.net) }}</span>
-          </div>
-        </ion-card-content>
-      </ion-card>
+      <!-- Unique Patients -->
+      <div class="stat-card patients-card">
+        <div class="stat-icon">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Pacientes</span>
+          <span class="stat-value">{{ stats().uniquePatients }}</span>
+          <span class="stat-change" *ngIf="stats().newPatientsThisMonth > 0">
+            {{ stats().newPatientsThisMonth }} este mes
+          </span>
+        </div>
+      </div>
 
-      <!-- Services Count -->
-      <ion-card class="summary-card services-card">
-        <ion-card-content>
-          <div class="card-icon">
-            <ion-icon name="medical-outline"></ion-icon>
-          </div>
-          <div class="card-info">
-            <span class="card-label">Servicios</span>
-            <span class="card-value">{{ earnings()!.servicesCount }}</span>
-          </div>
-        </ion-card-content>
-      </ion-card>
+      <!-- Average Rating -->
+      <div class="stat-card rating-card">
+        <div class="stat-icon rating">
+          <ion-icon name="star"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Valoracion</span>
+          <span class="stat-value">
+            {{ stats().averageRating > 0 ? stats().averageRating.toFixed(1) : '-' }}
+          </span>
+          <span class="stat-change" *ngIf="stats().totalReviews > 0">
+            {{ stats().totalReviews }} resenas
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Services History -->
-  <div class="history-section" *ngIf="!isLoading()">
+  <!-- Services List -->
+  <div class="services-section" *ngIf="!isLoading()">
     <div class="section-header">
-      <h2>Historial de Servicios</h2>
+      <h2>Servicios Recientes</h2>
       <ion-badge color="primary">{{ filteredServices().length }}</ion-badge>
     </div>
 
     <!-- Services List -->
-    <ion-list class="services-list" *ngIf="filteredServices().length > 0">
-      <ion-item *ngFor="let service of filteredServices()" lines="full">
-        <div class="service-date" slot="start">
-          <span class="date-day">{{ formatServiceDate(service.completedAt || service.updatedAt) }}</span>
+    <div class="services-list" *ngIf="filteredServices().length > 0">
+      @for (service of filteredServices(); track service._id) {
+        <div class="service-card">
+          <div class="service-header">
+            <div class="service-type">
+              <ion-icon name="medical-outline"></ion-icon>
+              <span>{{ service.service?.name || getCategoryLabel(service.service?.category || 'other') }}</span>
+            </div>
+            <ion-badge color="success">Completado</ion-badge>
+          </div>
+
+          <div class="service-details">
+            <div class="detail-row">
+              <ion-icon name="person-outline"></ion-icon>
+              <span>{{ getPatientName(service) }}</span>
+            </div>
+            <div class="detail-row">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ formatServiceDate(service.completedAt || service.updatedAt) }}</span>
+            </div>
+            <div class="detail-row">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{ formatDuration(service.service?.durationMinutes || 60) }}</span>
+            </div>
+          </div>
+
+          <div class="service-footer">
+            <div class="service-amount">
+              <span class="amount-label">Monto acordado</span>
+              <span class="amount-value">{{ formatCurrency(service.service?.price || 0) }}</span>
+            </div>
+            <div class="payment-method">
+              <ion-icon [name]="getPaymentMethodIcon(service.paymentMethod || 'cash')"></ion-icon>
+              <span>{{ getPaymentMethodLabel(service.paymentMethod || 'cash') }}</span>
+            </div>
+          </div>
+
+          <!-- Rating if exists -->
+          <div class="service-rating" *ngIf="service.rating">
+            <div class="rating-stars">
+              @for (star of [1,2,3,4,5]; track star) {
+                <ion-icon
+                  [name]="star <= (service.rating || 0) ? 'star' : 'star-outline'"
+                  [color]="star <= (service.rating || 0) ? 'warning' : 'medium'">
+                </ion-icon>
+              }
+            </div>
+            <span class="rating-text" *ngIf="service.review">"{{ service.review }}"</span>
+          </div>
         </div>
-        <ion-label>
-          <h3>{{ service.service.name || getCategoryLabel(service.service.category || 'other') }}</h3>
-          <p class="patient-name">
-            <ion-icon name="person-outline"></ion-icon>
-            {{ getPatientName(service) }}
-          </p>
-        </ion-label>
-        <div class="service-amount" slot="end">
-          <span class="amount">{{ formatCurrency(service.service.price || 0) }}</span>
-          <ion-badge color="success">Completado</ion-badge>
-        </div>
-      </ion-item>
-    </ion-list>
+      }
+    </div>
 
     <!-- Empty State -->
     <div class="empty-state" *ngIf="filteredServices().length === 0">
-      <ion-icon name="receipt-outline"></ion-icon>
-      <p>No hay servicios completados</p>
-      <span>Los servicios completados en este periodo apareceran aqui</span>
+      <ion-icon name="calendar-outline"></ion-icon>
+      <p>No hay servicios en este periodo</p>
+      <span>Los servicios completados apareceran aqui</span>
     </div>
+  </div>
+
+  <!-- Info Note -->
+  <div class="info-note" *ngIf="!isLoading() && filteredServices().length > 0">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <span>Los pagos se realizan directamente entre tu y el paciente. Este es solo un registro de tu actividad profesional.</span>
   </div>
 </ion-content>

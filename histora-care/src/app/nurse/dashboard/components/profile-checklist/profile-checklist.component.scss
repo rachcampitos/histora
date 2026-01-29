@@ -19,6 +19,18 @@ $nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
   &.completed-state {
     background: rgba(16, 185, 129, 0.05);
     border-color: rgba(16, 185, 129, 0.3);
+
+    // Verified state (approved) - green
+    &.verified {
+      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    // Pending verification states - blue/amber
+    &.pending-verification {
+      background: rgba(30, 58, 95, 0.05);
+      border-color: rgba(30, 58, 95, 0.3);
+    }
   }
 }
 
@@ -197,6 +209,21 @@ $nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
   }
 }
 
+// Pending verification state styles
+.checklist-card.pending-verification {
+  .completed-content {
+    .completed-text {
+      h3 {
+        color: #1e3a5f;
+      }
+
+      span {
+        color: #2d5f8a;
+      }
+    }
+  }
+}
+
 // ============================================================
 // DARK MODE STYLES
 // ============================================================
@@ -210,6 +237,11 @@ $nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
     &.completed-state {
       background: rgba(16, 185, 129, 0.1);
       border-color: rgba(16, 185, 129, 0.3);
+
+      &.pending-verification {
+        background: rgba(45, 95, 138, 0.15);
+        border-color: rgba(107, 181, 179, 0.3);
+      }
     }
   }
 
@@ -297,6 +329,20 @@ $nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
 
       span {
         color: #6ee7b7;
+      }
+    }
+  }
+
+  .checklist-card.pending-verification {
+    .completed-content {
+      .completed-text {
+        h3 {
+          color: #6bb5b3;
+        }
+
+        span {
+          color: #94a3b8;
+        }
       }
     }
   }

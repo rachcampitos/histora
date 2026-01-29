@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, input, Output, EventEmitter, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -29,7 +29,8 @@ export class ProfileChecklistComponent implements OnInit {
   private onboardingService = inject(NurseOnboardingService);
 
   isMinimized = signal(false);
-  isVisible = signal(true);
+  isVisible = signal(false); // Start hidden to prevent flickering
+  private hasInitialized = signal(false);
 
   checklistItems = computed<ChecklistItem[]>(() => {
     const nurse = this.nurse();
@@ -83,15 +84,88 @@ export class ProfileChecklistComponent implements OnInit {
     return this.completedCount() === this.totalCount();
   });
 
+  // Verification status computed values
+  verificationStatus = computed(() => {
+    return this.nurse()?.verificationStatus || 'pending';
+  });
+
+  isVerified = computed(() => {
+    return this.verificationStatus() === 'approved';
+  });
+
+  // Dynamic completion message based on verification status
+  completionTitle = computed(() => {
+    const status = this.verificationStatus();
+    if (status === 'approved') {
+      return 'Perfil completado';
+    } else if (status === 'under_review') {
+      return 'Perfil listo';
+    } else {
+      return 'Casi lista';
+    }
+  });
+
+  completionMessage = computed(() => {
+    const status = this.verificationStatus();
+    if (status === 'approved') {
+      return 'Estas lista para recibir solicitudes';
+    } else if (status === 'under_review') {
+      return 'Tu verificacion esta en proceso (24-48 hrs)';
+    } else if (status === 'rejected') {
+      return 'Revisa tu verificacion para recibir solicitudes';
+    } else {
+      return 'Completa tu verificacion para activarte';
+    }
+  });
+
+  completionIcon = computed(() => {
+    const status = this.verificationStatus();
+    if (status === 'approved') {
+      return 'checkmark-circle';
+    } else if (status === 'under_review') {
+      return 'time';
+    } else {
+      return 'alert-circle';
+    }
+  });
+
+  completionIconColor = computed(() => {
+    const status = this.verificationStatus();
+    if (status === 'approved') {
+      return 'success';
+    } else if (status === 'under_review') {
+      return 'primary';
+    } else {
+      return 'warning';
+    }
+  });
+
+  constructor() {
+    // Effect to handle visibility when nurse data changes
+    effect(() => {
+      const nurse = this.nurse();
+      const allCompleted = this.isAllCompleted();
+
+      // Only show once we have nurse data
+      if (nurse && !this.hasInitialized()) {
+        this.hasInitialized.set(true);
+        // Show the checklist after a brief delay to prevent flickering
+        setTimeout(() => {
+          this.isVisible.set(true);
+        }, 100);
+      }
+
+      // Auto-hide completed state after delay
+      if (nurse && allCompleted && this.hasInitialized()) {
+        setTimeout(() => {
+          this.isVisible.set(false);
+        }, 5000); // Show completion message for 5 seconds
+      }
+    });
+  }
+
   ngOnInit() {
     this.onboardingService.init();
-
-    // Check if all items are completed, hide checklist after a delay
-    if (this.isAllCompleted()) {
-      setTimeout(() => {
-        this.isVisible.set(false);
-      }, 3000);
-    }
   }
 
   toggleMinimize() {
