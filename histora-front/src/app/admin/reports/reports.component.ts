@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, effect } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { ThemeService } from '@core/service/theme.service';
@@ -26,7 +28,34 @@ import {
   ApexNonAxisChartSeries,
   ApexPlotOptions,
   ApexTheme,
+  ApexGrid,
 } from 'ng-apexcharts';
+
+interface ReportKPI {
+  label: string;
+  value: string;
+  change: number;
+  changeLabel: string;
+  icon: string;
+  iconClass: string;
+}
+
+interface TopNurse {
+  rank: number;
+  name: string;
+  cep: string;
+  value: number;
+  valueLabel: string;
+  services?: number;
+  rating?: number;
+}
+
+interface RegionData {
+  region: string;
+  services: number;
+  revenue: number;
+  nurses: number;
+}
 
 @Component({
   standalone: true,
@@ -45,32 +74,35 @@ import {
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
+    MatTabsModule,
+    MatTooltipModule,
     FormsModule,
     NgApexchartsModule,
   ],
 })
 export class ReportsComponent implements OnInit {
+  private themeService = inject(ThemeService);
+
   isLoading = true;
-  selectedPeriod = '6months';
+  selectedPeriod = '30days';
   private isDarkMode = false;
 
   periodOptions = [
+    { value: '7days', label: 'Últimos 7 días' },
     { value: '30days', label: 'Últimos 30 días' },
     { value: '3months', label: 'Últimos 3 meses' },
     { value: '6months', label: 'Últimos 6 meses' },
     { value: '1year', label: 'Último año' },
   ];
 
-  // KPIs
-  kpis = {
-    totalRevenue: 0,
-    revenueGrowth: 0,
-    totalClinics: 0,
-    clinicsGrowth: 0,
-    totalUsers: 0,
-    usersGrowth: 0,
-    avgRevenuePerClinic: 0,
-  };
+  // Business KPIs
+  businessKpis: ReportKPI[] = [];
+  operationalKpis: ReportKPI[] = [];
+
+  // Top performers
+  topNursesByRevenue: TopNurse[] = [];
+  topNursesByServices: TopNurse[] = [];
+  regionData: RegionData[] = [];
 
   // Charts
   revenueChartOptions!: {
@@ -85,9 +117,10 @@ export class ReportsComponent implements OnInit {
     tooltip: ApexTooltip;
     colors: string[];
     theme: ApexTheme;
+    grid: ApexGrid;
   };
 
-  clinicsGrowthChartOptions!: {
+  servicesChartOptions!: {
     series: ApexAxisChartSeries;
     chart: ApexChart;
     xaxis: ApexXAxis;
@@ -95,9 +128,11 @@ export class ReportsComponent implements OnInit {
     dataLabels: ApexDataLabels;
     colors: string[];
     theme: ApexTheme;
+    plotOptions: ApexPlotOptions;
+    grid: ApexGrid;
   };
 
-  planDistributionChartOptions!: {
+  nurseDistributionChartOptions!: {
     series: ApexNonAxisChartSeries;
     chart: ApexChart;
     labels: string[];
@@ -108,7 +143,7 @@ export class ReportsComponent implements OnInit {
     theme: ApexTheme;
   };
 
-  churnChartOptions!: {
+  patientGrowthChartOptions!: {
     series: ApexAxisChartSeries;
     chart: ApexChart;
     xaxis: ApexXAxis;
@@ -117,9 +152,11 @@ export class ReportsComponent implements OnInit {
     colors: string[];
     yaxis: ApexYAxis;
     theme: ApexTheme;
+    fill: ApexFill;
+    grid: ApexGrid;
   };
 
-  constructor(private themeService: ThemeService) {
+  constructor() {
     effect(() => {
       const theme = this.themeService.currentTheme();
       this.isDarkMode = theme === 'dark';
@@ -142,30 +179,120 @@ export class ReportsComponent implements OnInit {
     return { mode: this.isDarkMode ? 'dark' : 'light' };
   }
 
+  private getGridColor(): string {
+    return this.isDarkMode ? '#2a3040' : '#f0f0f0';
+  }
+
   private initAllCharts(): void {
     this.initRevenueChart();
-    this.initClinicsGrowthChart();
-    this.initPlanDistributionChart();
-    this.initChurnChart();
+    this.initServicesChart();
+    this.initNurseDistributionChart();
+    this.initPatientGrowthChart();
   }
 
   loadReportData(): void {
     setTimeout(() => {
-      this.kpis = {
-        totalRevenue: 245680,
-        revenueGrowth: 15.3,
-        totalClinics: 48,
-        clinicsGrowth: 12,
-        totalUsers: 3156,
-        usersGrowth: 23,
-        avgRevenuePerClinic: 5118,
-      };
+      // Business KPIs
+      this.businessKpis = [
+        {
+          label: 'GMV (Valor Bruto)',
+          value: 'S/. 45,680',
+          change: 18.5,
+          changeLabel: 'vs mes anterior',
+          icon: 'payments',
+          iconClass: 'gmv',
+        },
+        {
+          label: 'MRR (Suscripciones)',
+          value: 'S/. 2,350',
+          change: 12.3,
+          changeLabel: 'vs mes anterior',
+          icon: 'trending_up',
+          iconClass: 'mrr',
+        },
+        {
+          label: 'Comisiones Generadas',
+          value: 'S/. 6,852',
+          change: 15.2,
+          changeLabel: 'vs mes anterior',
+          icon: 'account_balance',
+          iconClass: 'commission',
+        },
+        {
+          label: 'Ticket Promedio',
+          value: 'S/. 85',
+          change: 5.8,
+          changeLabel: 'vs mes anterior',
+          icon: 'receipt_long',
+          iconClass: 'ticket',
+        },
+      ];
 
-      this.initRevenueChart();
-      this.initClinicsGrowthChart();
-      this.initPlanDistributionChart();
-      this.initChurnChart();
+      // Operational KPIs
+      this.operationalKpis = [
+        {
+          label: 'Servicios Completados',
+          value: '537',
+          change: 22.1,
+          changeLabel: 'vs mes anterior',
+          icon: 'medical_services',
+          iconClass: 'services',
+        },
+        {
+          label: 'Enfermeras Activas',
+          value: '76',
+          change: 8,
+          changeLabel: 'nuevas este mes',
+          icon: 'badge',
+          iconClass: 'nurses',
+        },
+        {
+          label: 'Pacientes Activos',
+          value: '312',
+          change: 15,
+          changeLabel: 'nuevos este mes',
+          icon: 'people',
+          iconClass: 'patients',
+        },
+        {
+          label: 'Tasa de Recompra',
+          value: '68%',
+          change: 4.2,
+          changeLabel: 'vs mes anterior',
+          icon: 'repeat',
+          iconClass: 'retention',
+        },
+      ];
 
+      // Top nurses by revenue
+      this.topNursesByRevenue = [
+        { rank: 1, name: 'Maria Claudia Chavez', cep: '108887', value: 4250, valueLabel: 'S/. 4,250', services: 48, rating: 4.9 },
+        { rank: 2, name: 'Rosa Isabel Mendez', cep: '112456', value: 3890, valueLabel: 'S/. 3,890', services: 42, rating: 4.8 },
+        { rank: 3, name: 'Ana Rosa Gutierrez', cep: '109234', value: 3420, valueLabel: 'S/. 3,420', services: 38, rating: 4.9 },
+        { rank: 4, name: 'Carmen Elena Torres', cep: '115678', value: 2980, valueLabel: 'S/. 2,980', services: 35, rating: 4.7 },
+        { rank: 5, name: 'Patricia Morales Silva', cep: '118901', value: 2650, valueLabel: 'S/. 2,650', services: 30, rating: 4.8 },
+      ];
+
+      // Top nurses by services
+      this.topNursesByServices = [
+        { rank: 1, name: 'Maria Claudia Chavez', cep: '108887', value: 48, valueLabel: '48 servicios', rating: 4.9 },
+        { rank: 2, name: 'Rosa Isabel Mendez', cep: '112456', value: 42, valueLabel: '42 servicios', rating: 4.8 },
+        { rank: 3, name: 'Lucia Fernanda Ramos', cep: '120345', value: 40, valueLabel: '40 servicios', rating: 4.6 },
+        { rank: 4, name: 'Ana Rosa Gutierrez', cep: '109234', value: 38, valueLabel: '38 servicios', rating: 4.9 },
+        { rank: 5, name: 'Gloria Martinez Lopez', cep: '117890', value: 36, valueLabel: '36 servicios', rating: 4.5 },
+      ];
+
+      // Region data
+      this.regionData = [
+        { region: 'Miraflores', services: 89, revenue: 7565, nurses: 12 },
+        { region: 'San Isidro', services: 76, revenue: 6840, nurses: 10 },
+        { region: 'Surco', services: 68, revenue: 5780, nurses: 11 },
+        { region: 'La Molina', services: 52, revenue: 4680, nurses: 8 },
+        { region: 'San Borja', services: 48, revenue: 4080, nurses: 7 },
+        { region: 'Otros', services: 204, revenue: 16735, nurses: 28 },
+      ];
+
+      this.initAllCharts();
       this.isLoading = false;
     }, 500);
   }
@@ -174,12 +301,12 @@ export class ReportsComponent implements OnInit {
     this.revenueChartOptions = {
       series: [
         {
-          name: 'Ingresos',
-          data: [31000, 40000, 38000, 51000, 42000, 45680],
+          name: 'GMV',
+          data: [32000, 38000, 35000, 42000, 40000, 45680],
         },
         {
-          name: 'Gastos Operativos',
-          data: [15000, 18000, 17000, 20000, 19000, 18500],
+          name: 'Comisiones',
+          data: [4800, 5700, 5250, 6300, 6000, 6852],
         },
       ],
       chart: {
@@ -190,9 +317,12 @@ export class ReportsComponent implements OnInit {
         background: 'transparent',
       },
       theme: this.getChartTheme(),
-      colors: ['#7c4dff', '#ff5252'],
+      colors: ['#4a9d9a', '#667eea'],
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 2 },
+      grid: {
+        borderColor: this.getGridColor(),
+      },
       xaxis: {
         categories: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
         labels: {
@@ -201,7 +331,7 @@ export class ReportsComponent implements OnInit {
       },
       yaxis: {
         labels: {
-          formatter: (val: number) => '$' + val.toLocaleString(),
+          formatter: (val: number) => 'S/. ' + val.toLocaleString(),
           style: { colors: [this.getChartForeColor()] },
         },
       },
@@ -222,18 +352,18 @@ export class ReportsComponent implements OnInit {
       tooltip: {
         theme: this.isDarkMode ? 'dark' : 'light',
         y: {
-          formatter: (val: number) => '$' + val.toLocaleString(),
+          formatter: (val: number) => 'S/. ' + val.toLocaleString(),
         },
       },
     };
   }
 
-  initClinicsGrowthChart(): void {
-    this.clinicsGrowthChartOptions = {
+  initServicesChart(): void {
+    this.servicesChartOptions = {
       series: [
         {
-          name: 'Nuevas Clínicas',
-          data: [5, 8, 6, 10, 7, 12],
+          name: 'Servicios',
+          data: [420, 485, 450, 510, 495, 537],
         },
       ],
       chart: {
@@ -244,9 +374,18 @@ export class ReportsComponent implements OnInit {
         background: 'transparent',
       },
       theme: this.getChartTheme(),
-      colors: ['#00c853'],
+      colors: ['#4a9d9a'],
+      plotOptions: {
+        bar: {
+          borderRadius: 6,
+          columnWidth: '60%',
+        },
+      },
       dataLabels: { enabled: false },
       stroke: { show: false },
+      grid: {
+        borderColor: this.getGridColor(),
+      },
       xaxis: {
         categories: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
         labels: {
@@ -256,9 +395,9 @@ export class ReportsComponent implements OnInit {
     };
   }
 
-  initPlanDistributionChart(): void {
-    this.planDistributionChartOptions = {
-      series: [25, 15, 6, 2],
+  initNurseDistributionChart(): void {
+    this.nurseDistributionChartOptions = {
+      series: [45, 23, 8],
       chart: {
         height: 300,
         type: 'donut',
@@ -266,8 +405,8 @@ export class ReportsComponent implements OnInit {
         background: 'transparent',
       },
       theme: this.getChartTheme(),
-      labels: ['Basic', 'Professional', 'Premium', 'Enterprise'],
-      colors: ['#42a5f5', '#66bb6a', '#ffca28', '#7c4dff'],
+      labels: ['Plan Básico', 'Plan Profesional', 'Plan Premium'],
+      colors: ['#42a5f5', '#4a9d9a', '#1e3a5f'],
       legend: {
         position: 'bottom',
         labels: { colors: this.getChartForeColor() },
@@ -289,7 +428,7 @@ export class ReportsComponent implements OnInit {
                 show: true,
                 label: 'Total',
                 color: this.getChartForeColor(),
-                formatter: () => '48',
+                formatter: () => '76',
               },
             },
           },
@@ -306,12 +445,16 @@ export class ReportsComponent implements OnInit {
     };
   }
 
-  initChurnChart(): void {
-    this.churnChartOptions = {
+  initPatientGrowthChart(): void {
+    this.patientGrowthChartOptions = {
       series: [
         {
-          name: 'Tasa de Cancelación',
-          data: [3.2, 2.8, 3.5, 2.1, 2.9, 2.5],
+          name: 'Pacientes Nuevos',
+          data: [45, 52, 48, 60, 55, 68],
+        },
+        {
+          name: 'Pacientes Recurrentes',
+          data: [180, 195, 210, 225, 240, 244],
         },
       ],
       chart: {
@@ -322,14 +465,12 @@ export class ReportsComponent implements OnInit {
         background: 'transparent',
       },
       theme: this.getChartTheme(),
-      colors: ['#ff5252'],
-      dataLabels: {
-        enabled: true,
-        style: {
-          colors: [this.isDarkMode ? '#ffffff' : '#2c3e50'],
-        },
-      },
+      colors: ['#667eea', '#4a9d9a'],
+      dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 3 },
+      grid: {
+        borderColor: this.getGridColor(),
+      },
       xaxis: {
         categories: ['Ago', 'Sep', 'Oct', 'Nov', 'Dic', 'Ene'],
         labels: {
@@ -338,8 +479,15 @@ export class ReportsComponent implements OnInit {
       },
       yaxis: {
         labels: {
-          formatter: (val: number) => val.toFixed(1) + '%',
           style: { colors: [this.getChartForeColor()] },
+        },
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.3,
+          opacityTo: 0.1,
         },
       },
     };
@@ -352,5 +500,14 @@ export class ReportsComponent implements OnInit {
 
   exportReport(format: string): void {
     console.log('Export report as:', format);
+    // TODO: Implement export functionality
+  }
+
+  getRatingStars(rating: number): number[] {
+    return Array(Math.floor(rating)).fill(0);
+  }
+
+  hasHalfStar(rating: number): boolean {
+    return rating % 1 >= 0.5;
   }
 }

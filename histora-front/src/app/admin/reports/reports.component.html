@@ -32,55 +32,50 @@
         <mat-progress-spinner color="primary" mode="indeterminate" [diameter]="50"></mat-progress-spinner>
       </div>
     } @else {
-      <!-- KPI Cards -->
+      <!-- Business KPIs -->
+      <div class="section-title">
+        <mat-icon>analytics</mat-icon>
+        <h3>Métricas de Negocio</h3>
+      </div>
       <div class="row">
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-          <div class="card kpi-card">
-            <div class="card-body">
-              <div class="kpi-header">
-                <mat-icon class="kpi-icon revenue">attach_money</mat-icon>
-                <span class="kpi-change positive">+{{ kpis.revenueGrowth }}%</span>
+        @for (kpi of businessKpis; track kpi.label) {
+          <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card kpi-card">
+              <div class="card-body">
+                <div class="kpi-header">
+                  <mat-icon class="kpi-icon" [ngClass]="kpi.iconClass">{{ kpi.icon }}</mat-icon>
+                  <span class="kpi-change positive">+{{ kpi.change }}%</span>
+                </div>
+                <h3 class="kpi-value">{{ kpi.value }}</h3>
+                <span class="kpi-label">{{ kpi.label }}</span>
+                <span class="kpi-sublabel">{{ kpi.changeLabel }}</span>
               </div>
-              <h3 class="kpi-value">${{ kpis.totalRevenue | number }}</h3>
-              <span class="kpi-label">Ingresos Totales</span>
             </div>
           </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-          <div class="card kpi-card">
-            <div class="card-body">
-              <div class="kpi-header">
-                <mat-icon class="kpi-icon clinics">business</mat-icon>
-                <span class="kpi-change positive">+{{ kpis.clinicsGrowth }}</span>
+        }
+      </div>
+
+      <!-- Operational KPIs -->
+      <div class="section-title">
+        <mat-icon>speed</mat-icon>
+        <h3>Métricas Operativas</h3>
+      </div>
+      <div class="row">
+        @for (kpi of operationalKpis; track kpi.label) {
+          <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card kpi-card">
+              <div class="card-body">
+                <div class="kpi-header">
+                  <mat-icon class="kpi-icon" [ngClass]="kpi.iconClass">{{ kpi.icon }}</mat-icon>
+                  <span class="kpi-change positive">+{{ kpi.change }}</span>
+                </div>
+                <h3 class="kpi-value">{{ kpi.value }}</h3>
+                <span class="kpi-label">{{ kpi.label }}</span>
+                <span class="kpi-sublabel">{{ kpi.changeLabel }}</span>
               </div>
-              <h3 class="kpi-value">{{ kpis.totalClinics }}</h3>
-              <span class="kpi-label">Clínicas Activas</span>
             </div>
           </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-          <div class="card kpi-card">
-            <div class="card-body">
-              <div class="kpi-header">
-                <mat-icon class="kpi-icon users">people</mat-icon>
-                <span class="kpi-change positive">+{{ kpis.usersGrowth }}%</span>
-              </div>
-              <h3 class="kpi-value">{{ kpis.totalUsers | number }}</h3>
-              <span class="kpi-label">Usuarios Totales</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-          <div class="card kpi-card">
-            <div class="card-body">
-              <div class="kpi-header">
-                <mat-icon class="kpi-icon avg">trending_up</mat-icon>
-              </div>
-              <h3 class="kpi-value">${{ kpis.avgRevenuePerClinic | number }}</h3>
-              <span class="kpi-label">Ingreso Prom. por Clínica</span>
-            </div>
-          </div>
-        </div>
+        }
       </div>
 
       <!-- Revenue Chart -->
@@ -88,7 +83,10 @@
         <div class="col-12">
           <div class="card">
             <div class="header">
-              <h2>Ingresos vs Gastos</h2>
+              <h2>
+                <mat-icon class="header-icon">show_chart</mat-icon>
+                Ingresos (GMV vs Comisiones)
+              </h2>
             </div>
             <div class="body">
               <apx-chart
@@ -103,6 +101,7 @@
                 [tooltip]="revenueChartOptions.tooltip"
                 [colors]="revenueChartOptions.colors"
                 [theme]="revenueChartOptions.theme"
+                [grid]="revenueChartOptions.grid"
               ></apx-chart>
             </div>
           </div>
@@ -114,18 +113,21 @@
         <div class="col-xl-4 col-lg-12">
           <div class="card">
             <div class="header">
-              <h2>Distribución por Plan</h2>
+              <h2>
+                <mat-icon class="header-icon">pie_chart</mat-icon>
+                Enfermeras por Plan
+              </h2>
             </div>
             <div class="body">
               <apx-chart
-                [series]="planDistributionChartOptions.series"
-                [chart]="planDistributionChartOptions.chart"
-                [labels]="planDistributionChartOptions.labels"
-                [colors]="planDistributionChartOptions.colors"
-                [legend]="planDistributionChartOptions.legend"
-                [plotOptions]="planDistributionChartOptions.plotOptions"
-                [dataLabels]="planDistributionChartOptions.dataLabels"
-                [theme]="planDistributionChartOptions.theme"
+                [series]="nurseDistributionChartOptions.series"
+                [chart]="nurseDistributionChartOptions.chart"
+                [labels]="nurseDistributionChartOptions.labels"
+                [colors]="nurseDistributionChartOptions.colors"
+                [legend]="nurseDistributionChartOptions.legend"
+                [plotOptions]="nurseDistributionChartOptions.plotOptions"
+                [dataLabels]="nurseDistributionChartOptions.dataLabels"
+                [theme]="nurseDistributionChartOptions.theme"
               ></apx-chart>
             </div>
           </div>
@@ -134,17 +136,22 @@
         <div class="col-xl-4 col-lg-6">
           <div class="card">
             <div class="header">
-              <h2>Nuevas Clínicas</h2>
+              <h2>
+                <mat-icon class="header-icon">bar_chart</mat-icon>
+                Servicios Mensuales
+              </h2>
             </div>
             <div class="body">
               <apx-chart
-                [series]="clinicsGrowthChartOptions.series"
-                [chart]="clinicsGrowthChartOptions.chart"
-                [xaxis]="clinicsGrowthChartOptions.xaxis"
-                [stroke]="clinicsGrowthChartOptions.stroke"
-                [dataLabels]="clinicsGrowthChartOptions.dataLabels"
-                [colors]="clinicsGrowthChartOptions.colors"
-                [theme]="clinicsGrowthChartOptions.theme"
+                [series]="servicesChartOptions.series"
+                [chart]="servicesChartOptions.chart"
+                [xaxis]="servicesChartOptions.xaxis"
+                [stroke]="servicesChartOptions.stroke"
+                [dataLabels]="servicesChartOptions.dataLabels"
+                [colors]="servicesChartOptions.colors"
+                [theme]="servicesChartOptions.theme"
+                [plotOptions]="servicesChartOptions.plotOptions"
+                [grid]="servicesChartOptions.grid"
               ></apx-chart>
             </div>
           </div>
@@ -153,73 +160,64 @@
         <div class="col-xl-4 col-lg-6">
           <div class="card">
             <div class="header">
-              <h2>Tasa de Cancelación</h2>
+              <h2>
+                <mat-icon class="header-icon">groups</mat-icon>
+                Crecimiento de Pacientes
+              </h2>
             </div>
             <div class="body">
               <apx-chart
-                [series]="churnChartOptions.series"
-                [chart]="churnChartOptions.chart"
-                [xaxis]="churnChartOptions.xaxis"
-                [stroke]="churnChartOptions.stroke"
-                [dataLabels]="churnChartOptions.dataLabels"
-                [colors]="churnChartOptions.colors"
-                [yaxis]="churnChartOptions.yaxis"
-                [theme]="churnChartOptions.theme"
+                [series]="patientGrowthChartOptions.series"
+                [chart]="patientGrowthChartOptions.chart"
+                [xaxis]="patientGrowthChartOptions.xaxis"
+                [stroke]="patientGrowthChartOptions.stroke"
+                [dataLabels]="patientGrowthChartOptions.dataLabels"
+                [colors]="patientGrowthChartOptions.colors"
+                [yaxis]="patientGrowthChartOptions.yaxis"
+                [theme]="patientGrowthChartOptions.theme"
+                [fill]="patientGrowthChartOptions.fill"
+                [grid]="patientGrowthChartOptions.grid"
               ></apx-chart>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Top Clinics -->
+      <!-- Top Performers -->
       <div class="row">
         <div class="col-xl-6">
           <div class="card">
             <div class="header">
-              <h2>Top 5 Clínicas por Ingresos</h2>
+              <h2>
+                <mat-icon class="header-icon">emoji_events</mat-icon>
+                Top 5 Enfermeras por Ingresos
+              </h2>
             </div>
             <div class="body">
               <div class="top-list">
-                <div class="top-item">
-                  <span class="rank">1</span>
-                  <div class="info">
-                    <span class="name">Clínica San Rafael</span>
-                    <span class="detail">Premium • 8 doctores</span>
+                @for (nurse of topNursesByRevenue; track nurse.rank) {
+                  <div class="top-item">
+                    <span class="rank" [class.gold]="nurse.rank === 1" [class.silver]="nurse.rank === 2" [class.bronze]="nurse.rank === 3">
+                      {{ nurse.rank }}
+                    </span>
+                    <div class="info">
+                      <span class="name">{{ nurse.name }}</span>
+                      <span class="detail">
+                        CEP: {{ nurse.cep }} • {{ nurse.services }} servicios
+                        <span class="rating">
+                          @for (_ of getRatingStars(nurse.rating || 0); track $index) {
+                            <mat-icon class="star-icon filled">star</mat-icon>
+                          }
+                          @if (hasHalfStar(nurse.rating || 0)) {
+                            <mat-icon class="star-icon filled">star_half</mat-icon>
+                          }
+                          {{ nurse.rating }}
+                        </span>
+                      </span>
+                    </div>
+                    <span class="value">{{ nurse.valueLabel }}</span>
                   </div>
-                  <span class="value">$999/mes</span>
-                </div>
-                <div class="top-item">
-                  <span class="rank">2</span>
-                  <div class="info">
-                    <span class="name">Clínica Vida Sana</span>
-                    <span class="detail">Premium • 6 doctores</span>
-                  </div>
-                  <span class="value">$999/mes</span>
-                </div>
-                <div class="top-item">
-                  <span class="rank">3</span>
-                  <div class="info">
-                    <span class="name">Centro Médico Aurora</span>
-                    <span class="detail">Professional • 5 doctores</span>
-                  </div>
-                  <span class="value">$599/mes</span>
-                </div>
-                <div class="top-item">
-                  <span class="rank">4</span>
-                  <div class="info">
-                    <span class="name">Centro Pediátrico Feliz</span>
-                    <span class="detail">Professional • 4 doctores</span>
-                  </div>
-                  <span class="value">$599/mes</span>
-                </div>
-                <div class="top-item">
-                  <span class="rank">5</span>
-                  <div class="info">
-                    <span class="name">Centro Dental Plus</span>
-                    <span class="detail">Professional • 3 doctores</span>
-                  </div>
-                  <span class="value">$599/mes</span>
-                </div>
+                }
               </div>
             </div>
           </div>
@@ -228,50 +226,73 @@
         <div class="col-xl-6">
           <div class="card">
             <div class="header">
-              <h2>Top 5 Clínicas por Pacientes</h2>
+              <h2>
+                <mat-icon class="header-icon">workspace_premium</mat-icon>
+                Top 5 Enfermeras por Servicios
+              </h2>
             </div>
             <div class="body">
               <div class="top-list">
-                <div class="top-item">
-                  <span class="rank">1</span>
-                  <div class="info">
-                    <span class="name">Hospital del Valle</span>
-                    <span class="detail">Enterprise • 25 doctores</span>
+                @for (nurse of topNursesByServices; track nurse.rank) {
+                  <div class="top-item">
+                    <span class="rank" [class.gold]="nurse.rank === 1" [class.silver]="nurse.rank === 2" [class.bronze]="nurse.rank === 3">
+                      {{ nurse.rank }}
+                    </span>
+                    <div class="info">
+                      <span class="name">{{ nurse.name }}</span>
+                      <span class="detail">
+                        CEP: {{ nurse.cep }}
+                        <span class="rating">
+                          @for (_ of getRatingStars(nurse.rating || 0); track $index) {
+                            <mat-icon class="star-icon filled">star</mat-icon>
+                          }
+                          @if (hasHalfStar(nurse.rating || 0)) {
+                            <mat-icon class="star-icon filled">star_half</mat-icon>
+                          }
+                          {{ nurse.rating }}
+                        </span>
+                      </span>
+                    </div>
+                    <span class="value services-value">{{ nurse.valueLabel }}</span>
                   </div>
-                  <span class="value">1,200</span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Region Distribution -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="header">
+              <h2>
+                <mat-icon class="header-icon">location_on</mat-icon>
+                Distribución por Zona (Lima)
+              </h2>
+            </div>
+            <div class="body">
+              <div class="region-table">
+                <div class="region-header">
+                  <span class="region-col">Zona</span>
+                  <span class="region-col">Servicios</span>
+                  <span class="region-col">Ingresos</span>
+                  <span class="region-col">Enfermeras</span>
+                  <span class="region-col">Ticket Prom.</span>
                 </div>
-                <div class="top-item">
-                  <span class="rank">2</span>
-                  <div class="info">
-                    <span class="name">Clínica San Rafael</span>
-                    <span class="detail">Premium • 8 doctores</span>
+                @for (region of regionData; track region.region) {
+                  <div class="region-row">
+                    <span class="region-col region-name">
+                      <mat-icon class="location-icon">place</mat-icon>
+                      {{ region.region }}
+                    </span>
+                    <span class="region-col">{{ region.services }}</span>
+                    <span class="region-col revenue">S/. {{ region.revenue | number }}</span>
+                    <span class="region-col">{{ region.nurses }}</span>
+                    <span class="region-col">S/. {{ (region.revenue / region.services) | number:'1.0-0' }}</span>
                   </div>
-                  <span class="value">450</span>
-                </div>
-                <div class="top-item">
-                  <span class="rank">3</span>
-                  <div class="info">
-                    <span class="name">Clínica Vida Sana</span>
-                    <span class="detail">Premium • 6 doctores</span>
-                  </div>
-                  <span class="value">320</span>
-                </div>
-                <div class="top-item">
-                  <span class="rank">4</span>
-                  <div class="info">
-                    <span class="name">Centro Médico Aurora</span>
-                    <span class="detail">Professional • 5 doctores</span>
-                  </div>
-                  <span class="value">280</span>
-                </div>
-                <div class="top-item">
-                  <span class="rank">5</span>
-                  <div class="info">
-                    <span class="name">Centro Pediátrico Feliz</span>
-                    <span class="detail">Professional • 4 doctores</span>
-                  </div>
-                  <span class="value">180</span>
-                </div>
+                }
               </div>
             </div>
           </div>

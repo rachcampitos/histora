@@ -9,17 +9,22 @@
         <mat-progress-spinner color="primary" mode="indeterminate" [diameter]="50"></mat-progress-spinner>
       </div>
     } @else {
-      <!-- Summary Cards -->
+      <!-- Revenue KPIs -->
+      <div class="section-title">
+        <mat-icon>analytics</mat-icon>
+        <h3>Métricas de Ingresos</h3>
+      </div>
       <div class="row">
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-          <div class="card stat-card">
+          <div class="card stat-card highlight">
             <div class="card-body">
-              <div class="stat-icon bg-primary">
-                <mat-icon>attach_money</mat-icon>
+              <div class="stat-icon bg-mrr">
+                <mat-icon>trending_up</mat-icon>
               </div>
               <div class="stat-info">
-                <span class="stat-label">Ingresos Mensuales</span>
-                <h3 class="stat-value">${{ totalRevenue | number }}</h3>
+                <span class="stat-label">MRR</span>
+                <h3 class="stat-value">S/. {{ stats.mrr | number }}</h3>
+                <span class="stat-change positive">+{{ stats.mrrGrowth }}%</span>
               </div>
             </div>
           </div>
@@ -27,12 +32,61 @@
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
           <div class="card stat-card">
             <div class="card-body">
+              <div class="stat-icon bg-arr">
+                <mat-icon>calendar_month</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">ARR Proyectado</span>
+                <h3 class="stat-value">S/. {{ stats.arr | number }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="stat-icon bg-arpu">
+                <mat-icon>person</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">ARPU</span>
+                <h3 class="stat-value">S/. {{ stats.arpu | number:'1.0-0' }}</h3>
+                <span class="stat-sublabel">Ingreso prom. por usuario</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card warning">
+            <div class="card-body">
+              <div class="stat-icon bg-pastdue">
+                <mat-icon>warning</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Pagos Vencidos</span>
+                <h3 class="stat-value">S/. {{ stats.pastDueAmount | number }}</h3>
+                <span class="stat-sublabel">Requiere atención</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subscription KPIs -->
+      <div class="section-title">
+        <mat-icon>people</mat-icon>
+        <h3>Estado de Suscripciones</h3>
+      </div>
+      <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card">
+            <div class="card-body">
               <div class="stat-icon bg-success">
                 <mat-icon>check_circle</mat-icon>
               </div>
               <div class="stat-info">
-                <span class="stat-label">Suscripciones Activas</span>
-                <h3 class="stat-value">{{ activeSubscriptions }}</h3>
+                <span class="stat-label">Activas</span>
+                <h3 class="stat-value">{{ stats.activeSubscriptions }}</h3>
               </div>
             </div>
           </div>
@@ -44,8 +98,8 @@
                 <mat-icon>hourglass_empty</mat-icon>
               </div>
               <div class="stat-info">
-                <span class="stat-label">En Período de Prueba</span>
-                <h3 class="stat-value">{{ trialSubscriptions }}</h3>
+                <span class="stat-label">En Prueba</span>
+                <h3 class="stat-value">{{ stats.trialSubscriptions }}</h3>
               </div>
             </div>
           </div>
@@ -53,50 +107,117 @@
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
           <div class="card stat-card">
             <div class="card-body">
-              <div class="stat-icon bg-warning">
+              <div class="stat-icon bg-conversion">
+                <mat-icon>swap_horiz</mat-icon>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Tasa de Conversión</span>
+                <h3 class="stat-value">{{ stats.conversionRate }}%</h3>
+                <span class="stat-sublabel">Prueba → Pago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+          <div class="card stat-card">
+            <div class="card-body">
+              <div class="stat-icon bg-churn">
                 <mat-icon>trending_down</mat-icon>
               </div>
               <div class="stat-info">
                 <span class="stat-label">Tasa de Cancelación</span>
-                <h3 class="stat-value">{{ churnRate }}%</h3>
+                <h3 class="stat-value">{{ stats.churnRate }}%</h3>
+                <span class="stat-sublabel">Churn mensual</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Plans Overview -->
+      <!-- Charts and Plans Row -->
       <div class="row">
-        @for (plan of plans; track plan.name) {
-          <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-            <div class="card plan-card" [style.border-top-color]="plan.color">
-              <div class="card-body">
-                <h4 class="plan-name">{{ plan.name }}</h4>
-                <div class="plan-price">
-                  <span class="amount">${{ plan.price }}</span>
-                  <span class="cycle">/{{ plan.billingCycle }}</span>
-                </div>
-                <ul class="plan-features">
-                  @for (feature of plan.features; track feature) {
-                    <li>
-                      <mat-icon class="feature-check">check</mat-icon>
-                      {{ feature }}
-                    </li>
-                  }
-                </ul>
-                <div class="plan-stats">
-                  <span class="active-count">{{ plan.activeSubscriptions }} activas</span>
-                </div>
+        <!-- Plans Overview -->
+        <div class="col-xl-8">
+          <div class="card">
+            <div class="header">
+              <h2>
+                <mat-icon class="header-icon">card_membership</mat-icon>
+                Planes Disponibles
+              </h2>
+            </div>
+            <div class="body">
+              <div class="plans-grid">
+                @for (plan of plans; track plan.name) {
+                  <div class="plan-card-mini" [style.border-left-color]="plan.color">
+                    <div class="plan-header">
+                      <mat-icon [style.color]="plan.color">{{ plan.icon }}</mat-icon>
+                      <span class="plan-name">{{ plan.name }}</span>
+                    </div>
+                    <div class="plan-price">
+                      @if (plan.price > 0) {
+                        <span class="amount">S/. {{ plan.price }}</span>
+                        <span class="cycle">/{{ plan.billingCycle }}</span>
+                      } @else {
+                        <span class="amount free">Gratis</span>
+                      }
+                    </div>
+                    <div class="plan-stats-row">
+                      <div class="stat">
+                        <span class="stat-num">{{ plan.activeSubscriptions }}</span>
+                        <span class="stat-txt">Activas</span>
+                      </div>
+                      <div class="stat">
+                        <span class="stat-num">S/. {{ plan.revenue | number }}</span>
+                        <span class="stat-txt">MRR</span>
+                      </div>
+                    </div>
+                    <ul class="plan-features-mini">
+                      @for (feature of plan.features.slice(0, 3); track feature) {
+                        <li>
+                          <mat-icon class="feature-check">check</mat-icon>
+                          {{ feature }}
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
               </div>
             </div>
           </div>
-        }
+        </div>
+
+        <!-- Distribution Charts -->
+        <div class="col-xl-4">
+          <div class="card">
+            <div class="header">
+              <h2>
+                <mat-icon class="header-icon">pie_chart</mat-icon>
+                Métodos de Pago
+              </h2>
+            </div>
+            <div class="body chart-body">
+              <apx-chart
+                [series]="paymentChartOptions.series"
+                [chart]="paymentChartOptions.chart"
+                [labels]="paymentChartOptions.labels"
+                [colors]="paymentChartOptions.colors"
+                [legend]="paymentChartOptions.legend"
+                [plotOptions]="paymentChartOptions.plotOptions"
+                [dataLabels]="paymentChartOptions.dataLabels"
+                [theme]="paymentChartOptions.theme"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Subscriptions Table -->
       <div class="card">
         <div class="header d-flex justify-content-between align-items-center">
-          <h2>Todas las Suscripciones</h2>
+          <h2>
+            <mat-icon class="header-icon">list</mat-icon>
+            Todas las Suscripciones
+          </h2>
         </div>
 
         <div class="body">
@@ -104,7 +225,7 @@
           <div class="filters-row">
             <mat-form-field appearance="outline" class="filter-field search-field">
               <mat-label>Buscar enfermera</mat-label>
-              <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()">
+              <input matInput [(ngModel)]="searchTerm" (input)="applyFilter()" placeholder="Nombre o email">
               <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
 
@@ -138,13 +259,16 @@
 
           <div class="table-responsive">
             <table mat-table [dataSource]="dataSource" matSort class="advance-table">
-              <!-- Clinic Column -->
+              <!-- Nurse Column -->
               <ng-container matColumnDef="nurse">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Enfermera</th>
                 <td mat-cell *matCellDef="let row">
-                  <div class="nurse-name">
-                    <mat-icon class="nurse-icon">medical_services</mat-icon>
-                    {{ row.nurseName }}
+                  <div class="nurse-cell">
+                    <div class="nurse-avatar">{{ getInitials(row.nurseName) }}</div>
+                    <div class="nurse-info">
+                      <span class="nurse-name">{{ row.nurseName }}</span>
+                      <span class="nurse-email">{{ row.nurseEmail }}</span>
+                    </div>
                   </div>
                 </td>
               </ng-container>
@@ -170,9 +294,9 @@
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto</th>
                 <td mat-cell *matCellDef="let row">
                   @if (row.amount > 0) {
-                    ${{ row.amount }}/mes
+                    <span class="amount-value">S/. {{ row.amount }}/mes</span>
                   } @else {
-                    <span class="text-muted">-</span>
+                    <span class="text-muted">Gratis</span>
                   }
                 </td>
               </ng-container>
@@ -182,7 +306,7 @@
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Próximo Cobro</th>
                 <td mat-cell *matCellDef="let row">
                   @if (row.status === 'active' || row.status === 'trial') {
-                    {{ row.nextBillingDate | date: 'dd/MM/yyyy' }}
+                    {{ row.nextBillingDate | date: 'dd MMM yyyy' }}
                   } @else {
                     <span class="text-muted">-</span>
                   }
@@ -192,7 +316,12 @@
               <!-- Payment Method Column -->
               <ng-container matColumnDef="paymentMethod">
                 <th mat-header-cell *matHeaderCellDef>Método de Pago</th>
-                <td mat-cell *matCellDef="let row">{{ row.paymentMethod }}</td>
+                <td mat-cell *matCellDef="let row">
+                  <div class="payment-method">
+                    <mat-icon class="payment-icon">{{ row.paymentIcon }}</mat-icon>
+                    <span>{{ row.paymentMethod }}</span>
+                  </div>
+                </td>
               </ng-container>
 
               <!-- Actions Column -->
@@ -211,6 +340,12 @@
                       <mat-icon>edit</mat-icon>
                       <span>Cambiar plan</span>
                     </button>
+                    @if (row.plan !== 'Premium' && row.status === 'active') {
+                      <button mat-menu-item (click)="upgradePlan(row)">
+                        <mat-icon>upgrade</mat-icon>
+                        <span>Upgrade</span>
+                      </button>
+                    }
                     @if (row.status === 'past_due') {
                       <button mat-menu-item (click)="retryPayment(row)">
                         <mat-icon>refresh</mat-icon>
