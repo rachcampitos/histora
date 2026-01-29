@@ -14,7 +14,8 @@ export interface ReviewSubmitData {
   templateUrl: './review-modal.component.html',
   styleUrls: ['./review-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  imports: [CommonModule, FormsModule, IonicModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewModalComponent {
   @Input() nurseId!: string;

@@ -4,16 +4,17 @@ import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { ClinicsService } from '../clinics/clinics.service';
-import { SubscriptionsService } from '../subscriptions/subscriptions.service';
+import { NursesService } from '../nurses/nurses.service';
+import { CepValidationService } from '../nurses/cep-validation.service';
+import { ReniecValidationService } from '../nurses/reniec-validation.service';
+import { AccountLockoutService } from './services/account-lockout.service';
 import { EmailProvider } from '../notifications/providers/email.provider';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UserRole } from '../users/schema/user.schema';
 
 describe('AuthService', () => {
   let service: AuthService;
   let usersService: jest.Mocked<UsersService>;
-  let clinicsService: jest.Mocked<ClinicsService>;
-  let subscriptionsService: jest.Mocked<SubscriptionsService>;
   let jwtService: jest.Mocked<JwtService>;
 
   const mockUser = {
@@ -22,18 +23,12 @@ describe('AuthService', () => {
     password: 'hashed_password',
     firstName: 'John',
     lastName: 'Doe',
-    role: UserRole.CLINIC_OWNER,
+    role: UserRole.PATIENT,
     isActive: true,
     isDeleted: false,
     toObject: function () {
       return this;
     },
-  };
-
-  const mockClinic = {
-    _id: 'clinic-id-123',
-    name: 'Test Clinic',
-    ownerId: 'user-id-123',
   };
 
   beforeEach(async () => {
@@ -46,14 +41,6 @@ describe('AuthService', () => {
       comparePasswords: jest.fn(),
       updateLastLogin: jest.fn(),
       findOne: jest.fn(),
-    };
-
-    const mockClinicsService = {
-      create: jest.fn().mockResolvedValue(mockClinic),
-    };
-
-    const mockSubscriptionsService = {
-      createTrialSubscription: jest.fn().mockResolvedValue({}),
     };
 
     const mockJwtService = {
@@ -69,22 +56,51 @@ describe('AuthService', () => {
       getPasswordResetTemplate: jest.fn().mockReturnValue('<html>Reset Password</html>'),
     };
 
+    const mockNursesService = {
+      create: jest.fn().mockResolvedValue({ _id: 'nurse-id-123' }),
+      findByCepNumber: jest.fn().mockResolvedValue(null),
+      findByUserId: jest.fn(),
+    };
+
+    const mockCepValidationService = {
+      validateByCep: jest.fn().mockResolvedValue({ isValid: true }),
+      checkPhotoByDni: jest.fn().mockResolvedValue({ exists: true, url: 'http://photo.url' }),
+      searchByName: jest.fn().mockResolvedValue([]),
+    };
+
+    const mockReniecValidationService = {
+      validateDni: jest.fn().mockResolvedValue({ success: true }),
+      isConfigured: jest.fn().mockReturnValue(false),
+    };
+
+    const mockAccountLockoutService = {
+      isLocked: jest.fn().mockResolvedValue({ isLocked: false }),
+      recordFailedAttempt: jest.fn().mockResolvedValue({ isLocked: false, attemptsRemaining: 4 }),
+      recordSuccessfulLogin: jest.fn().mockResolvedValue(undefined),
+    };
+
+    const mockNotificationsService = {
+      notifyAdminNewPatientRegistered: jest.fn().mockResolvedValue(undefined),
+      notifyAdminNewNurseRegistered: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: UsersService, useValue: mockUsersService },
-        { provide: ClinicsService, useValue: mockClinicsService },
-        { provide: SubscriptionsService, useValue: mockSubscriptionsService },
+        { provide: NursesService, useValue: mockNursesService },
+        { provide: CepValidationService, useValue: mockCepValidationService },
+        { provide: ReniecValidationService, useValue: mockReniecValidationService },
+        { provide: AccountLockoutService, useValue: mockAccountLockoutService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
         { provide: EmailProvider, useValue: mockEmailProvider },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     usersService = module.get(UsersService);
-    clinicsService = module.get(ClinicsService);
-    subscriptionsService = module.get(SubscriptionsService);
     jwtService = module.get(JwtService);
   });
 
@@ -96,49 +112,13 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('register', () => {
-    const registerDto = {
-      email: 'new@example.com',
-      password: 'password123',
-      firstName: 'John',
-      lastName: 'Doe',
-      clinicName: 'Test Clinic',
-    };
-
-    it('should register a new clinic owner', async () => {
-      usersService.findByEmail.mockResolvedValue(null);
-      usersService.create.mockResolvedValue(mockUser as any);
-      usersService.update.mockResolvedValue(mockUser as any);
-
-      const result = await service.register(registerDto);
-
-      expect(result.access_token).toBe('mock-jwt-token');
-      expect(result.user.email).toBe(mockUser.email);
-      expect(usersService.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          email: registerDto.email,
-          role: UserRole.CLINIC_OWNER,
-        }),
-      );
-      expect(clinicsService.create).toHaveBeenCalled();
-      expect(subscriptionsService.createTrialSubscription).toHaveBeenCalled();
-    });
-
-    it('should throw ConflictException if email already exists', async () => {
-      usersService.findByEmail.mockResolvedValue(mockUser as any);
-
-      await expect(service.register(registerDto)).rejects.toThrow(
-        ConflictException,
-      );
-    });
-  });
-
   describe('registerPatient', () => {
     const registerDto = {
       email: 'patient@example.com',
       password: 'password123',
       firstName: 'Jane',
       lastName: 'Doe',
+      termsAccepted: true,
     };
 
     it('should register a new patient', async () => {
@@ -153,6 +133,14 @@ describe('AuthService', () => {
         expect.objectContaining({
           role: UserRole.PATIENT,
         }),
+      );
+    });
+
+    it('should throw ConflictException if email already exists', async () => {
+      usersService.findByEmail.mockResolvedValue(mockUser as any);
+
+      await expect(service.registerPatient(registerDto)).rejects.toThrow(
+        ConflictException,
       );
     });
   });

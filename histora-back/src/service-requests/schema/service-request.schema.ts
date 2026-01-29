@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { phiEncryptionPlugin } from '../../common/encryption';
 
 export type ServiceRequestDocument = ServiceRequest & Document;
 
@@ -166,8 +167,18 @@ export class ServiceRequest extends Document {
 export const ServiceRequestSchema =
   SchemaFactory.createForClass(ServiceRequest);
 
+// PHI encryption for HIPAA compliance
+ServiceRequestSchema.plugin(phiEncryptionPlugin, {
+  fields: [
+    'patientNotes',
+    'nurseNotes',
+    'cancellationReason',
+    'review',
+  ],
+});
+
 // Create indexes
-ServiceRequestSchema.index({ location: '2dsphere' });
+// Note: location already has 2dsphere index via @Prop decorator
 ServiceRequestSchema.index({ patientId: 1, status: 1 });
 ServiceRequestSchema.index({ nurseId: 1, status: 1 });
 ServiceRequestSchema.index({ status: 1, createdAt: -1 });

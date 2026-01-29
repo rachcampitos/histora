@@ -37,7 +37,7 @@ export class NotificationsService {
   ) {}
 
   // Send notification
-  async send(dto: SendNotificationDto, clinicId?: string): Promise<Notification[]> {
+  async send(dto: SendNotificationDto): Promise<Notification[]> {
     const preferences = await this.getOrCreatePreferences(dto.userId);
     const channels = dto.channels || this.getDefaultChannels(dto.type, preferences);
     const notifications: Notification[] = [];
@@ -51,7 +51,6 @@ export class NotificationsService {
       const notification = await this.createNotification({
         ...dto,
         channel,
-        clinicId,
         scheduledFor: dto.scheduledFor ? new Date(dto.scheduledFor) : undefined,
       });
 
@@ -67,13 +66,13 @@ export class NotificationsService {
   }
 
   // Send bulk notifications
-  async sendBulk(dto: SendBulkNotificationDto, clinicId?: string): Promise<{ sent: number; failed: number }> {
+  async sendBulk(dto: SendBulkNotificationDto): Promise<{ sent: number; failed: number }> {
     let sent = 0;
     let failed = 0;
 
     for (const userId of dto.userIds) {
       try {
-        await this.send({ ...dto, userId }, clinicId);
+        await this.send({ ...dto, userId });
         sent++;
       } catch (error) {
         this.logger.error(`Failed to send to ${userId}: ${error.message}`);
@@ -155,27 +154,23 @@ export class NotificationsService {
     channel: NotificationChannel;
     title: string;
     message: string;
-    clinicId?: string;
     data?: Record<string, any>;
     scheduledFor?: Date;
-    appointmentId?: string;
-    consultationId?: string;
+    serviceRequestId?: string;
   }): Promise<NotificationDocument> {
     const recipient = await this.getRecipientForChannel(data.userId, data.channel);
 
     return this.notificationModel.create({
       userId: new Types.ObjectId(data.userId),
-      clinicId: data.clinicId ? new Types.ObjectId(data.clinicId) : undefined,
       type: data.type,
       channel: data.channel,
-      status: data.scheduledFor ? NotificationStatus.PENDING : NotificationStatus.PENDING,
+      status: NotificationStatus.PENDING,
       title: data.title,
       message: data.message,
       recipient,
       data: data.data,
       scheduledFor: data.scheduledFor,
-      appointmentId: data.appointmentId ? new Types.ObjectId(data.appointmentId) : undefined,
-      consultationId: data.consultationId ? new Types.ObjectId(data.consultationId) : undefined,
+      serviceRequestId: data.serviceRequestId ? new Types.ObjectId(data.serviceRequestId) : undefined,
     });
   }
 
@@ -200,13 +195,13 @@ export class NotificationsService {
   // Get default channels for notification type
   private getDefaultChannels(type: NotificationType, preferences: NotificationPreferencesDocument): NotificationChannel[] {
     const typeMap: Record<string, keyof NotificationPreferencesDocument> = {
-      [NotificationType.APPOINTMENT_REMINDER]: 'appointmentReminders',
-      [NotificationType.APPOINTMENT_CONFIRMATION]: 'appointmentConfirmations',
-      [NotificationType.APPOINTMENT_CANCELLED]: 'appointmentCancellations',
-      [NotificationType.CONSULTATION_COMPLETED]: 'consultationUpdates',
-      [NotificationType.LAB_RESULTS_READY]: 'labResults',
       [NotificationType.PAYMENT_RECEIVED]: 'paymentNotifications',
       [NotificationType.PAYMENT_REMINDER]: 'paymentNotifications',
+      [NotificationType.SERVICE_REQUEST_ACCEPTED]: 'serviceNotifications',
+      [NotificationType.SERVICE_REQUEST_REJECTED]: 'serviceNotifications',
+      [NotificationType.SERVICE_COMPLETED]: 'serviceNotifications',
+      [NotificationType.NURSE_ON_THE_WAY]: 'serviceNotifications',
+      [NotificationType.NURSE_ARRIVED]: 'serviceNotifications',
     };
 
     const prefKey = typeMap[type];
@@ -217,8 +212,8 @@ export class NotificationsService {
       }
     }
 
-    // Default: email and in-app
-    return [NotificationChannel.EMAIL, NotificationChannel.IN_APP];
+    // Default: in-app and push for service notifications
+    return [NotificationChannel.IN_APP, NotificationChannel.PUSH];
   }
 
   // Check if channel is enabled
@@ -330,80 +325,18 @@ export class NotificationsService {
     });
   }
 
-  // Send appointment reminder
-  async sendAppointmentReminder(appointment: {
-    id: string;
-    patientId: string;
-    patientName: string;
-    patientUserId?: string;
-    doctorName: string;
-    date: string;
-    time: string;
-    clinicId: string;
-    clinicName: string;
-  }): Promise<void> {
-    if (!appointment.patientUserId) {
-      this.logger.warn(`Patient ${appointment.patientId} has no user account, skipping notification`);
-      return;
-    }
-
-    await this.send({
-      userId: appointment.patientUserId,
-      type: NotificationType.APPOINTMENT_REMINDER,
-      title: 'Recordatorio de Cita',
-      message: this.emailProvider.getAppointmentReminderTemplate({
-        patientName: appointment.patientName,
-        doctorName: appointment.doctorName,
-        date: appointment.date,
-        time: appointment.time,
-        clinicName: appointment.clinicName,
-      }),
-      data: { appointmentId: appointment.id },
-      appointmentId: appointment.id,
-    }, appointment.clinicId);
-  }
-
-  // Send appointment confirmation
-  async sendAppointmentConfirmation(appointment: {
-    id: string;
-    patientUserId: string;
-    patientName: string;
-    doctorName: string;
-    date: string;
-    time: string;
-    clinicId: string;
-    clinicName: string;
-  }): Promise<void> {
-    await this.send({
-      userId: appointment.patientUserId,
-      type: NotificationType.APPOINTMENT_CONFIRMATION,
-      title: 'Cita Confirmada',
-      message: this.emailProvider.getAppointmentConfirmationTemplate({
-        patientName: appointment.patientName,
-        doctorName: appointment.doctorName,
-        date: appointment.date,
-        time: appointment.time,
-        clinicName: appointment.clinicName,
-      }),
-      data: { appointmentId: appointment.id },
-      appointmentId: appointment.id,
-    }, appointment.clinicId);
-  }
-
   // Send welcome notification
   async sendWelcomeNotification(user: {
     id: string;
     email: string;
     firstName: string;
-    clinicName?: string;
   }): Promise<void> {
     await this.send({
       userId: user.id,
       type: NotificationType.WELCOME,
-      title: 'Bienvenido a Histora',
+      title: 'Bienvenido a Histora Care',
       message: this.emailProvider.getWelcomeTemplate({
         userName: user.firstName,
-        clinicName: user.clinicName,
       }),
       channels: [NotificationChannel.EMAIL, NotificationChannel.IN_APP],
     });
@@ -434,95 +367,6 @@ export class NotificationsService {
   }
 
   // =====================
-  // DOCTOR NOTIFICATIONS
-  // =====================
-
-  // Notify doctor when a patient books an appointment
-  async notifyDoctorNewAppointment(appointment: {
-    id: string;
-    doctorUserId: string;
-    patientName: string;
-    date: string;
-    time: string;
-    clinicId: string;
-    reason?: string;
-  }): Promise<void> {
-    await this.send({
-      userId: appointment.doctorUserId,
-      type: NotificationType.NEW_APPOINTMENT_BOOKED,
-      title: 'Nueva Cita Agendada',
-      message: `${appointment.patientName} ha agendado una cita para el ${appointment.date} a las ${appointment.time}.${appointment.reason ? ` Motivo: ${appointment.reason}` : ''}`,
-      data: { appointmentId: appointment.id },
-      appointmentId: appointment.id,
-      channels: [NotificationChannel.IN_APP, NotificationChannel.EMAIL],
-    }, appointment.clinicId);
-  }
-
-  // Notify doctor when a patient cancels an appointment
-  async notifyDoctorAppointmentCancelled(appointment: {
-    id: string;
-    doctorUserId: string;
-    patientName: string;
-    date: string;
-    time: string;
-    clinicId: string;
-    reason?: string;
-  }): Promise<void> {
-    await this.send({
-      userId: appointment.doctorUserId,
-      type: NotificationType.APPOINTMENT_CANCELLED_BY_PATIENT,
-      title: 'Cita Cancelada',
-      message: `${appointment.patientName} ha cancelado la cita del ${appointment.date} a las ${appointment.time}.${appointment.reason ? ` Motivo: ${appointment.reason}` : ''}`,
-      data: { appointmentId: appointment.id },
-      appointmentId: appointment.id,
-      channels: [NotificationChannel.IN_APP, NotificationChannel.EMAIL],
-    }, appointment.clinicId);
-  }
-
-  // Notify doctor of upcoming appointment
-  async notifyDoctorUpcomingAppointment(appointment: {
-    id: string;
-    doctorUserId: string;
-    patientName: string;
-    date: string;
-    time: string;
-    clinicId: string;
-    minutesBefore: number;
-  }): Promise<void> {
-    const timeText = appointment.minutesBefore >= 60
-      ? `${Math.floor(appointment.minutesBefore / 60)} hora(s)`
-      : `${appointment.minutesBefore} minutos`;
-
-    await this.send({
-      userId: appointment.doctorUserId,
-      type: NotificationType.UPCOMING_APPOINTMENT_REMINDER,
-      title: 'Recordatorio de Cita',
-      message: `Tiene una cita con ${appointment.patientName} en ${timeText} (${appointment.time}).`,
-      data: { appointmentId: appointment.id },
-      appointmentId: appointment.id,
-      channels: [NotificationChannel.IN_APP],
-    }, appointment.clinicId);
-  }
-
-  // Notify doctor when a patient leaves a review
-  async notifyDoctorNewReview(review: {
-    doctorUserId: string;
-    patientName: string;
-    rating: number;
-    comment?: string;
-    clinicId?: string;
-  }): Promise<void> {
-    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-    await this.send({
-      userId: review.doctorUserId,
-      type: NotificationType.NEW_PATIENT_REVIEW,
-      title: 'Nueva Reseña de Paciente',
-      message: `${review.patientName} te ha dejado una reseña: ${stars}${review.comment ? ` - "${review.comment}"` : ''}`,
-      channels: [NotificationChannel.IN_APP],
-    }, review.clinicId);
-  }
-
-  // =====================
   // ADMIN NOTIFICATIONS
   // =====================
 
@@ -532,35 +376,6 @@ export class NotificationsService {
       role: UserRole.PLATFORM_ADMIN,
       isActive: true,
     });
-  }
-
-  // Notify admins when a new doctor (clinic owner) registers
-  async notifyAdminNewDoctorRegistered(doctor: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    clinicName: string;
-  }): Promise<void> {
-    const admins = await this.getPlatformAdmins();
-
-    for (const admin of admins) {
-      await this.send({
-        userId: admin._id.toString(),
-        type: NotificationType.NEW_DOCTOR_REGISTERED,
-        title: 'Nuevo Médico Registrado',
-        message: `${doctor.firstName} ${doctor.lastName} (${doctor.email}) se ha registrado como médico y creado el consultorio "${doctor.clinicName}".`,
-        data: {
-          userId: doctor.id,
-          email: doctor.email,
-          name: `${doctor.firstName} ${doctor.lastName}`,
-          clinicName: doctor.clinicName,
-        },
-        channels: [NotificationChannel.IN_APP, NotificationChannel.EMAIL],
-      });
-    }
-
-    this.logger.log(`Notified ${admins.length} admin(s) about new doctor: ${doctor.email}`);
   }
 
   // Notify admins when a new patient registers

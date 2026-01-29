@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, AfterViewInit, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, AfterViewInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { GeolocationService } from '../core/services/geolocation.service';
@@ -13,6 +13,7 @@ import { NurseSearchResult } from '../core/models';
   templateUrl: './browse.page.html',
   standalone: false,
   styleUrls: ['./browse.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BrowsePage implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);

@@ -5,6 +5,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   templateUrl: './tabs.page.html',
   standalone: false,
   styleUrls: ['./tabs.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabsPage {
   // AI assistant disabled until ready for release

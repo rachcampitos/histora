@@ -8,9 +8,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
-import { ClinicsService } from '../clinics/clinics.service';
-import { SubscriptionsService } from '../subscriptions/subscriptions.service';
-import { DoctorsService } from '../doctors/doctors.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto, RegisterPatientDto, RegisterNurseDto, ValidateNurseCepDto, CompleteNurseRegistrationDto } from './dto/register.dto';
@@ -38,7 +35,6 @@ export interface AuthResponse {
     firstName: string;
     lastName: string;
     role: UserRole;
-    clinicId?: string;
     avatar?: string;
   };
   session?: SessionInfo;
@@ -63,9 +59,6 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private clinicsService: ClinicsService,
-    private subscriptionsService: SubscriptionsService,
-    private doctorsService: DoctorsService,
     private nursesService: NursesService,
     private cepValidationService: CepValidationService,
     private reniecValidationService: ReniecValidationService,
@@ -110,104 +103,7 @@ export class AuthService {
     });
   }
 
-  async register(registerDto: RegisterDto): Promise<AuthResponse> {
-    // Check if email already exists
-    const existingUser = await this.usersService.findByEmail(registerDto.email);
-    if (existingUser) {
-      throw new ConflictException('Este email ya está registrado');
-    }
-
-    // Validate terms acceptance
-    if (!registerDto.termsAccepted) {
-      throw new UnauthorizedException('Debe aceptar los términos y condiciones');
-    }
-    if (!registerDto.professionalDisclaimerAccepted) {
-      throw new UnauthorizedException('Debe aceptar la exención de responsabilidad profesional');
-    }
-
-    // Create user as clinic owner with terms acceptance
-    const user = await this.usersService.create({
-      email: registerDto.email,
-      password: registerDto.password,
-      firstName: registerDto.firstName,
-      lastName: registerDto.lastName,
-      phone: registerDto.phone,
-      role: UserRole.CLINIC_OWNER,
-      termsAccepted: true,
-      termsAcceptedAt: new Date(),
-      termsVersion: '1.0',
-      professionalDisclaimerAccepted: true,
-      professionalDisclaimerAcceptedAt: new Date(),
-    });
-
-    // Create clinic for the new owner
-    const clinic = await this.clinicsService.create(
-      {
-        name: registerDto.clinicName,
-        phone: registerDto.clinicPhone,
-      },
-      user['_id'].toString(),
-    );
-
-    // Update user with clinicId
-    await this.usersService.update(user['_id'].toString(), {
-      clinicId: clinic['_id'],
-    });
-
-    // Create Doctor profile for the clinic owner (they are also a doctor)
-    await this.doctorsService.create(
-      clinic['_id'].toString(),
-      user['_id'].toString(),
-      {
-        firstName: registerDto.firstName,
-        lastName: registerDto.lastName,
-        specialty: registerDto.specialty || 'Medicina General',
-        email: registerDto.email,
-        phone: registerDto.phone,
-        isPublicProfile: true, // Visible in public directory by default
-      },
-    );
-
-    // Create trial subscription for the clinic
-    await this.subscriptionsService.createTrialSubscription(clinic['_id'].toString());
-
-    // Generate JWT token with clinicId
-    const payload: JwtPayload = {
-      sub: user['_id'].toString(),
-      email: user.email,
-      role: user.role,
-      clinicId: clinic['_id'].toString(),
-    };
-
-    // Generate and save refresh token
-    const refreshToken = this.generateRefreshToken();
-    await this.saveRefreshToken(user['_id'].toString(), refreshToken);
-
-    // Notify admins about new doctor registration (async, don't block)
-    this.notificationsService.notifyAdminNewDoctorRegistered({
-      id: user['_id'].toString(),
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      clinicName: registerDto.clinicName,
-    }).catch(err => {
-      this.logger.error(`Failed to notify admins about new doctor: ${err.message}`);
-    });
-
-    return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: refreshToken,
-      user: {
-        id: user['_id'].toString(),
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        clinicId: clinic['_id'].toString(),
-        avatar: user.avatar,
-      },
-    };
-  }
+  // Note: Legacy doctor/clinic registration removed - Histora Care only supports patient and nurse registration
 
   async registerPatient(registerDto: RegisterPatientDto): Promise<AuthResponse> {
     // Check if email already exists
@@ -458,7 +354,6 @@ export class AuthService {
       sub: user['_id'].toString(),
       email: user.email,
       role: user.role,
-      clinicId: user.clinicId?.toString(),
       nurseId,
     };
 
@@ -488,7 +383,6 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-        clinicId: user.clinicId?.toString(),
         avatar: user.avatar,
       },
       session: sessionInfo,
@@ -528,7 +422,6 @@ export class AuthService {
       sub: user['_id'].toString(),
       email: user.email,
       role: user.role,
-      clinicId: user.clinicId?.toString(),
       nurseId,
     };
 
@@ -556,7 +449,6 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-        clinicId: user.clinicId?.toString(),
         avatar: user.avatar,
       },
       session: sessionInfo,
@@ -917,7 +809,6 @@ export class AuthService {
       sub: user['_id'].toString(),
       email: user.email,
       role: user.role,
-      clinicId: user.clinicId?.toString(),
     };
 
     // Generate and save refresh token
@@ -936,7 +827,6 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-        clinicId: user.clinicId?.toString(),
         avatar: user.avatar,
       },
     };
@@ -944,11 +834,11 @@ export class AuthService {
 
   /**
    * Complete registration for new Google users who need to select their role
+   * Histora Care only supports patient and nurse registration
    */
   async completeGoogleRegistration(
     userId: string,
-    userType: 'doctor' | 'patient' | 'nurse',
-    clinicData?: { clinicName: string; clinicPhone?: string },
+    userType: 'patient' | 'nurse',
     nurseData?: {
       cepNumber: string;
       specialties?: string[];
@@ -974,90 +864,12 @@ export class AuthService {
       throw new UnauthorizedException('Debe aceptar los términos y condiciones');
     }
 
-    // Validate professional disclaimer for doctors and nurses
-    if ((userType === 'doctor' || userType === 'nurse') && !termsData?.professionalDisclaimerAccepted) {
+    // Validate professional disclaimer for nurses
+    if (userType === 'nurse' && !termsData?.professionalDisclaimerAccepted) {
       throw new UnauthorizedException('Debe aceptar la exención de responsabilidad profesional');
     }
 
-    if (userType === 'doctor') {
-      if (!clinicData?.clinicName) {
-        throw new UnauthorizedException('El nombre del consultorio es requerido');
-      }
-
-      // Create clinic
-      const clinic = await this.clinicsService.create(
-        {
-          name: clinicData.clinicName,
-          phone: clinicData.clinicPhone,
-        },
-        userId,
-      );
-
-      // Update user to clinic_owner role with terms acceptance
-      await this.usersService.update(userId, {
-        role: UserRole.CLINIC_OWNER,
-        clinicId: clinic['_id'],
-        termsAccepted: true,
-        termsAcceptedAt: new Date(),
-        termsVersion: '1.0',
-        professionalDisclaimerAccepted: true,
-        professionalDisclaimerAcceptedAt: new Date(),
-      });
-
-      // Create trial subscription
-      await this.subscriptionsService.createTrialSubscription(
-        clinic['_id'].toString(),
-      );
-
-      // Create doctor profile
-      await this.doctorsService.create(
-        clinic['_id'].toString(),
-        userId,
-        {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          specialty: 'Medicina General', // Default specialty
-          email: user.email,
-          phone: user.phone,
-        },
-      );
-
-      // Notify admins
-      await this.notificationsService.notifyAdminNewDoctorRegistered({
-        id: userId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        clinicName: clinicData.clinicName,
-      });
-
-      // Generate new token with updated role
-      const payload: JwtPayload = {
-        sub: userId,
-        email: user.email,
-        role: UserRole.CLINIC_OWNER,
-        clinicId: clinic['_id'].toString(),
-      };
-
-      const refreshToken = this.generateRefreshToken();
-      await this.saveRefreshToken(userId, refreshToken);
-
-      this.logger.log(`Google user ${user.email} completed registration as doctor`);
-
-      return {
-        access_token: this.jwtService.sign(payload),
-        refresh_token: refreshToken,
-        user: {
-          id: userId,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: UserRole.CLINIC_OWNER,
-          clinicId: clinic['_id'].toString(),
-          avatar: user.avatar,
-        },
-      };
-    } else if (userType === 'nurse') {
+    if (userType === 'nurse') {
       // Nurse registration for Histora Care
       if (!nurseData?.cepNumber) {
         throw new UnauthorizedException('El número de CEP es requerido para enfermeras');

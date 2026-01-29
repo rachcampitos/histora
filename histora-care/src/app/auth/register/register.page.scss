@@ -5,7 +5,7 @@ $nurse-color: var(--ion-color-success, #10b981);
 $patient-color: var(--splash-gradient-end, #2d5f8a);
 $error-color: var(--ion-color-danger, #f44336);
 $text-dark: var(--histora-text-primary, #1a1a1a);
-$text-muted: var(--histora-text-muted, #a1a1aa);
+$text-muted: var(--histora-text-muted, #71717a);
 $bg-light: var(--histora-background, #f7fafc);
 $border-radius: 12px;
 
@@ -436,7 +436,7 @@ $border-radius: 12px;
 
     ion-input {
       --color: white;
-      --placeholder-color: #a1a1aa;
+      --placeholder-color: #71717a;
     }
 
     .input-icon {

@@ -17,6 +17,7 @@ interface TimeSlotOption {
   templateUrl: './request.page.html',
   standalone: false,
   styleUrls: ['./request.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RequestPage implements OnInit {
   private route = inject(ActivatedRoute);

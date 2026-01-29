@@ -20,6 +20,7 @@ interface DayOption {
   templateUrl: './profile.page.html',
   standalone: false,
   styleUrls: ['./profile.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilePage implements OnInit {
   private nurseApi = inject(NurseApiService);

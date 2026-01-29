@@ -1,80 +1,49 @@
-# Instrucciones para Claude Code - Histora
+# Instrucciones para Claude Code - Histora Care
 
 ## Estructura del Proyecto
 
 ```
 histora/
-├── histora-back/     # Backend NestJS
-├── histora-care/     # Frontend Ionic/Angular (enfermeria a domicilio)
-└── histora-front/    # Frontend Angular (admin panel)
+├── histora-back/     # Backend NestJS (API)
+├── histora-care/     # App Ionic/Angular (enfermeria a domicilio)
+└── histora-front/    # (Legacy - No en uso)
 ```
 
 ## Despliegue
 
-### Admin Panel (histora-front)
-- **Hosting:** Railway (proyecto: fulfilling-victory)
-- **URL:** https://histora-front.up.railway.app (o dominio custom)
-- **Despliegue:** AUTOMATICO con git push a main
-
-### App Movil/PWA (histora-care)
-- **Hosting:** Cloudflare Pages
+### App (histora-care)
+- **Hosting:** Vercel
 - **URL:** https://care.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
 
 ### Backend API (histora-back)
-- **Hosting:** Railway (proyecto: merry-perfection)
+- **Hosting:** Railway
 - **URL:** https://api.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
 
-> **IMPORTANTE:** Los 3 servicios están conectados a GitHub.
-> Solo hacer `git push origin main` y el despliegue es automático.
-> **NO ejecutar:** `railway up` o `wrangler pages deploy` manualmente.
+> **IMPORTANTE:** Solo hacer `git push origin main` y el despliegue es automatico.
+> **NO ejecutar:** `railway up` ni `vercel --prod` manualmente.
 
 ## APIs Externas
 
 ### CEP (Colegio de Enfermeros del Peru)
 - **Documentacion:** `histora-back/docs/CEP-API.md`
-- **Endpoint:** `POST /validar/pagina/view.php`
 - **Uso:** Validar numero CEP, obtener nombre, foto, estado HABIL
 
 ### RENIEC (via decolecta)
 - **Limite:** 100 consultas/mes (gratis)
-- **Token:** En variables de entorno `RENIEC_API_TOKEN`
-- **Uso:** Backup para obtener nombre por DNI (ya no necesario con CEP)
+- **Token:** Variable `RENIEC_API_TOKEN`
+- **Uso:** Backup para validacion de DNI
 
-## GitHub Projects (Seguimiento de Tareas)
-
-### URL del Proyecto
-- **Repo:** https://github.com/rachcampitos/histora
-- **Issues:** https://github.com/rachcampitos/histora/issues
-
-### Proceso de Despliegue
-1. Implementar la feature
-2. Crear commit con conventional commits (`feat:`, `fix:`, `docs:`)
-3. Crear/actualizar Issue en GitHub con checklist de lo implementado
-4. Cerrar Issue con comentario de version
-5. Actualizar `docs/CHANGELOG.md` con la nueva version
-6. Push a main (despliegue automatico)
-
-### Labels Usados
-- `feature` - Nueva funcionalidad
-- `bug` - Correccion de error
-- `epic` - Feature grande con multiples sub-tareas
-- `frontend` / `backend` - Area afectada
-- `priority-high/medium/low` - Prioridad
-- `tech-debt` - Mejoras tecnicas
-- `ux-ui` - Diseño y experiencia
+### Culqi (Pagos)
+- **Uso:** Tarjetas de credito/debito y Yape
+- **Documentacion:** `histora-back/docs/PAYMENT-BETA-MODE.md`
 
 ## Flujos Importantes
 
 ### Verificacion de Enfermeras
 - **Documentacion:** `histora-back/docs/NURSE-VERIFICATION-FLOW.md`
-- **Flujo:** CEP + DNI → valida en cep.org.pe → foto + nombre + HABIL → confirma → documentos
-
-### Onboarding de Enfermeras (Modelo P2P)
-- **Documentacion:** `histora-back/docs/NURSE-ONBOARDING-FLOW.md`
-- **Flujo:** Welcome → Modelo P2P → Config Yape/Plin → Planes → Dashboard
-- **Checklist:** Metodos de pago, Servicios, Disponibilidad, Biografia
+- **Flujo:** DNI + CEP → valida en cep.org.pe → foto + nombre + HABIL → confirma → selfie → admin aprueba
 
 ## Datos de Prueba
 
@@ -89,38 +58,45 @@ Region: CONSEJO REGIONAL III LIMA METROPOLITANA
 ## Comandos Utiles
 
 ```bash
-# Build backend
+# Backend
 cd histora-back && npm run build
-
-# Build frontend
-cd histora-care && npm run build
-
-# Test backend
 cd histora-back && npm run test
+cd histora-back && npm run start:dev
 
-# Test frontend
+# Frontend
+cd histora-care && npm run build
 cd histora-care && npm run test
+cd histora-care && ionic serve
 ```
 
 ## Variables de Entorno
 
 ### Backend (Railway)
-- `MONGODB_URI` - MongoDB Atlas
-- `JWT_SECRET` - JWT signing
+- `MONGO_URL` - MongoDB Atlas
+- `JWT_SECRET` / `JWT_REFRESH_SECRET` - JWT
 - `CLOUDINARY_*` - Subida de imagenes
+- `SENDGRID_API_KEY` - Emails
+- `CULQI_API_KEY` - Pagos
 - `RENIEC_API_TOKEN` - API decolecta (opcional)
 
 ### Frontend
 - Variables en `environment.ts` y `environment.prod.ts`
 - API URL: `https://api.historahealth.com`
 
+## Roles de Usuario
+
+| Rol | Descripcion |
+|-----|-------------|
+| `platform_admin` | Administrador de la plataforma |
+| `patient` | Paciente que solicita servicios |
+| `nurse` | Enfermera profesional verificada |
+
 ## Notas Importantes
 
 1. **NO crear archivos .md innecesarios** - Solo documentacion esencial
 2. **NO usar emojis en codigo** - A menos que el usuario lo pida
-3. **Commits en español** - El proyecto es para Peru
-4. **Push = Deploy** - El push automaticamente despliega en Railway (front+back) y Cloudflare (care)
-5. **Vercel NO se usa** - Legacy, ignorar la carpeta .vercel
+3. **Commits en espanol** - El proyecto es para Peru
+4. **Push = Deploy** - El push automaticamente despliega
 
 ---
 Ultima actualizacion: 2026-01-29

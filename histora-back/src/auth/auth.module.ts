@@ -8,11 +8,9 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { AccountLockoutService } from './services/account-lockout.service';
+import { CookieService } from './services/cookie.service';
 import { LoginAttempt, LoginAttemptSchema } from './schema/login-attempt.schema';
 import { UsersModule } from '../users/users.module';
-import { ClinicsModule } from '../clinics/clinics.module';
-import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
-import { DoctorsModule } from '../doctors/doctors.module';
 import { NursesModule } from '../nurses/nurses.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { EmailProvider } from '../notifications/providers/email.provider';
@@ -24,9 +22,6 @@ import { EmailProvider } from '../notifications/providers/email.provider';
       { name: LoginAttempt.name, schema: LoginAttemptSchema },
     ]),
     UsersModule,
-    forwardRef(() => ClinicsModule),
-    forwardRef(() => SubscriptionsModule),
-    forwardRef(() => DoctorsModule),
     forwardRef(() => NursesModule),
     NotificationsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -48,7 +43,7 @@ import { EmailProvider } from '../notifications/providers/email.provider';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy, EmailProvider, AccountLockoutService],
-  exports: [AuthService, JwtModule, PassportModule, AccountLockoutService],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, EmailProvider, AccountLockoutService, CookieService],
+  exports: [AuthService, JwtModule, PassportModule, AccountLockoutService, CookieService],
 })
 export class AuthModule {}

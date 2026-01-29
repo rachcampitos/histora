@@ -1,14 +1,14 @@
-# Histora - Sistema de Gestión de Consultorios Médicos
+# Histora Care - Enfermeria a Domicilio
 
-**Histora** es un sistema SaaS completo para la gestión de consultorios médicos, desarrollado para el contexto latinoamericano. Incluye manejo de pacientes, citas, historiales clínicos, notificaciones automatizadas y más.
+**Histora Care** es una plataforma marketplace que conecta pacientes con enfermeras profesionales para servicios de salud a domicilio en Peru. Similar al modelo Uber, permite a los pacientes solicitar servicios de enfermeria y hacer seguimiento en tiempo real.
 
-## URLs de Producción
+## URLs de Produccion
 
 | Servicio | URL |
 |----------|-----|
-| Frontend | https://app.historahealth.com |
+| App Web (Histora Care) | https://care.historahealth.com |
 | Backend API | https://api.historahealth.com |
-| Swagger Docs | http://localhost:3000/docs (solo desarrollo) |
+| Swagger Docs | https://api.historahealth.com/docs |
 
 ---
 
@@ -18,172 +18,194 @@
 histora/
 ├── histora-back/           # Backend NestJS
 │   ├── src/
-│   │   ├── auth/           # Autenticación JWT
-│   │   ├── users/          # Gestión de usuarios
-│   │   ├── patients/       # Pacientes
-│   │   ├── doctors/        # Médicos y perfiles
-│   │   ├── appointments/   # Citas médicas
-│   │   ├── consultations/  # Consultas
-│   │   ├── clinical-history/ # Historiales
-│   │   ├── vitals/         # Signos vitales
-│   │   ├── notifications/  # Notificaciones
-│   │   ├── payments/       # Pagos
-│   │   ├── uploads/        # Cloudinary
-│   │   ├── chatbot/        # WhatsApp Bot
-│   │   └── ...
-│   └── Dockerfile
-├── histora-front/          # Frontend Angular (Web)
-│   ├── src/app/
-│   │   ├── core/           # Servicios, guards
-│   │   ├── authentication/ # Login, registro
-│   │   ├── admin/          # Panel admin
-│   │   ├── doctor/         # Panel médico
-│   │   └── patient/        # Panel paciente
-│   ├── Dockerfile
-│   └── nginx.conf
-├── histora-care/           # App Móvil (Ionic/Capacitor)
+│   │   ├── auth/           # Autenticacion JWT + Google OAuth
+│   │   ├── users/          # Gestion de usuarios
+│   │   ├── nurses/         # Perfiles de enfermeras
+│   │   ├── service-requests/ # Solicitudes de servicio
+│   │   ├── service-payments/ # Pagos (Culqi, Yape)
+│   │   ├── patient-verification/ # Verificacion de pacientes
+│   │   ├── patient-addresses/ # Direcciones de pacientes
+│   │   ├── patient-ratings/ # Calificaciones
+│   │   ├── notifications/  # Notificaciones multicanal
+│   │   ├── uploads/        # Cloudinary (fotos, selfies)
+│   │   ├── tracking/       # Tracking en tiempo real
+│   │   ├── chat/           # Chat enfermera-paciente
+│   │   ├── safety/         # Boton de panico, emergencias
+│   │   ├── admin/          # Panel de administracion
+│   │   └── health/         # Health checks
+│   └── docs/               # Documentacion tecnica
+├── histora-care/           # App Movil (Ionic/Angular/Capacitor)
 │   ├── src/app/
 │   │   ├── auth/           # Login, registro
 │   │   ├── nurse/          # Panel enfermera
 │   │   │   ├── dashboard/  # Dashboard con mapa
-│   │   │   ├── requests/   # Solicitudes
+│   │   │   ├── requests/   # Solicitudes entrantes
 │   │   │   ├── services/   # Servicios ofrecidos
-│   │   │   ├── earnings/   # Ganancias
+│   │   │   ├── earnings/   # Ganancias y pagos
+│   │   │   ├── verification/ # Verificacion CEP
 │   │   │   └── profile/    # Perfil profesional
 │   │   └── patient/        # Panel paciente
-│   │       ├── map/        # Mapa con enfermeras
+│   │       ├── home/       # Inicio con servicios
+│   │       ├── nurses/     # Busqueda de enfermeras
 │   │       ├── tracking/   # Seguimiento en tiempo real
 │   │       └── history/    # Historial de servicios
 │   └── capacitor.config.ts
-├── railway.toml            # Config Railway
-└── README.md
+├── histora-front/          # (Legacy - No en uso activo)
+└── CLAUDE.md               # Instrucciones para desarrollo
 ```
 
 ---
 
-## Stack Tecnológico
+## Stack Tecnologico
 
-### Backend
-| Tecnología | Versión | Uso |
+### Backend (NestJS)
+| Tecnologia | Version | Uso |
 |------------|---------|-----|
 | NestJS | 11 | Framework |
 | MongoDB | Atlas | Base de datos |
 | Mongoose | 8 | ODM |
-| JWT | - | Autenticación |
-| Cloudinary | - | Archivos/imágenes |
-| SendGrid | - | Emails |
-| WhatsApp API | - | Notificaciones |
+| JWT | - | Autenticacion |
+| Passport | - | Estrategias (Local, JWT, Google) |
+| Cloudinary | - | Almacenamiento de imagenes |
+| SendGrid | - | Emails transaccionales |
+| Culqi | - | Procesamiento de pagos (tarjetas, Yape) |
+| Socket.IO | - | Tiempo real (tracking) |
 | Helmet | 8 | Seguridad HTTP |
 | Throttler | 6 | Rate limiting |
 
-### Frontend (Web)
-| Tecnología | Versión | Uso |
-|------------|---------|-----|
-| Angular | 20 | Framework |
-| Angular Material | 20 | UI Components |
-| FullCalendar | 6 | Calendario |
-| ApexCharts | 5 | Gráficos |
-| NGX-Translate | 17 | i18n (ES/EN) |
-| NGX-Datatable | 22 | Tablas |
-
-### Mobile (Histora Care)
-| Tecnología | Versión | Uso |
+### Mobile (Ionic/Angular)
+| Tecnologia | Version | Uso |
 |------------|---------|-----|
 | Angular | 20 | Framework |
 | Ionic | 8 | UI Components mobile |
-| Capacitor | 8 | APIs nativas |
+| Capacitor | 8 | APIs nativas (GPS, camara, notificaciones) |
 | Mapbox GL | 3 | Mapas y rutas |
-| Socket.IO | 4 | Tiempo real |
+| Socket.IO Client | 4 | Tracking en tiempo real |
 
 ---
 
-## Características Principales
+## Caracteristicas Principales
 
-### Autenticación y Seguridad
-- Login con email/contraseña
-- **Google Sign-In** (OAuth 2.0)
-- JWT con refresh token rotation
-- "Recordarme" con tokens de larga duración
-- Rate limiting (10/s, 100/min, 1000/h)
-- Headers de seguridad (Helmet)
-- CORS configurado
-- Roles: **Platform Admin**, Clinic Owner, Doctor, Staff, Paciente
+### Para Pacientes
+- **Busqueda de enfermeras** cercanas en mapa interactivo
+- **Solicitud de servicios** de salud a domicilio
+- **Tracking en tiempo real** estilo Uber
+- **Multiples metodos de pago**: Tarjeta, Yape, Efectivo
+- **Historial de servicios** y calificaciones
+- **Chat directo** con la enfermera asignada
+- **Boton de panico** para emergencias
 
-### Panel del Médico
-- Dashboard con estadísticas
-- Gestión de pacientes
-- Calendario de citas interactivo
-- Historiales clínicos completos
-- Perfil profesional con CV
-- Notificaciones en tiempo real
+### Para Enfermeras
+- **Dashboard** con metricas y solicitudes entrantes
+- **Verificacion CEP** (Colegio de Enfermeros del Peru)
+- **Gestion de disponibilidad** y ubicacion
+- **Control de servicios** ofrecidos y precios
+- **Seguimiento de ganancias** y pagos
+- **Perfil profesional** con especialidades
 
-### Panel del Paciente
-- Búsqueda de médicos
-- Agendamiento de citas online
-- Historial de consultas
-- Portal del paciente
-- Recordatorios automáticos
-
-### Panel de Administración (Platform Admin)
+### Panel de Administracion
 - Dashboard con KPIs de la plataforma
-- Gestión de clínicas
-- Gestión de usuarios
-- Suscripciones y planes
-- Reportes de ingresos
-- Configuración global
-- **Notificaciones automáticas** cuando nuevos usuarios se registran
-- Soporte completo para **Dark Mode**
+- Gestion de enfermeras y verificaciones
+- Gestion de pacientes
+- Reportes de servicios e ingresos
+- Configuracion de comisiones
+- Soporte para **Dark Mode**
 
-### Sistema de Notificaciones
-- Email (SendGrid)
-- WhatsApp Business API
-- Notificaciones in-app con polling (30s)
-- Recordatorios automáticos:
-  - 24 horas antes de la cita
-  - 1 hora antes de la cita
-- Notificaciones para médicos:
-  - Nueva cita agendada
-  - Cita cancelada por paciente
-- Notificaciones para admins:
-  - Nuevo médico registrado
-  - Nuevo paciente registrado
-
-### Chatbot WhatsApp
-- Consulta de médicos disponibles
-- Agendamiento de citas
-- Consulta de citas existentes
-- Cancelación de citas
-
-### Accesibilidad
-- Cumplimiento WCAG 2.1 AA
-- Navegación por teclado
-- Labels ARIA
-- Contraste adecuado
-
-### App Móvil - Histora Care
-Aplicación móvil para servicios de enfermería a domicilio.
-
-**Para Pacientes:**
-- Mapa interactivo con enfermeras cercanas (Mapbox)
-- Solicitud de servicios de salud
-- Tracking en tiempo real estilo Uber
-- Historial de servicios
-
-**Para Enfermeras:**
-- Dashboard con métricas y solicitudes
-- Gestión de disponibilidad
-- Control de servicios ofrecidos
-- Seguimiento de ganancias
-- Perfil profesional
+### Sistema de Seguridad
+- Verificacion de enfermeras via CEP oficial
+- Verificacion de identidad con selfie
+- Sistema de calificaciones bidireccional
+- Boton de panico con alerta a contactos
+- Tracking GPS durante el servicio
 
 ---
 
-## Instalación Local
+## Autenticacion
+
+### Metodos Soportados
+- **Email/Password** con verificacion
+- **Google Sign-In** (OAuth 2.0)
+- **OTP por email** para recuperacion de contrasena
+
+### Roles
+| Rol | Descripcion |
+|-----|-------------|
+| `platform_admin` | Administrador de la plataforma |
+| `patient` | Paciente/Usuario que solicita servicios |
+| `nurse` | Enfermera profesional verificada |
+
+### Seguridad JWT
+- Access token: 15 minutos (enfermeras: 30 min)
+- Refresh token: 7 dias (con "recordarme": 30 dias)
+- Rotacion automatica de refresh tokens
+
+---
+
+## Flujo de Verificacion de Enfermeras
+
+1. **Registro inicial** con email y datos basicos
+2. **Validacion CEP**: DNI + numero CEP verificados con cep.org.pe
+3. **Confirmacion de identidad**: Foto oficial del CEP mostrada
+4. **Subida de selfie** para verificacion facial
+5. **Aprobacion manual** por administrador
+6. **Activacion** del perfil profesional
+
+---
+
+## APIs Principales
+
+### Autenticacion
+```
+POST /auth/login              # Iniciar sesion
+POST /auth/register/patient   # Registro paciente
+POST /auth/register/nurse/validate-cep  # Validar CEP
+POST /auth/register/nurse/complete      # Completar registro enfermera
+POST /auth/refresh            # Renovar token
+GET  /auth/google             # Google OAuth
+```
+
+### Enfermeras
+```
+GET  /nurses/nearby           # Enfermeras cercanas (geolocation)
+GET  /nurses/:id              # Perfil de enfermera
+GET  /nurses/me               # Mi perfil (enfermera)
+PATCH /nurses/me              # Actualizar perfil
+PATCH /nurses/me/availability # Actualizar disponibilidad
+PATCH /nurses/me/location     # Actualizar ubicacion
+```
+
+### Solicitudes de Servicio
+```
+POST   /service-requests              # Crear solicitud
+GET    /service-requests              # Mis solicitudes
+GET    /service-requests/:id          # Detalle de solicitud
+PATCH  /service-requests/:id/status   # Cambiar estado
+POST   /service-requests/:id/location # Actualizar ubicacion (tracking)
+```
+
+### Pagos
+```
+GET  /service-payments/:serviceRequestId/summary  # Resumen de pago
+POST /service-payments                            # Procesar pago
+POST /service-payments/:id/verify-yape            # Verificar Yape
+```
+
+### Notificaciones
+```
+GET   /notifications              # Mis notificaciones
+PATCH /notifications/:id/read     # Marcar como leida
+PATCH /notifications/read-all     # Marcar todas
+POST  /notifications/register-device  # Registrar para push
+```
+
+---
+
+## Instalacion Local
 
 ### Requisitos
 - Node.js 20+
 - MongoDB (local o Atlas)
-- npm
+- npm o yarn
 
 ### Backend
 
@@ -194,19 +216,17 @@ cp .env.example .env  # Configurar variables
 npm run start:dev     # Puerto 3000
 ```
 
-### Frontend
+### Mobile (Ionic)
 
 ```bash
-cd histora-front
+cd histora-care
 npm install
-npm start             # Puerto 4200
+ionic serve           # Puerto 8100
 ```
 
 ---
 
-## Variables de Entorno
-
-### Backend (.env)
+## Variables de Entorno (Backend)
 
 ```env
 # Base de datos
@@ -214,104 +234,47 @@ MONGO_URL=mongodb+srv://user:pass@cluster.mongodb.net/histora
 
 # JWT
 JWT_SECRET=tu-secreto-seguro
-JWT_EXPIRATION=15m
 JWT_REFRESH_SECRET=tu-refresh-secreto
-JWT_REFRESH_EXPIRATION=7d
+
+# Google OAuth
+GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=xxx
 
 # Cloudinary
 CLOUDINARY_CLOUD_NAME=tu-cloud
-CLOUDINARY_API_KEY=tu-api-key
-CLOUDINARY_API_SECRET=tu-api-secret
+CLOUDINARY_API_KEY=xxx
+CLOUDINARY_API_SECRET=xxx
 
 # SendGrid
-SENDGRID_API_KEY=SG.xxxxx
+SENDGRID_API_KEY=SG.xxx
 SENDGRID_FROM_EMAIL=noreply@historahealth.com
 
-# WhatsApp
-WHATSAPP_ACCESS_TOKEN=tu-token
-WHATSAPP_PHONE_NUMBER_ID=tu-phone-id
-WHATSAPP_VERIFY_TOKEN=histora_verify_token
+# Culqi (Pagos)
+CULQI_PUBLIC_KEY=pk_test_xxx
+CULQI_API_KEY=sk_test_xxx
 
 # Server
 PORT=3000
 NODE_ENV=production
-CORS_ORIGINS=https://app.historahealth.com
+CORS_ORIGINS=https://care.historahealth.com
+FRONTEND_URL=https://care.historahealth.com
 ```
 
 ---
 
 ## Despliegue
 
-### Railway (Producción actual)
-
-**Backend Service:**
-- Root Directory: `/` (usa railway.toml)
-- Dockerfile: `histora-back/Dockerfile`
+### Backend (Railway)
+- **Despliegue automatico** con git push a main
+- Root Directory: `histora-back`
 - Dominio: api.historahealth.com
 
-**Frontend Service:**
-- Root Directory: `histora-front`
-- Dockerfile: `Dockerfile`
-- Dominio: app.historahealth.com
+### Frontend (Vercel)
+- **Despliegue automatico** con git push a main
+- Framework: Ionic/Angular
+- Dominio: care.historahealth.com
 
-### DNS (Namecheap)
-
-```
-CNAME  api  →  [backend-service].up.railway.app
-CNAME  app  →  [frontend-service].up.railway.app
-```
-
----
-
-## API Endpoints
-
-### Autenticación
-```
-POST /auth/login          # Iniciar sesión
-POST /auth/register       # Registro
-POST /auth/refresh        # Renovar token
-POST /auth/logout         # Cerrar sesión
-```
-
-### Usuarios y Pacientes
-```
-GET    /users             # Listar usuarios
-GET    /patients          # Listar pacientes
-POST   /patients          # Crear paciente
-GET    /patients/:id      # Obtener paciente
-PATCH  /patients/:id      # Actualizar
-```
-
-### Médicos
-```
-GET    /doctors           # Listar médicos
-GET    /doctors/:id       # Obtener médico
-GET    /doctors/me        # Mi perfil
-PATCH  /doctors/me        # Actualizar perfil
-```
-
-### Citas
-```
-GET    /appointments      # Listar citas
-POST   /appointments      # Crear cita
-PATCH  /appointments/:id  # Actualizar
-DELETE /appointments/:id  # Cancelar
-```
-
-### Archivos
-```
-POST   /uploads/avatar       # Subir foto
-DELETE /uploads/avatar       # Eliminar foto
-POST   /uploads/doctor/cv    # Subir CV
-DELETE /uploads/doctor/cv    # Eliminar CV
-```
-
-### Notificaciones
-```
-GET    /notifications           # Mis notificaciones
-PATCH  /notifications/:id/read  # Marcar leída
-PATCH  /notifications/read-all  # Marcar todas
-```
+> **IMPORTANTE**: No ejecutar `railway up` ni `vercel --prod` manualmente. Solo hacer `git push origin main`.
 
 ---
 
@@ -320,77 +283,57 @@ PATCH  /notifications/read-all  # Marcar todas
 ### Backend
 ```bash
 npm run start:dev    # Desarrollo
-npm run start:prod   # Producción
 npm run build        # Compilar
-npm run test         # Tests
-npm run test:cov     # Coverage
+npm run test         # Tests (90+ tests)
 npm run lint         # Linting
 ```
 
-### Frontend
+### Mobile
 ```bash
-npm start            # Desarrollo
-npm run build        # Producción
+ionic serve          # Desarrollo web
+ionic build          # Build produccion
+ionic cap run ios    # Ejecutar en iOS
+ionic cap run android # Ejecutar en Android
 npm run test         # Tests
-npm run test:ci      # Tests CI
-npm run lint         # Linting
 ```
 
 ---
 
-## Seguridad Implementada
+## Integraciones Externas
 
-| Medida | Descripción |
-|--------|-------------|
-| Helmet.js | CSP, XSS Protection, HSTS |
-| Rate Limiting | 10/s, 100/min, 1000/h por IP |
-| JWT | Tokens de corta duración |
-| Refresh Tokens | Rotación automática |
-| CORS | Solo dominios autorizados |
-| Validation | DTOs con class-validator |
-| Sanitization | Whitelist en pipes |
+| Servicio | Uso |
+|----------|-----|
+| **CEP Peru** | Validacion de enfermeras (cep.org.pe) |
+| **Culqi** | Procesamiento de pagos (tarjetas, Yape) |
+| **Cloudinary** | Almacenamiento de imagenes |
+| **SendGrid** | Emails transaccionales |
+| **Mapbox** | Mapas y geocodificacion |
+| **MongoDB Atlas** | Base de datos en la nube |
+| **Google OAuth** | Autenticacion social |
 
 ---
 
 ## Tests
 
-- **Backend**: 279+ tests unitarios (Jest)
-- **Frontend**: 118+ tests unitarios (Karma/Jasmine)
+- **Backend**: 90+ tests unitarios (Jest)
+- **Mobile**: Tests con Jasmine/Karma
 
 ```bash
-# Ejecutar todos los tests
+# Backend
 cd histora-back && npm test
-cd histora-front && npm test
+
+# Mobile
+cd histora-care && npm test
 ```
 
 ---
 
-## Roadmap
+## Documentacion Adicional
 
-### Completado
-- [x] Backend completo (18 módulos)
-- [x] Frontend Angular con Material
-- [x] Sistema de autenticación JWT
-- [x] **Google Sign-In** (OAuth 2.0)
-- [x] Gestión de pacientes y citas
-- [x] Historiales clínicos
-- [x] Notificaciones automáticas
-- [x] Chatbot WhatsApp
-- [x] Despliegue en Railway
-- [x] Dominio personalizado
-- [x] Rate limiting y seguridad
-- [x] **Panel de administración** con dark mode
-- [x] **Perfil de médico** con CV
-- [x] **Portal del paciente** completo
-- [x] Accesibilidad WCAG 2.1 AA
-
-### Pendiente
-- [ ] Rediseño página de login/registro
-- [ ] Integración WhatsApp Business completa
-- [ ] Exportación PDF de historiales
-- [x] App móvil Histora Care (Ionic/Capacitor)
-- [ ] Google Auth en Histora Care
-- [ ] Sistema de pagos (Stripe/MercadoPago)
+- [Flujo de verificacion de enfermeras](histora-back/docs/NURSE-VERIFICATION-FLOW.md)
+- [Sistema de pagos](histora-care/docs/PAYMENT-STRATEGY.md)
+- [API del CEP](histora-back/docs/CEP-API.md)
+- [Flujos del sistema](histora-care/docs/FLUJOS_SISTEMA.md)
 
 ---
 

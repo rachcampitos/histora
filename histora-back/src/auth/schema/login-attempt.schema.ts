@@ -26,6 +26,4 @@ export const LoginAttemptSchema = SchemaFactory.createForClass(LoginAttempt);
 
 // TTL index: automatically delete entries after 24 hours of inactivity
 LoginAttemptSchema.index({ lastAttempt: 1 }, { expireAfterSeconds: 86400 });
-
-// Index for efficient lookups
-LoginAttemptSchema.index({ identifier: 1 });
+// Note: identifier already has index via unique: true in @Prop decorator

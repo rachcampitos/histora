@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 
 interface Section {
@@ -12,6 +12,7 @@ interface Section {
   templateUrl: './terms.page.html',
   standalone: false,
   styleUrls: ['./terms.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TermsPage implements OnInit {
   private location = inject(Location);

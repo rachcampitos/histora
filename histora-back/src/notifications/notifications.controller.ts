@@ -118,22 +118,20 @@ export class NotificationsController {
 
   // Admin endpoints
   @Post('send')
-  @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Send notification to a user (admin)' })
   sendNotification(
-    @CurrentUser() user: CurrentUserData,
     @Body() dto: SendNotificationDto,
   ) {
-    return this.notificationsService.send(dto, user.clinicId);
+    return this.notificationsService.send(dto);
   }
 
   @Post('send-bulk')
-  @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Send notification to multiple users (admin)' })
   sendBulkNotification(
-    @CurrentUser() user: CurrentUserData,
     @Body() dto: SendBulkNotificationDto,
   ) {
-    return this.notificationsService.sendBulk(dto, user.clinicId);
+    return this.notificationsService.sendBulk(dto);
   }
 }

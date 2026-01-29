@@ -12,6 +12,7 @@ import { AuthUser } from '../../core/models/user.model';
   templateUrl: './settings.page.html',
   standalone: false,
   styleUrls: ['./settings.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsPage implements OnInit {
   private router = inject(Router);

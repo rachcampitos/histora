@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 
 interface FAQ {
@@ -19,6 +19,7 @@ interface FAQCategory {
   templateUrl: './help.page.html',
   standalone: false,
   styleUrls: ['./help.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpPage implements OnInit {
   private location = inject(Location);

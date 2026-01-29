@@ -1,80 +1,104 @@
-# Histora Care - Documentación Backend
+# Histora Care - Documentacion Backend
 
-## Índice de Documentación
+## Indice de Documentacion
 
-### Autenticación y Seguridad
-| Documento | Descripción |
+### Autenticacion y Seguridad
+| Documento | Descripcion |
 |-----------|-------------|
-| [PASSWORD-RECOVERY-OTP.md](./PASSWORD-RECOVERY-OTP.md) | Sistema de recuperación de contraseña con OTP de 6 dígitos |
-| [EMAIL-VERIFICATION-RECOMMENDATION.md](./EMAIL-VERIFICATION-RECOMMENDATION.md) | Análisis UX/Marketing sobre verificación de email en registro |
-| [SECURITY_SYSTEM.md](./SECURITY_SYSTEM.md) | Sistema de seguridad general, rate limiting, lockout |
+| [PASSWORD-RECOVERY-OTP.md](./PASSWORD-RECOVERY-OTP.md) | Sistema de recuperacion de contrasena con OTP de 6 digitos |
+| [SECURITY_SYSTEM.md](./SECURITY_SYSTEM.md) | Rate limiting, account lockout, Helmet, CORS |
+| [EMAIL-VERIFICATION-RECOMMENDATION.md](./EMAIL-VERIFICATION-RECOMMENDATION.md) | Analisis UX/Marketing sobre verificacion de email |
 
-### Verificación de Enfermeras
-| Documento | Descripción |
+### Verificacion de Enfermeras
+| Documento | Descripcion |
 |-----------|-------------|
-| [NURSE-VERIFICATION-FLOW.md](./NURSE-VERIFICATION-FLOW.md) | Flujo completo de verificación CEP + RENIEC |
-| [CEP-API.md](./CEP-API.md) | Integración con API del Colegio de Enfermeros del Perú |
+| [NURSE-VERIFICATION-FLOW.md](./NURSE-VERIFICATION-FLOW.md) | Flujo completo de verificacion CEP + RENIEC |
+| [NURSE-ONBOARDING-FLOW.md](./NURSE-ONBOARDING-FLOW.md) | Proceso de onboarding de enfermeras |
+| [CEP-API.md](./CEP-API.md) | Integracion con API del Colegio de Enfermeros del Peru |
 
 ### Funcionalidades
-| Documento | Descripción |
+| Documento | Descripcion |
 |-----------|-------------|
-| [NURSE-REVIEWS-SYSTEM.md](./NURSE-REVIEWS-SYSTEM.md) | Sistema de calificaciones y reseñas de enfermeras |
-| [PAYMENT-BETA-MODE.md](./PAYMENT-BETA-MODE.md) | Modo beta de pagos (solo efectivo) |
+| [NURSE-REVIEWS-SYSTEM.md](./NURSE-REVIEWS-SYSTEM.md) | Sistema de calificaciones y resenas de enfermeras |
+| [PAYMENT-BETA-MODE.md](./PAYMENT-BETA-MODE.md) | Modo beta de pagos (Culqi, Yape, efectivo) |
 
 ---
 
-## Estructura del Proyecto
+## Estructura del Backend
 
 ```
-histora-back/
-├── src/
-│   ├── auth/           # Autenticación, OAuth, recuperación contraseña
-│   ├── users/          # Gestión de usuarios
-│   ├── nurses/         # Perfiles y verificación de enfermeras
-│   ├── patients/       # Perfiles de pacientes (pendiente)
-│   ├── service-requests/ # Solicitudes de servicio
-│   ├── payments/       # Procesamiento de pagos (Culqi)
-│   ├── notifications/  # Notificaciones (email, push)
-│   ├── uploads/        # Subida de archivos (Cloudinary)
-│   └── admin/          # Panel de administración
-├── docs/               # Esta documentación
-└── test/               # Tests
+src/
+├── auth/                   # Autenticacion (JWT, Google OAuth, OTP)
+│   ├── strategies/         # Passport strategies (JWT, Local, Google)
+│   ├── guards/             # Auth guards (JWT, Roles)
+│   ├── services/           # Account lockout, cookies
+│   └── dto/                # Login, register DTOs
+├── users/                  # Gestion de usuarios
+├── nurses/                 # Perfiles de enfermeras
+│   ├── cep-validation.service.ts    # Validacion CEP Peru
+│   └── reniec-validation.service.ts # Validacion RENIEC (backup)
+├── service-requests/       # Solicitudes de servicio
+├── service-payments/       # Pagos (Culqi, Yape, efectivo)
+│   └── providers/          # Culqi provider
+├── patient-verification/   # Verificacion de pacientes
+├── patient-addresses/      # Direcciones de pacientes
+├── patient-ratings/        # Sistema de calificaciones
+├── notifications/          # Notificaciones multicanal
+│   └── providers/          # Email, SMS, WhatsApp, Push
+├── uploads/                # Cloudinary (fotos, selfies)
+├── tracking/               # Tracking GPS en tiempo real
+├── chat/                   # Chat enfermera-paciente
+├── safety/                 # Boton de panico, emergencias
+├── admin/                  # Panel de administracion
+├── health/                 # Health checks
+└── common/                 # Guards, decorators, pipes, cache
 ```
 
-## Variables de Entorno Requeridas
+## Roles de Usuario
+
+| Rol | Descripcion |
+|-----|-------------|
+| `platform_admin` | Administrador de la plataforma |
+| `patient` | Paciente que solicita servicios |
+| `nurse` | Enfermera profesional verificada |
+
+## Variables de Entorno
 
 ```env
 # Base de datos
-MONGODB_URI=mongodb+srv://...
+MONGO_URL=mongodb+srv://...
 
 # JWT
 JWT_SECRET=your-secret-key
-JWT_EXPIRATION=7d
+JWT_REFRESH_SECRET=your-refresh-secret
+
+# Google OAuth
+GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=xxx
 
 # Email (SendGrid)
 SENDGRID_API_KEY=SG.xxxxx
 SENDGRID_FROM_EMAIL=noreply@historahealth.com
 
-# Cloudinary (imágenes)
+# Cloudinary
 CLOUDINARY_CLOUD_NAME=xxxxx
 CLOUDINARY_API_KEY=xxxxx
 CLOUDINARY_API_SECRET=xxxxx
 
-# RENIEC (opcional)
-RENIEC_API_TOKEN=xxxxx
-
-# URLs
-FRONTEND_URL=https://app.historahealth.com
-CARE_FRONTEND_URL=https://care.historahealth.com
-
 # Pagos (Culqi)
 CULQI_PUBLIC_KEY=pk_test_xxxxx
-CULQI_SECRET_KEY=sk_test_xxxxx
+CULQI_API_KEY=sk_test_xxxxx
+
+# Server
+PORT=3000
+NODE_ENV=production
+CORS_ORIGINS=https://care.historahealth.com
+FRONTEND_URL=https://care.historahealth.com
 ```
 
 ## Despliegue
 
-El backend se despliega automáticamente en **Railway** con cada push a `main`.
+El backend se despliega automaticamente en **Railway** con cada push a `main`.
 
 ```bash
 # NO ejecutar manualmente:
@@ -84,26 +108,18 @@ El backend se despliega automáticamente en **Railway** con cada push a `main`.
 git push origin main
 ```
 
-URL de producción: `https://api.historahealth.com`
+URL de produccion: `https://api.historahealth.com`
 
-## Comandos Útiles
+## Comandos
 
 ```bash
-# Desarrollo
-npm run start:dev
-
-# Build
-npm run build
-
-# Tests
-npm run test
-npm run test:e2e
-
-# Lint
-npm run lint
+npm run start:dev    # Desarrollo
+npm run build        # Compilar
+npm run test         # Tests unitarios (90+)
+npm run test:cov     # Coverage
+npm run lint         # Linting
 ```
 
-## Contacto
+---
 
-- **Desarrollo:** soporte@historahealth.com
-- **Repositorio:** https://github.com/rachcampitos/histora
+**Histora Care** - Enfermeria a domicilio en Peru

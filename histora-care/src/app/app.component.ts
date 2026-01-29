@@ -1,5 +1,5 @@
 // Histora Care - NurseLite v1.0.0
-import { Component, OnInit, inject, NgZone } from '@angular/core';
+import { Component, OnInit, inject, NgZone, ChangeDetectionStrategy } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { filter } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { ThemeService } from './core/services/theme.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
   private platform = inject(Platform);

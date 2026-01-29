@@ -5,7 +5,7 @@ ion-tab-bar {
 }
 
 ion-tab-button {
-  --color: var(--histora-text-muted, #a1a1aa);
+  --color: var(--histora-text-muted, #71717a);
   --color-selected: var(--ion-color-primary);
   --padding-top: 6px;
   --padding-bottom: 10px;
@@ -31,7 +31,7 @@ ion-tab-button {
   }
 
   ion-tab-button {
-    --color: #a1a1aa;
+    --color: #71717a;
     --color-selected: var(--ion-color-primary-tint);
   }
 }

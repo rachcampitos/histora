@@ -9,6 +9,7 @@ import { AlertController } from '@ionic/angular';
   templateUrl: './google-callback.page.html',
   styleUrls: ['./google-callback.page.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GoogleCallbackPage implements OnInit {
   private route = inject(ActivatedRoute);

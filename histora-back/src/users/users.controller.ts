@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -50,12 +49,12 @@ export class UsersController {
   }
 
   // ============================================================
-  // ADMIN ENDPOINTS (require specific roles)
+  // ADMIN ENDPOINTS (require PLATFORM_ADMIN role)
   // ============================================================
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Crear nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario creado exitosamente' })
   @ApiResponse({ status: 403, description: 'No autorizado' })
@@ -65,16 +64,16 @@ export class UsersController {
 
   @Get()
   @UseGuards(RolesGuard)
-  @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Listar usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios' })
-  findAll(@Query('clinicId') clinicId?: string): Promise<User[]> {
-    return this.usersService.findAll(clinicId);
+  findAll(): Promise<User[]> {
+    return this.usersService.findAll();
   }
 
   @Get(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER, UserRole.CLINIC_DOCTOR, UserRole.CLINIC_STAFF)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Obtener usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
@@ -84,7 +83,7 @@ export class UsersController {
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Actualizar usuario' })
   @ApiResponse({ status: 200, description: 'Usuario actualizado' })
   update(
@@ -96,7 +95,7 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.PLATFORM_ADMIN, UserRole.CLINIC_OWNER)
+  @Roles(UserRole.PLATFORM_ADMIN)
   @ApiOperation({ summary: 'Eliminar usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
   remove(@Param('id') id: string): Promise<User | null> {

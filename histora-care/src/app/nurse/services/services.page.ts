@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, ViewChild, DestroyRef } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { AlertController, ToastController, IonModal, RefresherCustomEvent } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NurseApiService } from '../../core/services/nurse.service';
@@ -15,6 +15,7 @@ interface CategoryOption {
   templateUrl: './services.page.html',
   standalone: false,
   styleUrls: ['./services.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServicesPage implements OnInit {
   @ViewChild('serviceModal') serviceModal!: IonModal;

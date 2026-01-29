@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { StorageService } from '../../core/services/storage.service';
 
@@ -15,6 +15,7 @@ interface ReasonConfig {
   templateUrl: './session-expired.page.html',
   standalone: false,
   styleUrls: ['./session-expired.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionExpiredPage implements OnInit {
   private router = inject(Router);

@@ -8,7 +8,8 @@ import { NurseSearchResult } from '../../../core/models';
   standalone: true,
   imports: [CommonModule, IonicModule],
   templateUrl: './nurse-list-modal.component.html',
-  styleUrls: ['./nurse-list-modal.component.scss']
+  styleUrls: ['./nurse-list-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NurseListModalComponent {
   @Input() nurses: NurseSearchResult[] = [];

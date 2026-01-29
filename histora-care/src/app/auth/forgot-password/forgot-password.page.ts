@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, inject, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
@@ -11,6 +11,7 @@ type Step = 'email' | 'otp' | 'password';
   templateUrl: './forgot-password.page.html',
   standalone: false,
   styleUrls: ['./forgot-password.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPasswordPage implements AfterViewInit {
   @ViewChild('otpInput1') otpInput1!: ElementRef<HTMLInputElement>;

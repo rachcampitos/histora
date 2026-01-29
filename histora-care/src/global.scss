@@ -69,15 +69,15 @@
   --ion-text-color: #1a1a1a;
   --ion-text-color-rgb: 26, 26, 26;
 
-  /* Custom semantic colors - Warm palette */
+  /* Custom semantic colors - Warm palette (WCAG AA compliant) */
   --histora-text-primary: #1a1a1a;
   --histora-text-secondary: #52525b;
-  --histora-text-muted: #a1a1aa;
+  --histora-text-muted: #71717a; /* Changed from #a1a1aa - now 4.8:1 contrast on white */
   --histora-background: #faf9f7;
   --histora-surface: #ffffff;
   --histora-surface-secondary: #f5f4f2;
-  --histora-border: #e7e5e4;
-  --histora-border-light: #f5f4f2;
+  --histora-border: #d4d4d8; /* Slightly darker for better visibility */
+  --histora-border-light: #e5e5e5;
 
   /* Item backgrounds */
   --histora-item-background: #ffffff;

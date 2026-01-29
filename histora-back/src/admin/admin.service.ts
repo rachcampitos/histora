@@ -8,7 +8,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../users/schema/user.schema';
-import { Clinic, ClinicDocument } from '../clinics/schema/clinic.schema';
 import { Nurse } from '../nurses/schema/nurse.schema';
 import { NurseVerification, VerificationStatus } from '../nurses/schema/nurse-verification.schema';
 import { ReniecUsage } from '../nurses/schema/reniec-usage.schema';
@@ -39,7 +38,6 @@ export class AdminService {
 
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Clinic.name) private clinicModel: Model<ClinicDocument>,
     @InjectModel(Nurse.name) private nurseModel: Model<Nurse>,
     @InjectModel(NurseVerification.name) private nurseVerificationModel: Model<NurseVerification>,
     @InjectModel(ReniecUsage.name) private reniecUsageModel: Model<ReniecUsage>,
@@ -75,11 +73,10 @@ export class AdminService {
     // Get total count
     const total = await this.userModel.countDocuments(filter);
 
-    // Get users with clinic info
+    // Get users
     const users = await this.userModel
       .find(filter)
       .select('-password -refreshToken -passwordResetToken -passwordResetExpires')
-      .populate('clinicId', 'name')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -95,8 +92,6 @@ export class AdminService {
         email: user.email,
         phone: user.phone,
         role: user.role,
-        clinic: user.clinicId ? (user.clinicId as any).name : null,
-        clinicId: user.clinicId ? (user.clinicId as any)._id?.toString() : null,
         status: user.isActive ? 'active' : 'inactive',
         isActive: user.isActive,
         isEmailVerified: user.isEmailVerified,
@@ -123,7 +118,6 @@ export class AdminService {
     const user = await this.userModel
       .findOne({ _id: id, isDeleted: false })
       .select('-password -refreshToken -passwordResetToken -passwordResetExpires')
-      .populate('clinicId', 'name')
       .exec();
 
     if (!user) {
@@ -138,8 +132,6 @@ export class AdminService {
       email: user.email,
       phone: user.phone,
       role: user.role,
-      clinic: user.clinicId ? (user.clinicId as any).name : null,
-      clinicId: user.clinicId ? (user.clinicId as any)._id?.toString() : null,
       status: user.isActive ? 'active' : 'inactive',
       isActive: user.isActive,
       isEmailVerified: user.isEmailVerified,
@@ -357,6 +349,7 @@ export class AdminService {
 
   /**
    * Get consolidated dashboard statistics for Histora Care admin
+   * Optimized with aggregation pipelines for fewer database round trips
    */
   async getDashboardStats(): Promise<DashboardStatsDto> {
     const now = new Date();
@@ -365,82 +358,102 @@ export class AdminService {
     startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    // Nurse stats
-    const [
-      totalNurses,
-      activeNurses,
-      availableNurses,
-      verifiedNurses,
-      pendingVerifications,
-    ] = await Promise.all([
-      this.nurseModel.countDocuments(),
-      this.nurseModel.countDocuments({ isActive: true }),
-      this.nurseModel.countDocuments({ isAvailable: true, isActive: true }),
-      this.nurseModel.countDocuments({ verificationStatus: VerificationStatus.APPROVED }),
-      this.nurseVerificationModel.countDocuments({
-        status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
-      }),
-    ]);
-
-    // Service stats
-    const [
-      totalServices,
-      pendingServices,
-      acceptedServices,
-      inProgressServices,
-      completedToday,
-      cancelledToday,
-      completedThisWeek,
-    ] = await Promise.all([
-      this.serviceRequestModel.countDocuments(),
-      this.serviceRequestModel.countDocuments({ status: 'pending' }),
-      this.serviceRequestModel.countDocuments({ status: 'accepted' }),
-      this.serviceRequestModel.countDocuments({ status: 'in_progress' }),
-      this.serviceRequestModel.countDocuments({
-        status: 'completed',
-        completedAt: { $gte: startOfToday },
-      }),
-      this.serviceRequestModel.countDocuments({
-        status: 'cancelled',
-        cancelledAt: { $gte: startOfToday },
-      }),
-      this.serviceRequestModel.countDocuments({
-        status: 'completed',
-        completedAt: { $gte: startOfWeek },
-      }),
-    ]);
-
-    // Revenue this week
-    const revenueResult = await this.serviceRequestModel.aggregate([
+    // Optimized: Single aggregation for all nurse stats
+    const nurseStatsAgg = await this.nurseModel.aggregate([
       {
-        $match: {
-          status: 'completed',
-          completedAt: { $gte: startOfWeek },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$service.price' },
+        $facet: {
+          total: [{ $count: 'count' }],
+          active: [{ $match: { isActive: true } }, { $count: 'count' }],
+          available: [{ $match: { isAvailable: true, isActive: true } }, { $count: 'count' }],
+          verified: [{ $match: { verificationStatus: VerificationStatus.APPROVED } }, { $count: 'count' }],
         },
       },
     ]);
-    const revenueThisWeek = revenueResult[0]?.total || 0;
 
-    // Safety stats
-    const [activePanicAlerts, activeEmergencies, resolvedThisMonth] = await Promise.all([
-      this.panicAlertModel.countDocuments({
-        status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED, PanicAlertStatus.RESPONDING] },
-      }),
-      this.panicAlertModel.countDocuments({
-        status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED] },
-        level: PanicAlertLevel.EMERGENCY,
-      }),
-      this.panicAlertModel.countDocuments({
-        status: PanicAlertStatus.RESOLVED,
-        resolvedAt: { $gte: startOfMonth },
-      }),
+    const nurseStats = nurseStatsAgg[0] || {};
+    const totalNurses = nurseStats.total?.[0]?.count || 0;
+    const activeNurses = nurseStats.active?.[0]?.count || 0;
+    const availableNurses = nurseStats.available?.[0]?.count || 0;
+    const verifiedNurses = nurseStats.verified?.[0]?.count || 0;
+
+    // Verification pending count (separate collection)
+    const pendingVerifications = await this.nurseVerificationModel.countDocuments({
+      status: { $in: [VerificationStatus.PENDING, VerificationStatus.UNDER_REVIEW] },
+    });
+
+    // Optimized: Single aggregation for all service stats
+    const serviceStatsAgg = await this.serviceRequestModel.aggregate([
+      {
+        $facet: {
+          total: [{ $count: 'count' }],
+          pending: [{ $match: { status: 'pending' } }, { $count: 'count' }],
+          accepted: [{ $match: { status: 'accepted' } }, { $count: 'count' }],
+          inProgress: [{ $match: { status: 'in_progress' } }, { $count: 'count' }],
+          completedToday: [
+            { $match: { status: 'completed', completedAt: { $gte: startOfToday } } },
+            { $count: 'count' },
+          ],
+          cancelledToday: [
+            { $match: { status: 'cancelled', cancelledAt: { $gte: startOfToday } } },
+            { $count: 'count' },
+          ],
+          weekStats: [
+            { $match: { status: 'completed', completedAt: { $gte: startOfWeek } } },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 },
+                revenue: { $sum: '$service.price' },
+              },
+            },
+          ],
+        },
+      },
     ]);
+
+    const serviceStats = serviceStatsAgg[0] || {};
+    const totalServices = serviceStats.total?.[0]?.count || 0;
+    const pendingServices = serviceStats.pending?.[0]?.count || 0;
+    const acceptedServices = serviceStats.accepted?.[0]?.count || 0;
+    const inProgressServices = serviceStats.inProgress?.[0]?.count || 0;
+    const completedToday = serviceStats.completedToday?.[0]?.count || 0;
+    const cancelledToday = serviceStats.cancelledToday?.[0]?.count || 0;
+    const completedThisWeek = serviceStats.weekStats?.[0]?.count || 0;
+    const revenueThisWeek = serviceStats.weekStats?.[0]?.revenue || 0;
+
+    // Optimized: Single aggregation for panic alert stats
+    const safetyStatsAgg = await this.panicAlertModel.aggregate([
+      {
+        $facet: {
+          active: [
+            {
+              $match: {
+                status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED, PanicAlertStatus.RESPONDING] },
+              },
+            },
+            { $count: 'count' },
+          ],
+          emergencies: [
+            {
+              $match: {
+                status: { $in: [PanicAlertStatus.ACTIVE, PanicAlertStatus.ACKNOWLEDGED] },
+                level: PanicAlertLevel.EMERGENCY,
+              },
+            },
+            { $count: 'count' },
+          ],
+          resolvedThisMonth: [
+            { $match: { status: PanicAlertStatus.RESOLVED, resolvedAt: { $gte: startOfMonth } } },
+            { $count: 'count' },
+          ],
+        },
+      },
+    ]);
+
+    const safetyStats = safetyStatsAgg[0] || {};
+    const activePanicAlerts = safetyStats.active?.[0]?.count || 0;
+    const activeEmergencies = safetyStats.emergencies?.[0]?.count || 0;
+    const resolvedThisMonth = safetyStats.resolvedThisMonth?.[0]?.count || 0;
 
     // Rating stats from service requests
     const ratingResult = await this.serviceRequestModel.aggregate([
@@ -773,47 +786,82 @@ export class AdminService {
 
   /**
    * Get service chart data for last 7 days
+   * Optimized: Single aggregation query instead of 21 separate queries
    */
   async getServiceChartData(): Promise<ServiceChartDataDto[]> {
     const now = new Date();
-    const result: ServiceChartDataDto[] = [];
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+    const startOfPeriod = new Date(sevenDaysAgo.getFullYear(), sevenDaysAgo.getMonth(), sevenDaysAgo.getDate());
 
+    // Single aggregation for all 7 days of data
+    const chartAgg = await this.serviceRequestModel.aggregate([
+      {
+        $match: {
+          $or: [
+            { status: 'completed', completedAt: { $gte: startOfPeriod } },
+            { status: 'cancelled', cancelledAt: { $gte: startOfPeriod } },
+          ],
+        },
+      },
+      {
+        $project: {
+          status: 1,
+          'service.price': 1,
+          dateKey: {
+            $dateToString: {
+              format: '%Y-%m-%d',
+              date: { $ifNull: ['$completedAt', '$cancelledAt'] },
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { date: '$dateKey', status: '$status' },
+          count: { $sum: 1 },
+          revenue: { $sum: '$service.price' },
+        },
+      },
+    ]);
+
+    // Build result map for all 7 days
+    const dataMap = new Map<string, { completed: number; cancelled: number; revenue: number }>();
+
+    // Initialize all 7 days
     for (let i = 6; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
-      const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      const endOfDay = new Date(startOfDay);
-      endOfDay.setDate(endOfDay.getDate() + 1);
-
-      const [completed, cancelled, revenueResult] = await Promise.all([
-        this.serviceRequestModel.countDocuments({
-          status: 'completed',
-          completedAt: { $gte: startOfDay, $lt: endOfDay },
-        }),
-        this.serviceRequestModel.countDocuments({
-          status: 'cancelled',
-          cancelledAt: { $gte: startOfDay, $lt: endOfDay },
-        }),
-        this.serviceRequestModel.aggregate([
-          {
-            $match: {
-              status: 'completed',
-              completedAt: { $gte: startOfDay, $lt: endOfDay },
-            },
-          },
-          { $group: { _id: null, total: { $sum: '$service.price' } } },
-        ]),
-      ]);
-
-      result.push({
-        date: startOfDay.toISOString().split('T')[0],
-        completed,
-        cancelled,
-        revenue: revenueResult[0]?.total || 0,
-      });
+      const dateKey = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+        .toISOString()
+        .split('T')[0];
+      dataMap.set(dateKey, { completed: 0, cancelled: 0, revenue: 0 });
     }
 
-    return result;
+    // Fill in data from aggregation
+    for (const row of chartAgg) {
+      const dateKey = row._id.date;
+      const status = row._id.status;
+      const current = dataMap.get(dateKey);
+      if (current) {
+        if (status === 'completed') {
+          current.completed = row.count;
+          current.revenue = row.revenue || 0;
+        } else if (status === 'cancelled') {
+          current.cancelled = row.count;
+        }
+      }
+    }
+
+    // Convert to array sorted by date
+    return Array.from(dataMap.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([date, data]) => ({
+        date,
+        completed: data.completed,
+        cancelled: data.cancelled,
+        revenue: data.revenue,
+      }));
   }
 
   /**

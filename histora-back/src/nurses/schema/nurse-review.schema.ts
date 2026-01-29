@@ -5,8 +5,8 @@ export type NurseReviewDocument = NurseReview & Document;
 
 @Schema({ timestamps: true })
 export class NurseReview {
-  @Prop({ type: Types.ObjectId, ref: 'Nurse', required: true, index: true })
-  nurseId: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'Nurse', required: true })
+  nurseId: Types.ObjectId; // Index covered by compound index below
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   patientId: Types.ObjectId;
