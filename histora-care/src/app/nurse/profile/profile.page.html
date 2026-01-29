@@ -243,11 +243,29 @@
       </ion-button>
     </div>
 
+    <!-- Subscription Section -->
+    <div class="section subscription-section">
+      <div class="section-header">
+        <ion-icon name="ribbon-outline"></ion-icon>
+        <h2>Mi Suscripcion</h2>
+      </div>
+
+      <ion-item button routerLink="/nurse/subscription" detail="true" class="subscription-item">
+        <div class="subscription-info" slot="start">
+          <span class="plan-name">Plan Basico</span>
+          <span class="plan-status">Gratis</span>
+        </div>
+        <ion-label>
+          <p>Mejora tu plan para mas beneficios</p>
+        </ion-label>
+      </ion-item>
+    </div>
+
     <!-- Settings Section -->
     <div class="section settings-section">
       <div class="section-header">
         <ion-icon name="settings-outline"></ion-icon>
-        <h2>Configuración</h2>
+        <h2>Configuracion</h2>
       </div>
 
       <ion-list lines="none" class="settings-list">

@@ -15,7 +15,8 @@ import {
 } from '../../core/models';
 import { ServiceRequest } from '../../core/models/service-request.model';
 
-type CheckoutStep = 'method' | 'card' | 'yape' | 'processing' | 'success' | 'error';
+type CheckoutStep = 'method' | 'card' | 'yape' | 'processing' | 'success' | 'confirmed' | 'error';
+type PaymentFlow = 'online' | 'cash';
 
 @Component({
   selector: 'app-checkout',
@@ -44,6 +45,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
   selectedSavedCard = signal<SavedCard | null>(null);
   error = signal<string | null>(null);
   isProcessing = signal(false);
+  paymentFlow = signal<PaymentFlow>('online');
 
   // Form for card payment
   cardForm: FormGroup;
@@ -357,6 +359,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
   private async processCashPayment() {
     this.isProcessing.set(true);
     this.currentStep.set('processing');
+    this.paymentFlow.set('cash');
 
     const request = this.serviceRequest();
     const user = this.user();
@@ -378,14 +381,29 @@ export class CheckoutPage implements OnInit, OnDestroy {
       ).toPromise();
 
       if (response?.success) {
-        this.handlePaymentSuccess();
+        this.handleCashConfirmation();
       } else {
-        this.handlePaymentError(response?.error?.userMessage || 'Error al registrar el pago');
+        this.handlePaymentError(response?.error?.userMessage || 'Error al registrar la solicitud');
       }
     } catch (err: any) {
       console.error('Cash payment error:', err);
-      this.handlePaymentError(err?.message || 'Error al registrar el pago');
+      this.handlePaymentError(err?.message || 'Error al registrar la solicitud');
     }
+  }
+
+  private handleCashConfirmation() {
+    this.isProcessing.set(false);
+    this.currentStep.set('confirmed');
+
+    // Navigate to tracking after brief delay
+    setTimeout(() => {
+      const request = this.serviceRequest();
+      if (request) {
+        this.router.navigate(['/patient/tracking', request._id]);
+      } else {
+        this.router.navigate(['/patient/tabs/home']);
+      }
+    }, 3000);
   }
 
   private handlePaymentSuccess() {

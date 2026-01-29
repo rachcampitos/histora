@@ -190,6 +190,10 @@ const routes: Routes = [
         loadChildren: () => import('./nurse/verification/verification.module').then(m => m.VerificationPageModule),
       },
       {
+        path: 'subscription',
+        loadChildren: () => import('./nurse/subscription/subscription.module').then(m => m.SubscriptionPageModule),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

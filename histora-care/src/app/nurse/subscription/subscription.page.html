@@ -1,0 +1,367 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Mi Suscripcion</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="subscription-content">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando...</p>
+    </div>
+  }
+
+  @if (!isLoading()) {
+    <!-- STEP: Plans Selection -->
+    @if (currentStep() === 'plans') {
+      <div class="plans-container">
+        <div class="plans-header">
+          <h1>Crece profesionalmente con Histora Care</h1>
+          <p>Elige el plan que mejor se adapte a tu practica profesional</p>
+        </div>
+
+        <!-- Current Plan Badge -->
+        @if (currentPlan() !== 'free') {
+          <div class="current-plan-badge">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <span>Plan actual: {{ currentPlan() === 'pro' ? 'Pro' : 'Premium' }}</span>
+            @if (formattedExpiryDate()) {
+              <span class="expiry">Vence: {{ formattedExpiryDate() }}</span>
+            }
+          </div>
+        }
+
+        <!-- Plans Grid -->
+        <div class="plans-grid">
+          @for (plan of plans; track plan.id) {
+            <div class="plan-card"
+                 [class.popular]="plan.popular"
+                 [class.current]="currentPlan() === plan.id"
+                 [class.disabled]="plan.id === 'free' && currentPlan() !== 'free'">
+
+              @if (plan.popular) {
+                <div class="popular-badge">Mas popular</div>
+              }
+              @if (currentPlan() === plan.id) {
+                <div class="current-badge">Plan actual</div>
+              }
+
+              <h2>{{ plan.name }}</h2>
+              <div class="price">
+                @if (plan.price === 0) {
+                  <span class="amount">Gratis</span>
+                } @else {
+                  <span class="currency">S/</span>
+                  <span class="amount">{{ plan.price }}</span>
+                  <span class="period">/mes</span>
+                }
+              </div>
+
+              <ul class="features">
+                @for (feature of plan.features; track feature) {
+                  <li>
+                    <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                    <span>{{ feature }}</span>
+                  </li>
+                }
+              </ul>
+
+              @if (plan.highlight) {
+                <div class="highlight">
+                  <ion-icon name="bulb-outline"></ion-icon>
+                  <span>{{ plan.highlight }}</span>
+                </div>
+              }
+
+              <ion-button
+                expand="block"
+                [fill]="plan.popular ? 'solid' : 'outline'"
+                [disabled]="plan.id === 'free' || currentPlan() === plan.id"
+                (click)="selectPlan(plan.id)">
+                @if (currentPlan() === plan.id) {
+                  <span>Plan actual</span>
+                } @else if (plan.id === 'free') {
+                  <span>Plan basico</span>
+                } @else {
+                  <span>Suscribirme</span>
+                }
+              </ion-button>
+            </div>
+          }
+        </div>
+
+        <div class="plans-footer">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Pago seguro por Yape</span>
+          <span class="separator">|</span>
+          <span>Activacion en max. 24h</span>
+          <span class="separator">|</span>
+          <span>Cancela cuando quieras</span>
+        </div>
+      </div>
+    }
+
+    <!-- STEP: Payment Instructions -->
+    @if (currentStep() === 'payment') {
+      <div class="payment-container">
+        <div class="payment-header">
+          <div class="selected-plan-chip">
+            <ion-icon name="ribbon-outline"></ion-icon>
+            <span>{{ selectedPlanInfo()?.name }}</span>
+            <span class="price">S/ {{ selectedPlanInfo()?.price }}/mes</span>
+          </div>
+          <h1>Ultimo paso para activar tu plan</h1>
+          <p>Realiza el pago por Yape siguiendo estos pasos:</p>
+        </div>
+
+        <div class="payment-steps">
+          <!-- Step 1: Yape Info -->
+          <div class="payment-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Abre tu app Yape y paga a:</h3>
+
+              <div class="yape-info-card">
+                <div class="yape-logo">
+                  <span>Y</span>
+                </div>
+                <div class="yape-details">
+                  <div class="yape-number">
+                    <span>{{ yapeNumber }}</span>
+                    <ion-button fill="clear" size="small" (click)="copyToClipboard(yapeNumber, 'number')">
+                      <ion-icon [name]="isCopied() === 'number' ? 'checkmark' : 'copy-outline'" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </div>
+                  <div class="yape-name">{{ yapeName }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Amount -->
+          <div class="payment-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Monto exacto:</h3>
+              <div class="amount-card">
+                <span class="amount">S/ {{ selectedPlanInfo()?.price }}.00</span>
+                <ion-button fill="clear" size="small" (click)="copyToClipboard('{{ selectedPlanInfo()?.price }}', 'amount')">
+                  <ion-icon [name]="isCopied() === 'amount' ? 'checkmark' : 'copy-outline'" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Message -->
+          <div class="payment-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>En el mensaje incluye (opcional):</h3>
+              <div class="message-card">
+                <span class="message">{{ getPaymentMessage() }}</span>
+                <ion-button fill="clear" size="small" (click)="copyToClipboard(getPaymentMessage(), 'message')">
+                  <ion-icon [name]="isCopied() === 'message' ? 'checkmark' : 'copy-outline'" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-actions">
+          <ion-button expand="block" (click)="goToProofUpload()">
+            Ya realice el pago
+            <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+          </ion-button>
+          <ion-button expand="block" fill="outline" color="medium" (click)="goBackToPlans()">
+            Volver a planes
+          </ion-button>
+        </div>
+      </div>
+    }
+
+    <!-- STEP: Proof Upload -->
+    @if (currentStep() === 'proof') {
+      <div class="proof-container">
+        <div class="proof-header">
+          <div class="step-icon">
+            <ion-icon name="camera-outline"></ion-icon>
+          </div>
+          <h1>Sube tu comprobante</h1>
+          <p>Captura de pantalla del comprobante de Yape</p>
+        </div>
+
+        <div class="proof-requirements">
+          <p>Asegurate de que se vean claramente:</p>
+          <ul>
+            <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Monto (S/ {{ selectedPlanInfo()?.price }}.00)</li>
+            <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Fecha y hora</li>
+            <li><ion-icon name="checkmark-circle" color="success"></ion-icon> Nombre del destinatario</li>
+          </ul>
+        </div>
+
+        <!-- Image Upload Area -->
+        <div class="upload-area" (click)="selectProofImage()">
+          @if (proofImage()) {
+            <div class="proof-preview">
+              <img [src]="proofImage()" alt="Comprobante de pago">
+              <ion-button fill="clear" class="remove-btn" (click)="removeProofImage(); $event.stopPropagation()">
+                <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          } @else {
+            <div class="upload-placeholder">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <p>Toca para subir comprobante</p>
+              <span>JPG, PNG (max 5MB)</span>
+            </div>
+          }
+        </div>
+
+        <div class="proof-actions">
+          <ion-button
+            expand="block"
+            [disabled]="!proofImage() || isUploading()"
+            (click)="confirmPaymentSubmission()">
+            @if (isUploading()) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+              <span>Enviando...</span>
+            } @else {
+              <ion-icon name="send-outline" slot="start"></ion-icon>
+              <span>Enviar comprobante</span>
+            }
+          </ion-button>
+          <ion-button expand="block" fill="outline" color="medium" (click)="goBackToPayment()" [disabled]="isUploading()">
+            Volver
+          </ion-button>
+        </div>
+
+        <div class="guarantee-note">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <p><strong>Garantia de activacion:</strong> Tu plan se activara en maximo 24 horas (usualmente en 2-4 horas). Si hay algun problema, te contactaremos de inmediato.</p>
+        </div>
+      </div>
+    }
+
+    <!-- STEP: Pending Approval -->
+    @if (currentStep() === 'pending') {
+      <div class="pending-container">
+        <div class="pending-icon">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <h1>Comprobante recibido</h1>
+        <p>Gracias por confiar en Histora Care. Estamos verificando tu pago.</p>
+
+        <div class="status-card">
+          <div class="status-item">
+            <span class="label">Plan seleccionado:</span>
+            <span class="value">{{ subscription().plan === 'pro' ? 'Pro' : 'Premium' }}</span>
+          </div>
+          <div class="status-item">
+            <span class="label">Monto:</span>
+            <span class="value">S/ {{ subscription().plan === 'pro' ? '29' : '99' }}.00</span>
+          </div>
+          @if (subscription().paymentDate) {
+            <div class="status-item">
+              <span class="label">Fecha de envio:</span>
+              <span class="value">{{ subscription().paymentDate | date:'d MMM yyyy, h:mm a' }}</span>
+            </div>
+          }
+          <div class="status-item status">
+            <span class="label">Estado:</span>
+            <ion-chip color="warning">
+              <ion-icon name="time-outline"></ion-icon>
+              <ion-label>En revision</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <h3>Que sigue:</h3>
+          <div class="timeline-item">
+            <div class="timeline-icon active">
+              <ion-icon name="checkmark"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <p>Comprobante recibido</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon pending">
+              <ion-icon name="search-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <p>Verificamos tu pago (max. 24h)</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon pending">
+              <ion-icon name="notifications-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <p>Te notificamos por email y push</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon pending">
+              <ion-icon name="rocket-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <p>Tu plan se activa automaticamente</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-note">
+          <ion-icon name="bulb-outline"></ion-icon>
+          <p><strong>Mientras tanto:</strong> Puedes seguir usando tu Plan Basico normalmente. Cuando activemos tu nuevo plan, los beneficios comenzaran de inmediato.</p>
+        </div>
+
+        <div class="pending-actions">
+          <ion-button expand="block" fill="outline" (click)="contactSupport()">
+            <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+            Contactar soporte
+          </ion-button>
+          <ion-button expand="block" fill="clear" color="medium" (click)="goToProfile()">
+            Volver a mi perfil
+          </ion-button>
+        </div>
+      </div>
+    }
+
+    <!-- Rejected State -->
+    @if (isRejected()) {
+      <div class="rejected-container">
+        <div class="rejected-icon">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+        </div>
+        <h1>Pago no verificado</h1>
+        <p>No pudimos verificar tu pago</p>
+
+        @if (subscription().rejectionReason) {
+          <div class="rejection-reason">
+            <strong>Razon:</strong>
+            <p>{{ subscription().rejectionReason }}</p>
+          </div>
+        }
+
+        <div class="rejected-actions">
+          <ion-button expand="block" (click)="retrySubscription()">
+            <ion-icon slot="start" name="refresh-outline"></ion-icon>
+            Intentar nuevamente
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="contactSupport()">
+            <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+            Contactar soporte
+          </ion-button>
+        </div>
+      </div>
+    }
+  }
+</ion-content>
