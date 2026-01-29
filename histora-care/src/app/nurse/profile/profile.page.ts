@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { ThemeService, ThemeMode } from '../../core/services/theme.service';
 import { UploadsService } from '../../core/services/uploads.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
+import { PeruLocationsService, Departamento, Distrito } from '../../core/services/peru-locations.service';
 import { Nurse } from '../../core/models';
 
 interface DayOption {
@@ -29,6 +30,7 @@ export class ProfilePage implements OnInit {
   private actionSheetCtrl = inject(ActionSheetController);
   private uploadsService = inject(UploadsService);
   private productTour = inject(ProductTourService);
+  private peruLocations = inject(PeruLocationsService);
   themeService = inject(ThemeService);
 
   // State signals
@@ -53,6 +55,29 @@ export class ProfilePage implements OnInit {
 
   // New specialty input
   newSpecialty = signal('');
+
+  // Location signals
+  departamentos = signal<Departamento[]>([]);
+  selectedDepartamento = signal<string>('15'); // Lima by default
+  selectedDistrito = signal<Distrito | null>(null);
+  distritoSearch = signal('');
+  showDistritoResults = signal(false);
+  locationCity = signal('');
+  locationDistrict = signal('');
+
+  // Location computed
+  filteredDistritos = computed(() => {
+    const search = this.distritoSearch();
+    const deptId = this.selectedDepartamento();
+    if (!search || search.length < 2) return [];
+    return this.peruLocations.buscarDistritos(search, deptId);
+  });
+
+  selectedDepartamentoNombre = computed(() => {
+    const deptId = this.selectedDepartamento();
+    const dept = this.departamentos().find(d => d.id === deptId);
+    return dept?.nombre || 'Lima';
+  });
 
   // Computed values
   user = this.authService.user;
@@ -95,7 +120,12 @@ export class ProfilePage implements OnInit {
   ];
 
   ngOnInit() {
+    this.loadLocations();
     this.loadProfile();
+  }
+
+  loadLocations() {
+    this.departamentos.set(this.peruLocations.getDepartamentos());
   }
 
   loadProfile() {
@@ -115,6 +145,17 @@ export class ProfilePage implements OnInit {
         this.yapeNumber.set(nurse.yapeNumber || '');
         this.plinNumber.set(nurse.plinNumber || '');
         this.acceptsCash.set(nurse.acceptsCash !== false); // Default true
+        // Location data
+        if (nurse.location) {
+          this.locationCity.set(nurse.location.city || '');
+          this.locationDistrict.set(nurse.location.district || '');
+          this.distritoSearch.set(nurse.location.district || '');
+          // Try to find departamento by city name
+          const dept = this.departamentos().find(d => d.nombre === nurse.location?.city);
+          if (dept) {
+            this.selectedDepartamento.set(dept.id);
+          }
+        }
         this.isLoading.set(false);
         // Start profile tour for first-time users
         this.productTour.startTour('nurse_profile');
@@ -197,6 +238,53 @@ export class ProfilePage implements OnInit {
     this.acceptsCash.set(event.detail.checked);
   }
 
+  // Location methods
+  onDepartamentoChange(event: CustomEvent) {
+    this.selectedDepartamento.set(event.detail.value);
+    this.locationCity.set(this.selectedDepartamentoNombre());
+    // Reset distrito when department changes
+    this.selectedDistrito.set(null);
+    this.distritoSearch.set('');
+    this.locationDistrict.set('');
+  }
+
+  onDistritoSearchInput(event: CustomEvent) {
+    const value = event.detail.value || '';
+    this.distritoSearch.set(value);
+    if (value.length >= 2) {
+      this.showDistritoResults.set(true);
+    } else {
+      this.showDistritoResults.set(false);
+    }
+  }
+
+  onDistritoSearchFocus() {
+    if (this.distritoSearch().length >= 2) {
+      this.showDistritoResults.set(true);
+    }
+  }
+
+  onDistritoSearchBlur() {
+    // Delay to allow click on results
+    setTimeout(() => {
+      this.showDistritoResults.set(false);
+    }, 200);
+  }
+
+  selectDistrito(distrito: Distrito) {
+    this.selectedDistrito.set(distrito);
+    this.distritoSearch.set(distrito.nombre);
+    this.locationDistrict.set(distrito.nombre);
+    this.locationCity.set(this.selectedDepartamentoNombre());
+    this.showDistritoResults.set(false);
+  }
+
+  clearDistrito() {
+    this.selectedDistrito.set(null);
+    this.distritoSearch.set('');
+    this.locationDistrict.set('');
+  }
+
   addSpecialty() {
     const specialty = this.newSpecialty().trim();
     if (specialty && !this.specialties().includes(specialty)) {
@@ -241,6 +329,19 @@ export class ProfilePage implements OnInit {
       plinNumber: this.plinNumber(),
       acceptsCash: this.acceptsCash(),
     };
+
+    // Include location if set
+    if (this.locationDistrict()) {
+      const distrito = this.selectedDistrito();
+      updateData.location = {
+        type: 'Point',
+        city: this.locationCity() || this.selectedDepartamentoNombre(),
+        district: this.locationDistrict(),
+        coordinates: distrito?.coordenadas
+          ? [distrito.coordenadas.lng, distrito.coordenadas.lat]
+          : [-77.0428, -12.0464], // Default Lima coordinates
+      };
+    }
 
     this.nurseApi.updateMyProfile(updateData).subscribe({
       next: (updatedNurse) => {

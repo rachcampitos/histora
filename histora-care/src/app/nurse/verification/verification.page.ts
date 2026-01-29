@@ -4,6 +4,7 @@ import { LoadingController, ToastController, AlertController, ActionSheetControl
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
+import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
 import { Nurse, NurseVerification, VerificationDocumentType, VerificationStatus, CepValidationResult } from '../../core/models';
 
 type VerificationStep = 'validate_cep' | 'confirm_identity' | 'upload_documents';
@@ -37,6 +38,7 @@ interface WaitingTask {
 export class VerificationPage implements OnInit, OnDestroy {
   private nurseApi = inject(NurseApiService);
   private authService = inject(AuthService);
+  private nurseOnboarding = inject(NurseOnboardingService);
   private router = inject(Router);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
@@ -346,16 +348,26 @@ export class VerificationPage implements OnInit, OnDestroy {
   }
 
   private async showDocumentsSubmittedAlert() {
+    // Check if onboarding is already completed
+    await this.nurseOnboarding.init();
+    const onboardingCompleted = this.nurseOnboarding.isCompleted();
+
     const alert = await this.alertCtrl.create({
       cssClass: 'histora-alert histora-alert-success',
       header: '¡Documentos enviados!',
-      message: 'Tu solicitud de verificación está en revisión. Te notificaremos en 24-48 horas cuando esté lista.<br><br>Mientras tanto, puedes completar tu perfil profesional y configurar tus servicios.',
+      message: 'Tu solicitud está en revisión. Te notificaremos en 24-48 horas cuando esté lista.',
       buttons: [
         {
-          text: 'Ir al inicio',
+          text: 'Continuar',
           cssClass: 'alert-button-primary',
           handler: () => {
-            this.router.navigate(['/nurse/dashboard'], { replaceUrl: true });
+            if (onboardingCompleted) {
+              // Go directly to dashboard if onboarding already done
+              this.router.navigate(['/nurse/dashboard'], { replaceUrl: true });
+            } else {
+              // Navigate to onboarding to complete location and payment setup
+              this.router.navigate(['/nurse/onboarding'], { replaceUrl: true });
+            }
           }
         }
       ],
