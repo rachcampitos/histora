@@ -46,6 +46,11 @@ export class ProfilePage implements OnInit {
   availableTo = signal('18:00');
   availableDays = signal<number[]>([1, 2, 3, 4, 5]); // Mon-Fri by default
 
+  // Payment methods
+  yapeNumber = signal('');
+  plinNumber = signal('');
+  acceptsCash = signal(true);
+
   // New specialty input
   newSpecialty = signal('');
 
@@ -103,6 +108,10 @@ export class ProfilePage implements OnInit {
         this.availableFrom.set(nurse.availableFrom || '08:00');
         this.availableTo.set(nurse.availableTo || '18:00');
         this.availableDays.set([...(nurse.availableDays || [1, 2, 3, 4, 5])]);
+        // Payment methods
+        this.yapeNumber.set(nurse.yapeNumber || '');
+        this.plinNumber.set(nurse.plinNumber || '');
+        this.acceptsCash.set(nurse.acceptsCash !== false); // Default true
         this.isLoading.set(false);
         // Start profile tour for first-time users
         this.productTour.startTour('nurse_profile');
@@ -167,6 +176,24 @@ export class ProfilePage implements OnInit {
     this.newSpecialty.set(event.detail.value || '');
   }
 
+  onYapeNumberChange(event: CustomEvent) {
+    const value = event.detail.value || '';
+    // Only keep digits and limit to 9
+    const cleaned = value.replace(/\D/g, '').slice(0, 9);
+    this.yapeNumber.set(cleaned);
+  }
+
+  onPlinNumberChange(event: CustomEvent) {
+    const value = event.detail.value || '';
+    // Only keep digits and limit to 9
+    const cleaned = value.replace(/\D/g, '').slice(0, 9);
+    this.plinNumber.set(cleaned);
+  }
+
+  onAcceptsCashChange(event: CustomEvent) {
+    this.acceptsCash.set(event.detail.checked);
+  }
+
   addSpecialty() {
     const specialty = this.newSpecialty().trim();
     if (specialty && !this.specialties().includes(specialty)) {
@@ -206,6 +233,10 @@ export class ProfilePage implements OnInit {
       availableFrom: this.availableFrom(),
       availableTo: this.availableTo(),
       availableDays: this.availableDays(),
+      // Payment methods
+      yapeNumber: this.yapeNumber(),
+      plinNumber: this.plinNumber(),
+      acceptsCash: this.acceptsCash(),
     };
 
     this.nurseApi.updateMyProfile(updateData).subscribe({

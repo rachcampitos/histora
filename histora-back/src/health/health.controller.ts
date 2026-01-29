@@ -44,7 +44,9 @@ export class HealthController {
 
     try {
       const dbStart = Date.now();
-      await this.connection.db.admin().ping();
+      if (this.connection.db) {
+        await this.connection.db.admin().ping();
+      }
       dbResponseTime = Date.now() - dbStart;
       dbStatus = 'up';
     } catch {
@@ -94,7 +96,9 @@ export class HealthController {
   @ApiResponse({ status: 503, description: 'Service is not ready' })
   async ready(): Promise<{ status: string; database: string }> {
     try {
-      await this.connection.db.admin().ping();
+      if (this.connection.db) {
+        await this.connection.db.admin().ping();
+      }
       return { status: 'ok', database: 'connected' };
     } catch {
       return { status: 'error', database: 'disconnected' };

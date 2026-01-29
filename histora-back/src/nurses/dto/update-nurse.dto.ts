@@ -7,6 +7,8 @@ import {
   IsArray,
   IsNumber,
   ValidateNested,
+  Matches,
+  MaxLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -32,6 +34,26 @@ export class UpdateNurseDto extends PartialType(CreateNurseDto) {
   @IsArray()
   @IsNumber({}, { each: true })
   availableDays?: number[];
+
+  // Payment Methods (P2P)
+  @ApiPropertyOptional({ example: '987654321', description: 'Yape phone number (9 digits or empty)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(9)
+  @Matches(/^(\d{9})?$/, { message: 'yapeNumber must be exactly 9 digits or empty' })
+  yapeNumber?: string;
+
+  @ApiPropertyOptional({ example: '987654321', description: 'Plin phone number (9 digits or empty)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(9)
+  @Matches(/^(\d{9})?$/, { message: 'plinNumber must be exactly 9 digits or empty' })
+  plinNumber?: string;
+
+  @ApiPropertyOptional({ example: true, description: 'Whether nurse accepts cash payments' })
+  @IsOptional()
+  @IsBoolean()
+  acceptsCash?: boolean;
 }
 
 export class UpdateNurseLocationDto {
