@@ -126,10 +126,15 @@ export class DashboardPage implements OnInit, OnDestroy {
         // Only update if verification status changed
         if (!currentNurse || currentNurse.verificationStatus !== nurse.verificationStatus) {
           this.nurse.set(nurse);
-          // If newly approved, show celebration
+          // If newly approved, show celebration (unless already shown by verification page)
           if (nurse.verificationStatus === 'approved' && currentNurse?.verificationStatus !== 'approved') {
             this.stopVerificationPolling(); // Stop polling once approved
-            this.showVerificationCelebration();
+            // Only show celebration if not already shown (verification page sets this flag)
+            const celebrationKey = `verification_celebration_${nurse._id}`;
+            if (!localStorage.getItem(celebrationKey)) {
+              localStorage.setItem(celebrationKey, 'shown');
+              this.showVerificationCelebration();
+            }
           }
         } else {
           // Still update the nurse data for other potential changes
@@ -456,7 +461,12 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     this.nurseApi.setAvailability(newStatus).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updatedNurse) => {
-        this.nurse.set(updatedNurse);
+        // Preserve existing user data (including avatar) if not returned by API
+        const mergedNurse = {
+          ...updatedNurse,
+          user: updatedNurse.user || nurse.user,
+        };
+        this.nurse.set(mergedNurse);
         this.showToast(
           newStatus ? 'Ahora estás disponible' : 'Ya no estás disponible',
           'success'

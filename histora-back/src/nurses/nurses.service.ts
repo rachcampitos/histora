@@ -301,11 +301,13 @@ export class NursesService {
   }
 
   async setAvailability(userId: string, isAvailable: boolean): Promise<Nurse> {
-    const nurse = await this.nurseModel.findOneAndUpdate(
-      { userId: new Types.ObjectId(userId) },
-      { $set: { isAvailable } },
-      { new: true },
-    );
+    const nurse = await this.nurseModel
+      .findOneAndUpdate(
+        { userId: new Types.ObjectId(userId) },
+        { $set: { isAvailable } },
+        { new: true },
+      )
+      .populate('userId', 'firstName lastName email phone avatar');
 
     if (!nurse) {
       throw new NotFoundException('Nurse profile not found');

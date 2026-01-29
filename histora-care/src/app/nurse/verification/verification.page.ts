@@ -304,6 +304,13 @@ export class VerificationPage implements OnInit, OnDestroy {
     console.log('[VERIFICATION] Current verificationStatus:', this.verificationStatus());
     console.log('[VERIFICATION] allChecklistCompleted:', this.allChecklistCompleted());
 
+    // Mark celebration as shown to prevent duplicate modal in dashboard
+    const nurse = this.nurse();
+    if (nurse) {
+      const celebrationKey = `verification_celebration_${nurse._id}`;
+      localStorage.setItem(celebrationKey, 'shown');
+    }
+
     // First, show the transition state (checklist items completing)
     this.showApprovalTransition.set(true);
     console.log('[VERIFICATION] showApprovalTransition set to TRUE');
