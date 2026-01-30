@@ -9,7 +9,7 @@ export function CTA() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section className="bg-white py-0">
+    <section className="bg-white dark:bg-[#0f172a] py-0">
       <div className="container mx-auto px-6">
         <AnimatedSection>
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e3a5f] via-[#2d5f8a] to-[#4a9d9a]">
