@@ -97,6 +97,7 @@ cd histora-care && ionic serve
 2. **NO usar emojis en codigo** - A menos que el usuario lo pida
 3. **Commits en espanol** - El proyecto es para Peru
 4. **Push = Deploy** - El push automaticamente despliega
+5. **NO incluir Co-Authored-By** - No agregar coautoria de Claude en commits
 
 ---
 Ultima actualizacion: 2026-01-29
