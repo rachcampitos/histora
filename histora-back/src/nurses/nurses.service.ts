@@ -432,6 +432,128 @@ export class NursesService {
   }
 
   /**
+   * Get featured professionals for landing page
+   * Returns verified nurses with good ratings and photos
+   */
+  async getFeatured(limit = 3): Promise<{
+    professionals: Array<{
+      id: string;
+      firstName: string;
+      rating: number;
+      specialty: string;
+      photoUrl: string | null;
+      verified: boolean;
+      totalReviews: number;
+    }>;
+    stats: {
+      totalProfessionals: number;
+      totalServices: number;
+      averageRating: number;
+    };
+  }> {
+    // Get verified nurses with good ratings, ordered by rating
+    const nurses = await this.nurseModel.aggregate([
+      {
+        $match: {
+          isActive: true,
+          isDeleted: { $ne: true },
+          verificationStatus: 'approved',
+          cepVerified: true,
+          officialCepPhotoUrl: { $exists: true, $nin: [null, ''] },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $sort: { averageRating: -1, totalReviews: -1 },
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $project: {
+          _id: 1,
+          firstName: '$user.firstName',
+          rating: { $ifNull: ['$averageRating', 5.0] },
+          specialty: { $arrayElemAt: ['$specialties', 0] },
+          photoUrl: '$officialCepPhotoUrl',
+          verified: '$cepVerified',
+          totalReviews: { $ifNull: ['$totalReviews', 0] },
+        },
+      },
+    ]);
+
+    // Get aggregate stats
+    const statsResult = await this.nurseModel.aggregate([
+      {
+        $match: {
+          isActive: true,
+          isDeleted: { $ne: true },
+          verificationStatus: 'approved',
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalProfessionals: { $sum: 1 },
+          totalServices: { $sum: '$totalServicesCompleted' },
+          avgRating: { $avg: '$averageRating' },
+        },
+      },
+    ]);
+
+    const stats = statsResult[0] || {
+      totalProfessionals: 0,
+      totalServices: 0,
+      avgRating: 0,
+    };
+
+    return {
+      professionals: nurses.map((n) => ({
+        id: n._id.toString(),
+        firstName: n.firstName || 'Profesional',
+        rating: n.rating || 5.0,
+        specialty: this.translateSpecialty(n.specialty),
+        photoUrl: n.photoUrl,
+        verified: n.verified || false,
+        totalReviews: n.totalReviews || 0,
+      })),
+      stats: {
+        totalProfessionals: stats.totalProfessionals || 0,
+        totalServices: stats.totalServices || 0,
+        averageRating: Math.round((stats.avgRating || 4.9) * 10) / 10,
+      },
+    };
+  }
+
+  /**
+   * Translate specialty code to Spanish label
+   */
+  private translateSpecialty(specialty: string | null): string {
+    const translations: Record<string, string> = {
+      elderly_care: 'Geriatria',
+      injection: 'Inyecciones',
+      wound_care: 'Curaciones',
+      vital_signs: 'Signos Vitales',
+      iv_therapy: 'Terapia IV',
+      catheter: 'Sondas',
+      blood_draw: 'Toma de muestras',
+      medication: 'Medicacion',
+      post_surgery: 'Post-operatorio',
+    };
+    return translations[specialty || ''] || 'Cuidado general';
+  }
+
+  /**
    * Get selfie public ID for a nurse (for deletion)
    */
   async getSelfiePublicId(nurseId: string): Promise<string | null> {
