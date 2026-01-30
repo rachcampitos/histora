@@ -122,6 +122,28 @@
         font-size: 12px;
       }
     }
+
+    // CEP Badge - Clickable with info icon
+    .cep-badge {
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+      &:active {
+        transform: scale(0.97);
+      }
+
+      ion-icon {
+        font-size: 14px;
+
+        &.info-icon {
+          font-size: 12px;
+          margin-left: 2px;
+          opacity: 0.8;
+        }
+      }
+    }
   }
 }
 
