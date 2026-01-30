@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastController, AlertController, ActionSheetController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -26,6 +26,7 @@ export class ProfilePage implements OnInit {
   private nurseApi = inject(NurseApiService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
   private actionSheetCtrl = inject(ActionSheetController);
@@ -229,6 +230,16 @@ export class ProfilePage implements OnInit {
         this.originalLocationDistrict.set(districtValue);
 
         this.isLoading.set(false);
+
+        // Check for scroll-to-section query param
+        this.route.queryParams.subscribe(params => {
+          if (params['section']) {
+            setTimeout(() => {
+              this.scrollToSection(params['section']);
+            }, 300);
+          }
+        });
+
         // Only start tour after a delay and if elements are ready
         // This prevents the tour from blocking navigation
         setTimeout(() => {
@@ -588,7 +599,20 @@ export class ProfilePage implements OnInit {
   }
 
   scrollToPaymentMethods() {
-    const element = document.querySelector('.payment-methods-section');
+    this.scrollToSection('payment');
+  }
+
+  scrollToSection(section: string) {
+    const sectionMap: Record<string, string> = {
+      'availability': '#tour-schedule-section',
+      'schedule': '#tour-schedule-section',
+      'bio': '#tour-bio-section',
+      'location': '#tour-location-section',
+      'payment': '.payment-methods-section',
+      'specialties': '#tour-specialties-section',
+    };
+    const selector = sectionMap[section] || `#${section}`;
+    const element = document.querySelector(selector);
     element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
