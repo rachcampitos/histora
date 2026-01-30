@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PeruLocationsService, Departamento, Distrito } from '../../core/services/peru-locations.service';
+import { Nurse } from '../../core/models';
 
 type OnboardingStep = 'welcome' | 'location' | 'payment-model' | 'payment-setup' | 'plans';
 
@@ -20,7 +21,7 @@ interface SlideConfig {
   styleUrls: ['./onboarding.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OnboardingPage implements OnInit {
+export class OnboardingPage implements OnInit, OnDestroy {
   @ViewChild('swiperRef') swiperRef!: ElementRef;
 
   private router = inject(Router);
@@ -29,6 +30,9 @@ export class OnboardingPage implements OnInit {
   private nurseApi = inject(NurseApiService);
   private authService = inject(AuthService);
   private peruLocations = inject(PeruLocationsService);
+
+  // Track if component is destroyed to prevent Swiper errors
+  private isDestroyed = false;
 
   // Slides configuration
   readonly slides: SlideConfig[] = [
@@ -71,7 +75,7 @@ export class OnboardingPage implements OnInit {
     return this.peruLocations.getDepartamentoNombre(this.selectedDepartamento());
   });
 
-  private swiper?: any;
+  private swiper: any = null;
 
   ngOnInit() {
     this.onboardingService.init();
@@ -84,11 +88,26 @@ export class OnboardingPage implements OnInit {
     this.departamentos.set(this.peruLocations.getDepartamentos(true));
   }
 
+  ngOnDestroy() {
+    this.isDestroyed = true;
+    // Destroy swiper instance to prevent memory leaks and DOM errors
+    if (this.swiper) {
+      try {
+        this.swiper.destroy(true, true);
+      } catch {
+        // Ignore errors during cleanup
+      }
+      this.swiper = null;
+    }
+  }
+
   onSwiperInit(event: any) {
+    if (this.isDestroyed) return;
     this.swiper = event.detail[0];
   }
 
   onSlideChange() {
+    if (this.isDestroyed) return;
     if (this.swiper) {
       this.currentIndex.set(this.swiper.activeIndex);
       this.onboardingService.setCurrentStep(this.swiper.activeIndex);
@@ -105,12 +124,14 @@ export class OnboardingPage implements OnInit {
   }
 
   nextSlide() {
+    if (this.isDestroyed) return;
     if (this.swiper && this.currentIndex() < this.slides.length - 1) {
       this.swiper.slideNext();
     }
   }
 
   prevSlide() {
+    if (this.isDestroyed) return;
     if (this.swiper && this.currentIndex() > 0) {
       this.swiper.slidePrev();
     }
@@ -213,14 +234,37 @@ export class OnboardingPage implements OnInit {
       return;
     }
 
+    // Validate phone numbers are exactly 9 digits if provided
+    const yape = this.yapeNumber();
+    const plin = this.plinNumber();
+
+    if (yape && yape.length !== 9) {
+      this.showToast('El numero de Yape debe tener 9 digitos', 'warning');
+      return;
+    }
+
+    if (plin && plin.length !== 9) {
+      this.showToast('El numero de Plin debe tener 9 digitos', 'warning');
+      return;
+    }
+
     this.isLoading.set(true);
 
     try {
-      await this.nurseApi.updateMyProfile({
-        yapeNumber: this.yapeNumber() || undefined,
-        plinNumber: this.plinNumber() || undefined,
+      // Only send yapeNumber/plinNumber if they are valid (9 digits) or empty
+      const updateData: Record<string, unknown> = {
         acceptsCash: this.acceptsCash(),
-      }).toPromise();
+      };
+
+      // Only include if exactly 9 digits, otherwise don't send (keeps existing value)
+      if (yape && yape.length === 9) {
+        updateData['yapeNumber'] = yape;
+      }
+      if (plin && plin.length === 9) {
+        updateData['plinNumber'] = plin;
+      }
+
+      await this.nurseApi.updateMyProfile(updateData as Partial<Nurse>).toPromise();
 
       await this.onboardingService.updateChecklistItem('paymentMethods', true);
       this.showToast('Metodos de pago guardados', 'success');

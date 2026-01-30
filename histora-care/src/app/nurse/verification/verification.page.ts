@@ -368,15 +368,13 @@ export class VerificationPage implements OnInit, OnDestroy {
   }
 
   private async showDocumentsSubmittedAlert() {
-    // Check if onboarding is already completed
-    await this.nurseOnboarding.init();
-    const onboardingCompleted = this.nurseOnboarding.isCompleted();
+    // Always reset and go to onboarding after document submission
+    // This ensures the nurse configures their profile while waiting for verification
+    await this.nurseOnboarding.resetOnboarding();
 
-    // Determine destination after alert
-    const destination = onboardingCompleted ? '/nurse/dashboard' : '/nurse/onboarding';
-    const nextStepMessage = onboardingCompleted
-      ? 'Te notificaremos en 24-48 horas cuando esté lista.'
-      : 'Mientras esperamos, configura tu ubicación y métodos de pago.';
+    // Always go to onboarding to configure profile while waiting
+    const destination = '/nurse/onboarding';
+    const nextStepMessage = 'Mientras esperamos, configura tu ubicación y métodos de pago.';
 
     const alert = await this.alertCtrl.create({
       cssClass: 'histora-alert histora-alert-success',
@@ -384,7 +382,7 @@ export class VerificationPage implements OnInit, OnDestroy {
       message: `Tu solicitud está en revisión. ${nextStepMessage}`,
       buttons: [
         {
-          text: onboardingCompleted ? 'Ir al Dashboard' : 'Configurar mi perfil',
+          text: 'Configurar mi perfil',
           cssClass: 'alert-button-primary',
           handler: () => {
             this.router.navigate([destination], { replaceUrl: true });
@@ -396,9 +394,8 @@ export class VerificationPage implements OnInit, OnDestroy {
 
     // Handle dismissal in any way (including hardware back button)
     alert.onDidDismiss().then(() => {
-      // Navigate to onboarding/dashboard even if alert is dismissed without button click
-      // This ensures the user always goes to the right place
-      if (!onboardingCompleted && this.router.url.includes('/nurse/verification')) {
+      // Navigate to onboarding even if alert is dismissed without button click
+      if (this.router.url.includes('/nurse/verification')) {
         this.router.navigate([destination], { replaceUrl: true });
       }
     });
