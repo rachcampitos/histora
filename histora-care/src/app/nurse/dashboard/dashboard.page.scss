@@ -1,7 +1,8 @@
 @use '../../../theme/design-tokens' as tokens;
 
 // Variables using design tokens
-$primary-gradient: var(--histora-gradient);
+// Use explicit gradient for Ionic components (CSS vars don't work well in --background)
+$primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
 
 .dashboard-content {
   --background: #{tokens.$surface-secondary};
