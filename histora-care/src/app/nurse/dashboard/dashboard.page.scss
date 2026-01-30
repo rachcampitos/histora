@@ -170,7 +170,7 @@ $primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: tokens.$spacing-5 tokens.$spacing-4 28px; // Extra bottom padding for overlap effect
+  padding: tokens.$spacing-5 tokens.$spacing-4 tokens.$spacing-4;
   background: $primary-gradient;
   position: relative;
   z-index: 1;
@@ -241,7 +241,7 @@ $primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
   display: flex;
   justify-content: space-between;
   padding: tokens.$spacing-4;
-  margin-top: -12px;
+  margin-top: 4px; // Removed negative margin to prevent overlap with tour elements
   position: relative;
   z-index: 2;
 
