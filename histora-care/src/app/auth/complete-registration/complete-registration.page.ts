@@ -594,11 +594,16 @@ export class CompleteRegistrationPage {
         return;
       }
 
+      // Validate district has coordinates
+      if (!distrito.coordenadas?.lat || !distrito.coordenadas?.lng) {
+        await loading.dismiss();
+        this.showToast('El distrito seleccionado no tiene coordenadas configuradas', 'danger');
+        return;
+      }
+
       // Build location object
       const locationData = {
-        coordinates: distrito.coordenadas
-          ? [distrito.coordenadas.lng, distrito.coordenadas.lat]
-          : [-77.0428, -12.0464], // Default Lima coords
+        coordinates: [distrito.coordenadas.lng, distrito.coordenadas.lat],
         city: departamento.nombre,
         district: distrito.nombre,
         address: '',
