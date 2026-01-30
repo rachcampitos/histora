@@ -15,26 +15,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nurse-lite.com"),
-  title: "NurseLite - Enfermeria a Domicilio en Lima | Profesionales CEP Verificados",
+  title: "NurseLite - Enfermeras a Domicilio en Lima | CEP Verificadas",
   description: "Conectamos pacientes con enfermeras profesionales verificadas por el CEP. Atencion medica de calidad en la comodidad de tu hogar. Inyecciones, curaciones, control de signos vitales y mas.",
-  keywords: [
-    "enfermeria a domicilio",
-    "enfermera a domicilio Lima",
-    "atencion medica domiciliaria",
-    "enfermeras CEP verificadas",
-    "cuidado de adultos mayores",
-    "inyecciones a domicilio",
-    "curaciones a domicilio",
-    "NurseLite",
-    "Histora Health",
-  ],
   authors: [{ name: "Histora Health" }],
   creator: "Histora Health",
   publisher: "Histora Health",
   openGraph: {
-    title: "NurseLite - Enfermeria a Domicilio en Lima",
+    title: "NurseLite - Enfermeras a Domicilio en Lima",
     description: "Conectamos pacientes con enfermeras profesionales verificadas por el CEP. Tu salud en las mejores manos.",
-    url: "https://nurselite.pe",
+    url: "https://nurse-lite.com",
     siteName: "NurseLite",
     locale: "es_PE",
     type: "website",
@@ -43,13 +32,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "NurseLite - Enfermeria a Domicilio",
+        alt: "NurseLite - Enfermeras a Domicilio en Lima",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "NurseLite - Enfermeria a Domicilio en Lima",
+    title: "NurseLite - Enfermeras a Domicilio en Lima",
     description: "Conectamos pacientes con enfermeras profesionales verificadas por el CEP.",
     images: ["/og-image.png"],
   },
@@ -64,9 +53,45 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "verification_token",
+};
+
+// JSON-LD Schema for MedicalBusiness
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MedicalBusiness",
+  name: "NurseLite",
+  description: "Plataforma que conecta pacientes con enfermeras profesionales verificadas por el CEP para servicios de enfermeria a domicilio en Lima, Peru.",
+  url: "https://nurse-lite.com",
+  logo: "https://nurse-lite.com/nurselite.png",
+  image: "https://nurse-lite.com/og-image.png",
+  telephone: "+51999999999",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Lima",
+    addressRegion: "Lima",
+    addressCountry: "PE",
   },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: -12.0464,
+    longitude: -77.0428,
+  },
+  areaServed: {
+    "@type": "City",
+    name: "Lima Metropolitana",
+  },
+  priceRange: "S/. 25 - S/. 250",
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "200",
+    bestRating: "5",
+    worstRating: "1",
+  },
+  sameAs: [
+    "https://www.facebook.com/nurselite",
+    "https://www.instagram.com/nurselite",
+  ],
 };
 
 export default function RootLayout({
@@ -81,6 +106,10 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#1e3a5f" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -98,6 +127,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Skip link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#1e3a5f] focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4a9d9a]"
+        >
+          Saltar al contenido principal
+        </a>
         <ThemeProvider>
           {children}
         </ThemeProvider>

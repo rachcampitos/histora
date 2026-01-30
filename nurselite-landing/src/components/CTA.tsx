@@ -1,11 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Heart, Stethoscope, ArrowRight, Download, CheckCircle } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Heart, Stethoscope, ArrowRight, CheckCircle } from "lucide-react";
 import { AnimatedSection } from "./ui/AnimatedSection";
 import Link from "next/link";
 
 export function CTA() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section className="bg-white py-0">
       <div className="container mx-auto px-6">
@@ -23,12 +25,12 @@ export function CTA() {
 
             {/* Floating Elements */}
             <motion.div
-              animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
+              animate={shouldReduceMotion ? {} : { y: [0, -15, 0], rotate: [0, 5, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               className="absolute top-10 left-10 w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm"
             />
             <motion.div
-              animate={{ y: [0, 15, 0], rotate: [0, -5, 0] }}
+              animate={shouldReduceMotion ? {} : { y: [0, 15, 0], rotate: [0, -5, 0] }}
               transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               className="absolute bottom-10 right-10 w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm"
             />
