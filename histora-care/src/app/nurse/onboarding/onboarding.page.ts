@@ -31,8 +31,8 @@ export class OnboardingPage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private peruLocations = inject(PeruLocationsService);
 
-  // Track if component is destroyed to prevent Swiper errors
-  private isDestroyed = false;
+  // Track if component is active to prevent Swiper errors
+  private isActive = true;
 
   // Slides configuration
   readonly slides: SlideConfig[] = [
@@ -89,10 +89,21 @@ export class OnboardingPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.isDestroyed = true;
+    this.cleanupSwiper();
+  }
+
+  // Ionic lifecycle - called before view is hidden
+  ionViewWillLeave() {
+    this.cleanupSwiper();
+  }
+
+  private cleanupSwiper() {
+    this.isActive = false;
     // Destroy swiper instance to prevent memory leaks and DOM errors
     if (this.swiper) {
       try {
+        // Remove all event listeners first
+        this.swiper.off('slideChange');
         this.swiper.destroy(true, true);
       } catch {
         // Ignore errors during cleanup
@@ -102,16 +113,14 @@ export class OnboardingPage implements OnInit, OnDestroy {
   }
 
   onSwiperInit(event: any) {
-    if (this.isDestroyed) return;
+    if (!this.isActive) return;
     this.swiper = event.detail[0];
   }
 
   onSlideChange() {
-    if (this.isDestroyed) return;
-    if (this.swiper) {
-      this.currentIndex.set(this.swiper.activeIndex);
-      this.onboardingService.setCurrentStep(this.swiper.activeIndex);
-    }
+    if (!this.isActive || !this.swiper) return;
+    this.currentIndex.set(this.swiper.activeIndex);
+    this.onboardingService.setCurrentStep(this.swiper.activeIndex);
   }
 
   getCurrentSlide(): OnboardingStep {
@@ -124,15 +133,15 @@ export class OnboardingPage implements OnInit, OnDestroy {
   }
 
   nextSlide() {
-    if (this.isDestroyed) return;
-    if (this.swiper && this.currentIndex() < this.slides.length - 1) {
+    if (!this.isActive || !this.swiper) return;
+    if (this.currentIndex() < this.slides.length - 1) {
       this.swiper.slideNext();
     }
   }
 
   prevSlide() {
-    if (this.isDestroyed) return;
-    if (this.swiper && this.currentIndex() > 0) {
+    if (!this.isActive || !this.swiper) return;
+    if (this.currentIndex() > 0) {
       this.swiper.slidePrev();
     }
   }

@@ -54,8 +54,8 @@
   --ion-color-primary-tint: #354f70;
 
   /* Success color for availability, completed states */
-  --ion-color-success: #10b981;
-  --ion-color-success-rgb: 16, 185, 129;
+  --ion-color-success: #16a34a;
+  --ion-color-success-rgb: 22, 163, 74;
   --ion-color-success-contrast: #ffffff;
   --ion-color-success-shade: #0e9f6e;
   --ion-color-success-tint: #28c094;
@@ -824,7 +824,7 @@ body.dark ion-loading {
     .success-icon {
       width: 80px;
       height: 80px;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -980,12 +980,12 @@ ion-alert.histora-alert-warning {
   }
 }
 
-// Success variant (green)
+// Success variant (green) - Verde puro diferenciado del teal accent
 ion-alert.histora-alert-success {
   .alert-button {
     // Confirm button - green gradient
     &:not(.alert-button-role-cancel) {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
       color: #ffffff;
       font-weight: 700;
     }
@@ -1010,7 +1010,7 @@ ion-alert.verification-celebration {
   }
 
   .alert-button:not(.alert-button-role-cancel) {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
     font-size: 16px;
   }
 }
@@ -1456,7 +1456,7 @@ body.dark ion-modal.service-modal {
 
         ion-toggle {
           --track-background: #475569;
-          --track-background-checked: #10b981;
+          --track-background-checked: #16a34a;
           --handle-background: #ffffff;
           --handle-background-checked: #ffffff;
         }

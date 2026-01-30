@@ -409,7 +409,7 @@ $primary-gradient: var(--histora-gradient);
 
       &.available {
         border-color: tokens.$color-success;
-        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 3px 10px rgba(22, 163, 74, 0.4);
       }
 
       &:hover {
@@ -438,8 +438,8 @@ $primary-gradient: var(--histora-gradient);
     }
 
     &.available {
-      background: linear-gradient(135deg, tokens.$color-success 0%, #059669 100%);
-      box-shadow: 0 3px 8px rgba(16, 185, 129, 0.4);
+      background: linear-gradient(135deg, tokens.$color-success 0%, #15803d 100%);
+      box-shadow: 0 3px 8px rgba(22, 163, 74, 0.4);
     }
 
     &:hover {
@@ -689,7 +689,7 @@ $primary-gradient: var(--histora-gradient);
 
         &.available {
           border-color: tokens.$color-success;
-          box-shadow: 0 3px 10px rgba(16, 185, 129, 0.5);
+          box-shadow: 0 3px 10px rgba(22, 163, 74, 0.5);
         }
       }
 
@@ -697,7 +697,7 @@ $primary-gradient: var(--histora-gradient);
         border-color: tokens.$surface-dark-secondary;
 
         &.available {
-          box-shadow: 0 3px 8px rgba(16, 185, 129, 0.6);
+          box-shadow: 0 3px 8px rgba(22, 163, 74, 0.6);
         }
 
         &:not(.available) {

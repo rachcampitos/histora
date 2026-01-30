@@ -327,8 +327,8 @@ ion-segment-button {
 
   .card-actions {
     ion-button[color="success"] {
-      --background: var(--ion-color-success, #10b981);
-      --background-hover: var(--ion-color-success-shade, #059669);
+      --background: var(--ion-color-success, #16a34a);
+      --background-hover: var(--ion-color-success-shade, #15803d);
     }
   }
 }
@@ -467,7 +467,7 @@ ion-item-options {
   }
 
   &.status-completed {
-    border-left-color: var(--ion-color-success, #10b981);
+    border-left-color: var(--ion-color-success, #16a34a);
   }
 
   &.status-cancelled,

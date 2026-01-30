@@ -222,7 +222,7 @@
 
   &.completed {
     .step-dot {
-      background: #10b981;
+      background: #16a34a;
 
       ion-icon {
         color: white;
@@ -230,7 +230,7 @@
     }
 
     .step-label {
-      color: #10b981;
+      color: #16a34a;
     }
   }
 }
@@ -244,7 +244,7 @@
   transition: background 0.3s ease;
 
   &.completed {
-    background: #10b981;
+    background: #16a34a;
   }
 }
 
@@ -307,7 +307,7 @@
 
       .new-nurse {
         font-size: 12px;
-        color: #10b981;
+        color: #16a34a;
         font-weight: 500;
       }
     }
@@ -438,7 +438,7 @@
 
   &.status-arrived {
     background: #ecfdf5;
-    color: #059669;
+    color: #15803d;
   }
 
   &.status-in_progress {
@@ -549,7 +549,7 @@
       }
 
       &.cash-logo {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
         ion-icon {
           font-size: 24px;
@@ -683,7 +683,7 @@
     .marker-icon {
       width: 24px;
       height: 24px;
-      background: #10b981;
+      background: #16a34a;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -819,7 +819,7 @@
 
     &.completed {
       .step-dot {
-        background: #10b981;
+        background: #16a34a;
 
         ion-icon {
           color: white;
@@ -827,7 +827,7 @@
       }
 
       .step-label {
-        color: #34d399;
+        color: #22c55e;
       }
     }
   }
@@ -836,7 +836,7 @@
     background: #334155;
 
     &.completed {
-      background: #10b981;
+      background: #16a34a;
     }
   }
 
@@ -915,7 +915,7 @@
     }
 
     &.status-arrived {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(22, 163, 74, 0.15);
       color: #34d399;
     }
 
@@ -925,7 +925,7 @@
     }
 
     &.status-completed {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(22, 163, 74, 0.2);
       color: #34d399;
     }
   }
@@ -996,7 +996,7 @@
   // Completed Actions
   .completed-actions {
     .review-submitted {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(22, 163, 74, 0.2);
       color: #34d399;
     }
   }

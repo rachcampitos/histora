@@ -16,7 +16,9 @@ $color-brand-accent: #4a9d9a;       // Teal - Acento (lámpara)
 // Semantic Colors
 $color-primary: #1e3a5f;
 $color-secondary: #64748b;
-$color-success: #16a34a;
+$color-success: #16a34a;            // Verde puro - diferenciado del teal accent
+$color-success-dark: #15803d;       // Para hover/texto sobre blanco
+$color-success-light: #dcfce7;      // Para fondos sutiles
 $color-error: #dc2626;
 $color-warning: #d97706;
 $color-info: #0284c7;
@@ -86,13 +88,13 @@ $text-dark-tertiary: #a8b5c4;     // Improved from #94a3b8 for better WCAG AA co
   --ion-color-tertiary-shade: #418a88;
   --ion-color-tertiary-tint: #5ca7a4;
 
-  // Success
+  // Success - Verde puro diferenciado del teal accent
   --ion-color-success: #{$color-success};
   --ion-color-success-rgb: 22, 163, 74;
   --ion-color-success-contrast: #ffffff;
   --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #138f41;
-  --ion-color-success-tint: #2dac57;
+  --ion-color-success-shade: #{$color-success-dark};
+  --ion-color-success-tint: #22c55e;
 
   // Warning
   --ion-color-warning: #{$color-warning};
