@@ -203,7 +203,7 @@ POST  /notifications/register-device  # Registrar para push
 ## Instalacion Local
 
 ### Requisitos
-- Node.js 20+
+- Node.js 22+ (requerido por Capacitor CLI)
 - MongoDB (local o Atlas)
 - npm o yarn
 
@@ -310,6 +310,47 @@ npm run test         # Tests
 | **Mapbox** | Mapas y geocodificacion |
 | **MongoDB Atlas** | Base de datos en la nube |
 | **Google OAuth** | Autenticacion social |
+| **Sentry** | Monitoreo de errores y performance |
+
+---
+
+## Monitoreo (Sentry)
+
+El proyecto incluye monitoreo de errores con Sentry:
+
+- **Frontend**: Captura errores de Angular y performance de navegacion
+- **Backend**: Captura excepciones y profiling de rendimiento
+- **Dashboard**: https://sentry.io (org: Histora)
+
+Solo activo en produccion para evitar ruido en desarrollo.
+
+---
+
+## Compilacion Nativa (iOS/Android)
+
+### Requisitos
+- **iOS**: macOS + Xcode 15+
+- **Android**: Android Studio + JDK 17
+
+### Comandos
+```bash
+cd histora-care
+
+# Sincronizar cambios web con nativo
+npx cap sync
+
+# Abrir en IDE nativo
+npx cap open ios      # Abre Xcode
+npx cap open android  # Abre Android Studio
+
+# Ejecutar en dispositivo/emulador
+npx cap run ios
+npx cap run android
+```
+
+### App Info
+- **Bundle ID**: com.historahealth.nurselite
+- **App Name**: NurseLite
 
 ---
 
@@ -334,6 +375,35 @@ cd histora-care && npm test
 - [Sistema de pagos](histora-care/docs/PAYMENT-STRATEGY.md)
 - [API del CEP](histora-back/docs/CEP-API.md)
 - [Flujos del sistema](histora-care/docs/FLUJOS_SISTEMA.md)
+
+---
+
+## Roadmap
+
+### Completado
+- [x] Autenticacion (JWT, Google OAuth)
+- [x] Verificacion de enfermeras via CEP
+- [x] Busqueda de enfermeras por geolocalizacion
+- [x] Solicitudes de servicio
+- [x] Tracking en tiempo real (Socket.IO)
+- [x] Sistema de calificaciones
+- [x] Panel de administracion
+- [x] Compilacion nativa iOS/Android (Capacitor)
+- [x] Monitoreo de errores (Sentry)
+- [x] Optimizacion de imagenes y lazy loading
+
+### En Progreso / Pendiente
+
+| Issue | Descripcion | Prioridad |
+|-------|-------------|-----------|
+| #27 | Integracion real con Culqi (Yape, Plin, Tarjetas) | Alta |
+| #28 | Notificaciones Push nativas (Firebase/APNs) | Alta |
+| #29 | Escalabilidad: Redis Cache | Media |
+| #30 | API Versioning (/api/v1/) | Media |
+| #32 | Panel Admin Avanzado | Media |
+| #34 | Sistema de Favoritos para Pacientes | Baja |
+| #36 | Testing: Aumentar cobertura a 80% | Media |
+| #38 | Chat en tiempo real Paciente-Enfermera | Baja |
 
 ---
 
