@@ -32,9 +32,9 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#0f1f33] text-white" role="contentinfo">
+    <footer className="bg-[#0f1f33] text-white pt-16 md:pt-24" role="contentinfo">
       {/* Main Footer */}
-      <div className="container mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-16">
+      <div className="container mx-auto px-6 pb-12 md:pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-4">
