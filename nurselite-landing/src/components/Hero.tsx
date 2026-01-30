@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Heart,
@@ -19,27 +19,32 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatedSection } from "./ui/AnimatedSection";
 import { Audience } from "@/types";
+import {
+  getFeaturedProfessionals,
+  fallbackFeaturedData,
+  FeaturedProfessional,
+} from "@/lib/api";
 
 const audiences = {
   patient: {
-    badge: "Enfermeras CEP Verificadas",
+    badge: "Profesionales CEP Verificados",
     title: "Cuida a tu familia",
     highlight: "sin culpa ni preocupacion",
     subtitle:
-      "Conectamos familias con enfermeras verificadas oficialmente por el CEP y RENIEC. Seguimiento GPS en tiempo real para tu completa tranquilidad.",
+      "Conectamos familias con profesionales de enfermeria verificados oficialmente por el CEP y RENIEC. Seguimiento GPS en tiempo real para tu completa tranquilidad.",
     cta: "Encontrar enfermera verificada",
     ctaLink: "https://care.historahealth.com/auth/register?type=patient",
     microCopy: "Sin registro previo. Proceso en menos de 3 minutos.",
     benefits: [
       { icon: ShieldCheck, text: "Verificacion oficial CEP + RENIEC" },
-      { icon: Clock, text: "Enfermeras disponibles hoy" },
+      { icon: Clock, text: "Profesionales disponibles hoy" },
       { icon: Star, text: "4.9/5 de calificacion promedio" },
     ],
   },
   nurse: {
     badge: "Unete a NurseLite",
     title: "Haz crecer tu carrera",
-    highlight: "como enfermera independiente",
+    highlight: "en enfermeria independiente",
     subtitle:
       "Unete a la red de profesionales de salud mas confiable. Tu defines tu horario, tus precios, y te quedas con el 100% de tus ingresos.",
     cta: "Comenzar a ganar mas",
@@ -48,15 +53,31 @@ const audiences = {
     benefits: [
       { icon: DollarSign, text: "100% de tus ingresos son tuyos" },
       { icon: Calendar, text: "Tu defines tu disponibilidad" },
-      { icon: Users, text: "500+ enfermeras activas" },
+      { icon: Users, text: "500+ profesionales activos" },
     ],
   },
 };
 
 export function Hero() {
   const [audience, setAudience] = useState<Audience>("patient");
+  const [professionals, setProfessionals] = useState<FeaturedProfessional[]>(
+    fallbackFeaturedData.professionals
+  );
+  const [stats, setStats] = useState(fallbackFeaturedData.stats);
   const content = audiences[audience];
   const shouldReduceMotion = useReducedMotion();
+
+  // Fetch real data from API
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getFeaturedProfessionals(3);
+      if (data) {
+        setProfessionals(data.professionals);
+        setStats(data.stats);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <section
@@ -90,13 +111,13 @@ export function Hero() {
                   role="tab"
                   aria-selected={audience === "patient"}
                   aria-controls="hero-content"
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
                     audience === "patient"
                       ? "bg-white dark:bg-[#1e293b] text-[#1e3a5f] dark:text-white shadow-md"
                       : "text-[#64748b] hover:text-[#1e3a5f] dark:hover:text-white"
                   }`}
                 >
-                  <Heart className="w-4 h-4" />
+                  <Heart className="w-4 h-4 flex-shrink-0" />
                   Busco enfermera
                 </button>
                 <button
@@ -104,14 +125,14 @@ export function Hero() {
                   role="tab"
                   aria-selected={audience === "nurse"}
                   aria-controls="hero-content"
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
                     audience === "nurse"
                       ? "bg-white dark:bg-[#1e293b] text-[#1e3a5f] dark:text-white shadow-md"
                       : "text-[#64748b] hover:text-[#1e3a5f] dark:hover:text-white"
                   }`}
                 >
-                  <Stethoscope className="w-4 h-4" />
-                  Soy enfermera
+                  <Stethoscope className="w-4 h-4 flex-shrink-0" />
+                  Soy profesional
                 </button>
               </div>
             </AnimatedSection>
@@ -199,19 +220,31 @@ export function Hero() {
               <div className="flex flex-wrap items-center gap-6">
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((i) => (
+                    {professionals.slice(0, 4).map((prof, i) => (
                       <div
-                        key={i}
-                        className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] border-2 border-white dark:border-[#0f172a] flex items-center justify-center"
+                        key={prof.id || i}
+                        className="w-8 h-8 rounded-full border-2 border-white dark:border-[#0f172a] overflow-hidden"
                       >
-                        <span className="text-white text-xs font-bold">
-                          {String.fromCharCode(64 + i)}
-                        </span>
+                        {prof.photoUrl ? (
+                          <Image
+                            src={prof.photoUrl}
+                            alt={prof.firstName}
+                            width={32}
+                            height={32}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">
+                              {prof.firstName?.charAt(0) || String.fromCharCode(65 + i)}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                   <span className="text-sm text-[#64748b] dark:text-[#94a3b8]">
-                    <strong className="text-[#1a1a2e] dark:text-white">500+</strong> enfermeras verificadas
+                    <strong className="text-[#1a1a2e] dark:text-white">{stats.totalProfessionals}+</strong> profesionales verificados
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -221,7 +254,7 @@ export function Hero() {
                     ))}
                   </div>
                   <span className="text-sm text-[#64748b] dark:text-[#94a3b8]">
-                    <strong className="text-[#1a1a2e] dark:text-white">4.9/5</strong> calificacion promedio
+                    <strong className="text-[#1a1a2e] dark:text-white">{stats.averageRating}/5</strong> calificacion promedio
                   </span>
                 </div>
               </div>
@@ -247,7 +280,7 @@ export function Hero() {
                       />
                       <div>
                         <p className="font-bold text-[#1a1a2e] dark:text-white">NurseLite</p>
-                        <p className="text-xs text-[#64748b] dark:text-[#94a3b8]">Tu enfermera a un toque</p>
+                        <p className="text-xs text-[#64748b] dark:text-[#94a3b8]">Cuidado profesional a un toque</p>
                       </div>
                     </div>
                     <div className="trust-badge">
@@ -256,37 +289,49 @@ export function Hero() {
                     </div>
                   </div>
 
-                  {/* Search Preview */}
+                  {/* Search Preview - Real Data */}
                   <div className="bg-white dark:bg-[#1e293b] rounded-xl p-4 shadow-sm mb-4">
-                    <p className="text-sm text-[#64748b] dark:text-[#94a3b8] mb-3">Enfermeras disponibles hoy</p>
+                    <p className="text-sm text-[#64748b] dark:text-[#94a3b8] mb-3">Profesionales disponibles hoy</p>
                     <div className="space-y-3">
-                      {[
-                        { name: "Maria C.", rating: 4.9, specialty: "Geriatria", verified: true },
-                        { name: "Ana L.", rating: 4.8, specialty: "Curaciones", verified: true },
-                        { name: "Rosa M.", rating: 5.0, specialty: "Inyecciones", verified: true },
-                      ].map((nurse, i) => (
+                      {professionals.map((prof, i) => (
                         <motion.div
-                          key={nurse.name}
+                          key={prof.id || i}
                           initial={shouldReduceMotion ? {} : { opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.8 + i * 0.15 }}
                           className="flex items-center gap-3 p-3 bg-[#f8fafc] dark:bg-[#0f172a] rounded-lg"
                         >
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f]" />
-                          <div className="flex-1">
+                          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                            {prof.photoUrl ? (
+                              <Image
+                                src={prof.photoUrl}
+                                alt={prof.firstName}
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center">
+                                <span className="text-white text-sm font-bold">
+                                  {prof.firstName?.charAt(0) || "?"}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1">
-                              <p className="text-sm font-semibold text-[#1a1a2e] dark:text-white">
-                                {nurse.name}
+                              <p className="text-sm font-semibold text-[#1a1a2e] dark:text-white truncate">
+                                {prof.firstName}
                               </p>
-                              {nurse.verified && (
-                                <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                              {prof.verified && (
+                                <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
                               )}
                             </div>
-                            <p className="text-xs text-[#64748b] dark:text-[#94a3b8]">{nurse.specialty}</p>
+                            <p className="text-xs text-[#64748b] dark:text-[#94a3b8]">{prof.specialty}</p>
                           </div>
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1 flex-shrink-0">
                             <Star className="w-3.5 h-3.5 text-[#fbbf24] fill-current" aria-hidden="true" />
-                            <span className="text-sm font-medium dark:text-white">{nurse.rating}</span>
+                            <span className="text-sm font-medium dark:text-white">{prof.rating}</span>
                           </div>
                         </motion.div>
                       ))}
