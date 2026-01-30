@@ -11,6 +11,7 @@ interface ChecklistItem {
   completed: boolean;
   route: string;
   icon: string;
+  section?: string;
 }
 
 @Component({
@@ -50,6 +51,7 @@ export class ProfileChecklistComponent implements OnInit {
         completed: !!(nurse?.availableFrom && nurse?.availableTo),
         route: '/nurse/profile',
         icon: 'calendar-outline',
+        section: 'availability',
       },
       {
         id: 'bio',
@@ -57,6 +59,7 @@ export class ProfileChecklistComponent implements OnInit {
         completed: !!(nurse?.bio && nurse.bio.trim().length > 0),
         route: '/nurse/profile',
         icon: 'document-text-outline',
+        section: 'bio',
       },
     ];
   });
@@ -168,7 +171,8 @@ export class ProfileChecklistComponent implements OnInit {
   }
 
   goToItem(item: ChecklistItem) {
-    this.router.navigate([item.route]);
+    const queryParams = item.section ? { section: item.section } : undefined;
+    this.router.navigate([item.route], { queryParams });
   }
 
   dismiss() {
