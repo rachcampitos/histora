@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Download, Sun, Moon } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 import Link from "next/link";
-import { useTheme } from "./ThemeProvider";
+import Image from "next/image";
+import { ThemeToggle } from "./ui/ThemeToggle";
 
 const navLinks = [
   { href: "#como-funciona", label: "Como Funciona" },
@@ -17,7 +18,6 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { theme, toggleTheme, mounted } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,10 +43,13 @@ export function Header() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <img
+              <Image
                 src="/nurselite.png"
-                alt="NurseLite"
-                className="w-10 h-10 rounded-xl object-cover"
+                alt="NurseLite logo"
+                width={40}
+                height={40}
+                className="rounded-xl object-cover"
+                priority
               />
               <span className="text-xl font-bold text-[#1e3a5f] dark:text-white">
                 Nurse<span className="text-[#4a9d9a]">Lite</span>
@@ -68,19 +71,7 @@ export function Header() {
 
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center gap-4">
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-[#f1f5f9] dark:hover:bg-[#334155] transition-colors"
-                aria-label={theme === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
-              >
-                {mounted && (theme === "dark" ? (
-                  <Sun className="w-5 h-5 text-[#fbbf24]" />
-                ) : (
-                  <Moon className="w-5 h-5 text-[#64748b]" />
-                ))}
-                {!mounted && <Moon className="w-5 h-5 text-[#64748b]" />}
-              </button>
+              <ThemeToggle />
               <Link
                 href="https://care.historahealth.com/auth/login"
                 className="text-[#1e3a5f] dark:text-white font-semibold hover:text-[#4a9d9a] transition-colors"
@@ -98,18 +89,7 @@ export function Header() {
 
             {/* Mobile Theme Toggle & Menu Button */}
             <div className="lg:hidden flex items-center gap-2">
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-[#f1f5f9] dark:hover:bg-[#334155] transition-colors"
-                aria-label={theme === "dark" ? "Activar modo claro" : "Activar modo oscuro"}
-              >
-                {mounted && (theme === "dark" ? (
-                  <Sun className="w-5 h-5 text-[#fbbf24]" />
-                ) : (
-                  <Moon className="w-5 h-5 text-[#64748b]" />
-                ))}
-                {!mounted && <Moon className="w-5 h-5 text-[#64748b]" />}
-              </button>
+              <ThemeToggle />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="p-2 text-[#1e3a5f] dark:text-white"

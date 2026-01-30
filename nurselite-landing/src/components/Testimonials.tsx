@@ -1,79 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Quote, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { AnimatedSection } from "./ui/AnimatedSection";
-
-const testimonials = [
-  {
-    id: 1,
-    name: "Maria Garcia",
-    location: "San Isidro",
-    avatar: "MG",
-    rating: 5,
-    text: "Llegaron rapido y con mucho profesionalismo. Mi mama quedo muy contenta con la atencion. La enfermera fue muy amable y explico todo con paciencia. Definitivamente volvere a usar el servicio.",
-    service: "Cuidado de adulto mayor",
-  },
-  {
-    id: 2,
-    name: "Carlos Rodriguez",
-    location: "Miraflores",
-    avatar: "CR",
-    rating: 5,
-    text: "Excelente servicio de inyecciones a domicilio. La enfermera llego puntual y fue muy cuidadosa con el procedimiento. Me ahorre mucho tiempo y el costo es muy razonable.",
-    service: "Inyeccion intramuscular",
-  },
-  {
-    id: 3,
-    name: "Ana Lucia Mendoza",
-    location: "La Molina",
-    avatar: "AL",
-    rating: 5,
-    text: "La verificacion CEP me dio mucha tranquilidad. Saber que la enfermera esta colegiada y habilitada es super importante cuando se trata de la salud de mi familia. Recomendado 100%.",
-    service: "Control de signos vitales",
-  },
-  {
-    id: 4,
-    name: "Roberto Sanchez",
-    location: "Surco",
-    avatar: "RS",
-    rating: 5,
-    text: "Mi padre necesitaba curacion de una herida post-operatoria. La enfermera fue muy profesional y el proceso de agendar fue super facil desde la app. Muy agradecido.",
-    service: "Curacion de heridas",
-  },
-  {
-    id: 5,
-    name: "Patricia Vega",
-    location: "San Borja",
-    avatar: "PV",
-    rating: 5,
-    text: "Como enfermera, NurseLite me ha permitido tener mas pacientes y manejar mi propio horario. La plataforma es muy intuitiva y el proceso de verificacion fue rapido.",
-    service: "Enfermera verificada",
-  },
-];
+import { testimonials } from "@/data/testimonials";
 
 export function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const nextTestimonial = () => {
+  const nextTestimonial = useCallback(() => {
     setDirection(1);
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-  };
+  }, []);
 
-  const prevTestimonial = () => {
+  const prevTestimonial = useCallback(() => {
     setDirection(-1);
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+  }, []);
 
-  // Auto-advance
+  // Auto-advance with pause on hover
   useEffect(() => {
+    if (isPaused) return;
+
     const interval = setInterval(() => {
       nextTestimonial();
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isPaused, nextTestimonial]);
 
   const variants = {
     enter: (direction: number) => ({
@@ -91,7 +47,11 @@ export function Testimonials() {
   };
 
   return (
-    <section id="testimonios" className="bg-white dark:bg-[#1e293b] relative overflow-hidden">
+    <section
+      id="testimonios"
+      className="bg-white dark:bg-[#1e293b] relative overflow-hidden"
+      aria-labelledby="testimonials-title"
+    >
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="absolute top-20 right-20 w-64 h-64 bg-amber-100 dark:bg-amber-900/20 rounded-full blur-3xl opacity-50" />
@@ -104,7 +64,10 @@ export function Testimonials() {
           <span className="inline-block px-4 py-2 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-sm font-semibold mb-4">
             Testimonios Reales
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a1a2e] dark:text-white mb-6">
+          <h2
+            id="testimonials-title"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a1a2e] dark:text-white mb-6"
+          >
             Lo Que Dicen Nuestros Usuarios
           </h2>
           <p className="text-lg text-[#64748b] dark:text-[#94a3b8]">
@@ -113,7 +76,13 @@ export function Testimonials() {
         </AnimatedSection>
 
         {/* Testimonials Carousel */}
-        <div className="max-w-4xl mx-auto">
+        <div
+          className="max-w-4xl mx-auto"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onFocus={() => setIsPaused(true)}
+          onBlur={() => setIsPaused(false)}
+        >
           <div className="relative">
             {/* Main Testimonial Card */}
             <AnimatePresence custom={direction} mode="wait">

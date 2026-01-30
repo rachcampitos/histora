@@ -2,6 +2,7 @@
 
 import { Heart, Mail, Phone, MapPin, Instagram, Facebook, Linkedin } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const footerLinks = {
   producto: [
@@ -41,10 +42,12 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6">
-              <img
+              <Image
                 src="/nurselite.png"
-                alt="NurseLite"
-                className="w-10 h-10 rounded-xl object-cover"
+                alt="NurseLite logo"
+                width={40}
+                height={40}
+                className="rounded-xl object-cover"
               />
               <span className="text-xl font-bold">
                 Nurse<span className="text-[#4a9d9a]">Lite</span>

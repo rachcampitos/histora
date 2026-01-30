@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://nurse-lite.com/sitemap.xml
+
+# Disallow admin paths (if any)
+Disallow: /api/
