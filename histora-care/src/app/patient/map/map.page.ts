@@ -174,8 +174,8 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
         latitude: this.userLat,
         longitude: this.userLng,
         radiusKm: this.searchRadius,
-        category: (this.selectedCategory as any) || undefined
-        // Removed availableNow filter to show all nurses
+        category: (this.selectedCategory as any) || undefined,
+        availableNow: true // Only show nurses available right now (day + time)
       }).toPromise();
 
       this.nearbyNurses = results || [];

@@ -188,8 +188,19 @@ export class NursesService {
       isDeleted: { $ne: true },
     };
 
+    // Get current time in Peru timezone (UTC-5)
+    const now = new Date();
+    const peruOffset = -5 * 60; // UTC-5 in minutes
+    const peruTime = new Date(now.getTime() + (peruOffset - now.getTimezoneOffset()) * 60000);
+    const currentDay = peruTime.getDay(); // 0=Sunday, 1=Monday, etc.
+    const currentHour = peruTime.getHours();
+    const currentMinute = peruTime.getMinutes();
+    const currentTimeStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+
     if (availableNow) {
       matchConditions.isAvailable = true;
+      // Filter by day of week - nurse must be available on current day
+      matchConditions.availableDays = currentDay;
     }
 
     if (minRating) {
@@ -263,7 +274,20 @@ export class NursesService {
       },
     ]);
 
-    return nurses.map((n) => ({
+    // Filter by time if availableNow is requested
+    let filteredNurses = nurses;
+    if (availableNow) {
+      filteredNurses = nurses.filter((n) => {
+        // If no schedule defined, consider available (toggle is already checked)
+        if (!n.availableFrom || !n.availableTo) {
+          return true;
+        }
+        // Check if current time is within availability window
+        return currentTimeStr >= n.availableFrom && currentTimeStr <= n.availableTo;
+      });
+    }
+
+    return filteredNurses.map((n) => ({
       nurse: n,
       distance: n.distance,
     }));
