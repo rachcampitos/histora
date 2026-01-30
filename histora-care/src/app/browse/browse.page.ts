@@ -158,7 +158,8 @@ export class BrowsePage implements OnInit, AfterViewInit, OnDestroy {
         latitude: this.userLat,
         longitude: this.userLng,
         radiusKm: this.searchRadius,
-        category: (this.selectedCategory as any) || undefined
+        category: (this.selectedCategory as any) || undefined,
+        availableNow: true // Only show nurses available right now (day + time)
       }).toPromise();
 
       this.nearbyNurses = results || [];
