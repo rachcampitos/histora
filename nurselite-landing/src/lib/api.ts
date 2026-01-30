@@ -25,19 +25,24 @@ export interface FeaturedResponse {
  * Fetch featured professionals for the landing page
  */
 export async function getFeaturedProfessionals(limit = 3): Promise<FeaturedResponse | null> {
+  // In development without local API, use fallback data to avoid console errors
+  if (process.env.NODE_ENV === 'development' && !process.env.NEXT_PUBLIC_API_URL) {
+    return fallbackFeaturedData;
+  }
+
   try {
     const response = await fetch(`${API_BASE_URL}/nurses/featured?limit=${limit}`, {
       next: { revalidate: 300 }, // Cache for 5 minutes
     });
 
     if (!response.ok) {
-      console.error('Failed to fetch featured professionals:', response.status);
+      console.warn('API unavailable, using fallback data');
       return null;
     }
 
     return response.json();
-  } catch (error) {
-    console.error('Error fetching featured professionals:', error);
+  } catch {
+    // Silently fall back to default data
     return null;
   }
 }
