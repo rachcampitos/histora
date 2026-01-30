@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.72.0",
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.1.12",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.12",
@@ -44,6 +45,7 @@
     "@sentry/profiling-node": "^10.38.0",
     "@types/multer": "^2.0.0",
     "@types/passport-google-oauth20": "^2.0.17",
+    "axios": "^1.13.4",
     "bcrypt": "^6.0.0",
     "cheerio": "^1.2.0",
     "class-transformer": "^0.5.1",
