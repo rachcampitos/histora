@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed, input, Output, EventEmitter, effect, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { NurseOnboardingService } from '../../../../core/services/nurse-onboarding.service';
@@ -18,7 +18,7 @@ interface ChecklistItem {
   templateUrl: './profile-checklist.component.html',
   styleUrls: ['./profile-checklist.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [IonicModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileChecklistComponent implements OnInit {

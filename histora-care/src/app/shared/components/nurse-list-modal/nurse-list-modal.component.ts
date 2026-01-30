@@ -1,12 +1,12 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, ModalController } from '@ionic/angular';
 import { NurseSearchResult } from '../../../core/models';
 
 @Component({
   selector: 'app-nurse-list-modal',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [IonicModule],
   templateUrl: './nurse-list-modal.component.html',
   styleUrls: ['./nurse-list-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

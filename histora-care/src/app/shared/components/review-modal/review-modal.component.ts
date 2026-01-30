@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { IonTextareaCustomEvent, TextareaInputEventDetail } from '@ionic/core';
@@ -14,7 +14,7 @@ export interface ReviewSubmitData {
   templateUrl: './review-modal.component.html',
   styleUrls: ['./review-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [FormsModule, IonicModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewModalComponent {

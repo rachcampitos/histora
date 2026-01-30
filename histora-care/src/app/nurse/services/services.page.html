@@ -13,13 +13,15 @@
   </ion-refresher>
 
   <!-- Loading State -->
-  <div class="loading-state" *ngIf="isLoading()">
-    <ion-spinner name="crescent"></ion-spinner>
-    <p>Cargando servicios...</p>
-  </div>
+  @if (isLoading()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando servicios...</p>
+    </div>
+  }
 
   <!-- Services List -->
-  <ng-container *ngIf="!isLoading()">
+  @if (!isLoading()) {
     <!-- Summary Section -->
     <div class="summary-section">
       <div class="summary-card">
@@ -39,115 +41,120 @@
         </div>
       </div>
     </div>
-
     <!-- Active Services -->
-    <div class="section" *ngIf="activeServices().length > 0">
-      <div class="section-header">
-        <h2>Servicios Activos</h2>
-        <ion-badge color="success">{{ activeServices().length }}</ion-badge>
+    @if (activeServices().length > 0) {
+      <div class="section">
+        <div class="section-header">
+          <h2>Servicios Activos</h2>
+          <ion-badge color="success">{{ activeServices().length }}</ion-badge>
+        </div>
+        <ion-list class="services-list">
+          @for (service of activeServices(); track service) {
+            <ion-item-sliding>
+              <ion-item button (click)="openEditModal(service)" detail="false">
+                <div class="service-icon" slot="start">
+                  <ion-icon [name]="getCategoryIcon(service.category)"></ion-icon>
+                </div>
+                <ion-label>
+                  <h3>{{ service.name }}</h3>
+                  <p class="category">{{ getCategoryLabel(service.category) }}</p>
+                  <div class="service-details">
+                    <span class="price">S/ {{ service.price | number:'1.2-2' }}</span>
+                    <span class="duration">
+                      <ion-icon name="time-outline"></ion-icon>
+                      {{ formatDuration(service.durationMinutes) }}
+                    </span>
+                  </div>
+                </ion-label>
+                <ion-toggle
+                  slot="end"
+                  [checked]="service.isActive"
+                  (ionChange)="toggleServiceStatus(service)"
+                  (click)="$event.stopPropagation()"
+                  color="success">
+                </ion-toggle>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="openEditModal(service)">
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-item-option>
+                <ion-item-option color="danger" (click)="confirmDeleteService(service)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          }
+        </ion-list>
       </div>
-
-      <ion-list class="services-list">
-        <ion-item-sliding *ngFor="let service of activeServices()">
-          <ion-item button (click)="openEditModal(service)" detail="false">
-            <div class="service-icon" slot="start">
-              <ion-icon [name]="getCategoryIcon(service.category)"></ion-icon>
-            </div>
-            <ion-label>
-              <h3>{{ service.name }}</h3>
-              <p class="category">{{ getCategoryLabel(service.category) }}</p>
-              <div class="service-details">
-                <span class="price">S/ {{ service.price | number:'1.2-2' }}</span>
-                <span class="duration">
-                  <ion-icon name="time-outline"></ion-icon>
-                  {{ formatDuration(service.durationMinutes) }}
-                </span>
-              </div>
-            </ion-label>
-            <ion-toggle
-              slot="end"
-              [checked]="service.isActive"
-              (ionChange)="toggleServiceStatus(service)"
-              (click)="$event.stopPropagation()"
-              color="success">
-            </ion-toggle>
-          </ion-item>
-
-          <ion-item-options side="end">
-            <ion-item-option color="primary" (click)="openEditModal(service)">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-item-option>
-            <ion-item-option color="danger" (click)="confirmDeleteService(service)">
-              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
-      </ion-list>
-    </div>
-
+    }
     <!-- Inactive Services -->
-    <div class="section" *ngIf="inactiveServices().length > 0">
-      <div class="section-header">
-        <h2>Servicios Inactivos</h2>
-        <ion-badge color="medium">{{ inactiveServices().length }}</ion-badge>
+    @if (inactiveServices().length > 0) {
+      <div class="section">
+        <div class="section-header">
+          <h2>Servicios Inactivos</h2>
+          <ion-badge color="medium">{{ inactiveServices().length }}</ion-badge>
+        </div>
+        <ion-list class="services-list inactive">
+          @for (service of inactiveServices(); track service) {
+            <ion-item-sliding>
+              <ion-item button (click)="openEditModal(service)" detail="false">
+                <div class="service-icon inactive" slot="start">
+                  <ion-icon [name]="getCategoryIcon(service.category)"></ion-icon>
+                </div>
+                <ion-label>
+                  <h3>{{ service.name }}</h3>
+                  <p class="category">{{ getCategoryLabel(service.category) }}</p>
+                  <div class="service-details">
+                    <span class="price">S/ {{ service.price | number:'1.2-2' }}</span>
+                    <span class="duration">
+                      <ion-icon name="time-outline"></ion-icon>
+                      {{ formatDuration(service.durationMinutes) }}
+                    </span>
+                  </div>
+                </ion-label>
+                <ion-toggle
+                  slot="end"
+                  [checked]="service.isActive"
+                  (ionChange)="toggleServiceStatus(service)"
+                  (click)="$event.stopPropagation()"
+                  color="success">
+                </ion-toggle>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="openEditModal(service)">
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-item-option>
+                <ion-item-option color="danger" (click)="confirmDeleteService(service)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          }
+        </ion-list>
       </div>
-
-      <ion-list class="services-list inactive">
-        <ion-item-sliding *ngFor="let service of inactiveServices()">
-          <ion-item button (click)="openEditModal(service)" detail="false">
-            <div class="service-icon inactive" slot="start">
-              <ion-icon [name]="getCategoryIcon(service.category)"></ion-icon>
-            </div>
-            <ion-label>
-              <h3>{{ service.name }}</h3>
-              <p class="category">{{ getCategoryLabel(service.category) }}</p>
-              <div class="service-details">
-                <span class="price">S/ {{ service.price | number:'1.2-2' }}</span>
-                <span class="duration">
-                  <ion-icon name="time-outline"></ion-icon>
-                  {{ formatDuration(service.durationMinutes) }}
-                </span>
-              </div>
-            </ion-label>
-            <ion-toggle
-              slot="end"
-              [checked]="service.isActive"
-              (ionChange)="toggleServiceStatus(service)"
-              (click)="$event.stopPropagation()"
-              color="success">
-            </ion-toggle>
-          </ion-item>
-
-          <ion-item-options side="end">
-            <ion-item-option color="primary" (click)="openEditModal(service)">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-item-option>
-            <ion-item-option color="danger" (click)="confirmDeleteService(service)">
-              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
-      </ion-list>
-    </div>
-
+    }
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="services().length === 0">
-      <ion-icon name="medical-outline"></ion-icon>
-      <h3>Sin servicios</h3>
-      <p>Agrega los servicios que ofreces para que los pacientes puedan encontrarte.</p>
-      <ion-button (click)="openAddModal()" expand="block">
-        <ion-icon slot="start" name="add-outline"></ion-icon>
-        Agregar servicio
-      </ion-button>
-    </div>
-  </ng-container>
+    @if (services().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="medical-outline"></ion-icon>
+        <h3>Sin servicios</h3>
+        <p>Agrega los servicios que ofreces para que los pacientes puedan encontrarte.</p>
+        <ion-button (click)="openAddModal()" expand="block">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          Agregar servicio
+        </ion-button>
+      </div>
+    }
+  }
 
   <!-- FAB Button -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isLoading() && services().length > 0">
-    <ion-fab-button (click)="openAddModal()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  @if (!isLoading() && services().length > 0) {
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="openAddModal()">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
 </ion-content>
 
 <!-- Service Modal -->
@@ -167,8 +174,12 @@
         <ion-title>{{ isEditMode() ? 'Editar Servicio' : 'Nuevo Servicio' }}</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="saveService()" [disabled]="isSaving()" strong>
-            <ion-spinner *ngIf="isSaving()" name="dots"></ion-spinner>
-            <span *ngIf="!isSaving()">Guardar</span>
+            @if (isSaving()) {
+              <ion-spinner name="dots"></ion-spinner>
+            }
+            @if (!isSaving()) {
+              <span>Guardar</span>
+            }
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
@@ -206,9 +217,11 @@
             [value]="serviceForm().category"
             (ionChange)="updateFormField('category', $event.detail.value)"
             interface="action-sheet">
-            <ion-select-option *ngFor="let cat of categories" [value]="cat.value">
-              {{ cat.label }}
-            </ion-select-option>
+            @for (cat of categories; track cat) {
+              <ion-select-option [value]="cat.value">
+                {{ cat.label }}
+              </ion-select-option>
+            }
           </ion-select>
         </ion-item>
 

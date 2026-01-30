@@ -12,9 +12,11 @@
           interface="action-sheet"
           placeholder="Tipo de servicio"
           aria-label="Seleccionar tipo de servicio">
-          <ion-select-option *ngFor="let cat of categories" [value]="cat.value">
-            {{ cat.label }}
-          </ion-select-option>
+          @for (cat of categories; track cat) {
+            <ion-select-option [value]="cat.value">
+              {{ cat.label }}
+            </ion-select-option>
+          }
         </ion-select>
       </ion-item>
 
@@ -44,107 +46,122 @@
   </div>
 
   <!-- Results Count Badge -->
-  <div class="results-badge" *ngIf="nearbyNurses.length > 0" role="status" aria-live="polite">
-    <ion-badge color="primary">
-      {{ nearbyNurses.length }} {{ nearbyNurses.length === 1 ? 'enfermera' : 'enfermeras' }} cerca
-    </ion-badge>
-  </div>
+  @if (nearbyNurses.length > 0) {
+    <div class="results-badge" role="status" aria-live="polite">
+      <ion-badge color="primary">
+        {{ nearbyNurses.length }} {{ nearbyNurses.length === 1 ? 'enfermera' : 'enfermeras' }} cerca
+      </ion-badge>
+    </div>
+  }
 
   <!-- Loading Overlay -->
-  <div class="loading-overlay" *ngIf="isSearching" role="status" aria-live="polite" aria-label="Buscando enfermeras">
-    <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-    <p>Buscando enfermeras...</p>
-  </div>
+  @if (isSearching) {
+    <div class="loading-overlay" role="status" aria-live="polite" aria-label="Buscando enfermeras">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <p>Buscando enfermeras...</p>
+    </div>
+  }
 
   <!-- Selected Nurse Card -->
-  <div class="nurse-card" *ngIf="selectedNurse" [@slideUp] role="dialog" aria-labelledby="nurse-card-title">
-    <ion-button fill="clear" class="close-btn" (click)="closeNurseCard()" aria-label="Cerrar tarjeta de enfermera">
-      <ion-icon name="close" slot="icon-only" aria-hidden="true"></ion-icon>
-    </ion-button>
-
-    <div class="nurse-header">
-      <ion-avatar class="nurse-avatar">
-        <img [src]="selectedNurse.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + selectedNurse.nurse.user?.firstName">
-      </ion-avatar>
-      <div class="nurse-info">
-        <div class="info-row">
-          <h3 id="nurse-card-title">{{ selectedNurse.nurse.user?.firstName }} {{ selectedNurse.nurse.user?.lastName }}</h3>
-          <div class="availability-badge"
-               [class.available]="selectedNurse.nurse.isAvailable"
-               role="status"
-               [attr.aria-label]="'Estado: ' + (selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible')">
-            {{ selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
+  @if (selectedNurse) {
+    <div class="nurse-card" [@slideUp] role="dialog" aria-labelledby="nurse-card-title">
+      <ion-button fill="clear" class="close-btn" (click)="closeNurseCard()" aria-label="Cerrar tarjeta de enfermera">
+        <ion-icon name="close" slot="icon-only" aria-hidden="true"></ion-icon>
+      </ion-button>
+      <div class="nurse-header">
+        <ion-avatar class="nurse-avatar">
+          <img [src]="selectedNurse.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + selectedNurse.nurse.user?.firstName">
+        </ion-avatar>
+        <div class="nurse-info">
+          <div class="info-row">
+            <h3 id="nurse-card-title">{{ selectedNurse.nurse.user?.firstName }} {{ selectedNurse.nurse.user?.lastName }}</h3>
+            <div class="availability-badge"
+              [class.available]="selectedNurse.nurse.isAvailable"
+              role="status"
+              [attr.aria-label]="'Estado: ' + (selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible')">
+              {{ selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
+            </div>
+          </div>
+          <div class="nurse-meta">
+            <span class="distance">
+              <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+              {{ selectedNurse.distance.toFixed(1) }} km
+            </span>
+            @if (selectedNurse.nurse.averageRating > 0) {
+              <span class="rating">
+                <ion-icon name="star" aria-hidden="true"></ion-icon>
+                {{ selectedNurse.nurse.averageRating.toFixed(1) }}
+                ({{ selectedNurse.nurse.totalReviews }})
+              </span>
+            }
           </div>
         </div>
-        <div class="nurse-meta">
-          <span class="distance">
-            <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
-            {{ selectedNurse.distance.toFixed(1) }} km
-          </span>
-          <span class="rating" *ngIf="selectedNurse.nurse.averageRating > 0">
-            <ion-icon name="star" aria-hidden="true"></ion-icon>
-            {{ selectedNurse.nurse.averageRating.toFixed(1) }}
-            ({{ selectedNurse.nurse.totalReviews }})
-          </span>
+      </div>
+      @if (selectedNurse.nurse.specialties?.length) {
+        <div class="nurse-specialties" role="list" aria-label="Especialidades">
+          @for (specialty of selectedNurse.nurse.specialties.slice(0, 3); track specialty) {
+            <ion-chip role="listitem">
+              {{ specialty }}
+            </ion-chip>
+          }
         </div>
+      }
+      @if (selectedNurse.nurse.services?.length) {
+        <div class="nurse-services">
+          <h4 id="services-title">Servicios destacados</h4>
+          <div class="service-list" role="list" aria-labelledby="services-title">
+            @for (service of selectedNurse.nurse.services.slice(0, 2); track service) {
+              <div class="service-item" role="listitem">
+                <span class="service-name">{{ service.name }}</span>
+                <span class="service-price">S/ {{ service.price }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <div class="nurse-actions" role="group" aria-label="Acciones disponibles">
+        <ion-button fill="outline" (click)="viewNurseProfile(selectedNurse.nurse._id)" aria-label="Ver perfil de la enfermera">
+          <ion-icon name="person-outline" slot="start" aria-hidden="true"></ion-icon>
+          Ver Perfil
+        </ion-button>
+        <ion-button
+          color="primary"
+          [disabled]="!selectedNurse.nurse.isAvailable"
+          (click)="requestService(selectedNurse.nurse._id)"
+          aria-label="Solicitar servicio de enfermeria">
+          <ion-icon name="medkit-outline" slot="start" aria-hidden="true"></ion-icon>
+          Solicitar Servicio
+        </ion-button>
       </div>
     </div>
-
-    <div class="nurse-specialties" *ngIf="selectedNurse.nurse.specialties?.length" role="list" aria-label="Especialidades">
-      <ion-chip *ngFor="let specialty of selectedNurse.nurse.specialties.slice(0, 3)" role="listitem">
-        {{ specialty }}
-      </ion-chip>
-    </div>
-
-    <div class="nurse-services" *ngIf="selectedNurse.nurse.services?.length">
-      <h4 id="services-title">Servicios destacados</h4>
-      <div class="service-list" role="list" aria-labelledby="services-title">
-        <div class="service-item" *ngFor="let service of selectedNurse.nurse.services.slice(0, 2)" role="listitem">
-          <span class="service-name">{{ service.name }}</span>
-          <span class="service-price">S/ {{ service.price }}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="nurse-actions" role="group" aria-label="Acciones disponibles">
-      <ion-button fill="outline" (click)="viewNurseProfile(selectedNurse.nurse._id)" aria-label="Ver perfil de la enfermera">
-        <ion-icon name="person-outline" slot="start" aria-hidden="true"></ion-icon>
-        Ver Perfil
-      </ion-button>
-      <ion-button
-        color="primary"
-        [disabled]="!selectedNurse.nurse.isAvailable"
-        (click)="requestService(selectedNurse.nurse._id)"
-        aria-label="Solicitar servicio de enfermeria">
-        <ion-icon name="medkit-outline" slot="start" aria-hidden="true"></ion-icon>
-        Solicitar Servicio
-      </ion-button>
-    </div>
-  </div>
+  }
 
   <!-- Bottom List (collapsed) -->
-  <div class="bottom-list" *ngIf="nearbyNurses.length > 0 && !selectedNurse">
-    <div class="list-header">
-      <span>{{ nearbyNurses.length }} enfermeras cerca de ti</span>
-      <ion-button fill="clear" size="small" (click)="viewNurseList()" aria-label="Ver lista completa de enfermeras">
-        Ver lista
-        <ion-icon name="chevron-forward" slot="end" aria-hidden="true"></ion-icon>
-      </ion-button>
-    </div>
-    <div class="nurse-thumbnails" role="list" aria-label="Enfermeras cercanas">
-      <div
-        class="thumbnail"
-        *ngFor="let result of nearbyNurses.slice(0, 5)"
-        (click)="selectNurse(result)"
-        role="listitem"
-        tabindex="0"
-        (keydown.enter)="selectNurse(result)"
-        [attr.aria-label]="(result.nurse.user?.firstName || 'Enfermera') + ' a ' + result.distance.toFixed(1) + ' km'">
-        <ion-avatar>
-          <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + (result.nurse.user?.firstName || 'enfermera')">
-        </ion-avatar>
-        <span class="distance" aria-hidden="true">{{ result.distance.toFixed(1) }} km</span>
+  @if (nearbyNurses.length > 0 && !selectedNurse) {
+    <div class="bottom-list">
+      <div class="list-header">
+        <span>{{ nearbyNurses.length }} enfermeras cerca de ti</span>
+        <ion-button fill="clear" size="small" (click)="viewNurseList()" aria-label="Ver lista completa de enfermeras">
+          Ver lista
+          <ion-icon name="chevron-forward" slot="end" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </div>
+      <div class="nurse-thumbnails" role="list" aria-label="Enfermeras cercanas">
+        @for (result of nearbyNurses.slice(0, 5); track result) {
+          <div
+            class="thumbnail"
+            (click)="selectNurse(result)"
+            role="listitem"
+            tabindex="0"
+            (keydown.enter)="selectNurse(result)"
+            [attr.aria-label]="(result.nurse.user?.firstName || 'Enfermera') + ' a ' + result.distance.toFixed(1) + ' km'">
+            <ion-avatar>
+              <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + (result.nurse.user?.firstName || 'enfermera')">
+            </ion-avatar>
+            <span class="distance" aria-hidden="true">{{ result.distance.toFixed(1) }} km</span>
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 </ion-content>

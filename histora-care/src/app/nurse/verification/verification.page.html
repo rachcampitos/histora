@@ -11,379 +11,402 @@
 
 <ion-content class="verification-content">
   <!-- Loading State -->
-  <div class="loading-container" *ngIf="isLoading()" role="status" aria-live="polite">
-    <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-    <p>Cargando...</p>
-  </div>
-
-  <div class="verification-container" *ngIf="!isLoading()">
-    <!-- Already Approved State -->
-    <div class="status-card approved" *ngIf="isApproved()">
-      <div class="status-icon">
-        <ion-icon name="checkmark-circle"></ion-icon>
-      </div>
-      <h2>Cuenta Verificada</h2>
-      <p>Tu identidad ha sido verificada exitosamente. Ya puedes ofrecer tus servicios en la plataforma.</p>
-      <ion-button expand="block" (click)="goToProfile()">
-        <ion-icon name="person-outline" slot="start"></ion-icon>
-        Ir a mi Perfil
-      </ion-button>
+  @if (isLoading()) {
+    <div class="loading-container" role="status" aria-live="polite">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <p>Cargando...</p>
     </div>
+  }
 
-    <!-- Under Review State - Enhanced Waiting Screen -->
-    <div class="waiting-screen" *ngIf="isUnderReview()">
-      <!-- Header with animation - changes during approval transition -->
-      <div class="waiting-header" [class.approved-transition]="showApprovalTransition()">
-        <div class="waiting-icon-container">
-          <div class="waiting-pulse" *ngIf="!showApprovalTransition()"></div>
-          <ion-icon [name]="showApprovalTransition() ? 'checkmark-circle' : 'hourglass-outline'"
-                    class="waiting-icon"
-                    [class.success-icon]="showApprovalTransition()"></ion-icon>
-        </div>
-        <h1>{{ showApprovalTransition() ? '¡Verificación Completada!' : 'Tu verificación está en proceso' }}</h1>
-        <p class="waiting-subtitle">{{ showApprovalTransition() ? 'Tu cuenta ha sido aprobada' : 'Nuestro equipo está revisando tus documentos' }}</p>
-      </div>
-
-      <!-- Progress Section -->
-      <div class="waiting-progress-section">
-        <div class="progress-header">
-          <span class="progress-label">Tiempo de espera</span>
-          <span class="progress-time">{{ waitingTimeElapsed() }}</span>
-        </div>
-        <div class="progress-bar-container">
-          <div class="progress-bar-fill" [style.width.%]="waitingProgressPercent()"></div>
-        </div>
-        <div class="progress-footer">
-          <span>Tiempo estimado: 24-48 horas</span>
-        </div>
-      </div>
-
-      <!-- Status Checklist - Dynamic based on verification status -->
-      <div class="status-checklist">
-        <div class="checklist-item completed">
-          <ion-icon name="checkmark-circle"></ion-icon>
-          <span>Registro completado</span>
-        </div>
-        <div class="checklist-item completed">
-          <ion-icon name="checkmark-circle"></ion-icon>
-          <span>CEP validado</span>
-        </div>
-        <div class="checklist-item completed">
-          <ion-icon name="checkmark-circle"></ion-icon>
-          <span>Documentos recibidos</span>
-        </div>
-        <div class="checklist-item" [class.in-progress]="!allChecklistCompleted()" [class.completed]="allChecklistCompleted()">
-          <ion-icon [name]="allChecklistCompleted() ? 'checkmark-circle' : 'sync-circle'"></ion-icon>
-          <span>En revisión por el equipo</span>
-        </div>
-        <div class="checklist-item" [class.pending]="!allChecklistCompleted()" [class.completed]="allChecklistCompleted()">
-          <ion-icon [name]="allChecklistCompleted() ? 'checkmark-circle' : 'ellipse-outline'"></ion-icon>
-          <span>Aprobación final</span>
-        </div>
-      </div>
-
-      <!-- Things to do while waiting -->
-      <div class="waiting-tasks-section">
-        <div class="section-header">
-          <h3>Mientras tanto, puedes...</h3>
-          <span class="tasks-progress">{{ completedTasksCount }}/{{ totalTasksCount }}</span>
-        </div>
-
-        <div class="tasks-list">
-          @for (task of waitingTasks(); track task.id) {
-            <div class="task-card" [class.completed]="task.completed" (click)="onTaskClick(task)">
-              <div class="task-icon">
-                <ion-icon [name]="task.completed ? 'checkmark-circle' : task.icon"></ion-icon>
-              </div>
-              <div class="task-content">
-                <h4>{{ task.title }}</h4>
-                <p>{{ task.description }}</p>
-              </div>
-              <ion-icon name="chevron-forward" class="task-arrow" *ngIf="!task.completed"></ion-icon>
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- Notification Reminder -->
-      <div class="notification-reminder">
-        <ion-icon name="notifications-outline"></ion-icon>
-        <div class="reminder-content">
-          <h4>Te avisaremos al instante</h4>
-          <p>Recibirás una notificación push y un email cuando tu cuenta esté lista</p>
-        </div>
-      </div>
-
-      <!-- Social Proof -->
-      <div class="social-proof">
-        <div class="testimonial">
-          <p class="quote">"Recibí mi primera solicitud 3 horas después de ser aprobada"</p>
-          <div class="author">
-            <ion-icon name="person-circle"></ion-icon>
-            <span>Carmen L., Lic. Enfermería</span>
+  @if (!isLoading()) {
+    <div class="verification-container">
+      <!-- Already Approved State -->
+      @if (isApproved()) {
+        <div class="status-card approved">
+          <div class="status-icon">
+            <ion-icon name="checkmark-circle"></ion-icon>
           </div>
-        </div>
-      </div>
-
-      <!-- Refresh Status Button -->
-      <div class="refresh-section">
-        <ion-button fill="clear" size="small" (click)="checkVerificationStatus()" [disabled]="isLoading()">
-          <ion-icon name="refresh-outline" slot="start"></ion-icon>
-          Actualizar estado
-        </ion-button>
-        <p class="auto-refresh-note">Se actualiza automáticamente cada 15 segundos</p>
-      </div>
-
-      <!-- Contact Support -->
-      <div class="support-section">
-        <p>¿Tienes alguna duda sobre tu verificación?</p>
-        <ion-button fill="outline" size="small" (click)="contactSupport()">
-          <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
-          Contactar Soporte
-        </ion-button>
-      </div>
-    </div>
-
-    <!-- Rejected State -->
-    <div class="status-card rejected" *ngIf="isRejected()">
-      <div class="status-icon">
-        <ion-icon name="close-circle"></ion-icon>
-      </div>
-      <h2>Verificacion Rechazada</h2>
-      <p *ngIf="verification()?.rejectionReason">
-        Motivo: {{ verification()?.rejectionReason }}
-      </p>
-      <p *ngIf="!verification()?.rejectionReason">
-        Tu solicitud de verificacion fue rechazada. Por favor, revisa los documentos y vuelve a intentarlo.
-      </p>
-      <ion-button expand="block" color="primary" (click)="loadData()">
-        <ion-icon name="refresh-outline" slot="start"></ion-icon>
-        Intentar de Nuevo
-      </ion-button>
-    </div>
-
-    <!-- Pending / Verification Flow -->
-    <ng-container *ngIf="isPending() || isRejected()">
-      <!-- Step Indicator -->
-      <div class="steps-indicator">
-        <div class="step" [class.active]="currentStep() === 'validate_cep'" [class.completed]="currentStep() !== 'validate_cep'">
-          <div class="step-number">1</div>
-          <span class="step-label">Validar CEP</span>
-        </div>
-        <div class="step-line" [class.completed]="currentStep() !== 'validate_cep'"></div>
-        <div class="step" [class.active]="currentStep() === 'confirm_identity'" [class.completed]="currentStep() === 'upload_documents'">
-          <div class="step-number">2</div>
-          <span class="step-label">Confirmar</span>
-        </div>
-        <div class="step-line" [class.completed]="currentStep() === 'upload_documents'"></div>
-        <div class="step" [class.active]="currentStep() === 'upload_documents'">
-          <div class="step-number">3</div>
-          <span class="step-label">Documentos</span>
-        </div>
-      </div>
-
-      <!-- STEP 1: Validate CEP -->
-      <div class="step-content" *ngIf="currentStep() === 'validate_cep'">
-        <div class="info-header">
-          <h1>Valida tu Registro CEP</h1>
-          <p>Ingresa tu numero de DNI para verificar tu registro en el Colegio de Enfermeros del Peru.</p>
-        </div>
-
-        <!-- CEP Number Display -->
-        <div class="cep-display">
-          <ion-icon name="card-outline"></ion-icon>
-          <div class="cep-info">
-            <span class="label">Tu numero CEP</span>
-            <span class="value">{{ cepNumber() }}</span>
-          </div>
-        </div>
-
-        <!-- DNI Input -->
-        <div class="form-section">
-          <ion-item lines="none" class="input-item">
-            <ion-icon name="id-card-outline" slot="start" class="input-icon"></ion-icon>
-            <ion-input
-              [value]="dniNumber()"
-              (ionInput)="onDniNumberChange($event)"
-              placeholder="Numero de DNI (8 digitos)"
-              inputmode="numeric"
-              maxlength="8"
-              aria-label="Numero de DNI">
-            </ion-input>
-          </ion-item>
-
-          <div class="helper-text" *ngIf="dniNumber().length > 0 && dniNumber().length < 8">
-            <ion-icon name="information-circle-outline"></ion-icon>
-            <span>El DNI debe tener 8 digitos</span>
-          </div>
-        </div>
-
-        <!-- Validate Button -->
-        <div class="action-section">
-          <ion-button
-            expand="block"
-            [disabled]="!canValidateCep()"
-            (click)="validateCep()">
-            <ion-spinner name="crescent" *ngIf="isValidatingCep()"></ion-spinner>
-            <ng-container *ngIf="!isValidatingCep()">
-              <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
-              Validar CEP
-            </ng-container>
+          <h2>Cuenta Verificada</h2>
+          <p>Tu identidad ha sido verificada exitosamente. Ya puedes ofrecer tus servicios en la plataforma.</p>
+          <ion-button expand="block" (click)="goToProfile()">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            Ir a mi Perfil
           </ion-button>
         </div>
-
-        <!-- Validation Error Message -->
-        <div class="error-message" *ngIf="cepValidationMessage() && !cepValidation()?.isValid">
-          <ion-icon name="alert-circle"></ion-icon>
-          <span>{{ cepValidationMessage() }}</span>
-        </div>
-      </div>
-
-      <!-- STEP 2: Confirm Identity -->
-      <div class="step-content" *ngIf="currentStep() === 'confirm_identity'">
-        <div class="info-header">
-          <h1>Confirma tu Identidad</h1>
-          <p>Hemos encontrado tu registro en el CEP. Por favor confirma que esta informacion corresponde a tu identidad.</p>
-        </div>
-
-        <!-- CEP Photo Display -->
-        <div class="identity-card">
-          <div class="photo-container" *ngIf="cepPhotoUrl()">
-            <img [src]="cepPhotoUrl()" alt="Foto del registro CEP" class="cep-photo">
-            <div class="verified-badge">
-              <ion-icon name="shield-checkmark"></ion-icon>
-              <span>Registro CEP</span>
+      }
+      <!-- Under Review State - Enhanced Waiting Screen -->
+      @if (isUnderReview()) {
+        <div class="waiting-screen">
+          <!-- Header with animation - changes during approval transition -->
+          <div class="waiting-header" [class.approved-transition]="showApprovalTransition()">
+            <div class="waiting-icon-container">
+              @if (!showApprovalTransition()) {
+                <div class="waiting-pulse"></div>
+              }
+              <ion-icon [name]="showApprovalTransition() ? 'checkmark-circle' : 'hourglass-outline'"
+                class="waiting-icon"
+              [class.success-icon]="showApprovalTransition()"></ion-icon>
+            </div>
+            <h1>{{ showApprovalTransition() ? '¡Verificación Completada!' : 'Tu verificación está en proceso' }}</h1>
+            <p class="waiting-subtitle">{{ showApprovalTransition() ? 'Tu cuenta ha sido aprobada' : 'Nuestro equipo está revisando tus documentos' }}</p>
+          </div>
+          <!-- Progress Section -->
+          <div class="waiting-progress-section">
+            <div class="progress-header">
+              <span class="progress-label">Tiempo de espera</span>
+              <span class="progress-time">{{ waitingTimeElapsed() }}</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" [style.width.%]="waitingProgressPercent()"></div>
+            </div>
+            <div class="progress-footer">
+              <span>Tiempo estimado: 24-48 horas</span>
             </div>
           </div>
-
-          <div class="no-photo-container" *ngIf="!cepPhotoUrl()">
-            <ion-icon name="person-circle-outline"></ion-icon>
-            <p>No se encontro foto en el registro CEP</p>
-          </div>
-
-          <!-- HABIL Status Badge -->
-          <div class="status-badge-container">
-            <div class="habil-badge" *ngIf="cepIsHabil()" [class.habil]="cepIsHabil()">
+          <!-- Status Checklist - Dynamic based on verification status -->
+          <div class="status-checklist">
+            <div class="checklist-item completed">
               <ion-icon name="checkmark-circle"></ion-icon>
-              <span>HABIL</span>
+              <span>Registro completado</span>
             </div>
-            <div class="habil-badge inhabilitado" *ngIf="cepStatus() === 'INHABILITADO'">
-              <ion-icon name="close-circle"></ion-icon>
-              <span>INHABILITADO</span>
+            <div class="checklist-item completed">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <span>CEP validado</span>
             </div>
-          </div>
-
-          <div class="identity-info">
-            <div class="info-row">
-              <span class="label">Nombre oficial CEP:</span>
-              <span class="value">{{ cepOfficialName() || fullNameOnDni() }}</span>
+            <div class="checklist-item completed">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <span>Documentos recibidos</span>
             </div>
-            <div class="info-row">
-              <span class="label">DNI:</span>
-              <span class="value">{{ dniNumber() }}</span>
+            <div class="checklist-item" [class.in-progress]="!allChecklistCompleted()" [class.completed]="allChecklistCompleted()">
+              <ion-icon [name]="allChecklistCompleted() ? 'checkmark-circle' : 'sync-circle'"></ion-icon>
+              <span>En revisión por el equipo</span>
             </div>
-            <div class="info-row">
-              <span class="label">CEP:</span>
-              <span class="value">{{ cepNumber() }}</span>
-            </div>
-            <div class="info-row" *ngIf="cepRegion()">
-              <span class="label">Region:</span>
-              <span class="value">{{ cepRegion() }}</span>
+            <div class="checklist-item" [class.pending]="!allChecklistCompleted()" [class.completed]="allChecklistCompleted()">
+              <ion-icon [name]="allChecklistCompleted() ? 'checkmark-circle' : 'ellipse-outline'"></ion-icon>
+              <span>Aprobación final</span>
             </div>
           </div>
-        </div>
-
-        <!-- Confirmation Question -->
-        <div class="confirmation-section">
-          <h3>Esta foto corresponde a tu identidad?</h3>
-
-          <div class="confirmation-buttons">
-            <ion-button
-              expand="block"
-              color="success"
-              [disabled]="isSubmitting()"
-              (click)="confirmIdentity()">
-              <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
-              <ng-container *ngIf="!isSubmitting()">
-                <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-                Si, soy yo
-              </ng-container>
-            </ion-button>
-
-            <ion-button
-              expand="block"
-              fill="outline"
-              color="medium"
-              [disabled]="isSubmitting()"
-              (click)="rejectIdentity()">
-              <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-              No, no soy yo
-            </ion-button>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP 3: Upload Documents -->
-      <div class="step-content" *ngIf="currentStep() === 'upload_documents'">
-        <div class="info-header">
-          <h1>Sube tus Documentos</h1>
-          <p>Para completar la verificacion, necesitamos fotos claras de tus documentos.</p>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="progress-section">
-          <div class="progress-header">
-            <span>Progreso de carga</span>
-            <span class="progress-value">{{ uploadProgress() }}%</span>
-          </div>
-          <ion-progress-bar [value]="uploadProgress() / 100" color="success"></ion-progress-bar>
-        </div>
-
-        <!-- Documents Upload -->
-        <div class="documents-section">
-          <div class="document-list">
-            @for (doc of documents(); track doc.type) {
-              <div class="document-card" (click)="selectImage(doc.type)">
-                <div class="document-preview" [class.has-image]="doc.imageData">
-                  <img *ngIf="doc.imageData" [src]="'data:' + doc.mimeType + ';base64,' + doc.imageData" [alt]="doc.label">
-                  <div class="placeholder" *ngIf="!doc.imageData">
-                    <ion-icon [name]="doc.icon"></ion-icon>
+          <!-- Things to do while waiting -->
+          <div class="waiting-tasks-section">
+            <div class="section-header">
+              <h3>Mientras tanto, puedes...</h3>
+              <span class="tasks-progress">{{ completedTasksCount }}/{{ totalTasksCount }}</span>
+            </div>
+            <div class="tasks-list">
+              @for (task of waitingTasks(); track task.id) {
+                <div class="task-card" [class.completed]="task.completed" (click)="onTaskClick(task)">
+                  <div class="task-icon">
+                    <ion-icon [name]="task.completed ? 'checkmark-circle' : task.icon"></ion-icon>
                   </div>
-                  <div class="upload-badge" *ngIf="doc.imageData">
-                    <ion-icon name="checkmark"></ion-icon>
+                  <div class="task-content">
+                    <h4>{{ task.title }}</h4>
+                    <p>{{ task.description }}</p>
                   </div>
+                  @if (!task.completed) {
+                    <ion-icon name="chevron-forward" class="task-arrow"></ion-icon>
+                  }
                 </div>
-                <div class="document-info">
-                  <h4>{{ doc.label }}</h4>
-                  <p>{{ doc.description }}</p>
+              }
+            </div>
+          </div>
+          <!-- Notification Reminder -->
+          <div class="notification-reminder">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <div class="reminder-content">
+              <h4>Te avisaremos al instante</h4>
+              <p>Recibirás una notificación push y un email cuando tu cuenta esté lista</p>
+            </div>
+          </div>
+          <!-- Social Proof -->
+          <div class="social-proof">
+            <div class="testimonial">
+              <p class="quote">"Recibí mi primera solicitud 3 horas después de ser aprobada"</p>
+              <div class="author">
+                <ion-icon name="person-circle"></ion-icon>
+                <span>Carmen L., Lic. Enfermería</span>
+              </div>
+            </div>
+          </div>
+          <!-- Refresh Status Button -->
+          <div class="refresh-section">
+            <ion-button fill="clear" size="small" (click)="checkVerificationStatus()" [disabled]="isLoading()">
+              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              Actualizar estado
+            </ion-button>
+            <p class="auto-refresh-note">Se actualiza automáticamente cada 15 segundos</p>
+          </div>
+          <!-- Contact Support -->
+          <div class="support-section">
+            <p>¿Tienes alguna duda sobre tu verificación?</p>
+            <ion-button fill="outline" size="small" (click)="contactSupport()">
+              <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+              Contactar Soporte
+            </ion-button>
+          </div>
+        </div>
+      }
+      <!-- Rejected State -->
+      @if (isRejected()) {
+        <div class="status-card rejected">
+          <div class="status-icon">
+            <ion-icon name="close-circle"></ion-icon>
+          </div>
+          <h2>Verificacion Rechazada</h2>
+          @if (verification()?.rejectionReason) {
+            <p>
+              Motivo: {{ verification()?.rejectionReason }}
+            </p>
+          }
+          @if (!verification()?.rejectionReason) {
+            <p>
+              Tu solicitud de verificacion fue rechazada. Por favor, revisa los documentos y vuelve a intentarlo.
+            </p>
+          }
+          <ion-button expand="block" color="primary" (click)="loadData()">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Intentar de Nuevo
+          </ion-button>
+        </div>
+      }
+      <!-- Pending / Verification Flow -->
+      @if (isPending() || isRejected()) {
+        <!-- Step Indicator -->
+        <div class="steps-indicator">
+          <div class="step" [class.active]="currentStep() === 'validate_cep'" [class.completed]="currentStep() !== 'validate_cep'">
+            <div class="step-number">1</div>
+            <span class="step-label">Validar CEP</span>
+          </div>
+          <div class="step-line" [class.completed]="currentStep() !== 'validate_cep'"></div>
+          <div class="step" [class.active]="currentStep() === 'confirm_identity'" [class.completed]="currentStep() === 'upload_documents'">
+            <div class="step-number">2</div>
+            <span class="step-label">Confirmar</span>
+          </div>
+          <div class="step-line" [class.completed]="currentStep() === 'upload_documents'"></div>
+          <div class="step" [class.active]="currentStep() === 'upload_documents'">
+            <div class="step-number">3</div>
+            <span class="step-label">Documentos</span>
+          </div>
+        </div>
+        <!-- STEP 1: Validate CEP -->
+        @if (currentStep() === 'validate_cep') {
+          <div class="step-content">
+            <div class="info-header">
+              <h1>Valida tu Registro CEP</h1>
+              <p>Ingresa tu numero de DNI para verificar tu registro en el Colegio de Enfermeros del Peru.</p>
+            </div>
+            <!-- CEP Number Display -->
+            <div class="cep-display">
+              <ion-icon name="card-outline"></ion-icon>
+              <div class="cep-info">
+                <span class="label">Tu numero CEP</span>
+                <span class="value">{{ cepNumber() }}</span>
+              </div>
+            </div>
+            <!-- DNI Input -->
+            <div class="form-section">
+              <ion-item lines="none" class="input-item">
+                <ion-icon name="id-card-outline" slot="start" class="input-icon"></ion-icon>
+                <ion-input
+                  [value]="dniNumber()"
+                  (ionInput)="onDniNumberChange($event)"
+                  placeholder="Numero de DNI (8 digitos)"
+                  inputmode="numeric"
+                  maxlength="8"
+                  aria-label="Numero de DNI">
+                </ion-input>
+              </ion-item>
+              @if (dniNumber().length > 0 && dniNumber().length < 8) {
+                <div class="helper-text">
+                  <ion-icon name="information-circle-outline"></ion-icon>
+                  <span>El DNI debe tener 8 digitos</span>
                 </div>
-                <div class="document-action">
-                  <ion-button fill="clear" size="small" *ngIf="!doc.imageData" aria-label="Subir foto">
-                    <ion-icon name="camera-outline"></ion-icon>
-                  </ion-button>
-                  <ion-button fill="clear" size="small" color="danger" *ngIf="doc.imageData" (click)="removeImage(doc.type); $event.stopPropagation()" aria-label="Eliminar foto">
-                    <ion-icon name="trash-outline"></ion-icon>
-                  </ion-button>
-                </div>
+              }
+            </div>
+            <!-- Validate Button -->
+            <div class="action-section">
+              <ion-button
+                expand="block"
+                [disabled]="!canValidateCep()"
+                (click)="validateCep()">
+                @if (isValidatingCep()) {
+                  <ion-spinner name="crescent"></ion-spinner>
+                }
+                @if (!isValidatingCep()) {
+                  <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+                  Validar CEP
+                }
+              </ion-button>
+            </div>
+            <!-- Validation Error Message -->
+            @if (cepValidationMessage() && !cepValidation()?.isValid) {
+              <div class="error-message">
+                <ion-icon name="alert-circle"></ion-icon>
+                <span>{{ cepValidationMessage() }}</span>
               </div>
             }
           </div>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="submit-section">
-          <ion-button
-            expand="block"
-            [disabled]="!canSubmitDocuments()"
-            (click)="submitVerification()">
-            <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
-            Enviar para Verificacion
-          </ion-button>
-          <p class="disclaimer">
-            Al enviar, confirmas que los documentos son autenticos y te pertenecen.
-          </p>
-        </div>
-      </div>
-    </ng-container>
-  </div>
+        }
+        <!-- STEP 2: Confirm Identity -->
+        @if (currentStep() === 'confirm_identity') {
+          <div class="step-content">
+            <div class="info-header">
+              <h1>Confirma tu Identidad</h1>
+              <p>Hemos encontrado tu registro en el CEP. Por favor confirma que esta informacion corresponde a tu identidad.</p>
+            </div>
+            <!-- CEP Photo Display -->
+            <div class="identity-card">
+              @if (cepPhotoUrl()) {
+                <div class="photo-container">
+                  <img [src]="cepPhotoUrl()" alt="Foto del registro CEP" class="cep-photo">
+                  <div class="verified-badge">
+                    <ion-icon name="shield-checkmark"></ion-icon>
+                    <span>Registro CEP</span>
+                  </div>
+                </div>
+              }
+              @if (!cepPhotoUrl()) {
+                <div class="no-photo-container">
+                  <ion-icon name="person-circle-outline"></ion-icon>
+                  <p>No se encontro foto en el registro CEP</p>
+                </div>
+              }
+              <!-- HABIL Status Badge -->
+              <div class="status-badge-container">
+                @if (cepIsHabil()) {
+                  <div class="habil-badge" [class.habil]="cepIsHabil()">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                    <span>HABIL</span>
+                  </div>
+                }
+                @if (cepStatus() === 'INHABILITADO') {
+                  <div class="habil-badge inhabilitado">
+                    <ion-icon name="close-circle"></ion-icon>
+                    <span>INHABILITADO</span>
+                  </div>
+                }
+              </div>
+              <div class="identity-info">
+                <div class="info-row">
+                  <span class="label">Nombre oficial CEP:</span>
+                  <span class="value">{{ cepOfficialName() || fullNameOnDni() }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">DNI:</span>
+                  <span class="value">{{ dniNumber() }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">CEP:</span>
+                  <span class="value">{{ cepNumber() }}</span>
+                </div>
+                @if (cepRegion()) {
+                  <div class="info-row">
+                    <span class="label">Region:</span>
+                    <span class="value">{{ cepRegion() }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+            <!-- Confirmation Question -->
+            <div class="confirmation-section">
+              <h3>Esta foto corresponde a tu identidad?</h3>
+              <div class="confirmation-buttons">
+                <ion-button
+                  expand="block"
+                  color="success"
+                  [disabled]="isSubmitting()"
+                  (click)="confirmIdentity()">
+                  @if (isSubmitting()) {
+                    <ion-spinner name="crescent"></ion-spinner>
+                  }
+                  @if (!isSubmitting()) {
+                    <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                    Si, soy yo
+                  }
+                </ion-button>
+                <ion-button
+                  expand="block"
+                  fill="outline"
+                  color="medium"
+                  [disabled]="isSubmitting()"
+                  (click)="rejectIdentity()">
+                  <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                  No, no soy yo
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        }
+        <!-- STEP 3: Upload Documents -->
+        @if (currentStep() === 'upload_documents') {
+          <div class="step-content">
+            <div class="info-header">
+              <h1>Sube tus Documentos</h1>
+              <p>Para completar la verificacion, necesitamos fotos claras de tus documentos.</p>
+            </div>
+            <!-- Progress Bar -->
+            <div class="progress-section">
+              <div class="progress-header">
+                <span>Progreso de carga</span>
+                <span class="progress-value">{{ uploadProgress() }}%</span>
+              </div>
+              <ion-progress-bar [value]="uploadProgress() / 100" color="success"></ion-progress-bar>
+            </div>
+            <!-- Documents Upload -->
+            <div class="documents-section">
+              <div class="document-list">
+                @for (doc of documents(); track doc.type) {
+                  <div class="document-card" (click)="selectImage(doc.type)">
+                    <div class="document-preview" [class.has-image]="doc.imageData">
+                      @if (doc.imageData) {
+                        <img [src]="'data:' + doc.mimeType + ';base64,' + doc.imageData" [alt]="doc.label">
+                      }
+                      @if (!doc.imageData) {
+                        <div class="placeholder">
+                          <ion-icon [name]="doc.icon"></ion-icon>
+                        </div>
+                      }
+                      @if (doc.imageData) {
+                        <div class="upload-badge">
+                          <ion-icon name="checkmark"></ion-icon>
+                        </div>
+                      }
+                    </div>
+                    <div class="document-info">
+                      <h4>{{ doc.label }}</h4>
+                      <p>{{ doc.description }}</p>
+                    </div>
+                    <div class="document-action">
+                      @if (!doc.imageData) {
+                        <ion-button fill="clear" size="small" aria-label="Subir foto">
+                          <ion-icon name="camera-outline"></ion-icon>
+                        </ion-button>
+                      }
+                      @if (doc.imageData) {
+                        <ion-button fill="clear" size="small" color="danger" (click)="removeImage(doc.type); $event.stopPropagation()" aria-label="Eliminar foto">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </ion-button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+            <!-- Submit Button -->
+            <div class="submit-section">
+              <ion-button
+                expand="block"
+                [disabled]="!canSubmitDocuments()"
+                (click)="submitVerification()">
+                <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                Enviar para Verificacion
+              </ion-button>
+              <p class="disclaimer">
+                Al enviar, confirmas que los documentos son autenticos y te pertenecen.
+              </p>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
 </ion-content>
