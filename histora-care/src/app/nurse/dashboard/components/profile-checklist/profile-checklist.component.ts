@@ -33,16 +33,10 @@ export class ProfileChecklistComponent implements OnInit {
   isVisible = signal(false); // Start hidden to prevent flickering
   private hasInitialized = signal(false);
 
+  // Note: paymentMethods is configured during onboarding, so not included here
   checklistItems = computed<ChecklistItem[]>(() => {
     const nurse = this.nurse();
     return [
-      {
-        id: 'paymentMethods',
-        label: 'Configura metodos de pago',
-        completed: !!(nurse?.yapeNumber || nurse?.plinNumber),
-        route: '/nurse/profile',
-        icon: 'wallet-outline',
-      },
       {
         id: 'services',
         label: 'Agrega tus servicios',
