@@ -44,12 +44,12 @@ export function Security() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {securityFeatures.map((feature, index) => (
             <AnimatedSection key={feature.title} delay={index * 0.1}>
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-colors">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-colors h-full flex flex-col">
+                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center mb-4 flex-shrink-0">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-white/70 text-sm">{feature.description}</p>
+                <p className="text-white/70 text-sm flex-1">{feature.description}</p>
               </div>
             </AnimatedSection>
           ))}
@@ -60,7 +60,7 @@ export function Security() {
           <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
             <Shield className="w-5 h-5 text-green-400" />
             <span className="text-white font-medium">
-              Primera plataforma en Peru con verificacion biometrica de enfermeras
+              Primera plataforma en Peru con verificacion oficial CEP integrada
             </span>
           </div>
         </AnimatedSection>
