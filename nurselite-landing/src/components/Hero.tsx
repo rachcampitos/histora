@@ -26,12 +26,12 @@ const audiences = {
     title: "Cuida a tu familia",
     highlight: "sin culpa ni preocupacion",
     subtitle:
-      "Conectamos familias con enfermeras verificadas por CEP + RENIEC + Biometria IA. Seguimiento en tiempo real para tu completa tranquilidad.",
+      "Conectamos familias con enfermeras verificadas oficialmente por el CEP y RENIEC. Seguimiento GPS en tiempo real para tu completa tranquilidad.",
     cta: "Encontrar enfermera verificada",
     ctaLink: "https://care.historahealth.com/auth/register?type=patient",
     microCopy: "Sin registro previo. Proceso en menos de 3 minutos.",
     benefits: [
-      { icon: ShieldCheck, text: "Triple Verificacion: CEP + RENIEC + IA" },
+      { icon: ShieldCheck, text: "Verificacion oficial CEP + RENIEC" },
       { icon: Clock, text: "Enfermeras disponibles hoy" },
       { icon: Star, text: "4.9/5 de calificacion promedio" },
     ],

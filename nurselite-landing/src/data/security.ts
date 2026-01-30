@@ -1,35 +1,41 @@
-import { ShieldCheck, Fingerprint, MapPin, Bell, Star, FileCheck } from "lucide-react";
+import { ShieldCheck, IdCard, MapPin, Bell, Star, FileCheck } from "lucide-react";
 import { SecurityFeature } from "@/types";
 
 export const securityFeatures: SecurityFeature[] = [
   {
     icon: ShieldCheck,
-    title: "Triple Verificacion",
-    description: "CEP + RENIEC + Biometria con IA para garantizar identidad",
+    title: "Verificacion CEP Oficial",
+    description:
+      "Validamos cada enfermera directamente con el Colegio de Enfermeros del Peru. Solo enfermeras con estado HABIL pueden atender.",
   },
   {
-    icon: Fingerprint,
-    title: "Biometria Avanzada",
-    description: "Verificacion facial con inteligencia artificial",
+    icon: IdCard,
+    title: "Verificacion de Identidad",
+    description:
+      "DNI verificado con RENIEC mas selfie de confirmacion. Ambas partes (enfermera y paciente) son verificadas.",
   },
   {
     icon: MapPin,
     title: "Seguimiento GPS",
-    description: "Ubicacion en tiempo real durante el servicio",
+    description:
+      "Ubicacion en tiempo real durante el servicio. Comparte el link de rastreo con familiares para tu tranquilidad.",
   },
   {
     icon: Bell,
-    title: "Boton de Panico",
-    description: "Alerta inmediata integrada en la app",
+    title: "Boton de Emergencia",
+    description:
+      "Ante cualquier situacion de riesgo, alerta inmediata a nuestro equipo de soporte con ubicacion GPS exacta.",
   },
   {
     icon: Star,
-    title: "Calificaciones Bidireccionales",
-    description: "Sistema de resenas para pacientes y enfermeras",
+    title: "Calificaciones Verificadas",
+    description:
+      "Sistema bidireccional donde pacientes y enfermeras se califican mutuamente despues de cada servicio.",
   },
   {
     icon: FileCheck,
-    title: "Historial Digital",
-    description: "Registro completo de todos los servicios",
+    title: "Historial Completo",
+    description:
+      "Registro digital de todos los servicios, calificaciones e incidentes. Transparencia total para tu seguridad.",
   },
 ];
