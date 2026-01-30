@@ -236,7 +236,7 @@ export class CepValidationService {
 
   /**
    * Validate CEP by searching for the number in the database
-   * Less reliable than photo check but useful for cross-validation
+   * Uses bracket pattern search since CEP appears as [NNNNNN ] in names
    */
   async validateByCep(cepNumber: string): Promise<CepValidationResult> {
     const cleanCep = cepNumber.replace(/\D/g, '');
@@ -248,16 +248,33 @@ export class CepValidationService {
       };
     }
 
-    // Search using the CEP number as query (it appears in the name field)
-    const results = await this.searchByName(cleanCep);
+    // Search using bracket pattern [CEP_NUMBER to find in the database
+    // The API returns names like "[108887 ] CHAVEZ TORRES MARIA CLAUDIA"
+    const searchQuery = `[${cleanCep}`;
+    const results = await this.searchByName(searchQuery);
 
-    // Find exact match
+    // Find exact match by CEP number
     const match = results.find((r) => r.cep === cleanCep);
 
     if (!match) {
+      // Fallback: try searching with just the number (some cases work)
+      const fallbackResults = await this.searchByName(cleanCep);
+      const fallbackMatch = fallbackResults.find((r) => r.cep === cleanCep);
+
+      if (!fallbackMatch) {
+        return {
+          isValid: false,
+          error: 'No se encontró enfermera(o) con este número de CEP',
+        };
+      }
+
       return {
-        isValid: false,
-        error: 'No se encontró enfermera(o) con este número de CEP',
+        isValid: true,
+        data: {
+          cepNumber: fallbackMatch.cep,
+          fullName: fallbackMatch.nombre,
+          isNameVerified: true,
+        },
       };
     }
 
@@ -330,8 +347,30 @@ export class CepValidationService {
 
       const html = response.data;
 
-      // Check for error response
+      // Check for error response - if view.php fails, try alternative method
       if (html.includes('Error 504') || (html.includes('alert-danger') && !html.includes('fotos/'))) {
+        this.logger.warn(`view.php returned error for CEP ${cleanCep}, trying alternative search`);
+
+        // Fallback: Use bracket search to find nurse in database
+        const searchResults = await this.searchByName(`[${cleanCep}`);
+        const match = searchResults.find((r) => r.cep === cleanCep);
+
+        if (match) {
+          // Found via search, now try to get photo
+          // Extract last name and search for photo by common pattern
+          const nameParts = match.nombre.split(' ');
+          return {
+            isValid: true,
+            data: {
+              cepNumber: cleanCep,
+              fullName: match.nombre,
+              isNameVerified: true,
+              isPhotoVerified: false, // We don't have DNI to check photo
+              status: 'UNKNOWN',
+            },
+          };
+        }
+
         return {
           isValid: false,
           error: 'No se encontró enfermera(o) con este número de CEP',
