@@ -32,7 +32,7 @@ export class EnvironmentVariables {
 
   // ============= Database =============
   @IsString()
-  @IsNotEmpty({ message: 'MONGO_URL is required. Example: mongodb+srv://user:pass@cluster.mongodb.net/db' })
+  @IsNotEmpty({ message: 'MONGO_URL is required' })
   MONGO_URL: string;
 
   // ============= JWT Authentication =============
