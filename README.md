@@ -269,12 +269,16 @@ FRONTEND_URL=https://care.historahealth.com
 - Root Directory: `histora-back`
 - Dominio: api.historahealth.com
 
-### Frontend (Vercel)
+### App Movil - NurseLite (Cloudflare Pages)
 - **Despliegue automatico** con git push a main
-- Framework: Ionic/Angular
+- Root Directory: `histora-care`
 - Dominio: care.historahealth.com
 
-> **IMPORTANTE**: No ejecutar `railway up` ni `vercel --prod` manualmente. Solo hacer `git push origin main`.
+### App Web Legacy (Railway)
+- Root Directory: `histora-front`
+- Estado: Legacy, no en uso activo
+
+> **IMPORTANTE**: No ejecutar `railway up` ni `wrangler pages deploy` manualmente. Solo hacer `git push origin main`.
 
 ---
 
