@@ -14,7 +14,7 @@ export const segments: Segment[] = [
       "Aseo y cuidado personal",
       "Acompanamiento y compania",
     ],
-    cta: "Ver enfermeras especializadas",
+    cta: "Ver enfermeras",
     ctaLink: "https://care.historahealth.com/auth/register?type=patient&segment=elderly",
   },
   {
@@ -29,7 +29,7 @@ export const segments: Segment[] = [
       "Control post-quirurgico",
       "Inyecciones y medicamentos",
     ],
-    cta: "Agendar atencion post-op",
+    cta: "Agendar cuidado",
     ctaLink: "https://care.historahealth.com/auth/register?type=patient&segment=postop",
   },
   {
@@ -44,7 +44,7 @@ export const segments: Segment[] = [
       "Control de la mama",
       "Orientacion y acompanamiento",
     ],
-    cta: "Conocer enfermeras especializadas",
+    cta: "Ver especialistas",
     ctaLink: "https://care.historahealth.com/auth/register?type=patient&segment=newmom",
   },
 ];

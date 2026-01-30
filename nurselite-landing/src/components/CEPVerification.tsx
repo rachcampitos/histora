@@ -195,11 +195,11 @@ export function CEPVerification() {
                 </div>
               </motion.div>
 
-              {/* Stats Badge */}
+              {/* Stats Badge - Bottom right to avoid CTA overlap */}
               <motion.div
-                animate={{ y: [0, -8, 0] }}
+                animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 -left-4 bg-white dark:bg-[#0f172a] rounded-2xl shadow-xl p-4 border border-[#e2e8f0] dark:border-[#334155]"
+                className="absolute -bottom-4 -right-4 bg-white dark:bg-[#0f172a] rounded-2xl shadow-xl p-4 border border-[#e2e8f0] dark:border-[#334155]"
               >
                 <div className="text-center">
                   <p className="text-3xl font-bold text-[#4a9d9a]">100%</p>
