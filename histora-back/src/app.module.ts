@@ -3,7 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
+import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { validate } from './config/env.validation';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -27,6 +28,8 @@ import { EncryptionModule } from './common/encryption';
 
 @Module({
   imports: [
+    // Sentry module for error tracking - must be first
+    SentryModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -83,6 +86,11 @@ import { EncryptionModule } from './common/encryption';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    // Sentry global exception filter - captures all unhandled exceptions
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
     },
   ],
 })

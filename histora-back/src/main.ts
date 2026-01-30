@@ -1,4 +1,8 @@
-// Build version: 2026-01-29-security-cookies
+// Build version: 2026-01-30-sentry
+// Sentry must be imported before all other imports
+import './instrument';
+import * as Sentry from '@sentry/nestjs';
+
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
