@@ -33,6 +33,7 @@ export class OnboardingPage implements OnInit, OnDestroy {
 
   // Track if component is active to prevent Swiper errors
   private isActive = true;
+  private swiperReady = false;
 
   // Slides configuration
   readonly slides: SlideConfig[] = [
@@ -92,6 +93,37 @@ export class OnboardingPage implements OnInit, OnDestroy {
     this.cleanupSwiper();
   }
 
+  // Ionic lifecycle - called before view is shown (re-entering)
+  ionViewWillEnter() {
+    // Reset active state when entering the page
+    this.isActive = true;
+    this.swiperReady = false;
+    console.log('[ONBOARDING] ionViewWillEnter - reset isActive to true');
+  }
+
+  // Ionic lifecycle - called after view is fully visible
+  ionViewDidEnter() {
+    // If Swiper wasn't initialized via event, try to get it from the element
+    if (!this.swiperReady && this.swiperRef?.nativeElement) {
+      console.log('[ONBOARDING] ionViewDidEnter - attempting to get Swiper from element');
+      // Give the Swiper Web Component time to initialize
+      setTimeout(() => {
+        try {
+          const swiperEl = this.swiperRef.nativeElement;
+          if (swiperEl && swiperEl.swiper) {
+            this.swiper = swiperEl.swiper;
+            this.swiperReady = true;
+            console.log('[ONBOARDING] Swiper obtained from element successfully');
+          } else {
+            console.warn('[ONBOARDING] Swiper not available on element');
+          }
+        } catch (error) {
+          console.error('[ONBOARDING] Error getting Swiper from element:', error);
+        }
+      }, 100);
+    }
+  }
+
   // Ionic lifecycle - called before view is hidden
   ionViewWillLeave() {
     this.cleanupSwiper();
@@ -99,12 +131,14 @@ export class OnboardingPage implements OnInit, OnDestroy {
 
   private cleanupSwiper() {
     this.isActive = false;
+    this.swiperReady = false;
     // Destroy swiper instance to prevent memory leaks and DOM errors
     if (this.swiper) {
       try {
         // Remove all event listeners first
         this.swiper.off('slideChange');
-        this.swiper.destroy(true, true);
+        // Use safer destroy options
+        this.swiper.destroy(false, false);
       } catch {
         // Ignore errors during cleanup
       }
@@ -114,11 +148,21 @@ export class OnboardingPage implements OnInit, OnDestroy {
 
   onSwiperInit(event: any) {
     if (!this.isActive) return;
-    this.swiper = event.detail[0];
+
+    try {
+      this.swiper = event.detail[0];
+      if (this.swiper) {
+        this.swiperReady = true;
+        console.log('[ONBOARDING] Swiper initialized successfully');
+      }
+    } catch (error) {
+      console.error('[ONBOARDING] Error initializing swiper:', error);
+      this.swiperReady = false;
+    }
   }
 
   onSlideChange() {
-    if (!this.isActive || !this.swiper) return;
+    if (!this.isActive || !this.swiperReady || !this.swiper) return;
     this.currentIndex.set(this.swiper.activeIndex);
     this.onboardingService.setCurrentStep(this.swiper.activeIndex);
   }
@@ -133,16 +177,31 @@ export class OnboardingPage implements OnInit, OnDestroy {
   }
 
   nextSlide() {
-    if (!this.isActive || !this.swiper) return;
+    if (!this.isActive || !this.swiperReady || !this.swiper) {
+      console.warn('[ONBOARDING] nextSlide called but swiper not ready:', {
+        isActive: this.isActive,
+        swiperReady: this.swiperReady,
+        hasSwiper: !!this.swiper
+      });
+      return;
+    }
     if (this.currentIndex() < this.slides.length - 1) {
-      this.swiper.slideNext();
+      try {
+        this.swiper.slideNext();
+      } catch (error) {
+        console.error('[ONBOARDING] Error in slideNext:', error);
+      }
     }
   }
 
   prevSlide() {
-    if (!this.isActive || !this.swiper) return;
+    if (!this.isActive || !this.swiperReady || !this.swiper) return;
     if (this.currentIndex() > 0) {
-      this.swiper.slidePrev();
+      try {
+        this.swiper.slidePrev();
+      } catch (error) {
+        console.error('[ONBOARDING] Error in slidePrev:', error);
+      }
     }
   }
 

@@ -12,7 +12,7 @@ histora/
 ## Despliegue
 
 ### App (histora-care)
-- **Hosting:** Vercel
+- **Hosting:** Cloudflare Pages
 - **URL:** https://care.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
 
@@ -22,7 +22,7 @@ histora/
 - **Despliegue:** AUTOMATICO con git push a main
 
 > **IMPORTANTE:** Solo hacer `git push origin main` y el despliegue es automatico.
-> **NO ejecutar:** `railway up` ni `vercel --prod` manualmente.
+> **NO ejecutar:** `railway up` manualmente.
 
 ## APIs Externas
 
