@@ -208,6 +208,9 @@ export class VerificationPage implements OnInit, OnDestroy {
   ionViewWillLeave() {
     // Stop any active tour when leaving to prevent freezing
     this.productTour.forceStop();
+    // Also stop polling and timers
+    this.stopStatusPolling();
+    this.stopWaitingTimer();
   }
 
   // ============= Waiting Screen Methods =============
@@ -783,13 +786,16 @@ export class VerificationPage implements OnInit, OnDestroy {
   // ============= Navigation =============
 
   goBack() {
-    // Stop any active tours first
+    // Stop any active tours and polling first
     this.productTour.forceStop();
+    this.stopStatusPolling();
+    this.stopWaitingTimer();
 
     // If under review, approved, or still loading - go to dashboard
     // This ensures the back button always works regardless of data state
     if (this.isLoading() || this.isUnderReview() || this.isApproved()) {
-      this.navCtrl.navigateRoot('/nurse/dashboard', { animated: true, animationDirection: 'back' });
+      // Use navigateForward with replaceUrl to ensure clean navigation
+      this.router.navigate(['/nurse/dashboard'], { replaceUrl: true });
       return;
     }
 
@@ -804,8 +810,8 @@ export class VerificationPage implements OnInit, OnDestroy {
       }
     }
 
-    // Default: go to dashboard using navigateRoot to clear stack
-    this.navCtrl.navigateRoot('/nurse/dashboard', { animated: true, animationDirection: 'back' });
+    // Default: go to dashboard using router navigate with replaceUrl
+    this.router.navigate(['/nurse/dashboard'], { replaceUrl: true });
   }
 
   goToProfile() {

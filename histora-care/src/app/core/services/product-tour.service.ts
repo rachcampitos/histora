@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
 import { driver, DriveStep, Config, Driver } from 'driver.js';
 import { AuthService } from './auth.service';
@@ -39,6 +40,20 @@ export class ProductTourService {
   private readonly STORAGE_KEY_PREFIX = 'nurselite-tour-completed-';
   private readonly PENDING_TOUR_KEY = 'nurselite-pending-tour';
   private authService = inject(AuthService);
+  private router = inject(Router);
+
+  // Map tour types to expected route patterns
+  private readonly TOUR_ROUTE_MAP: Record<TourType, string> = {
+    patient_home: '/patient/home',
+    patient_map: '/patient/map',
+    patient_settings: '/patient/settings',
+    nurse_dashboard: '/nurse/dashboard',
+    nurse_profile: '/nurse/profile',
+    nurse_requests: '/nurse/requests',
+    nurse_services: '/nurse/services',
+    nurse_earnings: '/nurse/earnings',
+    admin_verifications: '/admin/verifications',
+  };
 
   // Active driver instance
   private driverInstance: Driver | null = null;
@@ -176,6 +191,13 @@ export class ProductTourService {
     // Guard: Don't start if another tour is already active
     if (this.isTourActive() || this.activeTourType !== null) {
       console.log(`Tour ${tourType}: Another tour (${this.activeTourType}) is already active, skipping`);
+      return;
+    }
+
+    // Guard: Verify we're on the correct route for this tour
+    const expectedRoute = this.TOUR_ROUTE_MAP[tourType];
+    if (expectedRoute && !this.router.url.includes(expectedRoute)) {
+      console.log(`Tour ${tourType}: Wrong route. Expected ${expectedRoute}, got ${this.router.url}. Skipping.`);
       return;
     }
 
