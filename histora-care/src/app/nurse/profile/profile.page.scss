@@ -1,7 +1,8 @@
 @use '../../../theme/design-tokens' as tokens;
 
 // Variables using design tokens
-$primary-gradient: var(--histora-gradient);
+// Use explicit gradient for Ionic components (CSS vars don't work well in --background)
+$primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
 
 // Ensure page has opaque background to cover previous pages during transitions
 :host {
@@ -758,32 +759,35 @@ ion-range {
     .save-btn {
       flex: 1;
       --background: #{$primary-gradient};
+      --background-hover: #{$primary-gradient};
+      --background-activated: #{$primary-gradient};
+      --background-focused: #{$primary-gradient};
       --border-radius: #{tokens.$radius-lg};
-      --box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      --color: #ffffff !important;
-      --color-hover: #ffffff !important;
-      --color-activated: #ffffff !important;
-      --ion-text-color: #ffffff !important;
+      --box-shadow: 0 4px 15px rgba(30, 58, 95, 0.4);
+      --color: #ffffff;
+      --color-hover: #ffffff;
+      --color-activated: #ffffff;
       font-weight: tokens.$font-weight-semibold;
       font-size: tokens.$font-size-base;
       height: 48px;
-      color: #ffffff !important;
-      -webkit-text-fill-color: #ffffff !important;
 
-      span {
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
+      // Fallback for when CSS variables don't work
+      &::part(native) {
+        background: $primary-gradient;
+        color: #ffffff;
+      }
+
+      span, ion-spinner, ion-icon {
+        color: #ffffff;
       }
 
       ion-spinner {
         margin-right: tokens.$spacing-2;
-        color: #ffffff !important;
       }
 
       ion-icon {
         margin-right: tokens.$spacing-2;
         font-size: 20px;
-        color: #ffffff !important;
       }
     }
   }
@@ -1331,10 +1335,17 @@ ion-modal {
 
       .save-btn {
         --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+        --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+        --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
         --box-shadow: 0 4px 15px rgba(45, 95, 138, 0.4);
-        --color: white;
-        --color-hover: white;
-        --color-activated: white;
+        --color: #ffffff;
+        --color-hover: #ffffff;
+        --color-activated: #ffffff;
+
+        &::part(native) {
+          background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+          color: #ffffff;
+        }
       }
     }
   }
