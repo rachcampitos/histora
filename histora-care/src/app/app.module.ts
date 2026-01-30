@@ -1,8 +1,9 @@
-import { NgModule, APP_INITIALIZER, isDevMode } from '@angular/core';
+import { NgModule, APP_INITIALIZER, isDevMode, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouteReuseStrategy } from '@angular/router';
+import { RouteReuseStrategy, Router } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import * as Sentry from '@sentry/angular';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
@@ -39,6 +40,24 @@ function initializeApp(authService: AuthService) {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
       deps: [AuthService],
+      multi: true,
+    },
+    // Sentry error handler - captures unhandled Angular errors
+    {
+      provide: ErrorHandler,
+      useValue: Sentry.createErrorHandler({
+        showDialog: false, // Don't show feedback dialog on errors
+      }),
+    },
+    // Sentry tracing for router navigation
+    {
+      provide: Sentry.TraceService,
+      deps: [Router],
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => () => {},
+      deps: [Sentry.TraceService],
       multi: true,
     },
   ],
