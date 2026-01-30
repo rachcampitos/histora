@@ -251,6 +251,13 @@ export class OnboardingPage implements OnInit, OnDestroy {
       return;
     }
 
+    // Validate district has coordinates
+    if (!distrito.coordenadas || !distrito.coordenadas.lat || !distrito.coordenadas.lng) {
+      console.error('District missing coordinates:', distrito);
+      this.showToast('Error: El distrito no tiene coordenadas configuradas', 'danger');
+      return;
+    }
+
     this.isLoading.set(true);
 
     try {
@@ -259,9 +266,7 @@ export class OnboardingPage implements OnInit, OnDestroy {
           type: 'Point',
           city: this.selectedDepartamentoNombre(),
           district: distrito.nombre,
-          coordinates: distrito.coordenadas
-            ? [distrito.coordenadas.lng, distrito.coordenadas.lat]
-            : [-77.0428, -12.0464], // Lima centro default
+          coordinates: [distrito.coordenadas.lng, distrito.coordenadas.lat],
         }
       }).toPromise();
 

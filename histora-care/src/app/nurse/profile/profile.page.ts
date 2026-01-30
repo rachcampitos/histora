@@ -436,17 +436,19 @@ export class ProfilePage implements OnInit {
       acceptsCash: this.acceptsCash(),
     };
 
-    // Include location if set
+    // Include location if set and has valid coordinates
     if (this.locationDistrict()) {
       const distrito = this.selectedDistrito();
-      updateData.location = {
-        type: 'Point',
-        city: this.locationCity() || this.selectedDepartamentoNombre(),
-        district: this.locationDistrict(),
-        coordinates: distrito?.coordenadas
-          ? [distrito.coordenadas.lng, distrito.coordenadas.lat]
-          : [-77.0428, -12.0464], // Default Lima coordinates
-      };
+      if (distrito?.coordenadas?.lat && distrito?.coordenadas?.lng) {
+        updateData.location = {
+          type: 'Point',
+          city: this.locationCity() || this.selectedDepartamentoNombre(),
+          district: this.locationDistrict(),
+          coordinates: [distrito.coordenadas.lng, distrito.coordenadas.lat],
+        };
+      } else {
+        console.warn('District missing coordinates, location not updated:', distrito);
+      }
     }
 
     this.nurseApi.updateMyProfile(updateData).subscribe({
