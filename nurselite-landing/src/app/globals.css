@@ -1,0 +1,307 @@
+@import "tailwindcss";
+
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* NurseLite Design Tokens */
+:root {
+  /* Primary - Deep Ocean Blue */
+  --primary: #1e3a5f;
+  --primary-light: #2d5f8a;
+  --primary-dark: #0f1f33;
+
+  /* Secondary - Teal */
+  --secondary: #4a9d9a;
+  --secondary-light: #6bb5b3;
+  --secondary-dark: #3d8580;
+
+  /* Warm Accent - Amber (trust & comfort) */
+  --amber: #fbbf24;
+  --amber-light: #fcd34d;
+  --amber-dark: #f59e0b;
+
+  /* Neutrals */
+  --background: #ffffff;
+  --foreground: #1a1a2e;
+  --surface: #f8fafc;
+  --surface-secondary: #f1f5f9;
+  --text-primary: #1a1a2e;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+
+  /* Semantic */
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(30, 58, 95, 0.05);
+  --shadow-md: 0 4px 12px rgba(30, 58, 95, 0.1);
+  --shadow-lg: 0 8px 24px rgba(30, 58, 95, 0.15);
+  --shadow-xl: 0 16px 48px rgba(30, 58, 95, 0.2);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  --gradient-hero: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  --gradient-cta: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+}
+
+/* Dark Mode */
+.dark {
+  --primary: #2d5f8a;
+  --primary-light: #4a9d9a;
+  --primary-dark: #1e3a5f;
+
+  --secondary: #6bb5b3;
+  --secondary-light: #8ecfcd;
+  --secondary-dark: #4a9d9a;
+
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --surface: #1e293b;
+  --surface-secondary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  --gradient-hero: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-amber: var(--amber);
+  --color-surface: var(--surface);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Smooth scrolling with reduced motion support */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+/* Smooth link transitions */
+a {
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Button base styles */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--primary);
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border: 2px solid var(--primary);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Section base styles */
+section {
+  padding: 80px 0;
+}
+
+@media (min-width: 768px) {
+  section {
+    padding: 120px 0;
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Glass effect for cards */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Trust badge styles */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Pulse animation for CTAs */
+@keyframes pulse-soft {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(74, 157, 154, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(74, 157, 154, 0);
+  }
+}
+
+.pulse-animation {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Selection color */
+::selection {
+  background: var(--secondary);
+  color: white;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-dark);
+}
+
+/* Dark mode specific overrides */
+.dark body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.dark .btn-secondary {
+  color: var(--secondary-light);
+  border-color: var(--secondary-light);
+}
+
+.dark .btn-secondary:hover {
+  background: var(--secondary);
+  color: var(--background);
+}
+
+.dark .glass {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(51, 65, 85, 0.5);
+}
+
+.dark .trust-badge {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+.dark ::selection {
+  background: var(--secondary);
+  color: var(--background);
+}
