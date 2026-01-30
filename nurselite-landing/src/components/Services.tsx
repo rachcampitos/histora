@@ -29,7 +29,7 @@ const bentoServices = [
   {
     id: "injections",
     title: "Inyecciones a Domicilio",
-    description: "Intramuscular, subcutanea o endovenosa por enfermeras certificadas",
+    description: "Intramuscular, subcutanea o endovenosa por profesionales certificados",
     icon: Syringe,
     price: "Desde S/. 30",
     duration: "10-30 min",
@@ -56,7 +56,7 @@ const bentoServices = [
 ];
 
 const stats = [
-  { value: 500, suffix: "+", label: "Enfermeras" },
+  { value: 500, suffix: "+", label: "Profesionales" },
   { value: 2000, suffix: "+", label: "Servicios" },
   { value: 4.9, suffix: "/5", label: "Rating" },
 ];
@@ -91,7 +91,7 @@ export function Services() {
           </h2>
           <p className="text-lg text-[#64748b] dark:text-[#94a3b8]">
             Atencion profesional en la comodidad de tu hogar.
-            Todas nuestras enfermeras estan verificadas por el CEP.
+            Todos nuestros profesionales estan verificados por el CEP.
           </p>
         </AnimatedSection>
 
@@ -124,11 +124,11 @@ export function Services() {
                 {bentoServices[0].description}
               </p>
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold">{bentoServices[0].price}</p>
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-2xl sm:text-3xl font-bold whitespace-nowrap">{bentoServices[0].price}</p>
                   <p className="text-white/70 text-sm flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
+                    <Clock className="w-4 h-4 flex-shrink-0" />
                     {bentoServices[0].duration}
                   </p>
                 </div>

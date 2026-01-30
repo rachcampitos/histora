@@ -65,13 +65,13 @@ export function Footer() {
                 <span>contacto@nurse-lite.com</span>
               </a>
               <a
-                href="https://wa.me/51987654321"
+                href="https://wa.me/51923018997"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-[#94a3b8] hover:text-white transition-colors"
               >
                 <Phone className="w-4 h-4 flex-shrink-0" />
-                <span>+51 987 654 321</span>
+                <span>+51 923 018 997</span>
               </a>
               <div className="flex items-center gap-2 text-[#94a3b8]">
                 <MapPin className="w-4 h-4 flex-shrink-0" />

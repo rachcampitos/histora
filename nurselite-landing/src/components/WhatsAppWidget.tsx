@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 
-const WHATSAPP_NUMBER = "51987654321";
+const WHATSAPP_NUMBER = "51923018997";
 const DEFAULT_MESSAGE = "Hola, me gustaria recibir mas informacion sobre los servicios de enfermeria a domicilio.";
 
 interface WhatsAppWidgetProps {
@@ -117,13 +117,15 @@ export function WhatsAppWidget({
           <motion.span
             className="absolute inset-0 rounded-full bg-[#25D366]"
             animate={{
-              scale: [1, 1.4],
-              opacity: [0.5, 0],
+              scale: [1, 1.2, 1.4],
+              opacity: [0, 0.4, 0],
             }}
             transition={{
-              duration: 2,
+              duration: 2.5,
               repeat: Infinity,
-              ease: "easeOut",
+              ease: [0.4, 0, 0.2, 1],
+              times: [0, 0.35, 1],
+              repeatDelay: 0.5,
             }}
           />
         )}

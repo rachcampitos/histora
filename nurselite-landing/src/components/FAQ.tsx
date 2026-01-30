@@ -55,7 +55,7 @@ export function FAQ() {
                   </div>
                 </div>
                 <Link
-                  href="https://wa.me/51987654321?text=Hola, tengo una consulta sobre NurseLite"
+                  href="https://wa.me/51923018997?text=Hola, tengo una consulta sobre NurseLite"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full block text-center py-3 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-[#0f172a]"
