@@ -2,22 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Download } from "lucide-react";
+import { Menu, X, Download, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "./ui/ThemeToggle";
 
 const navLinks = [
-  { href: "#como-funciona", label: "Como Funciona" },
-  { href: "#servicios", label: "Servicios" },
-  { href: "#verificacion", label: "Verificacion CEP" },
-  { href: "#testimonios", label: "Testimonios" },
-  { href: "#faq", label: "FAQ" },
+  { href: "#hero", label: "Inicio", sectionId: "hero" },
+  { href: "#tecnologia", label: "Caracteristicas", sectionId: "tecnologia" },
+  { href: "#como-funciona", label: "Como Funciona", sectionId: "como-funciona" },
+  { href: "#seguridad", label: "Seguridad", sectionId: "seguridad" },
+  { href: "#testimonios", label: "Testimonios", sectionId: "testimonios" },
 ];
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("hero");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +27,54 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Intersection Observer for active section highlighting
+  useEffect(() => {
+    const sectionIds = navLinks.map((link) => link.sectionId);
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (!element) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(sectionId);
+            }
+          });
+        },
+        {
+          threshold: 0.3,
+          rootMargin: "-100px 0px -50% 0px",
+        }
+      );
+
+      observer.observe(element);
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, []);
+
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace("#", "");
+    const element = document.getElementById(targetId);
+
+    if (element) {
+      const offsetTop = element.offsetTop - 80; // Account for fixed header
+      window.scrollTo({
+        top: offsetTop,
+        behavior: "smooth",
+      });
+    }
+
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -59,13 +108,26 @@ export function Header() {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
-                <Link
+                <a
                   key={link.href}
                   href={link.href}
-                  className="text-[#64748b] hover:text-[#1e3a5f] dark:text-[#94a3b8] dark:hover:text-white font-medium transition-colors text-sm"
+                  onClick={(e) => scrollToSection(e, link.href)}
+                  className={`relative font-medium transition-colors text-sm ${
+                    activeSection === link.sectionId
+                      ? "text-[#1e3a5f] dark:text-white"
+                      : "text-[#64748b] hover:text-[#1e3a5f] dark:text-[#94a3b8] dark:hover:text-white"
+                  }`}
                 >
                   {link.label}
-                </Link>
+                  {/* Active indicator */}
+                  {activeSection === link.sectionId && (
+                    <motion.span
+                      layoutId="activeSection"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a]"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </a>
               ))}
             </nav>
 
@@ -116,7 +178,13 @@ export function Header() {
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-40 bg-white dark:bg-[#0f172a] pt-24 px-6 lg:hidden"
           >
-            <nav className="flex flex-col gap-6">
+            {/* Mobile nav indicator */}
+            <p className="text-xs text-[#94a3b8] dark:text-[#64748b] mb-4 flex items-center gap-1">
+              <ChevronDown className="w-3 h-3" />
+              Navegar en esta pagina
+            </p>
+
+            <nav className="flex flex-col gap-4">
               {navLinks.map((link, index) => (
                 <motion.div
                   key={link.href}
@@ -124,13 +192,20 @@ export function Header() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link
+                  <a
                     href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-xl font-medium text-[#1e3a5f] dark:text-white hover:text-[#4a9d9a] transition-colors"
+                    onClick={(e) => scrollToSection(e, link.href)}
+                    className={`flex items-center justify-between text-xl font-medium transition-colors py-2 ${
+                      activeSection === link.sectionId
+                        ? "text-[#4a9d9a]"
+                        : "text-[#1e3a5f] dark:text-white hover:text-[#4a9d9a]"
+                    }`}
                   >
-                    {link.label}
-                  </Link>
+                    <span>{link.label}</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${
+                      activeSection === link.sectionId ? "rotate-180 text-[#4a9d9a]" : "text-[#94a3b8]"
+                    }`} />
+                  </a>
                 </motion.div>
               ))}
 
