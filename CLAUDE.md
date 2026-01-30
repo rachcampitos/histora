@@ -10,12 +10,18 @@
 
 ```
 histora/
-├── histora-back/     # Backend NestJS (API)
-├── histora-care/     # App Ionic/Angular (enfermeria a domicilio)
-└── histora-front/    # (Legacy - No en uso)
+├── histora-back/        # Backend NestJS (API)
+├── histora-care/        # App Ionic/Angular (enfermeria a domicilio)
+├── nurselite-landing/   # Landing page Next.js
+└── histora-front/       # (Legacy - No en uso)
 ```
 
 ## Despliegue
+
+### Landing Page (nurselite-landing)
+- **Hosting:** Cloudflare Pages
+- **URL:** https://nurse-lite.com
+- **Despliegue:** AUTOMATICO con git push a main
 
 ### App Movil (histora-care / NurseLite)
 - **Hosting:** Cloudflare Pages
@@ -33,6 +39,63 @@ histora/
 
 > **IMPORTANTE:** Solo hacer `git push origin main` y el despliegue es automatico.
 > **NO ejecutar:** `railway up` ni `wrangler pages deploy` manualmente.
+
+## Arquitectura nurselite-landing
+
+### Stack Tecnologico
+
+| Categoria | Tecnologia | Version |
+|-----------|------------|---------|
+| Framework | Next.js | 16.1.6 |
+| UI Library | React | 19.2.3 |
+| Lenguaje | TypeScript | 5.x |
+| Estilos | Tailwind CSS | 4.x |
+| Animaciones | Framer Motion | 12.29.2 |
+| Iconos | Lucide React | 0.563.0 |
+| Hosting | Cloudflare Pages | - |
+
+### Configuracion
+
+```typescript
+// next.config.ts
+{
+  output: "export",              // Static export (no server)
+  images: { unoptimized: true }  // Para Cloudflare Pages
+}
+```
+
+### Estructura de Componentes
+
+```
+nurselite-landing/src/
+├── app/
+│   ├── layout.tsx         # Layout principal + metadata SEO
+│   ├── page.tsx           # Pagina principal
+│   └── globals.css        # Variables CSS + dark mode
+│
+└── components/
+    ├── Header.tsx         # Navegacion + theme toggle
+    ├── Hero.tsx           # Seccion principal (Paciente/Enfermera)
+    ├── HowItWorks.tsx     # 4 pasos del proceso
+    ├── Services.tsx       # Catalogo de servicios por categoria
+    ├── CEPVerification.tsx # Explicacion verificacion CEP
+    ├── Testimonials.tsx   # Carrusel de testimonios
+    ├── FAQ.tsx            # Preguntas frecuentes (accordion)
+    ├── CTA.tsx            # Call to action final
+    ├── Footer.tsx         # Pie de pagina
+    ├── ThemeProvider.tsx  # Contexto dark/light mode
+    └── ui/
+        └── AnimatedSection.tsx  # Wrapper animaciones scroll
+```
+
+### Dark Mode
+
+```
+1. Script en <head> → Detecta preferencia antes de render
+2. ThemeProvider → Maneja estado + localStorage
+3. CSS Variables → :root (light) / .dark (dark)
+4. Tailwind → @custom-variant dark (&:where(.dark, .dark *))
+```
 
 ## APIs Externas
 
@@ -73,10 +136,14 @@ cd histora-back && npm run build
 cd histora-back && npm run test
 cd histora-back && npm run start:dev
 
-# Frontend
+# App Movil
 cd histora-care && npm run build
 cd histora-care && npm run test
 cd histora-care && ionic serve
+
+# Landing Page
+cd nurselite-landing && npm run dev
+cd nurselite-landing && npm run build
 ```
 
 ## Variables de Entorno
@@ -118,6 +185,14 @@ npx cap open android   # Abrir Android Studio
 
 - **Bundle ID:** com.historahealth.nurselite
 - **Requiere:** Node.js 22+ (para Capacitor CLI)
+
+## URLs de Produccion
+
+| Servicio | URL |
+|----------|-----|
+| Landing NurseLite | https://nurse-lite.com |
+| App NurseLite | https://care.historahealth.com |
+| API Backend | https://api.historahealth.com |
 
 ## Notas Importantes
 
