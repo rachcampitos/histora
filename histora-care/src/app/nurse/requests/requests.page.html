@@ -71,7 +71,7 @@
                     <div class="patient-info">
                       @if (request.patient?.avatar) {
                         <ion-avatar>
-                          <img [src]="request.patient?.avatar" alt="Patient">
+                          <img [src]="request.patient?.avatar" alt="Patient" loading="lazy">
                         </ion-avatar>
                       }
                       @if (!request.patient?.avatar) {
@@ -165,7 +165,7 @@
                   <div class="patient-info">
                     @if (request.patient?.avatar) {
                       <ion-avatar>
-                        <img [src]="request.patient?.avatar" alt="Patient">
+                        <img [src]="request.patient?.avatar" alt="Patient" loading="lazy">
                       </ion-avatar>
                     }
                     @if (!request.patient?.avatar) {
@@ -256,7 +256,7 @@
                   <div class="patient-info">
                     @if (request.patient?.avatar) {
                       <ion-avatar class="small">
-                        <img [src]="request.patient?.avatar" alt="Patient">
+                        <img [src]="request.patient?.avatar" alt="Patient" loading="lazy">
                       </ion-avatar>
                     }
                     @if (!request.patient?.avatar) {

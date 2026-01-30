@@ -59,7 +59,7 @@
       @for (v of filteredVerifications(); track v) {
         <ion-item (click)="selectVerification(v)" button detail>
           <ion-avatar slot="start">
-            <img [src]="v.nurse?.user?.avatar || 'assets/img/default-avatar.png'" alt="">
+            <img [src]="v.nurse?.user?.avatar || 'assets/img/default-avatar.png'" alt="" loading="lazy">
           </ion-avatar>
           <ion-label>
             <h2>{{ v.nurse?.user?.firstName }} {{ v.nurse?.user?.lastName }}</h2>
@@ -95,7 +95,7 @@
             <!-- Nurse Info -->
             <div class="nurse-info">
               <ion-avatar>
-                <img [src]="v.nurse?.user?.avatar || 'assets/img/default-avatar.png'" alt="">
+                <img [src]="v.nurse?.user?.avatar || 'assets/img/default-avatar.png'" alt="" loading="lazy">
               </ion-avatar>
               <div class="info">
                 <h3>{{ v.nurse?.user?.firstName }} {{ v.nurse?.user?.lastName }}</h3>
@@ -139,7 +139,7 @@
               <div class="doc-thumbnails">
                 @for (doc of v.documents; track doc) {
                   <div class="doc-thumb">
-                    <img [src]="doc.url" [alt]="getDocumentLabel(doc.type)">
+                    <img [src]="doc.url" [alt]="getDocumentLabel(doc.type)" loading="lazy">
                     <span class="doc-label">{{ getDocumentLabel(doc.type) }}</span>
                   </div>
                 }

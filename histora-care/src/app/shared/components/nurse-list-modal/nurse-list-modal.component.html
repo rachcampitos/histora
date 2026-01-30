@@ -15,65 +15,135 @@
     <span>{{ nurses.length }} {{ nurses.length === 1 ? 'enfermera encontrada' : 'enfermeras encontradas' }}</span>
   </div>
 
-  <ion-list lines="none" class="nurse-list">
-    @for (result of nurses; track result) {
-      <ion-item button detail="false" (click)="selectNurse(result)">
-        <div class="nurse-item-content">
-          <div class="nurse-avatar-container">
-            <ion-avatar>
-              <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'"
-                [alt]="result.nurse.user?.firstName">
-            </ion-avatar>
-            @if (result.nurse.isAvailable) {
-              <span class="availability-dot"></span>
-            }
-          </div>
-          <div class="nurse-details">
-            <div class="nurse-header">
-              <h3>{{ result.nurse.user?.firstName }} {{ result.nurse.user?.lastName }}</h3>
-              <span class="availability-badge" [class.available]="result.nurse.isAvailable">
-                {{ result.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
-              </span>
+  <!-- Virtual scroll for large lists (20+ items) -->
+  @if (nurses.length >= 20) {
+    <cdk-virtual-scroll-viewport itemSize="140" class="virtual-scroll-viewport">
+      <div class="nurse-list virtual-list">
+        @for (result of nurses; track result) {
+          <div class="nurse-item-wrapper" (click)="selectNurse(result)">
+            <div class="nurse-item-content">
+              <div class="nurse-avatar-container">
+                <ion-avatar>
+                  <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'"
+                    [alt]="result.nurse.user?.firstName"
+                    loading="lazy">
+                </ion-avatar>
+                @if (result.nurse.isAvailable) {
+                  <span class="availability-dot"></span>
+                }
+              </div>
+              <div class="nurse-details">
+                <div class="nurse-header">
+                  <h3>{{ result.nurse.user?.firstName }} {{ result.nurse.user?.lastName }}</h3>
+                  <span class="availability-badge" [class.available]="result.nurse.isAvailable">
+                    {{ result.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
+                  </span>
+                </div>
+                <div class="nurse-meta">
+                  <span class="distance">
+                    <ion-icon name="location-outline"></ion-icon>
+                    {{ result.distance.toFixed(1) }} km
+                  </span>
+                  @if (result.nurse.averageRating > 0) {
+                    <span class="rating">
+                      <ion-icon name="star"></ion-icon>
+                      {{ result.nurse.averageRating.toFixed(1) }}
+                      <span class="reviews">({{ result.nurse.totalReviews }})</span>
+                    </span>
+                  }
+                </div>
+                @if (result.nurse.specialties?.length) {
+                  <div class="nurse-specialties">
+                    @for (specialty of result.nurse.specialties.slice(0, 2); track specialty) {
+                      <ion-chip size="small">
+                        {{ specialty }}
+                      </ion-chip>
+                    }
+                    @if (result.nurse.specialties.length > 2) {
+                      <span class="more-count">
+                        +{{ result.nurse.specialties.length - 2 }}
+                      </span>
+                    }
+                  </div>
+                }
+                @if (result.nurse.services?.length) {
+                  <div class="nurse-price">
+                    <span class="from">Desde</span>
+                    <span class="price">S/ {{ getMinPrice(result.nurse.services) }}</span>
+                  </div>
+                }
+              </div>
+              <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
             </div>
-            <div class="nurse-meta">
-              <span class="distance">
-                <ion-icon name="location-outline"></ion-icon>
-                {{ result.distance.toFixed(1) }} km
-              </span>
-              @if (result.nurse.averageRating > 0) {
-                <span class="rating">
-                  <ion-icon name="star"></ion-icon>
-                  {{ result.nurse.averageRating.toFixed(1) }}
-                  <span class="reviews">({{ result.nurse.totalReviews }})</span>
-                </span>
+          </div>
+        }
+      </div>
+    </cdk-virtual-scroll-viewport>
+  }
+
+  <!-- Standard list for smaller lists (<20 items) -->
+  @if (nurses.length > 0 && nurses.length < 20) {
+    <ion-list lines="none" class="nurse-list">
+      @for (result of nurses; track result) {
+        <ion-item button detail="false" (click)="selectNurse(result)">
+          <div class="nurse-item-content">
+            <div class="nurse-avatar-container">
+              <ion-avatar>
+                <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'"
+                  [alt]="result.nurse.user?.firstName"
+                  loading="lazy">
+              </ion-avatar>
+              @if (result.nurse.isAvailable) {
+                <span class="availability-dot"></span>
               }
             </div>
-            @if (result.nurse.specialties?.length) {
-              <div class="nurse-specialties">
-                @for (specialty of result.nurse.specialties.slice(0, 2); track specialty) {
-                  <ion-chip size="small">
-                    {{ specialty }}
-                  </ion-chip>
-                }
-                @if (result.nurse.specialties.length > 2) {
-                  <span class="more-count">
-                    +{{ result.nurse.specialties.length - 2 }}
+            <div class="nurse-details">
+              <div class="nurse-header">
+                <h3>{{ result.nurse.user?.firstName }} {{ result.nurse.user?.lastName }}</h3>
+                <span class="availability-badge" [class.available]="result.nurse.isAvailable">
+                  {{ result.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
+                </span>
+              </div>
+              <div class="nurse-meta">
+                <span class="distance">
+                  <ion-icon name="location-outline"></ion-icon>
+                  {{ result.distance.toFixed(1) }} km
+                </span>
+                @if (result.nurse.averageRating > 0) {
+                  <span class="rating">
+                    <ion-icon name="star"></ion-icon>
+                    {{ result.nurse.averageRating.toFixed(1) }}
+                    <span class="reviews">({{ result.nurse.totalReviews }})</span>
                   </span>
                 }
               </div>
-            }
-            @if (result.nurse.services?.length) {
-              <div class="nurse-price">
-                <span class="from">Desde</span>
-                <span class="price">S/ {{ getMinPrice(result.nurse.services) }}</span>
-              </div>
-            }
+              @if (result.nurse.specialties?.length) {
+                <div class="nurse-specialties">
+                  @for (specialty of result.nurse.specialties.slice(0, 2); track specialty) {
+                    <ion-chip size="small">
+                      {{ specialty }}
+                    </ion-chip>
+                  }
+                  @if (result.nurse.specialties.length > 2) {
+                    <span class="more-count">
+                      +{{ result.nurse.specialties.length - 2 }}
+                    </span>
+                  }
+                </div>
+              }
+              @if (result.nurse.services?.length) {
+                <div class="nurse-price">
+                  <span class="from">Desde</span>
+                  <span class="price">S/ {{ getMinPrice(result.nurse.services) }}</span>
+                </div>
+              }
+            </div>
+            <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
           </div>
-          <ion-icon name="chevron-forward" class="arrow-icon"></ion-icon>
-        </div>
-      </ion-item>
-    }
-  </ion-list>
+        </ion-item>
+      }
+    </ion-list>
+  }
 
   @if (nurses.length === 0) {
     <div class="empty-state">

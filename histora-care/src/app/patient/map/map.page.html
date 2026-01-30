@@ -70,7 +70,7 @@
       </ion-button>
       <div class="nurse-header">
         <ion-avatar class="nurse-avatar">
-          <img [src]="selectedNurse.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + selectedNurse.nurse.user?.firstName">
+          <img [src]="selectedNurse.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + selectedNurse.nurse.user?.firstName" loading="lazy">
         </ion-avatar>
         <div class="nurse-info">
           <div class="info-row">
@@ -156,7 +156,7 @@
             (keydown.enter)="selectNurse(result)"
             [attr.aria-label]="(result.nurse.user?.firstName || 'Enfermera') + ' a ' + result.distance.toFixed(1) + ' km'">
             <ion-avatar>
-              <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + (result.nurse.user?.firstName || 'enfermera')">
+              <img [src]="result.nurse.user?.avatar || 'assets/img/default-avatar.png'" [alt]="'Foto de ' + (result.nurse.user?.firstName || 'enfermera')" loading="lazy">
             </ion-avatar>
             <span class="distance" aria-hidden="true">{{ result.distance.toFixed(1) }} km</span>
           </div>
