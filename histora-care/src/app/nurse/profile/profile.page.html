@@ -16,33 +16,42 @@
 
 <ion-content class="profile-content">
   <!-- Loading State -->
-  <div class="loading-container" *ngIf="isLoading()">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p>Cargando perfil...</p>
-  </div>
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando perfil...</p>
+    </div>
+  }
 
-  <ng-container *ngIf="!isLoading()">
+  @if (!isLoading()) {
     <!-- Profile Header -->
     <div class="profile-header" id="tour-profile-avatar">
       <div class="avatar-container" (click)="changeAvatar()">
         <ion-avatar>
-          <img *ngIf="avatar()" [src]="avatar()" alt="Avatar">
-          <ion-icon *ngIf="!avatar()" name="person-circle" class="default-avatar"></ion-icon>
+          @if (avatar()) {
+            <img [src]="avatar()" alt="Avatar">
+          }
+          @if (!avatar()) {
+            <ion-icon name="person-circle" class="default-avatar"></ion-icon>
+          }
         </ion-avatar>
         <div class="avatar-edit-badge">
           <ion-icon name="camera"></ion-icon>
         </div>
-        <div class="verified-badge" *ngIf="cepVerified()">
-          <ion-icon name="checkmark-circle"></ion-icon>
-        </div>
-        <div class="avatar-loading" *ngIf="isUploadingAvatar()">
-          <ion-spinner name="crescent" color="light"></ion-spinner>
-        </div>
+        @if (cepVerified()) {
+          <div class="verified-badge">
+            <ion-icon name="checkmark-circle"></ion-icon>
+          </div>
+        }
+        @if (isUploadingAvatar()) {
+          <div class="avatar-loading">
+            <ion-spinner name="crescent" color="light"></ion-spinner>
+          </div>
+        }
       </div>
       <h1 class="nurse-name">{{ fullName() }}</h1>
       <p class="nurse-role">Enfermera Profesional</p>
     </div>
-
     <!-- CEP Number Section (Display Only) -->
     <div class="section cep-section" id="tour-cep-section">
       <div class="section-header">
@@ -58,19 +67,19 @@
       </div>
       <p class="cep-note">Colegio de Enfermeros del Peru</p>
     </div>
-
     <!-- Payment Methods Banner (when not configured) -->
-    <div class="payment-banner" *ngIf="!yapeNumber() && !plinNumber()" (click)="scrollToPaymentMethods()">
-      <div class="banner-icon">
-        <ion-icon name="wallet-outline"></ion-icon>
+    @if (!yapeNumber() && !plinNumber()) {
+      <div class="payment-banner" (click)="scrollToPaymentMethods()">
+        <div class="banner-icon">
+          <ion-icon name="wallet-outline"></ion-icon>
+        </div>
+        <div class="banner-content">
+          <h4>Configura tus metodos de pago</h4>
+          <p>Agrega Yape o Plin para recibir pagos de pacientes</p>
+        </div>
+        <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>
       </div>
-      <div class="banner-content">
-        <h4>Configura tus metodos de pago</h4>
-        <p>Agrega Yape o Plin para recibir pagos de pacientes</p>
-      </div>
-      <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>
-    </div>
-
+    }
     <!-- Bio Section -->
     <div class="section" id="tour-bio-section">
       <div class="section-header">
@@ -88,22 +97,23 @@
       </ion-textarea>
       <p class="char-count">{{ bio().length }}/500 caracteres</p>
     </div>
-
     <!-- Specialties Section -->
     <div class="section" id="tour-specialties-section">
       <div class="section-header">
         <ion-icon name="medical-outline"></ion-icon>
         <h2>Especialidades</h2>
       </div>
-
       <!-- Current Specialties as Chips -->
-      <div class="selected-specialties" *ngIf="specialties().length > 0">
-        <ion-chip *ngFor="let specialty of specialties()" class="specialty-chip">
-          <ion-label>{{ specialty }}</ion-label>
-          <ion-icon name="close-circle" (click)="removeSpecialty(specialty)"></ion-icon>
-        </ion-chip>
-      </div>
-
+      @if (specialties().length > 0) {
+        <div class="selected-specialties">
+          @for (specialty of specialties(); track specialty) {
+            <ion-chip class="specialty-chip">
+              <ion-label>{{ specialty }}</ion-label>
+              <ion-icon name="close-circle" (click)="removeSpecialty(specialty)"></ion-icon>
+            </ion-chip>
+          }
+        </div>
+      }
       <!-- Custom Specialty Input -->
       <div class="specialty-input-container">
         <div class="specialty-input-wrapper">
@@ -116,37 +126,40 @@
             class="specialty-input">
           </ion-input>
         </div>
-        <ion-button
-          *ngIf="newSpecialty()"
-          fill="solid"
-          size="small"
-          (click)="addSpecialty()"
-          class="add-specialty-btn">
-          <ion-icon name="add" slot="start"></ion-icon>
-          Agregar
-        </ion-button>
+        @if (newSpecialty()) {
+          <ion-button
+            fill="solid"
+            size="small"
+            (click)="addSpecialty()"
+            class="add-specialty-btn">
+            <ion-icon name="add" slot="start"></ion-icon>
+            Agregar
+          </ion-button>
+        }
       </div>
-
       <!-- Common Specialties Suggestions -->
-      <div class="suggestions" *ngIf="getAvailableCommonSpecialties().length > 0">
-        <p class="suggestions-label">Sugerencias populares:</p>
-        <div class="suggestions-chips">
-          <ion-chip
-            *ngFor="let specialty of getAvailableCommonSpecialties()"
-            class="suggestion-chip"
-            (click)="addCommonSpecialty(specialty)">
-            <ion-icon name="add-outline"></ion-icon>
-            <ion-label>{{ specialty }}</ion-label>
-          </ion-chip>
+      @if (getAvailableCommonSpecialties().length > 0) {
+        <div class="suggestions">
+          <p class="suggestions-label">Sugerencias populares:</p>
+          <div class="suggestions-chips">
+            @for (specialty of getAvailableCommonSpecialties(); track specialty) {
+              <ion-chip
+                class="suggestion-chip"
+                (click)="addCommonSpecialty(specialty)">
+                <ion-icon name="add-outline"></ion-icon>
+                <ion-label>{{ specialty }}</ion-label>
+              </ion-chip>
+            }
+          </div>
         </div>
-      </div>
-
-      <p class="helper-text" *ngIf="specialties().length === 0">
-        <ion-icon name="information-circle-outline"></ion-icon>
-        Agrega especialidades para que los pacientes puedan encontrarte mas facilmente
-      </p>
+      }
+      @if (specialties().length === 0) {
+        <p class="helper-text">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          Agrega especialidades para que los pacientes puedan encontrarte mas facilmente
+        </p>
+      }
     </div>
-
     <!-- Experience Section -->
     <div class="section">
       <div class="section-header">
@@ -165,23 +178,24 @@
         <span class="experience-label">años</span>
       </div>
     </div>
-
     <!-- Location Section -->
     <div class="section" id="tour-location-section">
       <div class="section-header">
         <ion-icon name="location-outline"></ion-icon>
         <h2>Ubicacion de Servicio</h2>
       </div>
-
       <!-- Current Location Display -->
-      <div class="location-display" *ngIf="locationDistrict()">
-        <ion-icon name="checkmark-circle" color="success"></ion-icon>
-        <span>{{ locationDistrict() }}, {{ locationCity() }}</span>
-      </div>
-      <p class="empty-text" *ngIf="!locationDistrict()">
-        Indica tu ubicacion para que los pacientes cercanos puedan encontrarte
-      </p>
-
+      @if (locationDistrict()) {
+        <div class="location-display">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>{{ locationDistrict() }}, {{ locationCity() }}</span>
+        </div>
+      }
+      @if (!locationDistrict()) {
+        <p class="empty-text">
+          Indica tu ubicacion para que los pacientes cercanos puedan encontrarte
+        </p>
+      }
       <!-- Location Form -->
       <div class="location-form">
         <div class="form-row">
@@ -193,13 +207,14 @@
               interface="popover"
               placeholder="Selecciona"
               class="location-select">
-              <ion-select-option *ngFor="let dept of departamentos()" [value]="dept.id">
-                {{ dept.nombre }}
-              </ion-select-option>
+              @for (dept of departamentos(); track dept) {
+                <ion-select-option [value]="dept.id">
+                  {{ dept.nombre }}
+                </ion-select-option>
+              }
             </ion-select>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label>Distrito</label>
@@ -214,36 +229,40 @@
                 [class.has-value]="locationDistrict()">
                 <ion-icon slot="start" name="search-outline"></ion-icon>
               </ion-input>
-
-              <ion-button *ngIf="locationDistrict()" fill="clear" size="small" (click)="clearDistrito()" class="clear-btn">
-                <ion-icon name="close-circle"></ion-icon>
-              </ion-button>
-
-              <div class="search-results" *ngIf="showDistritoResults() && filteredDistritos().length > 0">
-                <div class="result-item"
-                     *ngFor="let distrito of filteredDistritos()"
-                     (mousedown)="selectDistrito(distrito); $event.preventDefault()"
-                     (touchend)="selectDistrito(distrito); $event.preventDefault()">
-                  <ion-icon name="location-outline"></ion-icon>
-                  <span>{{ distrito.nombre }}</span>
-                  <small *ngIf="distrito.zona">{{ distrito.zona | titlecase }}</small>
+              @if (locationDistrict()) {
+                <ion-button fill="clear" size="small" (click)="clearDistrito()" class="clear-btn">
+                  <ion-icon name="close-circle"></ion-icon>
+                </ion-button>
+              }
+              @if (showDistritoResults() && filteredDistritos().length > 0) {
+                <div class="search-results">
+                  @for (distrito of filteredDistritos(); track distrito) {
+                    <div class="result-item"
+                      (mousedown)="selectDistrito(distrito); $event.preventDefault()"
+                      (touchend)="selectDistrito(distrito); $event.preventDefault()">
+                      <ion-icon name="location-outline"></ion-icon>
+                      <span>{{ distrito.nombre }}</span>
+                      @if (distrito.zona) {
+                        <small>{{ distrito.zona | titlecase }}</small>
+                      }
+                    </div>
+                  }
                 </div>
-              </div>
-
-              <div class="search-results empty" *ngIf="showDistritoResults() && distritoSearch().length >= 2 && filteredDistritos().length === 0">
-                <p>No se encontraron distritos</p>
-              </div>
+              }
+              @if (showDistritoResults() && distritoSearch().length >= 2 && filteredDistritos().length === 0) {
+                <div class="search-results empty">
+                  <p>No se encontraron distritos</p>
+                </div>
+              }
             </div>
           </div>
         </div>
       </div>
-
       <p class="helper-text">
         <ion-icon name="shield-checkmark-outline"></ion-icon>
         Tu ubicacion exacta solo se comparte cuando aceptas un servicio
       </p>
     </div>
-
     <!-- Service Radius Section -->
     <div class="section" id="tour-radius-section">
       <div class="section-header">
@@ -269,28 +288,26 @@
         Define la distancia maxima a la que estas dispuesta a desplazarte para atender pacientes
       </p>
     </div>
-
     <!-- Availability Schedule Section -->
     <div class="section" id="tour-schedule-section">
       <div class="section-header">
         <ion-icon name="calendar-outline"></ion-icon>
         <h2>Horario de Disponibilidad</h2>
       </div>
-
       <!-- Days of Week -->
       <div class="days-selector">
         <p class="subsection-label">Dias disponibles</p>
         <div class="days-grid">
-          <div
-            *ngFor="let day of dayOptions"
-            class="day-chip"
-            [class.selected]="isDaySelected(day.value)"
-            (click)="toggleDay(day.value)">
-            {{ day.shortLabel }}
-          </div>
+          @for (day of dayOptions; track day) {
+            <div
+              class="day-chip"
+              [class.selected]="isDaySelected(day.value)"
+              (click)="toggleDay(day.value)">
+              {{ day.shortLabel }}
+            </div>
+          }
         </div>
       </div>
-
       <!-- Time Range -->
       <div class="time-selector">
         <div class="time-field">
@@ -330,7 +347,6 @@
         </div>
       </div>
     </div>
-
     <!-- Payment Methods Section (P2P) -->
     <div class="section payment-methods-section">
       <div class="section-header">
@@ -338,7 +354,6 @@
         <h2>Metodos de Pago</h2>
       </div>
       <p class="section-description">Los pacientes veran estos datos para pagarte directamente</p>
-
       <!-- Yape -->
       <div class="payment-method">
         <div class="payment-method-header">
@@ -355,7 +370,6 @@
           class="payment-input">
         </ion-input>
       </div>
-
       <!-- Plin -->
       <div class="payment-method">
         <div class="payment-method-header">
@@ -372,7 +386,6 @@
           class="payment-input">
         </ion-input>
       </div>
-
       <!-- Cash Toggle -->
       <ion-item lines="none" class="cash-toggle">
         <ion-icon name="cash-outline" slot="start" color="success"></ion-icon>
@@ -382,20 +395,17 @@
         </ion-label>
         <ion-toggle [checked]="acceptsCash()" (ionChange)="onAcceptsCashChange($event)" slot="end"></ion-toggle>
       </ion-item>
-
       <p class="payment-note">
         <ion-icon name="information-circle-outline"></ion-icon>
         Debes tener al menos un metodo de pago activo
       </p>
     </div>
-
     <!-- Subscription Section -->
     <div class="section subscription-section">
       <div class="section-header">
         <ion-icon name="ribbon-outline"></ion-icon>
         <h2>Mi Suscripcion</h2>
       </div>
-
       <ion-item button routerLink="/nurse/subscription" detail="true" class="subscription-item">
         <div class="subscription-info" slot="start">
           <span class="plan-name">Plan Basico</span>
@@ -406,14 +416,12 @@
         </ion-label>
       </ion-item>
     </div>
-
     <!-- Settings Section -->
     <div class="section settings-section">
       <div class="section-header">
         <ion-icon name="settings-outline"></ion-icon>
         <h2>Configuracion</h2>
       </div>
-
       <ion-list lines="none" class="settings-list">
         <ion-item button (click)="openThemeSelector()" detail="true">
           <ion-icon [name]="themeService.getThemeIcon(themeService.currentTheme())" slot="start" class="setting-icon"></ion-icon>
@@ -431,7 +439,6 @@
         </ion-item>
       </ion-list>
     </div>
-
     <!-- Logout Section -->
     <div class="logout-section">
       <ion-button
@@ -444,30 +451,42 @@
         Cerrar Sesion
       </ion-button>
     </div>
-
     <!-- App Version -->
     <div class="app-version">
       <p>NurseLite v1.0.0</p>
       <p class="powered-by">by Histora Health</p>
     </div>
-
     <!-- Spacer for sticky footer when visible -->
-    <div class="footer-spacer" *ngIf="hasUnsavedChanges()"></div>
-  </ng-container>
+    @if (hasUnsavedChanges()) {
+      <div class="footer-spacer"></div>
+    }
+  }
 </ion-content>
 
 <!-- Sticky Footer for Save Actions -->
-<ion-footer class="save-footer" *ngIf="hasUnsavedChanges() && !isLoading()" id="tour-save-button">
-  <div class="footer-content">
-    <ion-button fill="clear" (click)="cancelChanges()" [disabled]="isSaving()" class="cancel-btn">
-      Cancelar
-    </ion-button>
-    <ion-button (click)="saveProfile()" [disabled]="isSaving()" class="save-btn">
-      <ion-spinner *ngIf="isSaving()" name="crescent" slot="start"></ion-spinner>
-      <ion-icon *ngIf="justSaved()" name="checkmark-circle" slot="start"></ion-icon>
-      <span *ngIf="!isSaving() && !justSaved()">Guardar cambios</span>
-      <span *ngIf="isSaving()">Guardando...</span>
-      <span *ngIf="justSaved()">Guardado</span>
-    </ion-button>
-  </div>
-</ion-footer>
+@if (hasUnsavedChanges() && !isLoading()) {
+  <ion-footer class="save-footer" id="tour-save-button">
+    <div class="footer-content">
+      <ion-button fill="clear" (click)="cancelChanges()" [disabled]="isSaving()" class="cancel-btn">
+        Cancelar
+      </ion-button>
+      <ion-button (click)="saveProfile()" [disabled]="isSaving()" class="save-btn">
+        @if (isSaving()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        @if (justSaved()) {
+          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        }
+        @if (!isSaving() && !justSaved()) {
+          <span>Guardar cambios</span>
+        }
+        @if (isSaving()) {
+          <span>Guardando...</span>
+        }
+        @if (justSaved()) {
+          <span>Guardado</span>
+        }
+      </ion-button>
+    </div>
+  </ion-footer>
+}

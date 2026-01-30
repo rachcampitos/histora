@@ -10,10 +10,12 @@
     <p class="message">{{ reasonConfig.message }}</p>
 
     <!-- Security Info -->
-    <div class="security-info" *ngIf="reason === 'inactivity' || reason === 'timeout'">
-      <ion-icon name="information-circle-outline"></ion-icon>
-      <span>Esta medida protege tu informacion personal y datos de salud.</span>
-    </div>
+    @if (reason === 'inactivity' || reason === 'timeout') {
+      <div class="security-info">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>Esta medida protege tu informacion personal y datos de salud.</span>
+      </div>
+    }
 
     <!-- Login Button -->
     <ion-button expand="block" class="login-button" (click)="goToLogin()">

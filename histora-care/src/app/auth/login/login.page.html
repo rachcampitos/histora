@@ -28,10 +28,16 @@
             [attr.aria-describedby]="email?.invalid && email?.touched ? 'email-error' : null">
           </ion-input>
         </ion-item>
-        <div id="email-error" class="error-message" role="alert" *ngIf="email?.invalid && email?.touched">
-          <span *ngIf="email?.errors?.['required']">El correo es requerido</span>
-          <span *ngIf="email?.errors?.['email']">Ingresa un correo válido</span>
-        </div>
+        @if (email?.invalid && email?.touched) {
+          <div id="email-error" class="error-message" role="alert">
+            @if (email?.errors?.['required']) {
+              <span>El correo es requerido</span>
+            }
+            @if (email?.errors?.['email']) {
+              <span>Ingresa un correo válido</span>
+            }
+          </div>
+        }
 
         <!-- Password Field -->
         <ion-item lines="none" class="input-item" [class.input-error]="password?.invalid && password?.touched">
@@ -56,10 +62,16 @@
             <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
           </ion-button>
         </ion-item>
-        <div id="password-error" class="error-message" role="alert" *ngIf="password?.invalid && password?.touched">
-          <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
-          <span *ngIf="password?.errors?.['minlength']">Mínimo 8 caracteres</span>
-        </div>
+        @if (password?.invalid && password?.touched) {
+          <div id="password-error" class="error-message" role="alert">
+            @if (password?.errors?.['required']) {
+              <span>La contraseña es requerida</span>
+            }
+            @if (password?.errors?.['minlength']) {
+              <span>Mínimo 8 caracteres</span>
+            }
+          </div>
+        }
 
         <!-- Remember Me & Forgot Password -->
         <div class="options-row">

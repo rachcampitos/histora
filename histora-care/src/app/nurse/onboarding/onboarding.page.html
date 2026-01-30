@@ -109,8 +109,8 @@
                 <div class="search-results">
                   @for (distrito of filteredDistritos(); track distrito.id) {
                     <div class="result-item"
-                         (mousedown)="selectDistrito(distrito); $event.preventDefault()"
-                         (touchend)="selectDistrito(distrito); $event.preventDefault()">
+                      (mousedown)="selectDistrito(distrito); $event.preventDefault()"
+                      (touchend)="selectDistrito(distrito); $event.preventDefault()">
                       <ion-icon name="location-outline"></ion-icon>
                       <span>{{ distrito.nombre }}</span>
                       @if (distrito.zona) {
@@ -149,9 +149,13 @@
             (click)="saveLocation()"
             [disabled]="isLoading() || !hasValidLocation()"
             class="primary-btn">
-            <ion-spinner *ngIf="isLoading()" name="crescent" slot="start"></ion-spinner>
+            @if (isLoading()) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+            }
             {{ isLoading() ? 'Guardando...' : 'Continuar' }}
-            <ion-icon slot="end" name="arrow-forward" *ngIf="!isLoading()"></ion-icon>
+            @if (!isLoading()) {
+              <ion-icon slot="end" name="arrow-forward"></ion-icon>
+            }
           </ion-button>
         </div>
       </div>
@@ -299,7 +303,9 @@
             (click)="savePaymentMethods()"
             [disabled]="isLoading() || !hasAnyPaymentMethod()"
             class="primary-btn">
-            <ion-spinner *ngIf="isLoading()" name="crescent" slot="start"></ion-spinner>
+            @if (isLoading()) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+            }
             {{ isLoading() ? 'Guardando...' : 'Guardar y continuar' }}
           </ion-button>
           <ion-button expand="block" fill="clear" (click)="skipPaymentSetup()" class="skip-btn">

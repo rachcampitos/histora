@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, signal, Input, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { IonicModule, AlertController, ToastController, ModalController } from '@ionic/angular';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,7 +11,7 @@ import { GeolocationService } from '../../../core/services/geolocation.service';
   templateUrl: './panic-button.component.html',
   styleUrls: ['./panic-button.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [IonicModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PanicButtonComponent implements OnInit, OnDestroy {

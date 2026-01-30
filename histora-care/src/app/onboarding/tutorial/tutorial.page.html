@@ -1,134 +1,142 @@
 <ion-content class="tutorial-content" [fullscreen]="true">
   <div class="tutorial-container">
     <!-- Intro Video Slide (shown only once at the beginning) -->
-    <div class="intro-slide" *ngIf="showIntroVideo" [class.video-ended]="videoEnded" (click)="skipIntro()">
-      <!-- Video Container (shrinks with clip-path, logo inside for perfect transition) -->
-      <div class="video-container" [class.shrinking]="videoEnded">
-        <video
-          #introVideo
-          class="intro-video"
-          [class.hidden]="showLogoAfterVideo"
-          autoplay
-          muted
-          playsinline
-          (ended)="onVideoEnded()">
-          <source src="assets/video/NurseLite video 2.mp4" type="video/mp4">
-        </video>
-
-        <!-- Logo inside container - fills the clipped area perfectly -->
-        <img
-          src="assets/icon/nurselite.png"
-          alt="NurseLite"
-          class="intro-logo"
-          [class.visible]="showLogoAfterVideo">
+    @if (showIntroVideo) {
+      <div class="intro-slide" [class.video-ended]="videoEnded" (click)="skipIntro()">
+        <!-- Video Container (shrinks with clip-path, logo inside for perfect transition) -->
+        <div class="video-container" [class.shrinking]="videoEnded">
+          <video
+            #introVideo
+            class="intro-video"
+            [class.hidden]="showLogoAfterVideo"
+            autoplay
+            muted
+            playsinline
+            (ended)="onVideoEnded()">
+            <source src="assets/video/NurseLite video 2.mp4" type="video/mp4">
+          </video>
+          <!-- Logo inside container - fills the clipped area perfectly -->
+          <img
+            src="assets/icon/nurselite.png"
+            alt="NurseLite"
+            class="intro-logo"
+            [class.visible]="showLogoAfterVideo">
+        </div>
+        <!-- Welcome text (appears after video) -->
+        <div class="intro-welcome" [class.visible]="videoEnded">
+          <h1 class="intro-title">Bienvenido a NurseLite</h1>
+          <p class="intro-subtitle">{{ userRole === 'nurse' ? 'Tu plataforma de servicios de enfermería' : 'Enfermería profesional a domicilio' }}</p>
+        </div>
+        <!-- Skip hint -->
+        @if (!videoEnded) {
+          <div class="skip-hint">
+            <span>Toca para omitir</span>
+          </div>
+        }
+        <!-- Continue button (after video) -->
+        @if (videoEnded) {
+          <ion-button
+            class="continue-btn"
+            (click)="startTutorial($event)">
+            Continuar
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          </ion-button>
+        }
       </div>
-
-      <!-- Welcome text (appears after video) -->
-      <div class="intro-welcome" [class.visible]="videoEnded">
-        <h1 class="intro-title">Bienvenido a NurseLite</h1>
-        <p class="intro-subtitle">{{ userRole === 'nurse' ? 'Tu plataforma de servicios de enfermería' : 'Enfermería profesional a domicilio' }}</p>
-      </div>
-
-      <!-- Skip hint -->
-      <div class="skip-hint" *ngIf="!videoEnded">
-        <span>Toca para omitir</span>
-      </div>
-
-      <!-- Continue button (after video) -->
-      <ion-button
-        *ngIf="videoEnded"
-        class="continue-btn"
-        (click)="startTutorial($event)">
-        Continuar
-        <ion-icon name="arrow-forward" slot="end"></ion-icon>
-      </ion-button>
-    </div>
+    }
 
     <!-- Slides Wrapper -->
-    <div class="slides-wrapper" *ngIf="!showIntroVideo">
-      <div class="slides-track" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
-        <div
-          *ngFor="let slide of slides; let i = index"
-          class="slide"
-          [class.active]="i === currentSlide">
-          <div class="slide-content">
-            <!-- Logo (only on first slide) -->
-            <div class="slide-logo" *ngIf="i === 0">
-              <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
-            </div>
-
-            <!-- Icon/Illustration (on all slides except first) -->
-            <div class="slide-illustration" *ngIf="i !== 0">
-              <div class="icon-wrapper" [ngClass]="slide.gradient">
-                <ion-icon [name]="slide.icon"></ion-icon>
+    @if (!showIntroVideo) {
+      <div class="slides-wrapper">
+        <div class="slides-track" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+          @for (slide of slides; track slide; let i = $index) {
+            <div
+              class="slide"
+              [class.active]="i === currentSlide">
+              <div class="slide-content">
+                <!-- Logo (only on first slide) -->
+                @if (i === 0) {
+                  <div class="slide-logo">
+                    <img src="assets/icon/nurselite.png" alt="NurseLite" class="logo-image">
+                  </div>
+                }
+                <!-- Icon/Illustration (on all slides except first) -->
+                @if (i !== 0) {
+                  <div class="slide-illustration">
+                    <div class="icon-wrapper" [ngClass]="slide.gradient">
+                      <ion-icon [name]="slide.icon"></ion-icon>
+                    </div>
+                  </div>
+                }
+                <!-- Title -->
+                <h1 class="slide-title">{{ slide.title }}</h1>
+                <!-- Description -->
+                <p class="slide-description">{{ slide.description }}</p>
+                <!-- Features (if any) -->
+                @if (slide.features) {
+                  <div class="slide-features">
+                    @for (feature of slide.features; track feature) {
+                      <div class="feature-item">
+                        <ion-icon [name]="feature.icon" class="feature-icon"></ion-icon>
+                        <span class="feature-text">{{ feature.text }}</span>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
-
-            <!-- Title -->
-            <h1 class="slide-title">{{ slide.title }}</h1>
-
-            <!-- Description -->
-            <p class="slide-description">{{ slide.description }}</p>
-
-            <!-- Features (if any) -->
-            <div class="slide-features" *ngIf="slide.features">
-              <div class="feature-item" *ngFor="let feature of slide.features">
-                <ion-icon [name]="feature.icon" class="feature-icon"></ion-icon>
-                <span class="feature-text">{{ feature.text }}</span>
-              </div>
-            </div>
-          </div>
+          }
         </div>
       </div>
-    </div>
+    }
 
     <!-- Controls (only show when not in intro video) -->
-    <div class="tutorial-controls" [class.last-slide]="isLastSlide" *ngIf="!showIntroVideo">
-      <ng-container *ngIf="!isLastSlide">
-        <!-- Skip Button -->
-        <ion-button fill="clear" class="skip-btn" (click)="skip()">
-          Omitir
-        </ion-button>
-
-        <!-- Pagination Dots -->
-        <div class="pagination-dots">
-          <button
-            *ngFor="let slide of slides; let i = index"
-            class="dot"
-            [class.active]="i === currentSlide"
-            (click)="goToSlide(i)"
-            [attr.aria-label]="'Ir a slide ' + (i + 1)">
-          </button>
-        </div>
-
-        <!-- Next Button -->
-        <ion-button class="next-btn" (click)="next()">
-          Siguiente
-          <ion-icon name="arrow-forward" slot="end"></ion-icon>
-        </ion-button>
-      </ng-container>
-
-      <!-- Last Slide CTA -->
-      <ng-container *ngIf="isLastSlide">
-        <div class="cta-container">
-          <!-- Pagination Dots (centered) -->
-          <div class="pagination-dots centered">
-            <button
-              *ngFor="let slide of slides; let i = index"
-              class="dot"
-              [class.active]="i === currentSlide"
-              (click)="goToSlide(i)"
-              [attr.aria-label]="'Ir a slide ' + (i + 1)">
-            </button>
-          </div>
-
-          <!-- CTA Button - Dynamic text based on user role -->
-          <ion-button expand="block" class="cta-btn" (click)="completeAndStart()">
-            <ion-icon [name]="userRole === 'nurse' ? 'shield-checkmark' : 'search'" slot="start"></ion-icon>
-            {{ lastSlideCta }}
+    @if (!showIntroVideo) {
+      <div class="tutorial-controls" [class.last-slide]="isLastSlide">
+        @if (!isLastSlide) {
+          <!-- Skip Button -->
+          <ion-button fill="clear" class="skip-btn" (click)="skip()">
+            Omitir
           </ion-button>
-        </div>
-      </ng-container>
-    </div>
+          <!-- Pagination Dots -->
+          <div class="pagination-dots">
+            @for (slide of slides; track slide; let i = $index) {
+              <button
+                class="dot"
+                [class.active]="i === currentSlide"
+                (click)="goToSlide(i)"
+                [attr.aria-label]="'Ir a slide ' + (i + 1)">
+              </button>
+            }
+          </div>
+          <!-- Next Button -->
+          <ion-button class="next-btn" (click)="next()">
+            Siguiente
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          </ion-button>
+        }
+        <!-- Last Slide CTA -->
+        @if (isLastSlide) {
+          <div class="cta-container">
+            <!-- Pagination Dots (centered) -->
+            <div class="pagination-dots centered">
+              @for (slide of slides; track slide; let i = $index) {
+                <button
+                  class="dot"
+                  [class.active]="i === currentSlide"
+                  (click)="goToSlide(i)"
+                  [attr.aria-label]="'Ir a slide ' + (i + 1)">
+                </button>
+              }
+            </div>
+            <!-- CTA Button - Dynamic text based on user role -->
+            <ion-button expand="block" class="cta-btn" (click)="completeAndStart()">
+              <ion-icon [name]="userRole === 'nurse' ? 'shield-checkmark' : 'search'" slot="start"></ion-icon>
+              {{ lastSlideCta }}
+            </ion-button>
+          </div>
+        }
+      </div>
+    }
   </div>
 </ion-content>

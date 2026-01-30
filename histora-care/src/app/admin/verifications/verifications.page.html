@@ -11,161 +11,178 @@
 
 <ion-content class="verifications-content">
   <!-- Loading State -->
-  <div class="loading-container" *ngIf="isLoading()" role="status" aria-live="polite" aria-label="Cargando verificaciones">
-    <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-    <span class="sr-only">Cargando verificaciones...</span>
-  </div>
-
-  <ng-container *ngIf="!isLoading()">
-    <!-- Stats Cards -->
-    <div class="stats-row" *ngIf="stats()">
-      <div class="stat-card pending">
-        <ion-icon name="time-outline"></ion-icon>
-        <span class="value">{{ stats()?.pending }}</span>
-        <span class="label">Pendientes</span>
-      </div>
-      <div class="stat-card review">
-        <ion-icon name="eye-outline"></ion-icon>
-        <span class="value">{{ stats()?.underReview }}</span>
-        <span class="label">En Revision</span>
-      </div>
-      <div class="stat-card approved">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
-        <span class="value">{{ stats()?.approved }}</span>
-        <span class="label">Aprobados</span>
-      </div>
-      <div class="stat-card rejected">
-        <ion-icon name="close-circle-outline"></ion-icon>
-        <span class="value">{{ stats()?.rejected }}</span>
-        <span class="label">Rechazados</span>
-      </div>
+  @if (isLoading()) {
+    <div class="loading-container" role="status" aria-live="polite" aria-label="Cargando verificaciones">
+      <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+      <span class="sr-only">Cargando verificaciones...</span>
     </div>
+  }
 
+  @if (!isLoading()) {
+    <!-- Stats Cards -->
+    @if (stats()) {
+      <div class="stats-row">
+        <div class="stat-card pending">
+          <ion-icon name="time-outline"></ion-icon>
+          <span class="value">{{ stats()?.pending }}</span>
+          <span class="label">Pendientes</span>
+        </div>
+        <div class="stat-card review">
+          <ion-icon name="eye-outline"></ion-icon>
+          <span class="value">{{ stats()?.underReview }}</span>
+          <span class="label">En Revision</span>
+        </div>
+        <div class="stat-card approved">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span class="value">{{ stats()?.approved }}</span>
+          <span class="label">Aprobados</span>
+        </div>
+        <div class="stat-card rejected">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          <span class="value">{{ stats()?.rejected }}</span>
+          <span class="label">Rechazados</span>
+        </div>
+      </div>
+    }
     <!-- Filters -->
     <div class="filters-section">
       <ion-segment [value]="statusFilter()" (ionChange)="onStatusFilterChange($event)">
-        <ion-segment-button *ngFor="let opt of statusOptions" [value]="opt.value">
-          <ion-label>{{ opt.label }}</ion-label>
-        </ion-segment-button>
+        @for (opt of statusOptions; track opt) {
+          <ion-segment-button [value]="opt.value">
+            <ion-label>{{ opt.label }}</ion-label>
+          </ion-segment-button>
+        }
       </ion-segment>
     </div>
-
     <!-- Verifications List -->
     <ion-list class="verifications-list">
-      <ion-item *ngFor="let v of filteredVerifications()" (click)="selectVerification(v)" button detail>
-        <ion-avatar slot="start">
-          <img [src]="v.nurse?.user?.avatar || 'assets/img/default-avatar.png'" alt="">
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ v.nurse?.user?.firstName }} {{ v.nurse?.user?.lastName }}</h2>
-          <p>CEP: {{ v.nurse?.cepNumber }}</p>
-          <p class="date">{{ v.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
-        </ion-label>
-        <ion-badge slot="end" [color]="getStatusColor(v.status)">
-          {{ getStatusLabel(v.status) }}
-        </ion-badge>
-      </ion-item>
-    </ion-list>
-
-    <div class="empty-state" *ngIf="filteredVerifications().length === 0">
-      <ion-icon name="document-text-outline"></ion-icon>
-      <p>No hay verificaciones</p>
-    </div>
-  </ng-container>
-
-  <!-- Verification Detail Modal -->
-  <div class="detail-overlay" *ngIf="selectedVerification()" (click)="closeDetail()">
-    <div class="detail-modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h2>Detalle de Verificacion</h2>
-        <ion-button fill="clear" (click)="closeDetail()">
-          <ion-icon name="close" slot="icon-only"></ion-icon>
-        </ion-button>
-      </div>
-
-      <div class="modal-content" *ngIf="selectedVerification() as v">
-        <!-- Nurse Info -->
-        <div class="nurse-info">
-          <ion-avatar>
+      @for (v of filteredVerifications(); track v) {
+        <ion-item (click)="selectVerification(v)" button detail>
+          <ion-avatar slot="start">
             <img [src]="v.nurse?.user?.avatar || 'assets/img/default-avatar.png'" alt="">
           </ion-avatar>
-          <div class="info">
-            <h3>{{ v.nurse?.user?.firstName }} {{ v.nurse?.user?.lastName }}</h3>
-            <p>{{ v.nurse?.user?.email }}</p>
+          <ion-label>
+            <h2>{{ v.nurse?.user?.firstName }} {{ v.nurse?.user?.lastName }}</h2>
             <p>CEP: {{ v.nurse?.cepNumber }}</p>
-          </div>
-          <ion-badge [color]="getStatusColor(v.status)">
+            <p class="date">{{ v.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          </ion-label>
+          <ion-badge slot="end" [color]="getStatusColor(v.status)">
             {{ getStatusLabel(v.status) }}
           </ion-badge>
-        </div>
+        </ion-item>
+      }
+    </ion-list>
+    @if (filteredVerifications().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <p>No hay verificaciones</p>
+      </div>
+    }
+  }
 
-        <!-- DNI Info -->
-        <div class="dni-info">
-          <div class="info-row">
-            <span class="label">DNI:</span>
-            <span class="value">{{ v.dniNumber }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Nombre en DNI:</span>
-            <span class="value">{{ v.fullNameOnDni }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Enviado:</span>
-            <span class="value">{{ v.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
-          </div>
-          <div class="info-row" *ngIf="v.reviewedAt">
-            <span class="label">Revisado:</span>
-            <span class="value">{{ v.reviewedAt | date:'dd/MM/yyyy HH:mm' }}</span>
-          </div>
-          <div class="info-row" *ngIf="v.rejectionReason">
-            <span class="label">Motivo Rechazo:</span>
-            <span class="value danger">{{ v.rejectionReason }}</span>
-          </div>
-        </div>
-
-        <!-- Documents Grid -->
-        <div class="documents-grid">
-          <h4>Documentos Enviados</h4>
-          <div class="doc-thumbnails">
-            <div class="doc-thumb" *ngFor="let doc of v.documents">
-              <img [src]="doc.url" [alt]="getDocumentLabel(doc.type)">
-              <span class="doc-label">{{ getDocumentLabel(doc.type) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="modal-actions" *ngIf="v.status === 'pending' || v.status === 'under_review'">
-          <ion-button
-            *ngIf="v.status === 'pending'"
-            expand="block"
-            color="primary"
-            [disabled]="isProcessing()"
-            (click)="markUnderReview(v)">
-            <ion-icon slot="start" name="eye-outline"></ion-icon>
-            Iniciar Revision
+  <!-- Verification Detail Modal -->
+  @if (selectedVerification()) {
+    <div class="detail-overlay" (click)="closeDetail()">
+      <div class="detail-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Detalle de Verificacion</h2>
+          <ion-button fill="clear" (click)="closeDetail()">
+            <ion-icon name="close" slot="icon-only"></ion-icon>
           </ion-button>
-
-          <div class="action-buttons" *ngIf="v.status === 'under_review'">
-            <ion-button
-              expand="block"
-              color="success"
-              [disabled]="isProcessing()"
-              (click)="approveVerification(v)">
-              <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-              Aprobar
-            </ion-button>
-            <ion-button
-              expand="block"
-              color="danger"
-              [disabled]="isProcessing()"
-              (click)="rejectVerification(v)">
-              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
-              Rechazar
-            </ion-button>
-          </div>
         </div>
+        @if (selectedVerification(); as v) {
+          <div class="modal-content">
+            <!-- Nurse Info -->
+            <div class="nurse-info">
+              <ion-avatar>
+                <img [src]="v.nurse?.user?.avatar || 'assets/img/default-avatar.png'" alt="">
+              </ion-avatar>
+              <div class="info">
+                <h3>{{ v.nurse?.user?.firstName }} {{ v.nurse?.user?.lastName }}</h3>
+                <p>{{ v.nurse?.user?.email }}</p>
+                <p>CEP: {{ v.nurse?.cepNumber }}</p>
+              </div>
+              <ion-badge [color]="getStatusColor(v.status)">
+                {{ getStatusLabel(v.status) }}
+              </ion-badge>
+            </div>
+            <!-- DNI Info -->
+            <div class="dni-info">
+              <div class="info-row">
+                <span class="label">DNI:</span>
+                <span class="value">{{ v.dniNumber }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Nombre en DNI:</span>
+                <span class="value">{{ v.fullNameOnDni }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Enviado:</span>
+                <span class="value">{{ v.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              @if (v.reviewedAt) {
+                <div class="info-row">
+                  <span class="label">Revisado:</span>
+                  <span class="value">{{ v.reviewedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              }
+              @if (v.rejectionReason) {
+                <div class="info-row">
+                  <span class="label">Motivo Rechazo:</span>
+                  <span class="value danger">{{ v.rejectionReason }}</span>
+                </div>
+              }
+            </div>
+            <!-- Documents Grid -->
+            <div class="documents-grid">
+              <h4>Documentos Enviados</h4>
+              <div class="doc-thumbnails">
+                @for (doc of v.documents; track doc) {
+                  <div class="doc-thumb">
+                    <img [src]="doc.url" [alt]="getDocumentLabel(doc.type)">
+                    <span class="doc-label">{{ getDocumentLabel(doc.type) }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+            <!-- Actions -->
+            @if (v.status === 'pending' || v.status === 'under_review') {
+              <div class="modal-actions">
+                @if (v.status === 'pending') {
+                  <ion-button
+                    expand="block"
+                    color="primary"
+                    [disabled]="isProcessing()"
+                    (click)="markUnderReview(v)">
+                    <ion-icon slot="start" name="eye-outline"></ion-icon>
+                    Iniciar Revision
+                  </ion-button>
+                }
+                @if (v.status === 'under_review') {
+                  <div class="action-buttons">
+                    <ion-button
+                      expand="block"
+                      color="success"
+                      [disabled]="isProcessing()"
+                      (click)="approveVerification(v)">
+                      <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+                      Aprobar
+                    </ion-button>
+                    <ion-button
+                      expand="block"
+                      color="danger"
+                      [disabled]="isProcessing()"
+                      (click)="rejectVerification(v)">
+                      <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+                      Rechazar
+                    </ion-button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 </ion-content>

@@ -10,28 +10,38 @@
       <ion-button (click)="goToProfile()" class="profile-avatar-btn">
         <div class="avatar-wrapper" [class.verified]="isVerified()">
           <!-- Photo -->
-          <img *ngIf="nurse()?.user?.avatar"
-               [src]="nurse()?.user?.avatar"
-               [alt]="user()?.firstName"
-               class="avatar-image" />
+          @if (nurse()?.user?.avatar) {
+            <img
+              [src]="nurse()?.user?.avatar"
+              [alt]="user()?.firstName"
+              class="avatar-image" />
+          }
           <!-- Initials fallback -->
-          <div *ngIf="!nurse()?.user?.avatar && user()?.firstName"
-               class="avatar-initials"
-               [style.background-color]="getAvatarColor()">
-            {{ getInitials() }}
-          </div>
+          @if (!nurse()?.user?.avatar && user()?.firstName) {
+            <div
+              class="avatar-initials"
+              [style.background-color]="getAvatarColor()">
+              {{ getInitials() }}
+            </div>
+          }
           <!-- Icon fallback -->
-          <ion-icon *ngIf="!nurse()?.user?.avatar && !user()?.firstName"
-                    name="person-circle"
-                    class="avatar-icon"></ion-icon>
+          @if (!nurse()?.user?.avatar && !user()?.firstName) {
+            <ion-icon
+              name="person-circle"
+            class="avatar-icon"></ion-icon>
+          }
           <!-- Verification badge -->
-          <div *ngIf="isVerified()" class="verified-badge">
-            <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          </div>
+          @if (isVerified()) {
+            <div class="verified-badge">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            </div>
+          }
           <!-- Profile incomplete badge -->
-          <div *ngIf="!isVerified() && nurse()" class="incomplete-badge">
-            <ion-icon name="alert-circle" color="warning"></ion-icon>
-          </div>
+          @if (!isVerified() && nurse()) {
+            <div class="incomplete-badge">
+              <ion-icon name="alert-circle" color="warning"></ion-icon>
+            </div>
+          }
         </div>
       </ion-button>
     </ion-buttons>
@@ -44,22 +54,36 @@
   </ion-refresher>
 
   <!-- Verification Banner - only show after nurse data is loaded -->
-  <div class="verification-banner" *ngIf="!isLoading() && nurse() && needsVerification()"
-       [ngClass]="'banner-' + verificationStatus()" (click)="goToVerification()">
-    <div class="banner-icon" [ngClass]="verificationStatus()">
+  @if (!isLoading() && nurse() && needsVerification()) {
+    <div class="verification-banner"
+      [ngClass]="'banner-' + verificationStatus()" (click)="goToVerification()">
+      <div class="banner-icon" [ngClass]="verificationStatus()">
       <ion-icon [name]="verificationStatus() === 'under_review' ? 'time' :
                        verificationStatus() === 'rejected' ? 'alert-circle' : 'shield-checkmark'"></ion-icon>
+      </div>
+      <div class="banner-content">
+        @if (verificationStatus() === 'pending') {
+          <h4>Verifica tu identidad</h4>
+        }
+        @if (verificationStatus() === 'under_review') {
+          <h4>Verificacion en proceso</h4>
+        }
+        @if (verificationStatus() === 'rejected') {
+          <h4>Verificacion rechazada</h4>
+        }
+        @if (verificationStatus() === 'pending') {
+          <p>Completa tu verificacion para poder recibir solicitudes</p>
+        }
+        @if (verificationStatus() === 'under_review') {
+          <p>Estamos revisando tus documentos (24-48 hrs)</p>
+        }
+        @if (verificationStatus() === 'rejected') {
+          <p>Revisa tus documentos y vuelve a intentarlo</p>
+        }
+      </div>
+      <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>
     </div>
-    <div class="banner-content">
-      <h4 *ngIf="verificationStatus() === 'pending'">Verifica tu identidad</h4>
-      <h4 *ngIf="verificationStatus() === 'under_review'">Verificacion en proceso</h4>
-      <h4 *ngIf="verificationStatus() === 'rejected'">Verificacion rechazada</h4>
-      <p *ngIf="verificationStatus() === 'pending'">Completa tu verificacion para poder recibir solicitudes</p>
-      <p *ngIf="verificationStatus() === 'under_review'">Estamos revisando tus documentos (24-48 hrs)</p>
-      <p *ngIf="verificationStatus() === 'rejected'">Revisa tus documentos y vuelve a intentarlo</p>
-    </div>
-    <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>
-  </div>
+  }
 
   <!-- Profile Checklist -->
   <app-profile-checklist [nurse]="nurse()"></app-profile-checklist>
@@ -77,16 +101,20 @@
         [disabled]="isTogglingAvailability() || !isVerified()"
         color="success">
       </ion-toggle>
-      <p class="toggle-hint" *ngIf="!isVerified()">Verifica tu identidad para activar</p>
+      @if (!isVerified()) {
+        <p class="toggle-hint">Verifica tu identidad para activar</p>
+      }
     </div>
   </div>
 
   <!-- Location Broadcasting Indicator -->
-  <div class="broadcasting-indicator" *ngIf="isBroadcastingLocation()">
-    <div class="pulse-ring"></div>
-    <ion-icon name="navigate"></ion-icon>
-    <span>Transmitiendo ubicación al paciente...</span>
-  </div>
+  @if (isBroadcastingLocation()) {
+    <div class="broadcasting-indicator">
+      <div class="pulse-ring"></div>
+      <ion-icon name="navigate"></ion-icon>
+      <span>Transmitiendo ubicación al paciente...</span>
+    </div>
+  }
 
   <!-- Stats Cards -->
   <div class="stats-section" id="tour-nurse-stats">
@@ -117,65 +145,70 @@
 
   <!-- Active Requests -->
   <div class="section" id="tour-active-requests">
-    <div class="section-header" *ngIf="activeRequests().length > 0">
-      <h2>Servicios Activos</h2>
-      <ion-badge color="primary">{{ activeRequests().length }}</ion-badge>
-    </div>
+    @if (activeRequests().length > 0) {
+      <div class="section-header">
+        <h2>Servicios Activos</h2>
+        <ion-badge color="primary">{{ activeRequests().length }}</ion-badge>
+      </div>
+    }
 
     <div class="active-request-cards">
-      <div class="active-request-card" *ngFor="let request of activeRequests()">
-        <div class="request-header">
-          <div class="request-info">
-            <h3>{{ request.service.name || 'Servicio' }}</h3>
-            <p class="address">
-              <ion-icon name="location-outline"></ion-icon>
-              {{ request.location.address }}
-            </p>
-            <p class="time">
-              <ion-icon name="time-outline"></ion-icon>
-              {{ request.requestedDate | date:'dd/MM HH:mm' }}
-            </p>
+      @for (request of activeRequests(); track request) {
+        <div class="active-request-card">
+          <div class="request-header">
+            <div class="request-info">
+              <h3>{{ request.service.name || 'Servicio' }}</h3>
+              <p class="address">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ request.location.address }}
+              </p>
+              <p class="time">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ request.requestedDate | date:'dd/MM HH:mm' }}
+              </p>
+            </div>
+            <ion-badge [color]="getStatusColor(request.status)">
+              {{ getStatusLabel(request.status) }}
+            </ion-badge>
           </div>
-          <ion-badge [color]="getStatusColor(request.status)">
-            {{ getStatusLabel(request.status) }}
-          </ion-badge>
-        </div>
-
-        <!-- Patient Info -->
-        <div class="patient-info" *ngIf="request.patient">
-          <ion-avatar>
-            <img [src]="$any(request.patient).avatar || 'assets/img/default-avatar.png'" alt="Patient">
-          </ion-avatar>
-          <div class="patient-details">
-            <span class="patient-name">{{ request.patient.firstName }} {{ request.patient.lastName }}</span>
-            <a class="patient-phone" [href]="'tel:' + request.patient.phone" (click)="$event.stopPropagation()">
-              <ion-icon name="call-outline"></ion-icon>
-              {{ request.patient.phone }}
-            </a>
-          </div>
-        </div>
-
-        <!-- Action Button -->
-        <div class="request-actions" *ngIf="getNextAction(request) as action">
-          <ion-button
-            expand="block"
-            [color]="action.color"
-            (click)="action.action()">
-            <ion-icon slot="start"
+          <!-- Patient Info -->
+          @if (request.patient) {
+            <div class="patient-info">
+              <ion-avatar>
+                <img [src]="$any(request.patient).avatar || 'assets/img/default-avatar.png'" alt="Patient">
+              </ion-avatar>
+              <div class="patient-details">
+                <span class="patient-name">{{ request.patient.firstName }} {{ request.patient.lastName }}</span>
+                <a class="patient-phone" [href]="'tel:' + request.patient.phone" (click)="$event.stopPropagation()">
+                  <ion-icon name="call-outline"></ion-icon>
+                  {{ request.patient.phone }}
+                </a>
+              </div>
+            </div>
+          }
+          <!-- Action Button -->
+          @if (getNextAction(request); as action) {
+            <div class="request-actions">
+              <ion-button
+                expand="block"
+                [color]="action.color"
+                (click)="action.action()">
+                <ion-icon slot="start"
               [name]="request.status === 'accepted' ? 'navigate' :
                       request.status === 'on_the_way' ? 'flag' :
                       request.status === 'arrived' ? 'play' : 'checkmark-circle'">
-            </ion-icon>
-            {{ action.label }}
+                </ion-icon>
+                {{ action.label }}
+              </ion-button>
+            </div>
+          }
+          <!-- View Details Button -->
+          <ion-button fill="clear" size="small" (click)="viewRequest(request)">
+            Ver detalles
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
         </div>
-
-        <!-- View Details Button -->
-        <ion-button fill="clear" size="small" (click)="viewRequest(request)">
-          Ver detalles
-          <ion-icon slot="end" name="arrow-forward"></ion-icon>
-        </ion-button>
-      </div>
+      }
     </div>
   </div>
 
@@ -189,26 +222,32 @@
       </ion-button>
     </div>
 
-    <ion-list class="request-list" *ngIf="pendingRequests().length > 0">
-      <ion-item *ngFor="let request of pendingRequests()" (click)="viewRequest(request)" button detail>
-        <ion-icon slot="start" name="time-outline" color="warning"></ion-icon>
-        <ion-label>
-          <h3>{{ request.service.name || getCategoryLabel(request.service.category || 'other') }}</h3>
-          <p>{{ request.location.district }}, {{ request.location.city }}</p>
-          <p class="price">S/ {{ request.service.price }}</p>
-        </ion-label>
-        <div slot="end" class="distance-badge">
-          <ion-icon name="navigate-outline"></ion-icon>
-          <span>{{ $any(request).distance | number:'1.1-1' }} km</span>
-        </div>
-      </ion-item>
-    </ion-list>
+    @if (pendingRequests().length > 0) {
+      <ion-list class="request-list">
+        @for (request of pendingRequests(); track request) {
+          <ion-item (click)="viewRequest(request)" button detail>
+            <ion-icon slot="start" name="time-outline" color="warning"></ion-icon>
+            <ion-label>
+              <h3>{{ request.service.name || getCategoryLabel(request.service.category || 'other') }}</h3>
+              <p>{{ request.location.district }}, {{ request.location.city }}</p>
+              <p class="price">S/ {{ request.service.price }}</p>
+            </ion-label>
+            <div slot="end" class="distance-badge">
+              <ion-icon name="navigate-outline"></ion-icon>
+              <span>{{ $any(request).distance | number:'1.1-1' }} km</span>
+            </div>
+          </ion-item>
+        }
+      </ion-list>
+    }
 
-    <div class="empty-state" *ngIf="pendingRequests().length === 0 && !isLoading()">
-      <ion-icon name="clipboard-outline"></ion-icon>
-      <p>No hay solicitudes cercanas</p>
-      <span>Las nuevas solicitudes aparecerán aquí</span>
-    </div>
+    @if (pendingRequests().length === 0 && !isLoading()) {
+      <div class="empty-state">
+        <ion-icon name="clipboard-outline"></ion-icon>
+        <p>No hay solicitudes cercanas</p>
+        <span>Las nuevas solicitudes aparecerán aquí</span>
+      </div>
+    }
   </div>
 
   <!-- Quick Menu -->

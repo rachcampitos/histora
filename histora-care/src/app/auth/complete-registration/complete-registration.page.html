@@ -13,132 +13,425 @@
 
     <!-- Step 1: Select User Type -->
     @if (step() === 'select') {
-    <div class="select-section">
-      <h2 class="section-title">Completa tu registro</h2>
-      <p class="section-subtitle">Selecciona tu tipo de cuenta</p>
+      <div class="select-section">
+        <h2 class="section-title">Completa tu registro</h2>
+        <p class="section-subtitle">Selecciona tu tipo de cuenta</p>
 
-      <div class="type-cards">
-        <!-- Nurse Card -->
-        <button class="type-card nurse-card" (click)="selectUserType('nurse')" aria-label="Registrarme como enfermera">
-          <div class="card-icon">
-            <ion-icon name="medkit"></ion-icon>
-          </div>
-          <h3>Soy Enfermera/o</h3>
-          <p>Quiero ofrecer mis servicios de enfermeria a domicilio</p>
-          <div class="card-features">
-            <span><ion-icon name="checkmark-circle"></ion-icon> Gestion de citas</span>
-            <span><ion-icon name="checkmark-circle"></ion-icon> Control de ganancias</span>
-            <span><ion-icon name="checkmark-circle"></ion-icon> Mapa de pacientes</span>
-          </div>
-        </button>
+        <div class="type-cards">
+          <!-- Nurse Card -->
+          <button class="type-card nurse-card" (click)="selectUserType('nurse')" aria-label="Registrarme como enfermera">
+            <div class="card-icon">
+              <ion-icon name="medkit"></ion-icon>
+            </div>
+            <h3>Soy Enfermera/o</h3>
+            <p>Quiero ofrecer mis servicios de enfermeria a domicilio</p>
+            <div class="card-features">
+              <span><ion-icon name="checkmark-circle"></ion-icon> Gestion de citas</span>
+              <span><ion-icon name="checkmark-circle"></ion-icon> Control de ganancias</span>
+              <span><ion-icon name="checkmark-circle"></ion-icon> Mapa de pacientes</span>
+            </div>
+          </button>
 
-        <!-- Patient Card -->
-        <button class="type-card patient-card" (click)="selectUserType('patient')" aria-label="Registrarme como paciente">
-          <div class="card-icon">
-            <ion-icon name="person"></ion-icon>
-          </div>
-          <h3>Soy Paciente</h3>
-          <p>Necesito servicios de enfermeria a domicilio</p>
-          <div class="card-features">
-            <span><ion-icon name="checkmark-circle"></ion-icon> Buscar enfermeras</span>
-            <span><ion-icon name="checkmark-circle"></ion-icon> Seguimiento en tiempo real</span>
-            <span><ion-icon name="checkmark-circle"></ion-icon> Historial de servicios</span>
-          </div>
-        </button>
+          <!-- Patient Card -->
+          <button class="type-card patient-card" (click)="selectUserType('patient')" aria-label="Registrarme como paciente">
+            <div class="card-icon">
+              <ion-icon name="person"></ion-icon>
+            </div>
+            <h3>Soy Paciente</h3>
+            <p>Necesito servicios de enfermeria a domicilio</p>
+            <div class="card-features">
+              <span><ion-icon name="checkmark-circle"></ion-icon> Buscar enfermeras</span>
+              <span><ion-icon name="checkmark-circle"></ion-icon> Seguimiento en tiempo real</span>
+              <span><ion-icon name="checkmark-circle"></ion-icon> Historial de servicios</span>
+            </div>
+          </button>
+        </div>
       </div>
-    </div>
     }
 
     <!-- Step 2: Nurse Form -->
     @if (step() === 'form' && selectedType() === 'nurse') {
-    <div class="form-section">
-      <h2 class="section-title">Datos Profesionales</h2>
-      <p class="section-subtitle">Completa tu informacion como enfermera/o</p>
+      <div class="form-section">
+        <h2 class="section-title">Datos Profesionales</h2>
+        <p class="section-subtitle">Completa tu informacion como enfermera/o</p>
 
-      <!-- Progress indicator -->
-      <div class="progress-indicator">
-        <div class="progress-step active">
-          <span class="step-number">1</span>
-          <span class="step-label">Datos</span>
+        <!-- Progress indicator -->
+        <div class="progress-indicator">
+          <div class="progress-step active">
+            <span class="step-number">1</span>
+            <span class="step-label">Datos</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step">
+            <span class="step-number">2</span>
+            <span class="step-label">Documentos</span>
+          </div>
         </div>
-        <div class="progress-line"></div>
-        <div class="progress-step">
-          <span class="step-number">2</span>
-          <span class="step-label">Documentos</span>
-        </div>
+
+        <form [formGroup]="nurseForm">
+          <!-- CEP Number Field -->
+          <ion-item lines="none" class="input-item" [class.input-error]="cepNumber?.invalid && cepNumber?.touched">
+            <ion-icon name="card-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
+            <ion-input
+              type="text"
+              formControlName="cepNumber"
+              placeholder="Numero de CEP"
+              aria-label="Numero de CEP del Colegio de Enfermeros"
+              [attr.aria-invalid]="cepNumber?.invalid && cepNumber?.touched"
+              [attr.aria-describedby]="cepNumber?.invalid && cepNumber?.touched ? 'cep-error' : null">
+            </ion-input>
+          </ion-item>
+          @if (cepNumber?.invalid && cepNumber?.touched) {
+            <div id="cep-error" class="error-message" role="alert">
+              @if (cepNumber?.errors?.['required']) {
+                <span>El numero de CEP es requerido</span>
+              }
+              @if (cepNumber?.errors?.['minlength']) {
+                <span>Minimo 5 caracteres</span>
+              }
+            </div>
+          }
+          <p class="field-hint">Numero del Colegio de Enfermeros del Peru</p>
+
+          <!-- DNI Number Field -->
+          <ion-item lines="none" class="input-item" [class.input-error]="dniNumber?.invalid && dniNumber?.touched">
+            <ion-icon name="id-card-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
+            <ion-input
+              type="text"
+              formControlName="dniNumber"
+              placeholder="Numero de DNI"
+              maxlength="8"
+              aria-label="Numero de DNI"
+              [attr.aria-invalid]="dniNumber?.invalid && dniNumber?.touched">
+            </ion-input>
+          </ion-item>
+          @if (dniNumber?.invalid && dniNumber?.touched) {
+            <div class="error-message" role="alert">
+              @if (dniNumber?.errors?.['required']) {
+                <span>El numero de DNI es requerido</span>
+              }
+              @if (dniNumber?.errors?.['pattern']) {
+                <span>El DNI debe tener 8 digitos</span>
+              }
+            </div>
+          }
+
+          <!-- Full Name on DNI -->
+          <ion-item lines="none" class="input-item" [class.input-error]="fullNameOnDni?.invalid && fullNameOnDni?.touched">
+            <ion-icon name="person-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
+            <ion-input
+              type="text"
+              formControlName="fullNameOnDni"
+              placeholder="Nombre completo (como aparece en DNI)"
+              aria-label="Nombre completo como aparece en el DNI"
+              [attr.aria-invalid]="fullNameOnDni?.invalid && fullNameOnDni?.touched">
+            </ion-input>
+          </ion-item>
+          @if (fullNameOnDni?.invalid && fullNameOnDni?.touched) {
+            <div class="error-message" role="alert">
+              @if (fullNameOnDni?.errors?.['required']) {
+                <span>El nombre completo es requerido</span>
+              }
+              @if (fullNameOnDni?.errors?.['minlength']) {
+                <span>Minimo 3 caracteres</span>
+              }
+            </div>
+          }
+          <p class="field-hint">Tal como aparece en tu documento de identidad</p>
+
+          <!-- Specialties -->
+          <div class="specialties-section">
+            <h3>Especialidades (opcional)</h3>
+            <p class="field-hint">Selecciona los servicios que ofreces</p>
+
+            <div class="specialties-grid">
+              @for (specialty of specialtiesList; track specialty) {
+                <button
+                  type="button"
+                  class="specialty-chip"
+                  [class.selected]="isSpecialtySelected(specialty)"
+                  (click)="toggleSpecialty(specialty)"
+                  [attr.aria-pressed]="isSpecialtySelected(specialty)">
+                  <ion-icon [name]="isSpecialtySelected(specialty) ? 'checkmark-circle' : 'add-circle-outline'"></ion-icon>
+                  {{ specialty }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Continue Button -->
+          <ion-button
+            expand="block"
+            type="button"
+            class="submit-btn"
+            (click)="proceedToLocation()"
+            [disabled]="nurseForm.invalid">
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+            Continuar
+          </ion-button>
+        </form>
       </div>
+    }
 
-      <form [formGroup]="nurseForm">
-        <!-- CEP Number Field -->
-        <ion-item lines="none" class="input-item" [class.input-error]="cepNumber?.invalid && cepNumber?.touched">
-          <ion-icon name="card-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
-          <ion-input
-            type="text"
-            formControlName="cepNumber"
-            placeholder="Numero de CEP"
-            aria-label="Numero de CEP del Colegio de Enfermeros"
-            [attr.aria-invalid]="cepNumber?.invalid && cepNumber?.touched"
-            [attr.aria-describedby]="cepNumber?.invalid && cepNumber?.touched ? 'cep-error' : null">
-          </ion-input>
-        </ion-item>
-        <div id="cep-error" class="error-message" role="alert" *ngIf="cepNumber?.invalid && cepNumber?.touched">
-          <span *ngIf="cepNumber?.errors?.['required']">El numero de CEP es requerido</span>
-          <span *ngIf="cepNumber?.errors?.['minlength']">Minimo 5 caracteres</span>
-        </div>
-        <p class="field-hint">Numero del Colegio de Enfermeros del Peru</p>
+    <!-- Step 3: Location Selection -->
+    @if (step() === 'location' && selectedType() === 'nurse') {
+      <div class="form-section">
+        <h2 class="section-title">Zona de Servicio</h2>
+        <p class="section-subtitle">Selecciona donde ofreces tus servicios</p>
 
-        <!-- DNI Number Field -->
-        <ion-item lines="none" class="input-item" [class.input-error]="dniNumber?.invalid && dniNumber?.touched">
-          <ion-icon name="id-card-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
-          <ion-input
-            type="text"
-            formControlName="dniNumber"
-            placeholder="Numero de DNI"
-            maxlength="8"
-            aria-label="Numero de DNI"
-            [attr.aria-invalid]="dniNumber?.invalid && dniNumber?.touched">
-          </ion-input>
-        </ion-item>
-        <div class="error-message" role="alert" *ngIf="dniNumber?.invalid && dniNumber?.touched">
-          <span *ngIf="dniNumber?.errors?.['required']">El numero de DNI es requerido</span>
-          <span *ngIf="dniNumber?.errors?.['pattern']">El DNI debe tener 8 digitos</span>
+        <!-- Progress indicator -->
+        <div class="progress-indicator">
+          <div class="progress-step completed">
+            <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+            <span class="step-label">Datos</span>
+          </div>
+          <div class="progress-line active"></div>
+          <div class="progress-step active">
+            <span class="step-number">2</span>
+            <span class="step-label">Ubicacion</span>
+          </div>
+          <div class="progress-line"></div>
+          <div class="progress-step">
+            <span class="step-number">3</span>
+            <span class="step-label">Documentos</span>
+          </div>
         </div>
 
-        <!-- Full Name on DNI -->
-        <ion-item lines="none" class="input-item" [class.input-error]="fullNameOnDni?.invalid && fullNameOnDni?.touched">
-          <ion-icon name="person-outline" slot="start" class="input-icon" aria-hidden="true"></ion-icon>
-          <ion-input
-            type="text"
-            formControlName="fullNameOnDni"
-            placeholder="Nombre completo (como aparece en DNI)"
-            aria-label="Nombre completo como aparece en el DNI"
-            [attr.aria-invalid]="fullNameOnDni?.invalid && fullNameOnDni?.touched">
-          </ion-input>
-        </ion-item>
-        <div class="error-message" role="alert" *ngIf="fullNameOnDni?.invalid && fullNameOnDni?.touched">
-          <span *ngIf="fullNameOnDni?.errors?.['required']">El nombre completo es requerido</span>
-          <span *ngIf="fullNameOnDni?.errors?.['minlength']">Minimo 3 caracteres</span>
+        <!-- Use current location button -->
+        <ion-button
+          expand="block"
+          fill="outline"
+          class="location-btn"
+          (click)="useCurrentLocation()"
+          [disabled]="loadingLocation()">
+          <ion-icon name="locate" slot="start"></ion-icon>
+          {{ loadingLocation() ? 'Detectando...' : 'Usar mi ubicacion actual' }}
+        </ion-button>
+
+        <div class="divider-text">
+          <span>o selecciona manualmente</span>
         </div>
-        <p class="field-hint">Tal como aparece en tu documento de identidad</p>
 
-        <!-- Specialties -->
-        <div class="specialties-section">
-          <h3>Especialidades (opcional)</h3>
-          <p class="field-hint">Selecciona los servicios que ofreces</p>
+        <!-- Departamento Select -->
+        <ion-item lines="none" class="input-item">
+          <ion-icon name="map-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-select
+            placeholder="Selecciona departamento"
+            interface="action-sheet"
+            cancelText="Cancelar"
+            (ionChange)="onDepartamentoChange($event)"
+            [value]="selectedDepartamento()?.id"
+            aria-label="Departamento">
+            @for (dept of departamentos(); track dept.id) {
+              <ion-select-option [value]="dept.id">{{ dept.nombre }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
 
-          <div class="specialties-grid">
-            @for (specialty of specialtiesList; track specialty) {
-            <button
-              type="button"
-              class="specialty-chip"
-              [class.selected]="isSpecialtySelected(specialty)"
-              (click)="toggleSpecialty(specialty)"
-              [attr.aria-pressed]="isSpecialtySelected(specialty)">
-              <ion-icon [name]="isSpecialtySelected(specialty) ? 'checkmark-circle' : 'add-circle-outline'"></ion-icon>
-              {{ specialty }}
-            </button>
+        <!-- Provincia Select (for non-Lima) -->
+        @if (selectedDepartamento() && !isLima()) {
+          <ion-item lines="none" class="input-item">
+            <ion-icon name="business-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-select
+              placeholder="Selecciona provincia"
+              interface="action-sheet"
+              cancelText="Cancelar"
+              (ionChange)="onProvinciaChange($event)"
+              [value]="selectedProvincia()?.id"
+              aria-label="Provincia">
+              @for (prov of provincias(); track prov.id) {
+                <ion-select-option [value]="prov.id">{{ prov.nombre }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        }
+
+        <!-- Distrito Search/Select -->
+        @if (selectedDepartamento()) {
+          <div class="distrito-section">
+            <ion-searchbar
+              placeholder="Buscar distrito..."
+              [debounce]="300"
+              (ionInput)="filterDistritos($event)"
+              [value]="distritosSearchQuery()"
+              class="distrito-search">
+            </ion-searchbar>
+
+            <!-- Lima: Show grouped by zones -->
+            @if (isLima() && distritosAgrupados()) {
+              <div class="distritos-grouped">
+                @for (entry of distritosAgrupados() | keyvalue; track entry.key) {
+                  <div class="zona-group">
+                    <div class="zona-header">
+                      <ion-icon name="location-outline"></ion-icon>
+                      <span>{{ entry.key }}</span>
+                    </div>
+                    <div class="distritos-list">
+                      @for (distrito of entry.value; track distrito.id) {
+                        <button
+                          type="button"
+                          class="distrito-chip"
+                          [class.selected]="selectedDistrito()?.id === distrito.id"
+                          (click)="selectDistrito(distrito)">
+                          <ion-icon [name]="selectedDistrito()?.id === distrito.id ? 'checkmark-circle' : 'location-outline'"></ion-icon>
+                          {{ distrito.nombre }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Non-Lima: Show flat list -->
+            @if (!isLima() && distritos().length > 0) {
+              <div class="distritos-list flat">
+                @for (distrito of distritos(); track distrito.id) {
+                  <button
+                    type="button"
+                    class="distrito-chip"
+                    [class.selected]="selectedDistrito()?.id === distrito.id"
+                    (click)="selectDistrito(distrito)">
+                    <ion-icon [name]="selectedDistrito()?.id === distrito.id ? 'checkmark-circle' : 'location-outline'"></ion-icon>
+                    {{ distrito.nombre }}
+                  </button>
+                }
+              </div>
             }
           </div>
+        }
+
+        <!-- Service Radius Slider -->
+        @if (selectedDistrito()) {
+          <div class="radius-section">
+            <div class="radius-header">
+              <ion-icon name="radio-outline"></ion-icon>
+              <span>Radio de servicio: <strong>{{ serviceRadius() }} km</strong></span>
+            </div>
+            <ion-range
+              [min]="1"
+              [max]="50"
+              [step]="1"
+              [pin]="true"
+              [value]="serviceRadius()"
+              (ionChange)="onRadiusChange($event)"
+              color="primary">
+              <ion-label slot="start">1 km</ion-label>
+              <ion-label slot="end">50 km</ion-label>
+            </ion-range>
+            <p class="radius-hint">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              Aproximadamente {{ estimatedDistricts() }} distritos cubiertos
+            </p>
+          </div>
+
+          <!-- Selected location summary -->
+          <div class="location-summary">
+            <div class="summary-header">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              <span>Tu zona de cobertura</span>
+            </div>
+            <div class="summary-chips">
+              <ion-chip color="primary">
+                <ion-icon name="location"></ion-icon>
+                <ion-label>{{ selectedDistrito()?.nombre }}</ion-label>
+              </ion-chip>
+              <ion-chip color="secondary" outline>
+                <ion-label>{{ serviceRadius() }} km</ion-label>
+              </ion-chip>
+              @if (selectedDepartamento()) {
+                <ion-chip color="tertiary" outline>
+                  <ion-label>{{ selectedDepartamento()?.nombre }}</ion-label>
+                </ion-chip>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Continue Button -->
+        <ion-button
+          expand="block"
+          type="button"
+          class="submit-btn"
+          (click)="proceedToDocuments()"
+          [disabled]="!selectedDistrito()">
+          <ion-icon name="arrow-forward" slot="end"></ion-icon>
+          Continuar
+        </ion-button>
+      </div>
+    }
+
+    <!-- Step 4: Document Upload -->
+    @if (step() === 'documents' && selectedType() === 'nurse') {
+      <div class="form-section">
+        <h2 class="section-title">Verificacion de Identidad</h2>
+        <p class="section-subtitle">Sube los documentos requeridos para verificar tu perfil</p>
+
+        <!-- Progress indicator -->
+        <div class="progress-indicator">
+          <div class="progress-step completed">
+            <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+            <span class="step-label">Datos</span>
+          </div>
+          <div class="progress-line completed"></div>
+          <div class="progress-step completed">
+            <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+            <span class="step-label">Ubicacion</span>
+          </div>
+          <div class="progress-line active"></div>
+          <div class="progress-step active">
+            <span class="step-number">3</span>
+            <span class="step-label">Documentos</span>
+          </div>
+        </div>
+
+        <!-- Document count -->
+        <div class="document-count">
+          <ion-icon name="documents-outline"></ion-icon>
+          <span>{{ uploadedCount }} de {{ documents().length }} documentos</span>
+        </div>
+
+        <!-- Document upload cards -->
+        <div class="documents-list">
+          @for (doc of documents(); track doc.type) {
+            <div class="document-card" [class.uploaded]="doc.previewUrl">
+              @if (doc.previewUrl) {
+                <!-- Uploaded state -->
+                <div class="document-preview">
+                  <img [src]="doc.previewUrl" [alt]="doc.label" />
+                  <button class="remove-btn" (click)="removeDocument(doc.type)" aria-label="Eliminar documento">
+                    <ion-icon name="close-circle"></ion-icon>
+                  </button>
+                </div>
+                <div class="document-info">
+                  <span class="document-label">{{ doc.label }}</span>
+                  <span class="document-status success">
+                    <ion-icon name="checkmark-circle"></ion-icon> Subido
+                  </span>
+                </div>
+              } @else {
+                <!-- Empty state -->
+                <button class="upload-area" (click)="takePhoto(doc.type)" [attr.aria-label]="'Subir ' + doc.label">
+                  <ion-icon [name]="doc.icon" class="upload-icon"></ion-icon>
+                  <span class="upload-label">{{ doc.label }}</span>
+                  <span class="upload-hint">{{ doc.description }}</span>
+                  <div class="upload-btn">
+                    <ion-icon name="camera-outline"></ion-icon>
+                    Subir Foto
+                  </div>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Security notice -->
+        <div class="security-notice">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <p>
+            Tus documentos estan protegidos y solo seran utilizados para verificar tu identidad.
+            Una vez aprobada tu verificacion, podras comenzar a recibir solicitudes de servicio.
+          </p>
         </div>
 
         <!-- Continue Button -->
@@ -146,439 +439,164 @@
           expand="block"
           type="button"
           class="submit-btn"
-          (click)="proceedToLocation()"
-          [disabled]="nurseForm.invalid">
+          (click)="proceedToTerms()"
+          [disabled]="!allDocumentsUploaded">
           <ion-icon name="arrow-forward" slot="end"></ion-icon>
           Continuar
         </ion-button>
-      </form>
-    </div>
-    }
-
-    <!-- Step 3: Location Selection -->
-    @if (step() === 'location' && selectedType() === 'nurse') {
-    <div class="form-section">
-      <h2 class="section-title">Zona de Servicio</h2>
-      <p class="section-subtitle">Selecciona donde ofreces tus servicios</p>
-
-      <!-- Progress indicator -->
-      <div class="progress-indicator">
-        <div class="progress-step completed">
-          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
-          <span class="step-label">Datos</span>
-        </div>
-        <div class="progress-line active"></div>
-        <div class="progress-step active">
-          <span class="step-number">2</span>
-          <span class="step-label">Ubicacion</span>
-        </div>
-        <div class="progress-line"></div>
-        <div class="progress-step">
-          <span class="step-number">3</span>
-          <span class="step-label">Documentos</span>
-        </div>
       </div>
-
-      <!-- Use current location button -->
-      <ion-button
-        expand="block"
-        fill="outline"
-        class="location-btn"
-        (click)="useCurrentLocation()"
-        [disabled]="loadingLocation()">
-        <ion-icon name="locate" slot="start"></ion-icon>
-        {{ loadingLocation() ? 'Detectando...' : 'Usar mi ubicacion actual' }}
-      </ion-button>
-
-      <div class="divider-text">
-        <span>o selecciona manualmente</span>
-      </div>
-
-      <!-- Departamento Select -->
-      <ion-item lines="none" class="input-item">
-        <ion-icon name="map-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-select
-          placeholder="Selecciona departamento"
-          interface="action-sheet"
-          cancelText="Cancelar"
-          (ionChange)="onDepartamentoChange($event)"
-          [value]="selectedDepartamento()?.id"
-          aria-label="Departamento">
-          @for (dept of departamentos(); track dept.id) {
-          <ion-select-option [value]="dept.id">{{ dept.nombre }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
-
-      <!-- Provincia Select (for non-Lima) -->
-      @if (selectedDepartamento() && !isLima()) {
-      <ion-item lines="none" class="input-item">
-        <ion-icon name="business-outline" slot="start" class="input-icon"></ion-icon>
-        <ion-select
-          placeholder="Selecciona provincia"
-          interface="action-sheet"
-          cancelText="Cancelar"
-          (ionChange)="onProvinciaChange($event)"
-          [value]="selectedProvincia()?.id"
-          aria-label="Provincia">
-          @for (prov of provincias(); track prov.id) {
-          <ion-select-option [value]="prov.id">{{ prov.nombre }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
-      }
-
-      <!-- Distrito Search/Select -->
-      @if (selectedDepartamento()) {
-      <div class="distrito-section">
-        <ion-searchbar
-          placeholder="Buscar distrito..."
-          [debounce]="300"
-          (ionInput)="filterDistritos($event)"
-          [value]="distritosSearchQuery()"
-          class="distrito-search">
-        </ion-searchbar>
-
-        <!-- Lima: Show grouped by zones -->
-        @if (isLima() && distritosAgrupados()) {
-        <div class="distritos-grouped">
-          @for (entry of distritosAgrupados() | keyvalue; track entry.key) {
-          <div class="zona-group">
-            <div class="zona-header">
-              <ion-icon name="location-outline"></ion-icon>
-              <span>{{ entry.key }}</span>
-            </div>
-            <div class="distritos-list">
-              @for (distrito of entry.value; track distrito.id) {
-              <button
-                type="button"
-                class="distrito-chip"
-                [class.selected]="selectedDistrito()?.id === distrito.id"
-                (click)="selectDistrito(distrito)">
-                <ion-icon [name]="selectedDistrito()?.id === distrito.id ? 'checkmark-circle' : 'location-outline'"></ion-icon>
-                {{ distrito.nombre }}
-              </button>
-              }
-            </div>
-          </div>
-          }
-        </div>
-        }
-
-        <!-- Non-Lima: Show flat list -->
-        @if (!isLima() && distritos().length > 0) {
-        <div class="distritos-list flat">
-          @for (distrito of distritos(); track distrito.id) {
-          <button
-            type="button"
-            class="distrito-chip"
-            [class.selected]="selectedDistrito()?.id === distrito.id"
-            (click)="selectDistrito(distrito)">
-            <ion-icon [name]="selectedDistrito()?.id === distrito.id ? 'checkmark-circle' : 'location-outline'"></ion-icon>
-            {{ distrito.nombre }}
-          </button>
-          }
-        </div>
-        }
-      </div>
-      }
-
-      <!-- Service Radius Slider -->
-      @if (selectedDistrito()) {
-      <div class="radius-section">
-        <div class="radius-header">
-          <ion-icon name="radio-outline"></ion-icon>
-          <span>Radio de servicio: <strong>{{ serviceRadius() }} km</strong></span>
-        </div>
-        <ion-range
-          [min]="1"
-          [max]="50"
-          [step]="1"
-          [pin]="true"
-          [value]="serviceRadius()"
-          (ionChange)="onRadiusChange($event)"
-          color="primary">
-          <ion-label slot="start">1 km</ion-label>
-          <ion-label slot="end">50 km</ion-label>
-        </ion-range>
-        <p class="radius-hint">
-          <ion-icon name="information-circle-outline"></ion-icon>
-          Aproximadamente {{ estimatedDistricts() }} distritos cubiertos
-        </p>
-      </div>
-
-      <!-- Selected location summary -->
-      <div class="location-summary">
-        <div class="summary-header">
-          <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          <span>Tu zona de cobertura</span>
-        </div>
-        <div class="summary-chips">
-          <ion-chip color="primary">
-            <ion-icon name="location"></ion-icon>
-            <ion-label>{{ selectedDistrito()?.nombre }}</ion-label>
-          </ion-chip>
-          <ion-chip color="secondary" outline>
-            <ion-label>{{ serviceRadius() }} km</ion-label>
-          </ion-chip>
-          @if (selectedDepartamento()) {
-          <ion-chip color="tertiary" outline>
-            <ion-label>{{ selectedDepartamento()?.nombre }}</ion-label>
-          </ion-chip>
-          }
-        </div>
-      </div>
-      }
-
-      <!-- Continue Button -->
-      <ion-button
-        expand="block"
-        type="button"
-        class="submit-btn"
-        (click)="proceedToDocuments()"
-        [disabled]="!selectedDistrito()">
-        <ion-icon name="arrow-forward" slot="end"></ion-icon>
-        Continuar
-      </ion-button>
-    </div>
-    }
-
-    <!-- Step 4: Document Upload -->
-    @if (step() === 'documents' && selectedType() === 'nurse') {
-    <div class="form-section">
-      <h2 class="section-title">Verificacion de Identidad</h2>
-      <p class="section-subtitle">Sube los documentos requeridos para verificar tu perfil</p>
-
-      <!-- Progress indicator -->
-      <div class="progress-indicator">
-        <div class="progress-step completed">
-          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
-          <span class="step-label">Datos</span>
-        </div>
-        <div class="progress-line completed"></div>
-        <div class="progress-step completed">
-          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
-          <span class="step-label">Ubicacion</span>
-        </div>
-        <div class="progress-line active"></div>
-        <div class="progress-step active">
-          <span class="step-number">3</span>
-          <span class="step-label">Documentos</span>
-        </div>
-      </div>
-
-      <!-- Document count -->
-      <div class="document-count">
-        <ion-icon name="documents-outline"></ion-icon>
-        <span>{{ uploadedCount }} de {{ documents().length }} documentos</span>
-      </div>
-
-      <!-- Document upload cards -->
-      <div class="documents-list">
-        @for (doc of documents(); track doc.type) {
-        <div class="document-card" [class.uploaded]="doc.previewUrl">
-          @if (doc.previewUrl) {
-          <!-- Uploaded state -->
-          <div class="document-preview">
-            <img [src]="doc.previewUrl" [alt]="doc.label" />
-            <button class="remove-btn" (click)="removeDocument(doc.type)" aria-label="Eliminar documento">
-              <ion-icon name="close-circle"></ion-icon>
-            </button>
-          </div>
-          <div class="document-info">
-            <span class="document-label">{{ doc.label }}</span>
-            <span class="document-status success">
-              <ion-icon name="checkmark-circle"></ion-icon> Subido
-            </span>
-          </div>
-          } @else {
-          <!-- Empty state -->
-          <button class="upload-area" (click)="takePhoto(doc.type)" [attr.aria-label]="'Subir ' + doc.label">
-            <ion-icon [name]="doc.icon" class="upload-icon"></ion-icon>
-            <span class="upload-label">{{ doc.label }}</span>
-            <span class="upload-hint">{{ doc.description }}</span>
-            <div class="upload-btn">
-              <ion-icon name="camera-outline"></ion-icon>
-              Subir Foto
-            </div>
-          </button>
-          }
-        </div>
-        }
-      </div>
-
-      <!-- Security notice -->
-      <div class="security-notice">
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <p>
-          Tus documentos estan protegidos y solo seran utilizados para verificar tu identidad.
-          Una vez aprobada tu verificacion, podras comenzar a recibir solicitudes de servicio.
-        </p>
-      </div>
-
-      <!-- Continue Button -->
-      <ion-button
-        expand="block"
-        type="button"
-        class="submit-btn"
-        (click)="proceedToTerms()"
-        [disabled]="!allDocumentsUploaded">
-        <ion-icon name="arrow-forward" slot="end"></ion-icon>
-        Continuar
-      </ion-button>
-    </div>
     }
 
     <!-- Step 4: Terms and Conditions -->
     @if (step() === 'terms') {
-    <div class="form-section terms-section">
-      <h2 class="section-title">Terminos y Condiciones</h2>
-      <p class="section-subtitle">Por favor lee y acepta los terminos para continuar</p>
+      <div class="form-section terms-section">
+        <h2 class="section-title">Terminos y Condiciones</h2>
+        <p class="section-subtitle">Por favor lee y acepta los terminos para continuar</p>
 
-      @if (selectedType() === 'nurse') {
-      <!-- Progress indicator for nurses -->
-      <div class="progress-indicator">
-        <div class="progress-step completed">
-          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
-          <span class="step-label">Datos</span>
-        </div>
-        <div class="progress-line completed"></div>
-        <div class="progress-step completed">
-          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
-          <span class="step-label">Ubicacion</span>
-        </div>
-        <div class="progress-line completed"></div>
-        <div class="progress-step completed">
-          <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
-          <span class="step-label">Documentos</span>
-        </div>
-        <div class="progress-line active"></div>
-        <div class="progress-step active">
-          <span class="step-number">4</span>
-          <span class="step-label">Terminos</span>
-        </div>
-      </div>
-      }
-
-      <!-- Terms acceptance card -->
-      <div class="terms-card">
-        <div class="terms-header">
-          <ion-icon name="document-text-outline"></ion-icon>
-          <h3>Terminos de Servicio</h3>
-        </div>
-        <div class="terms-content">
-          <p>
-            Al usar NurseLite, aceptas que la plataforma actua unicamente como
-            intermediario entre profesionales de enfermeria y pacientes.
-          </p>
-          <ul>
-            <li>La plataforma facilita la conexion entre usuarios</li>
-            <li>Los pagos se procesan de forma segura</li>
-            <li>Protegemos tu informacion personal</li>
-          </ul>
-          <button type="button" class="read-more-btn" (click)="openTermsModal()">
-            <ion-icon name="document-text-outline"></ion-icon>
-            Leer terminos completos
-          </button>
-        </div>
-        <div class="terms-checkbox" (click)="toggleTermsAccepted()">
-          <ion-checkbox [checked]="termsAccepted()" labelPlacement="end" aria-label="Aceptar terminos de servicio">
-          </ion-checkbox>
-          <span>Acepto los <strong>Terminos de Servicio</strong> y la <strong>Politica de Privacidad</strong></span>
-        </div>
-      </div>
-
-      @if (selectedType() === 'nurse') {
-      <!-- Professional disclaimer for nurses -->
-      <div class="terms-card disclaimer-card">
-        <div class="terms-header">
-          <ion-icon name="shield-checkmark-outline" class="warning-icon"></ion-icon>
-          <h3>Exencion de Responsabilidad Profesional</h3>
-        </div>
-        <div class="terms-content disclaimer-content">
-          <div class="disclaimer-important">
-            <ion-icon name="warning-outline"></ion-icon>
-            <strong>IMPORTANTE</strong>
+        @if (selectedType() === 'nurse') {
+          <!-- Progress indicator for nurses -->
+          <div class="progress-indicator">
+            <div class="progress-step completed">
+              <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+              <span class="step-label">Datos</span>
+            </div>
+            <div class="progress-line completed"></div>
+            <div class="progress-step completed">
+              <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+              <span class="step-label">Ubicacion</span>
+            </div>
+            <div class="progress-line completed"></div>
+            <div class="progress-step completed">
+              <ion-icon name="checkmark-circle" class="step-check"></ion-icon>
+              <span class="step-label">Documentos</span>
+            </div>
+            <div class="progress-line active"></div>
+            <div class="progress-step active">
+              <span class="step-number">4</span>
+              <span class="step-label">Terminos</span>
+            </div>
           </div>
-          <p>
-            Como profesional de enfermeria registrado/a en NurseLite, reconozco y acepto que:
-          </p>
-          <ul class="disclaimer-list">
-            <li>
-              <ion-icon name="alert-circle"></ion-icon>
-              <span>Soy <strong>100% responsable</strong> de la calidad y seguridad de los servicios que presto</span>
-            </li>
-            <li>
-              <ion-icon name="alert-circle"></ion-icon>
-              <span>Cuento con las <strong>licencias y certificaciones vigentes</strong> requeridas por ley</span>
-            </li>
-            <li>
-              <ion-icon name="alert-circle"></ion-icon>
-              <span>NurseLite <strong>no se responsabiliza</strong> por eventos adversos derivados de los servicios prestados</span>
-            </li>
-            <li>
-              <ion-icon name="alert-circle"></ion-icon>
-              <span>Debo mantener un <strong>seguro de responsabilidad profesional</strong> activo</span>
-            </li>
-            <li>
-              <ion-icon name="alert-circle"></ion-icon>
-              <span>Seguire los <strong>protocolos medicos y eticos</strong> establecidos por el Colegio de Enfermeros del Peru</span>
-            </li>
-          </ul>
-          <button type="button" class="read-more-btn" (click)="openDisclaimerModal()">
+        }
+
+        <!-- Terms acceptance card -->
+        <div class="terms-card">
+          <div class="terms-header">
             <ion-icon name="document-text-outline"></ion-icon>
-            Leer exencion completa
-          </button>
+            <h3>Terminos de Servicio</h3>
+          </div>
+          <div class="terms-content">
+            <p>
+              Al usar NurseLite, aceptas que la plataforma actua unicamente como
+              intermediario entre profesionales de enfermeria y pacientes.
+            </p>
+            <ul>
+              <li>La plataforma facilita la conexion entre usuarios</li>
+              <li>Los pagos se procesan de forma segura</li>
+              <li>Protegemos tu informacion personal</li>
+            </ul>
+            <button type="button" class="read-more-btn" (click)="openTermsModal()">
+              <ion-icon name="document-text-outline"></ion-icon>
+              Leer terminos completos
+            </button>
+          </div>
+          <div class="terms-checkbox" (click)="toggleTermsAccepted()">
+            <ion-checkbox [checked]="termsAccepted()" labelPlacement="end" aria-label="Aceptar terminos de servicio">
+            </ion-checkbox>
+            <span>Acepto los <strong>Terminos de Servicio</strong> y la <strong>Politica de Privacidad</strong></span>
+          </div>
         </div>
-        <div class="terms-checkbox" (click)="toggleProfessionalDisclaimerAccepted()">
-          <ion-checkbox [checked]="professionalDisclaimerAccepted()" labelPlacement="end" aria-label="Aceptar exencion de responsabilidad profesional">
-          </ion-checkbox>
-          <span>Acepto la <strong>Exencion de Responsabilidad Profesional</strong></span>
-        </div>
-      </div>
-      }
 
-      @if (selectedType() === 'patient') {
-      <!-- Patient disclaimer -->
-      <div class="terms-card disclaimer-card patient-disclaimer">
-        <div class="terms-header">
-          <ion-icon name="information-circle-outline"></ion-icon>
-          <h3>Informacion Importante</h3>
-        </div>
-        <div class="terms-content">
-          <p>Al usar NurseLite como paciente, entiendo que:</p>
-          <ul>
-            <li>Los profesionales son independientes y responsables de sus servicios</li>
-            <li>NurseLite facilita la conexion pero no garantiza resultados medicos</li>
-            <li>En caso de emergencia, debo contactar a los servicios de emergencia (106)</li>
-          </ul>
-        </div>
-      </div>
-      }
+        @if (selectedType() === 'nurse') {
+          <!-- Professional disclaimer for nurses -->
+          <div class="terms-card disclaimer-card">
+            <div class="terms-header">
+              <ion-icon name="shield-checkmark-outline" class="warning-icon"></ion-icon>
+              <h3>Exencion de Responsabilidad Profesional</h3>
+            </div>
+            <div class="terms-content disclaimer-content">
+              <div class="disclaimer-important">
+                <ion-icon name="warning-outline"></ion-icon>
+                <strong>IMPORTANTE</strong>
+              </div>
+              <p>
+                Como profesional de enfermeria registrado/a en NurseLite, reconozco y acepto que:
+              </p>
+              <ul class="disclaimer-list">
+                <li>
+                  <ion-icon name="alert-circle"></ion-icon>
+                  <span>Soy <strong>100% responsable</strong> de la calidad y seguridad de los servicios que presto</span>
+                </li>
+                <li>
+                  <ion-icon name="alert-circle"></ion-icon>
+                  <span>Cuento con las <strong>licencias y certificaciones vigentes</strong> requeridas por ley</span>
+                </li>
+                <li>
+                  <ion-icon name="alert-circle"></ion-icon>
+                  <span>NurseLite <strong>no se responsabiliza</strong> por eventos adversos derivados de los servicios prestados</span>
+                </li>
+                <li>
+                  <ion-icon name="alert-circle"></ion-icon>
+                  <span>Debo mantener un <strong>seguro de responsabilidad profesional</strong> activo</span>
+                </li>
+                <li>
+                  <ion-icon name="alert-circle"></ion-icon>
+                  <span>Seguire los <strong>protocolos medicos y eticos</strong> establecidos por el Colegio de Enfermeros del Peru</span>
+                </li>
+              </ul>
+              <button type="button" class="read-more-btn" (click)="openDisclaimerModal()">
+                <ion-icon name="document-text-outline"></ion-icon>
+                Leer exencion completa
+              </button>
+            </div>
+            <div class="terms-checkbox" (click)="toggleProfessionalDisclaimerAccepted()">
+              <ion-checkbox [checked]="professionalDisclaimerAccepted()" labelPlacement="end" aria-label="Aceptar exencion de responsabilidad profesional">
+              </ion-checkbox>
+              <span>Acepto la <strong>Exencion de Responsabilidad Profesional</strong></span>
+            </div>
+          </div>
+        }
 
-      <!-- Submit Button -->
-      @if (selectedType() === 'patient') {
-      <ion-button
-        expand="block"
-        type="button"
-        class="submit-btn"
-        (click)="completeAsPatient()"
-        [disabled]="!canProceedFromTerms">
-        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
-        Completar Registro
-      </ion-button>
-      } @else {
-      <ion-button
-        expand="block"
-        type="button"
-        class="submit-btn"
-        (click)="completeAsNurse()"
-        [disabled]="!canProceedFromTerms">
-        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
-        Enviar Verificacion
-      </ion-button>
-      }
-    </div>
+        @if (selectedType() === 'patient') {
+          <!-- Patient disclaimer -->
+          <div class="terms-card disclaimer-card patient-disclaimer">
+            <div class="terms-header">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <h3>Informacion Importante</h3>
+            </div>
+            <div class="terms-content">
+              <p>Al usar NurseLite como paciente, entiendo que:</p>
+              <ul>
+                <li>Los profesionales son independientes y responsables de sus servicios</li>
+                <li>NurseLite facilita la conexion pero no garantiza resultados medicos</li>
+                <li>En caso de emergencia, debo contactar a los servicios de emergencia (106)</li>
+              </ul>
+            </div>
+          </div>
+        }
+
+        <!-- Submit Button -->
+        @if (selectedType() === 'patient') {
+          <ion-button
+            expand="block"
+            type="button"
+            class="submit-btn"
+            (click)="completeAsPatient()"
+            [disabled]="!canProceedFromTerms">
+            <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+            Completar Registro
+          </ion-button>
+        } @else {
+          <ion-button
+            expand="block"
+            type="button"
+            class="submit-btn"
+            (click)="completeAsNurse()"
+            [disabled]="!canProceedFromTerms">
+            <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+            Enviar Verificacion
+          </ion-button>
+        }
+      </div>
     }
   </div>
 
