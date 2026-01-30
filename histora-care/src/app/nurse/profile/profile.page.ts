@@ -39,6 +39,7 @@ export class ProfilePage implements OnInit {
   isLoading = signal(true);
   isSaving = signal(false);
   isUploadingAvatar = signal(false);
+  justSaved = signal(false); // For showing success feedback
 
   // Form state signals
   bio = signal('');
@@ -56,6 +57,20 @@ export class ProfilePage implements OnInit {
 
   // New specialty input
   newSpecialty = signal('');
+
+  // Original values for change detection
+  private originalBio = signal('');
+  private originalSpecialties = signal<string[]>([]);
+  private originalYearsOfExperience = signal(0);
+  private originalServiceRadius = signal(10);
+  private originalAvailableFrom = signal('08:00');
+  private originalAvailableTo = signal('18:00');
+  private originalAvailableDays = signal<number[]>([1, 2, 3, 4, 5]);
+  private originalYapeNumber = signal('');
+  private originalPlinNumber = signal('');
+  private originalAcceptsCash = signal(true);
+  private originalLocationDistrict = signal('');
+  private originalLocationCity = signal('');
 
   // Location signals
   departamentos = signal<Departamento[]>([]);
@@ -91,6 +106,26 @@ export class ProfilePage implements OnInit {
   cepVerified = computed(() => this.nurse()?.cepVerified || false);
   hasPaymentMethod = computed(() => {
     return !!(this.yapeNumber() || this.plinNumber() || this.acceptsCash());
+  });
+
+  // Detect if there are unsaved changes
+  hasUnsavedChanges = computed(() => {
+    if (this.isLoading()) return false;
+
+    return (
+      this.bio() !== this.originalBio() ||
+      JSON.stringify(this.specialties()) !== JSON.stringify(this.originalSpecialties()) ||
+      this.yearsOfExperience() !== this.originalYearsOfExperience() ||
+      this.serviceRadius() !== this.originalServiceRadius() ||
+      this.availableFrom() !== this.originalAvailableFrom() ||
+      this.availableTo() !== this.originalAvailableTo() ||
+      JSON.stringify(this.availableDays()) !== JSON.stringify(this.originalAvailableDays()) ||
+      this.yapeNumber() !== this.originalYapeNumber() ||
+      this.plinNumber() !== this.originalPlinNumber() ||
+      this.acceptsCash() !== this.originalAcceptsCash() ||
+      this.locationDistrict() !== this.originalLocationDistrict() ||
+      this.locationCity() !== this.originalLocationCity()
+    );
   });
 
   // Day options for availability
@@ -140,28 +175,59 @@ export class ProfilePage implements OnInit {
       next: (nurse) => {
         this.nurse.set(nurse);
         // Initialize form values from nurse data
-        this.bio.set(nurse.bio || '');
-        this.specialties.set([...(nurse.specialties || [])]);
-        this.yearsOfExperience.set(nurse.yearsOfExperience || 0);
-        this.serviceRadius.set(nurse.serviceRadius || 10);
-        this.availableFrom.set(nurse.availableFrom || '08:00');
-        this.availableTo.set(nurse.availableTo || '18:00');
-        this.availableDays.set([...(nurse.availableDays || [1, 2, 3, 4, 5])]);
-        // Payment methods
-        this.yapeNumber.set(nurse.yapeNumber || '');
-        this.plinNumber.set(nurse.plinNumber || '');
-        this.acceptsCash.set(nurse.acceptsCash !== false); // Default true
+        const bioValue = nurse.bio || '';
+        const specialtiesValue = [...(nurse.specialties || [])];
+        const yearsValue = nurse.yearsOfExperience || 0;
+        const radiusValue = nurse.serviceRadius || 10;
+        const fromValue = nurse.availableFrom || '08:00';
+        const toValue = nurse.availableTo || '18:00';
+        const daysValue = [...(nurse.availableDays || [1, 2, 3, 4, 5])];
+        const yapeValue = nurse.yapeNumber || '';
+        const plinValue = nurse.plinNumber || '';
+        const cashValue = nurse.acceptsCash !== false;
+
+        // Set current values
+        this.bio.set(bioValue);
+        this.specialties.set(specialtiesValue);
+        this.yearsOfExperience.set(yearsValue);
+        this.serviceRadius.set(radiusValue);
+        this.availableFrom.set(fromValue);
+        this.availableTo.set(toValue);
+        this.availableDays.set(daysValue);
+        this.yapeNumber.set(yapeValue);
+        this.plinNumber.set(plinValue);
+        this.acceptsCash.set(cashValue);
+
+        // Store original values for change detection
+        this.originalBio.set(bioValue);
+        this.originalSpecialties.set([...specialtiesValue]);
+        this.originalYearsOfExperience.set(yearsValue);
+        this.originalServiceRadius.set(radiusValue);
+        this.originalAvailableFrom.set(fromValue);
+        this.originalAvailableTo.set(toValue);
+        this.originalAvailableDays.set([...daysValue]);
+        this.originalYapeNumber.set(yapeValue);
+        this.originalPlinNumber.set(plinValue);
+        this.originalAcceptsCash.set(cashValue);
+
         // Location data
+        let cityValue = '';
+        let districtValue = '';
         if (nurse.location) {
-          this.locationCity.set(nurse.location.city || '');
-          this.locationDistrict.set(nurse.location.district || '');
-          this.distritoSearch.set(nurse.location.district || '');
+          cityValue = nurse.location.city || '';
+          districtValue = nurse.location.district || '';
+          this.locationCity.set(cityValue);
+          this.locationDistrict.set(districtValue);
+          this.distritoSearch.set(districtValue);
           // Try to find departamento by city name
           const dept = this.departamentos().find(d => d.nombre === nurse.location?.city);
           if (dept) {
             this.selectedDepartamento.set(dept.id);
           }
         }
+        this.originalLocationCity.set(cityValue);
+        this.originalLocationDistrict.set(districtValue);
+
         this.isLoading.set(false);
         // Only start tour after a delay and if elements are ready
         // This prevents the tour from blocking navigation
@@ -178,6 +244,23 @@ export class ProfilePage implements OnInit {
         this.isLoading.set(false);
       },
     });
+  }
+
+  cancelChanges() {
+    // Restore all values to their original state
+    this.bio.set(this.originalBio());
+    this.specialties.set([...this.originalSpecialties()]);
+    this.yearsOfExperience.set(this.originalYearsOfExperience());
+    this.serviceRadius.set(this.originalServiceRadius());
+    this.availableFrom.set(this.originalAvailableFrom());
+    this.availableTo.set(this.originalAvailableTo());
+    this.availableDays.set([...this.originalAvailableDays()]);
+    this.yapeNumber.set(this.originalYapeNumber());
+    this.plinNumber.set(this.originalPlinNumber());
+    this.acceptsCash.set(this.originalAcceptsCash());
+    this.locationCity.set(this.originalLocationCity());
+    this.locationDistrict.set(this.originalLocationDistrict());
+    this.distritoSearch.set(this.originalLocationDistrict());
   }
 
   onBioChange(event: CustomEvent) {
@@ -358,6 +441,25 @@ export class ProfilePage implements OnInit {
     this.nurseApi.updateMyProfile(updateData).subscribe({
       next: (updatedNurse) => {
         this.nurse.set(updatedNurse);
+
+        // Update original values to match saved state
+        this.originalBio.set(this.bio());
+        this.originalSpecialties.set([...this.specialties()]);
+        this.originalYearsOfExperience.set(this.yearsOfExperience());
+        this.originalServiceRadius.set(this.serviceRadius());
+        this.originalAvailableFrom.set(this.availableFrom());
+        this.originalAvailableTo.set(this.availableTo());
+        this.originalAvailableDays.set([...this.availableDays()]);
+        this.originalYapeNumber.set(this.yapeNumber());
+        this.originalPlinNumber.set(this.plinNumber());
+        this.originalAcceptsCash.set(this.acceptsCash());
+        this.originalLocationCity.set(this.locationCity());
+        this.originalLocationDistrict.set(this.locationDistrict());
+
+        // Show success feedback briefly
+        this.justSaved.set(true);
+        setTimeout(() => this.justSaved.set(false), 2000);
+
         this.showToast('Perfil actualizado correctamente', 'success');
         this.isSaving.set(false);
       },

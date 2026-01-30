@@ -372,27 +372,37 @@ export class VerificationPage implements OnInit, OnDestroy {
     await this.nurseOnboarding.init();
     const onboardingCompleted = this.nurseOnboarding.isCompleted();
 
+    // Determine destination after alert
+    const destination = onboardingCompleted ? '/nurse/dashboard' : '/nurse/onboarding';
+    const nextStepMessage = onboardingCompleted
+      ? 'Te notificaremos en 24-48 horas cuando esté lista.'
+      : 'Mientras esperamos, configura tu ubicación y métodos de pago.';
+
     const alert = await this.alertCtrl.create({
       cssClass: 'histora-alert histora-alert-success',
       header: '¡Documentos enviados!',
-      message: 'Tu solicitud está en revisión. Te notificaremos en 24-48 horas cuando esté lista.',
+      message: `Tu solicitud está en revisión. ${nextStepMessage}`,
       buttons: [
         {
-          text: 'Continuar',
+          text: onboardingCompleted ? 'Ir al Dashboard' : 'Configurar mi perfil',
           cssClass: 'alert-button-primary',
           handler: () => {
-            if (onboardingCompleted) {
-              // Go directly to dashboard if onboarding already done
-              this.router.navigate(['/nurse/dashboard'], { replaceUrl: true });
-            } else {
-              // Navigate to onboarding to complete location and payment setup
-              this.router.navigate(['/nurse/onboarding'], { replaceUrl: true });
-            }
+            this.router.navigate([destination], { replaceUrl: true });
           }
         }
       ],
       backdropDismiss: false
     });
+
+    // Handle dismissal in any way (including hardware back button)
+    alert.onDidDismiss().then(() => {
+      // Navigate to onboarding/dashboard even if alert is dismissed without button click
+      // This ensures the user always goes to the right place
+      if (!onboardingCompleted && this.router.url.includes('/nurse/verification')) {
+        this.router.navigate([destination], { replaceUrl: true });
+      }
+    });
+
     await alert.present();
   }
 

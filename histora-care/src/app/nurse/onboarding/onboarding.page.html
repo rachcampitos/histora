@@ -17,33 +17,39 @@
     <!-- SLIDE 1: Welcome -->
     <swiper-slide>
       <div class="slide-content welcome-slide">
+        <!-- Verification Status Banner -->
+        <div class="verification-banner">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>Tu verificacion esta en proceso. Mientras tanto, configura tu perfil.</span>
+        </div>
+
         <div class="illustration">
           <div class="icon-container">
             <ion-icon name="heart-circle"></ion-icon>
           </div>
         </div>
 
-        <h1>Bienvenida a NurseLite, {{ userName() }}</h1>
-        <p class="subtitle">La plataforma que conecta tu experiencia profesional con familias que necesitan cuidados de calidad</p>
+        <h1>Prepara tu perfil, {{ userName() }}</h1>
+        <p class="subtitle">Mientras verificamos tus documentos, configura tu perfil para estar lista cuando te aprobemos</p>
 
         <div class="features">
           <div class="feature">
-            <ion-icon name="checkmark-circle" color="success"></ion-icon>
-            <span>Tu defines tus horarios y tarifas</span>
+            <ion-icon name="location-outline" color="primary"></ion-icon>
+            <span>Define tu zona de servicio</span>
           </div>
           <div class="feature">
-            <ion-icon name="checkmark-circle" color="success"></ion-icon>
-            <span>Las familias te solicitan directamente</span>
+            <ion-icon name="wallet-outline" color="primary"></ion-icon>
+            <span>Configura como recibir pagos</span>
           </div>
           <div class="feature">
-            <ion-icon name="checkmark-circle" color="success"></ion-icon>
-            <span>Tu cobras el 100% de tus servicios</span>
+            <ion-icon name="ribbon-outline" color="primary"></ion-icon>
+            <span>Conoce los planes disponibles</span>
           </div>
         </div>
 
         <div class="slide-actions">
           <ion-button expand="block" (click)="nextSlide()" class="primary-btn">
-            Continuar
+            Comenzar configuracion
             <ion-icon slot="end" name="arrow-forward"></ion-icon>
           </ion-button>
         </div>

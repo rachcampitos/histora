@@ -6,3 +6,6 @@ dist/
 cliniva/
 .vercel
 .env*.local
+
+# Claude Code - mantener solo local
+.claude/
