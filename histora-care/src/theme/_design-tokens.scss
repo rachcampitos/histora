@@ -13,6 +13,13 @@ $color-brand-primary: #1e3a5f;      // Navy Blue - Color principal NurseLite
 $color-brand-secondary: #2d5f8a;    // Medium Blue - Gradiente secundario
 $color-brand-accent: #4a9d9a;       // Teal - Acento (lámpara)
 
+// Warm Colors - Para humanizar la experiencia del paciente
+$color-warmth-primary: #f59e0b;     // Amber 500 - Optimismo, energia positiva
+$color-warmth-secondary: #fbbf24;   // Amber 400 - Variante mas suave
+$color-warmth-light: #fef3c7;       // Amber 100 - Fondos calidos
+$color-empathy-primary: #ec4899;    // Pink 500 - Cuidado, empatia
+$color-empathy-light: #fce7f3;      // Pink 100 - Fondos suaves
+
 // Semantic Colors
 $color-primary: #1e3a5f;
 $color-secondary: #64748b;
@@ -139,6 +146,14 @@ $text-dark-tertiary: #a8b5c4;     // Improved from #94a3b8 for better WCAG AA co
   // Brand gradient - NurseLite Blue
   --nurselite-gradient: linear-gradient(135deg, #{$color-brand-primary} 0%, #{$color-brand-accent} 100%);
   --histora-gradient: var(--nurselite-gradient); // Legacy alias
+
+  // Warm gradient - Para elementos que necesitan calidez humana
+  --nurselite-gradient-warm: linear-gradient(135deg, #{$color-brand-primary} 0%, #{$color-brand-accent} 60%, #{$color-warmth-secondary} 100%);
+
+  // Warm colors as CSS variables
+  --color-warmth-primary: #{$color-warmth-primary};
+  --color-warmth-secondary: #{$color-warmth-secondary};
+  --color-warmth-light: #{$color-warmth-light};
 
   // Surfaces
   --surface-primary: #{$surface-primary};

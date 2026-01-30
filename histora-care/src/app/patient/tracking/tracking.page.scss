@@ -452,6 +452,32 @@
   }
 }
 
+// Contextual Tip - Proactive helpful message
+.contextual-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary, #475569);
+  margin-bottom: 12px;
+
+  ion-icon {
+    font-size: 18px;
+    color: #f59e0b;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  span {
+    flex: 1;
+  }
+}
+
 // Cancel Section
 .cancel-section {
   margin-top: 8px;
@@ -927,6 +953,17 @@
     &.status-completed {
       background: rgba(22, 163, 74, 0.2);
       color: #34d399;
+    }
+  }
+
+  // Contextual Tip Dark Mode
+  .contextual-tip {
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.25);
+    color: #d1d9e3;
+
+    ion-icon {
+      color: #fbbf24;
     }
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { Nurse, NurseReview } from '../../core/models';
 
@@ -14,6 +14,7 @@ import { Nurse, NurseReview } from '../../core/models';
 export class SearchPage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private alertCtrl = inject(AlertController);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
   private nurseService = inject(NurseApiService);
@@ -156,5 +157,26 @@ export class SearchPage implements OnInit {
 
   getStars(rating: number): number[] {
     return Array(5).fill(0).map((_, i) => i < Math.round(rating) ? 1 : 0);
+  }
+
+  async showCepExplanation() {
+    const alert = await this.alertCtrl.create({
+      header: '¿Que significa CEP Verificado?',
+      message: `
+        <div class="cep-explanation">
+          <p><strong>CEP</strong> = Colegio de Enfermeros del Peru</p>
+          <p>Todas las enfermeras en NurseLite estan verificadas directamente con el CEP, garantizando:</p>
+          <ul>
+            <li><strong>Titulo profesional valido</strong> - Licenciatura en enfermeria</li>
+            <li><strong>Colegiatura activa</strong> - Habilitada para ejercer</li>
+            <li><strong>Estado HABIL</strong> - Sin sanciones ni inhabilitaciones</li>
+          </ul>
+          <p class="cep-trust">Tu seguridad es nuestra prioridad. Solo trabajamos con profesionales 100% verificados.</p>
+        </div>
+      `,
+      buttons: ['Entendido'],
+      cssClass: 'cep-alert'
+    });
+    await alert.present();
   }
 }

@@ -114,23 +114,50 @@
     }
   }
 
-  // Trust Badges
-  .trust-badges {
+  // Trust Badges - Enhanced with warm colors
+  .trust-badges-enhanced {
     display: flex;
-    justify-content: center;
-    gap: tokens.$spacing-4;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: tokens.$spacing-2;
 
-    .badge {
+    .trust-badge {
       display: flex;
       align-items: center;
-      gap: tokens.$spacing-1;
-      font-size: 12px;
-      font-weight: tokens.$font-weight-medium;
-      color: rgba(255, 255, 255, 0.9);
+      gap: tokens.$spacing-3;
+      padding: tokens.$spacing-2 tokens.$spacing-3;
+      background: rgba(251, 191, 36, 0.12); // Amber with transparency
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      border-radius: tokens.$radius-md;
+      transition: all tokens.$duration-normal tokens.$easing-standard;
+
+      &:hover {
+        background: rgba(251, 191, 36, 0.18);
+        transform: translateX(4px);
+      }
 
       ion-icon {
-        font-size: 14px;
+        font-size: 18px;
+        color: #fbbf24; // Amber 400
+        flex-shrink: 0;
+      }
+
+      .badge-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+
+        .badge-title {
+          font-size: 13px;
+          font-weight: tokens.$font-weight-semibold;
+          color: white;
+          line-height: 1.2;
+        }
+
+        .badge-subtitle {
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.75);
+          line-height: 1.2;
+        }
       }
     }
   }
@@ -433,8 +460,13 @@
       }
     }
 
-    .trust-badges .badge {
-      color: rgba(255, 255, 255, 0.85);
+    .trust-badges-enhanced .trust-badge {
+      background: rgba(251, 191, 36, 0.15);
+      border-color: rgba(251, 191, 36, 0.3);
+
+      .badge-content .badge-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+      }
     }
   }
 

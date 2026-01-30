@@ -155,7 +155,7 @@
               <ion-item lines="none" class="reference-input">
                 <ion-label position="stacked">Referencia (opcional)</ion-label>
                 <ion-input
-                  placeholder="Ej: Casa amarilla, frente al parque"
+                  placeholder="Ayudanos a llegar facil: color de casa, edificio, etc."
                   [value]="addressReference()"
                   (ionInput)="addressReference.set($any($event).target.value)"
                 ></ion-input>
@@ -169,7 +169,7 @@
               <ion-item lines="none">
                 <ion-label position="stacked">Direccion *</ion-label>
                 <ion-input
-                  placeholder="Av. Principal 123"
+                  placeholder="¿Donde te visitamos? Ej: Av. Javier Prado 1520"
                   [value]="manualAddress()"
                   (ionInput)="manualAddress.set($any($event).target.value)"
                   required
@@ -179,7 +179,7 @@
               <ion-item lines="none">
                 <ion-label position="stacked">Distrito *</ion-label>
                 <ion-input
-                  placeholder="Miraflores"
+                  placeholder="Ej: San Isidro, Miraflores, Surco..."
                   [value]="manualDistrict()"
                   (ionInput)="manualDistrict.set($any($event).target.value)"
                   required
@@ -199,7 +199,7 @@
               <ion-item lines="none">
                 <ion-label position="stacked">Referencia (opcional)</ion-label>
                 <ion-input
-                  placeholder="Ej: Casa amarilla, frente al parque"
+                  placeholder="Ayudanos a llegar facil: color de casa, edificio, etc."
                   [value]="addressReference()"
                   (ionInput)="addressReference.set($any($event).target.value)"
                 ></ion-input>
@@ -214,10 +214,11 @@
         <ion-card-header>
           <ion-card-title>
             <ion-icon name="calendar-outline"></ion-icon>
-            Fecha y Horario
+            ¿Cuando te visitamos?
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
+          <p class="section-helper">La enfermera confirmara la hora exacta contigo antes de la visita.</p>
           <!-- Date Picker -->
           <ion-item lines="none" class="date-picker-item">
             <ion-label position="stacked">Fecha deseada *</ion-label>
@@ -264,12 +265,12 @@
         <ion-card-header>
           <ion-card-title>
             <ion-icon name="document-text-outline"></ion-icon>
-            Notas Adicionales
+            Cuentanos mas (opcional)
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ion-textarea
-            placeholder="Indique cualquier informacion adicional que la enfermera deba saber (alergias, condiciones medicas, instrucciones especiales, etc.)"
+            placeholder="¿Hay algo que debamos saber para cuidarte mejor? Alergias, medicamentos actuales, movilidad reducida, etc. Toda informacion nos ayuda a darte una mejor atencion."
             [value]="patientNotes()"
             (ionInput)="patientNotes.set($any($event).target.value)"
             [autoGrow]="true"

@@ -152,28 +152,54 @@
         </div>
       </div>
 
-      <!-- Status Message -->
+      <!-- Status Message - Empathetic microcopy with nurse name -->
       <div class="status-message" [ngClass]="'status-' + currentStatus()" role="status" aria-live="polite">
         @switch (currentStatus()) {
         @case ('accepted') {
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span>Servicio aceptado, esperando a la enfermera</span>
+        <span>{{ nurse()?.firstName || 'La enfermera' }} acepto tu solicitud. ¡Ya esta en camino!</span>
         }
         @case ('on_the_way') {
         <ion-icon name="navigate"></ion-icon>
-        <span>La enfermera está en camino</span>
+        <span>{{ nurse()?.firstName || 'La enfermera' }} esta en camino. Tranquilo(a), ya casi llega.</span>
         }
         @case ('arrived') {
         <ion-icon name="location"></ion-icon>
-        <span>¡La enfermera ha llegado!</span>
+        <span>¡{{ nurse()?.firstName || 'La enfermera' }} llego! Revisa que sea ella antes de abrir.</span>
         }
         @case ('in_progress') {
         <ion-icon name="medical"></ion-icon>
-        <span>Servicio en progreso</span>
+        <span>{{ nurse()?.firstName || 'La enfermera' }} te esta atendiendo. Estas en buenas manos.</span>
         }
         @case ('completed') {
         <ion-icon name="checkmark-done"></ion-icon>
-        <span>¡Servicio completado!</span>
+        <span>¡Listo! Esperamos que {{ nurse()?.firstName || 'la enfermera' }} haya cumplido tus expectativas.</span>
+        }
+        }
+      </div>
+
+      <!-- Contextual Tip - Proactive helpful message -->
+      <div class="contextual-tip" role="note">
+        @switch (currentStatus()) {
+        @case ('accepted') {
+        <ion-icon name="bulb-outline"></ion-icon>
+        <span>{{ nurse()?.firstName }} vio tu solicitud y la acepto. Esta preparandose para salir.</span>
+        }
+        @case ('on_the_way') {
+        <ion-icon name="bulb-outline"></ion-icon>
+        <span>Puedes ir preparando un espacio comodo y bien iluminado para la atencion.</span>
+        }
+        @case ('arrived') {
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Por tu seguridad, confirma su identidad (foto y nombre) antes de permitir el ingreso.</span>
+        }
+        @case ('in_progress') {
+        <ion-icon name="bulb-outline"></ion-icon>
+        <span>Si tienes preguntas sobre el procedimiento, no dudes en preguntarle.</span>
+        }
+        @case ('completed') {
+        <ion-icon name="heart-outline"></ion-icon>
+        <span>Tu opinion nos ayuda a mejorar. ¡Gracias por confiar en NurseLite!</span>
         }
         }
       </div>

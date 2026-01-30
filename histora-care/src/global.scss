@@ -1015,6 +1015,74 @@ ion-alert.verification-celebration {
   }
 }
 
+// CEP Explanation alert - Educational modal
+ion-alert.cep-alert {
+  .alert-wrapper {
+    max-width: 360px;
+  }
+
+  .alert-head {
+    padding: 20px 20px 8px;
+  }
+
+  .alert-title {
+    font-size: 17px;
+    font-weight: 700;
+    text-align: left;
+    color: #1e3a5f;
+  }
+
+  .alert-message {
+    text-align: left;
+    padding: 8px 20px 16px;
+
+    .cep-explanation {
+      p {
+        margin: 0 0 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #475569;
+
+        strong {
+          color: #1e3a5f;
+        }
+      }
+
+      ul {
+        margin: 0 0 16px;
+        padding-left: 20px;
+
+        li {
+          margin-bottom: 8px;
+          font-size: 13px;
+          line-height: 1.4;
+          color: #475569;
+
+          strong {
+            color: #16a34a;
+          }
+        }
+      }
+
+      .cep-trust {
+        background: rgba(22, 163, 74, 0.1);
+        border-left: 3px solid #16a34a;
+        padding: 10px 12px;
+        border-radius: 0 8px 8px 0;
+        font-size: 13px;
+        color: #15803d;
+        margin: 0;
+      }
+    }
+  }
+
+  .alert-button {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+}
+
 /* Dark mode for all alert variants */
 body.ion-palette-dark,
 body.dark {
@@ -1042,6 +1110,44 @@ body.dark {
       &.alert-button-role-cancel {
         background: #334155;
         color: #f1f5f9;
+      }
+    }
+  }
+
+  // CEP Alert dark mode
+  ion-alert.cep-alert {
+    .alert-wrapper {
+      background: #1e293b;
+      border: 1px solid #475569;
+    }
+
+    .alert-title {
+      color: #6bb5b3;
+    }
+
+    .alert-message {
+      .cep-explanation {
+        p {
+          color: #cbd5e1;
+
+          strong {
+            color: #6bb5b3;
+          }
+        }
+
+        ul li {
+          color: #cbd5e1;
+
+          strong {
+            color: #34d399;
+          }
+        }
+
+        .cep-trust {
+          background: rgba(34, 197, 94, 0.15);
+          border-left-color: #22c55e;
+          color: #34d399;
+        }
       }
     }
   }

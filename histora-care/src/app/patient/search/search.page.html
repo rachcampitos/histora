@@ -66,9 +66,11 @@
             <p class="experience">{{ nurse()!.yearsOfExperience || 0 }} años de experiencia</p>
 
             @if (nurse()!.cepVerified) {
-              <ion-badge color="success">
-                <ion-icon name="checkmark-circle"></ion-icon>
+              <ion-badge color="success" class="cep-badge" button (click)="showCepExplanation()"
+                         role="button" aria-label="CEP Verificado - toca para mas informacion">
+                <ion-icon name="shield-checkmark"></ion-icon>
                 CEP Verificado
+                <ion-icon name="information-circle-outline" class="info-icon"></ion-icon>
               </ion-badge>
             }
           </div>

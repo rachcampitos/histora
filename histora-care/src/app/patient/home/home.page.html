@@ -24,7 +24,7 @@
             <ion-icon name="person" aria-hidden="true"></ion-icon>
           </div>
         }
-        <span class="greeting-text">Hola, {{ user()?.firstName || 'Usuario' }}</span>
+        <span class="greeting-text">Hola {{ user()?.firstName || 'Usuario' }}, ¿como te ayudamos hoy?</span>
       </div>
 
       <!-- Main CTA -->
@@ -34,15 +34,34 @@
         aria-label="Buscar enfermera disponible cerca de ti">
         <div class="cta-content">
           <ion-icon name="search-outline" class="cta-icon"></ion-icon>
-          <span class="cta-text">Solicitar enfermera</span>
+          <span class="cta-text">Necesito una enfermera</span>
         </div>
         <ion-icon name="chevron-forward" class="cta-arrow"></ion-icon>
       </button>
 
-      <!-- Trust Badges -->
-      <div class="trust-badges">
-        <span class="badge"><ion-icon name="shield-checkmark-outline"></ion-icon> Verificadas CEP</span>
-        <span class="badge"><ion-icon name="time-outline"></ion-icon> Disponible 24/7</span>
+      <!-- Trust Badges - Enhanced with warm colors -->
+      <div class="trust-badges-enhanced">
+        <div class="trust-badge">
+          <ion-icon name="shield-checkmark"></ion-icon>
+          <div class="badge-content">
+            <span class="badge-title">100% Verificadas</span>
+            <span class="badge-subtitle">Colegio de Enfermeros</span>
+          </div>
+        </div>
+        <div class="trust-badge">
+          <ion-icon name="time"></ion-icon>
+          <div class="badge-content">
+            <span class="badge-title">Atencion 24/7</span>
+            <span class="badge-subtitle">Todos los dias</span>
+          </div>
+        </div>
+        <div class="trust-badge">
+          <ion-icon name="people"></ion-icon>
+          <div class="badge-content">
+            <span class="badge-title">+500 servicios</span>
+            <span class="badge-subtitle">Este mes en Lima</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>

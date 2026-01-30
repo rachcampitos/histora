@@ -9,6 +9,42 @@
       <p class="app-tagline subtle">Tu enfermera a un toque</p>
     </header>
 
+    <!-- Social Proof - Trust Indicator -->
+    <div class="social-proof" role="complementary" aria-label="Testimonios de usuarios">
+      <div class="testimonial-carousel" #testimonialCarousel>
+        <div class="testimonial-item">
+          <div class="testimonial-content">
+            <ion-icon name="star" class="star-icon"></ion-icon>
+            <p>"Llegaron rapido y con mucho profesionalismo. Mi mama quedo muy contenta."</p>
+          </div>
+          <span class="testimonial-author">Maria G. - San Isidro</span>
+        </div>
+        <div class="testimonial-item">
+          <div class="testimonial-content">
+            <ion-icon name="star" class="star-icon"></ion-icon>
+            <p>"Excelente servicio. La enfermera fue muy amable y explico todo con paciencia."</p>
+          </div>
+          <span class="testimonial-author">Carlos R. - Miraflores</span>
+        </div>
+        <div class="testimonial-item">
+          <div class="testimonial-content">
+            <ion-icon name="star" class="star-icon"></ion-icon>
+            <p>"La verificacion CEP me dio mucha tranquilidad. Recomendado 100%."</p>
+          </div>
+          <span class="testimonial-author">Ana L. - La Molina</span>
+        </div>
+      </div>
+      <div class="testimonial-dots" role="tablist" aria-label="Indicadores de testimonios">
+        @for (dot of [0, 1, 2]; track dot) {
+          <button class="dot" [class.active]="currentTestimonial === dot"
+                  (click)="setTestimonial(dot)"
+                  role="tab" [attr.aria-selected]="currentTestimonial === dot"
+                  [attr.aria-label]="'Testimonio ' + (dot + 1)">
+          </button>
+        }
+      </div>
+    </div>
+
     <!-- Login Form -->
     <main class="form-section" role="main">
       <h2 class="form-title">Iniciar Sesion</h2>

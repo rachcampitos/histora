@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, computed, ChangeDetectionStrategy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingController, ToastController } from '@ionic/angular';
@@ -11,7 +11,7 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./login.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginPage implements OnInit {
+export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -19,9 +19,17 @@ export class LoginPage implements OnInit {
   private toastCtrl = inject(ToastController);
   private authService = inject(AuthService);
 
+  @ViewChild('testimonialCarousel') testimonialCarousel!: ElementRef<HTMLDivElement>;
+
   loginForm: FormGroup;
   showPassword = false;
   googleAuthPending = computed(() => this.authService.googleAuthPending());
+
+  // Testimonial carousel
+  currentTestimonial = 0;
+  private testimonialInterval: ReturnType<typeof setInterval> | null = null;
+  private readonly TESTIMONIAL_COUNT = 3;
+  private readonly TESTIMONIAL_INTERVAL_MS = 5000;
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -141,6 +149,48 @@ export class LoginPage implements OnInit {
     Object.keys(this.loginForm.controls).forEach(key => {
       this.loginForm.get(key)?.markAsTouched();
     });
+  }
+
+  // Testimonial carousel methods
+  ngAfterViewInit() {
+    this.startTestimonialCarousel();
+  }
+
+  ngOnDestroy() {
+    this.stopTestimonialCarousel();
+  }
+
+  private startTestimonialCarousel() {
+    this.testimonialInterval = setInterval(() => {
+      this.currentTestimonial = (this.currentTestimonial + 1) % this.TESTIMONIAL_COUNT;
+      this.scrollToTestimonial(this.currentTestimonial);
+    }, this.TESTIMONIAL_INTERVAL_MS);
+  }
+
+  private stopTestimonialCarousel() {
+    if (this.testimonialInterval) {
+      clearInterval(this.testimonialInterval);
+      this.testimonialInterval = null;
+    }
+  }
+
+  setTestimonial(index: number) {
+    this.currentTestimonial = index;
+    this.scrollToTestimonial(index);
+    // Reset interval to avoid jumping
+    this.stopTestimonialCarousel();
+    this.startTestimonialCarousel();
+  }
+
+  private scrollToTestimonial(index: number) {
+    if (this.testimonialCarousel?.nativeElement) {
+      const container = this.testimonialCarousel.nativeElement;
+      const itemWidth = container.scrollWidth / this.TESTIMONIAL_COUNT;
+      container.scrollTo({
+        left: itemWidth * index,
+        behavior: 'smooth'
+      });
+    }
   }
 
   // Getters for template
