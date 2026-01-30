@@ -201,6 +201,7 @@ npx cap open android   # Abrir Android Studio
 3. **Commits en espanol** - El proyecto es para Peru
 4. **Push = Deploy** - El push automaticamente despliega
 5. **Usuario GitHub:** rachcampitos (para operaciones con gh CLI)
+6. **NO agregar Co-Authored-By de Claude** - Los commits no deben incluir coautoria de Claude
 
 ---
 Ultima actualizacion: 2026-01-30
