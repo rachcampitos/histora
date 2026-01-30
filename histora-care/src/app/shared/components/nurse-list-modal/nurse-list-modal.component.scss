@@ -37,11 +37,22 @@ ion-header {
   }
 }
 
+// Virtual scroll viewport
+.virtual-scroll-viewport {
+  height: calc(100vh - 180px); // Account for header and count bar
+  width: 100%;
+}
+
 .nurse-list {
   background: transparent;
   padding: 8px 16px 40px;
 
-  ion-item {
+  &.virtual-list {
+    padding: 8px 16px 40px;
+  }
+
+  ion-item,
+  .nurse-item-wrapper {
     --background: var(--histora-surface, #ffffff);
     --padding-start: 0;
     --padding-end: 0;
@@ -51,6 +62,12 @@ ion-header {
     border-radius: 14px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     overflow: hidden;
+    cursor: pointer;
+    background: var(--histora-surface, #ffffff);
+
+    &:active {
+      opacity: 0.8;
+    }
   }
 }
 

@@ -36,7 +36,7 @@
         <div class="profile-header">
           <div class="avatar-container">
             @if (nurse()!.user?.avatar) {
-              <img [src]="nurse()!.user?.avatar" alt="Avatar" class="avatar" />
+              <img [src]="nurse()!.user?.avatar" alt="Avatar" class="avatar" loading="eager" />
             } @else {
               <div class="avatar-placeholder">
                 <ion-icon name="person"></ion-icon>
@@ -231,7 +231,7 @@
                     <div class="reviewer-info">
                       @if (review.patient?.avatar) {
                         <ion-avatar>
-                          <img [src]="review.patient?.avatar" [alt]="review.patient?.firstName || 'Paciente'" />
+                          <img [src]="review.patient?.avatar" [alt]="review.patient?.firstName || 'Paciente'" loading="lazy" />
                         </ion-avatar>
                       } @else {
                         <ion-avatar class="avatar-placeholder-small">

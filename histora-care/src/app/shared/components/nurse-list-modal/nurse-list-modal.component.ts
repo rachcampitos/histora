@@ -1,12 +1,13 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { IonicModule, ModalController } from '@ionic/angular';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NurseSearchResult } from '../../../core/models';
 
 @Component({
   selector: 'app-nurse-list-modal',
   standalone: true,
-  imports: [IonicModule],
+  imports: [IonicModule, ScrollingModule],
   templateUrl: './nurse-list-modal.component.html',
   styleUrls: ['./nurse-list-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

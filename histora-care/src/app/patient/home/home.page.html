@@ -18,7 +18,7 @@
       <div class="greeting-inline">
         @if (user()?.avatar) {
           <img [src]="user()!.avatar" class="hero-avatar"
-               [alt]="'Foto de perfil de ' + (user()?.firstName || 'usuario')" />
+               [alt]="'Foto de perfil de ' + (user()?.firstName || 'usuario')" loading="eager" />
         } @else {
           <div class="hero-avatar hero-avatar-placeholder">
             <ion-icon name="person" aria-hidden="true"></ion-icon>
@@ -66,7 +66,8 @@
                 <img
                   [src]="activeRequest()!.nurse!.avatar"
                   class="nurse-avatar-compact"
-                  [alt]="(activeRequest()!.nurse?.firstName || 'Enfermera') + ' ' + (activeRequest()!.nurse?.lastName || '')" />
+                  [alt]="(activeRequest()!.nurse?.firstName || 'Enfermera') + ' ' + (activeRequest()!.nurse?.lastName || '')"
+                  loading="lazy" />
               } @else {
                 <div class="nurse-avatar-compact nurse-avatar-placeholder">
                   <ion-icon name="person" aria-hidden="true"></ion-icon>
@@ -141,7 +142,7 @@
             [attr.aria-label]="'Solicitar servicio de ' + (nurse.firstName || 'enfermera') + ' ' + (nurse.lastName || '')">
             @if (nurse.avatar) {
               <img [src]="nurse.avatar" class="nurse-avatar-recent"
-                   [alt]="(nurse.firstName || 'Enfermera') + ' ' + (nurse.lastName || '')" />
+                   [alt]="(nurse.firstName || 'Enfermera') + ' ' + (nurse.lastName || '')" loading="lazy" />
             } @else {
               <div class="nurse-avatar-recent nurse-avatar-placeholder">
                 <ion-icon name="person" aria-hidden="true"></ion-icon>
