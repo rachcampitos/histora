@@ -428,7 +428,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
       // Add patient marker
       this.mapboxService.addMarker('patient', patientLoc, {
-        color: '#10b981',
+        color: '#16a34a',
         popup: '<strong>Tu ubicación</strong>'
       });
 

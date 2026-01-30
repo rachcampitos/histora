@@ -1,7 +1,7 @@
 // Variables - using CSS custom properties for theming
 $primary-color: var(--ion-color-primary, #1e3a5f);
 $primary-gradient: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
-$nurse-color: var(--ion-color-success, #10b981);
+$nurse-color: var(--ion-color-success, #16a34a);
 $patient-color: var(--splash-gradient-end, #2d5f8a);
 $error-color: var(--ion-color-danger, #f44336);
 $text-dark: var(--histora-text-primary, #1a1a1a);
@@ -165,15 +165,15 @@ $border-radius: 12px;
   // Nurse Card Variant
   &.nurse-card {
     .type-card-icon {
-      background: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
+      background: linear-gradient(135deg, var(--ion-color-success, #16a34a) 0%, var(--ion-color-success-shade, #15803d) 100%);
     }
 
     .type-card-features ion-icon {
-      color: var(--ion-color-success, #10b981);
+      color: var(--ion-color-success, #16a34a);
     }
 
     &:hover {
-      border-color: var(--ion-color-success, #10b981);
+      border-color: var(--ion-color-success, #16a34a);
     }
   }
 }
@@ -450,7 +450,7 @@ $border-radius: 12px;
     }
 
     &.professional-disclaimer {
-      background: rgba(16, 185, 129, 0.12);
+      background: rgba(22, 163, 74, 0.12);
 
       .terms-text {
         color: #94a3b8;
@@ -556,7 +556,7 @@ $border-radius: 12px;
     position: absolute;
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, $nurse-color 0%, #0d9668 100%);
+    background: linear-gradient(135deg, $nurse-color 0%, #15803d 100%);
     border-radius: 12px;
     z-index: 1;
   }
@@ -590,7 +590,7 @@ $border-radius: 12px;
   .cep-progress-fill {
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, $nurse-color, #0d9668);
+    background: linear-gradient(90deg, $nurse-color, #15803d);
     border-radius: 2px;
     animation: indeterminate 1.5s ease-in-out infinite;
   }
@@ -665,7 +665,7 @@ $border-radius: 12px;
   max-width: 380px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.2);
+  box-shadow: 0 20px 60px rgba(var(--ion-color-success-rgb, 22, 163, 74), 0.2);
   animation: scaleIn 0.4s ease-out;
 }
 
@@ -684,7 +684,7 @@ $border-radius: 12px;
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
-  background: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
+  background: linear-gradient(135deg, var(--ion-color-success, #16a34a) 0%, var(--ion-color-success-shade, #15803d) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -742,10 +742,10 @@ $border-radius: 12px;
     }
 
     &.completed {
-      color: var(--ion-color-success, #10b981);
+      color: var(--ion-color-success, #16a34a);
 
       ion-icon {
-        color: var(--ion-color-success, #10b981);
+        color: var(--ion-color-success, #16a34a);
       }
     }
 
@@ -763,7 +763,7 @@ $border-radius: 12px;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.08);
+  background: rgba(var(--ion-color-success-rgb, 22, 163, 74), 0.08);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
@@ -771,7 +771,7 @@ $border-radius: 12px;
 
   .next-step-icon {
     font-size: 28px;
-    color: var(--ion-color-success, #10b981);
+    color: var(--ion-color-success, #16a34a);
     flex-shrink: 0;
   }
 
@@ -807,10 +807,10 @@ $border-radius: 12px;
 }
 
 .continue-btn {
-  --background: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
-  --background-hover: linear-gradient(135deg, var(--ion-color-success, #10b981) 0%, var(--ion-color-success-shade, #0d9668) 100%);
+  --background: linear-gradient(135deg, var(--ion-color-success, #16a34a) 0%, var(--ion-color-success-shade, #15803d) 100%);
+  --background-hover: linear-gradient(135deg, var(--ion-color-success, #16a34a) 0%, var(--ion-color-success-shade, #15803d) 100%);
   --border-radius: 12px;
-  --box-shadow: 0 4px 16px rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.4);
+  --box-shadow: 0 4px 16px rgba(var(--ion-color-success-rgb, 22, 163, 74), 0.4);
   height: 50px;
   font-size: 16px;
   font-weight: 600;
@@ -874,7 +874,7 @@ $border-radius: 12px;
     }
 
     .next-step-info {
-      background: rgba(16, 185, 129, 0.12);
+      background: rgba(22, 163, 74, 0.12);
 
       .next-step-text h4 {
         color: white;

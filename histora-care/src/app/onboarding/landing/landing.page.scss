@@ -2,7 +2,7 @@
 
 // Variables using design tokens
 $primary-gradient: var(--histora-gradient);
-$nurse-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+$nurse-gradient: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
 $border-radius: tokens.$radius-lg;
 
 .landing-content {
@@ -237,7 +237,7 @@ $border-radius: tokens.$radius-lg;
 .nurse-mode .tab-selector .tab-btn.active {
   background: $nurse-gradient;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
 
   ion-icon {
     color: #ffffff;
@@ -299,10 +299,10 @@ $border-radius: tokens.$radius-lg;
 
 // Nurse mode features
 .nurse-mode .features-list .feature-item {
-  background: rgba(16, 185, 129, 0.08);
+  background: rgba(22, 163, 74, 0.08);
 
   ion-icon {
-    color: #059669;
+    color: #15803d;
   }
 }
 
@@ -363,7 +363,7 @@ $border-radius: tokens.$radius-lg;
     --color-hover: #ffffff;
     --color-activated: #ffffff;
     --border-radius: 26px;
-    --box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+    --box-shadow: 0 8px 24px rgba(22, 163, 74, 0.35);
     height: 52px;
     font-size: tokens.$font-size-base;
     font-weight: tokens.$font-weight-semibold;
@@ -426,10 +426,10 @@ $border-radius: tokens.$radius-lg;
 
 // Nurse mode login link
 .nurse-mode .cta-section .login-link .link-text {
-  color: #059669;
+  color: #15803d;
 
   &:active {
-    color: #047857;
+    color: #166534;
   }
 }
 
@@ -479,9 +479,9 @@ $border-radius: tokens.$radius-lg;
 
   // Nurse tab active in dark mode - matches nurse CTA
   .nurse-mode .tab-selector .tab-btn.active {
-    background: linear-gradient(135deg, #047857 0%, #059669 100%);
+    background: linear-gradient(135deg, #166534 0%, #15803d 100%);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
 
     ion-icon {
       color: #ffffff;
@@ -512,11 +512,11 @@ $border-radius: tokens.$radius-lg;
   }
 
   .nurse-mode .features-list .feature-item {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.15);
+    background: rgba(22, 163, 74, 0.1);
+    border: 1px solid rgba(22, 163, 74, 0.15);
 
     ion-icon {
-      color: #34d399;
+      color: #22c55e;
     }
   }
 
@@ -535,10 +535,10 @@ $border-radius: tokens.$radius-lg;
     }
 
     .nurse-btn {
-      --background: linear-gradient(135deg, #047857 0%, #059669 100%);
-      --background-hover: linear-gradient(135deg, #047857 0%, #059669 100%);
-      --background-activated: linear-gradient(135deg, #047857 0%, #059669 100%);
-      --box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
+      --background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+      --background-hover: linear-gradient(135deg, #166534 0%, #15803d 100%);
+      --background-activated: linear-gradient(135deg, #166534 0%, #15803d 100%);
+      --box-shadow: 0 8px 24px rgba(22, 163, 74, 0.25);
     }
 
     .login-link {
@@ -549,13 +549,13 @@ $border-radius: tokens.$radius-lg;
       }
 
       &:active .link-text {
-        color: #34d399;
+        color: #22c55e;
       }
     }
   }
 
   .nurse-mode .cta-section .login-link .link-text {
-    color: #34d399;
+    color: #22c55e;
   }
 }
 

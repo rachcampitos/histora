@@ -90,7 +90,7 @@
 
   &.current {
     border-color: var(--ion-color-success);
-    background: rgba(16, 185, 129, 0.05);
+    background: rgba(22, 163, 74, 0.05);
   }
 
   &.disabled {
@@ -772,8 +772,8 @@
     }
 
     &.current {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: #10b981;
+      background: rgba(22, 163, 74, 0.1);
+      border-color: #16a34a;
     }
 
     h2 {

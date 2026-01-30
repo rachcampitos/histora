@@ -1,7 +1,7 @@
 // Variables - using CSS custom properties for theming
 $primary-color: var(--ion-color-primary, #1e3a5f);
 $primary-gradient: linear-gradient(135deg, var(--ion-color-primary, #1e3a5f) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
-$success-color: var(--ion-color-success, #10b981);
+$success-color: var(--ion-color-success, #16a34a);
 $error-color: var(--ion-color-danger, #f44336);
 $warning-color: var(--ion-color-warning, #f59e0b);
 $text-dark: var(--histora-text-primary, #1a1a1a);
@@ -135,7 +135,7 @@ $border-radius: 12px;
   }
 
   &.patient-card .card-icon {
-    background: linear-gradient(135deg, var(--ion-color-success, #10b981), var(--ion-color-success-shade, #059669));
+    background: linear-gradient(135deg, var(--ion-color-success, #16a34a), var(--ion-color-success-shade, #15803d));
   }
 
   h3 {
@@ -489,7 +489,7 @@ $border-radius: 12px;
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.05);
+    background: rgba(var(--ion-color-success-rgb, 22, 163, 74), 0.05);
 
     .document-label {
       font-size: 13px;
@@ -689,7 +689,7 @@ $border-radius: 12px;
     }
 
     .document-info {
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(22, 163, 74, 0.1);
 
       .document-label {
         color: white;
@@ -1285,8 +1285,8 @@ $border-radius: 12px;
 .location-summary {
   margin: 16px 0 24px;
   padding: 16px;
-  background: rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.08);
-  border: 1px solid rgba(var(--ion-color-success-rgb, 16, 185, 129), 0.2);
+  background: rgba(var(--ion-color-success-rgb, 22, 163, 74), 0.08);
+  border: 1px solid rgba(var(--ion-color-success-rgb, 22, 163, 74), 0.2);
   border-radius: 12px;
 
   .summary-header {
@@ -1366,8 +1366,8 @@ $border-radius: 12px;
   }
 
   .location-summary {
-    background: rgba(16, 185, 129, 0.12);
-    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(22, 163, 74, 0.12);
+    border-color: rgba(22, 163, 74, 0.3);
   }
 }
 
