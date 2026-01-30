@@ -172,12 +172,12 @@ export function Footer() {
               <Heart className="w-4 h-4 text-red-500" fill="currentColor" aria-hidden="true" />
               <span>por</span>
               <a
-                href="https://historahealth.com"
+                href="https://codemedia.pe"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#4a9d9a] hover:text-[#6bb5b3] font-medium transition-colors"
               >
-                Histora Health
+                Code Media
               </a>
             </div>
           </div>
