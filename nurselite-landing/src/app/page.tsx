@@ -12,10 +12,12 @@ import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 import { StickyCTA } from "@/components/StickyCTA";
 import { WhatsAppWidget } from "@/components/WhatsAppWidget";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 
 export default function Home() {
   return (
     <>
+      <ScrollProgress />
       <Header />
       <main id="main-content">
         <Hero />
