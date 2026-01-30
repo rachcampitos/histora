@@ -1,5 +1,11 @@
 # Instrucciones para Claude Code - Histora Care
 
+## GitHub
+
+- **Repositorio:** github.com/rachcampitos/histora
+- **Usuario GitHub:** rachcampitos (NO raul-campos-wbd)
+- **Branch principal:** main
+
 ## Estructura del Proyecto
 
 ```
@@ -12,7 +18,7 @@ histora/
 ## Despliegue
 
 ### App (histora-care)
-- **Hosting:** Cloudflare Pages
+- **Hosting:** Vercel
 - **URL:** https://care.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
 
@@ -91,13 +97,31 @@ cd histora-care && ionic serve
 | `patient` | Paciente que solicita servicios |
 | `nurse` | Enfermera profesional verificada |
 
+## Monitoreo
+
+- **Sentry:** Configurado en frontend y backend
+- **DSN:** Configurado en environments
+- **Solo activo en produccion**
+
+## Compilacion Nativa
+
+```bash
+cd histora-care
+npx cap sync           # Sincronizar
+npx cap open ios       # Abrir Xcode
+npx cap open android   # Abrir Android Studio
+```
+
+- **Bundle ID:** com.historahealth.nurselite
+- **Requiere:** Node.js 22+ (para Capacitor CLI)
+
 ## Notas Importantes
 
 1. **NO crear archivos .md innecesarios** - Solo documentacion esencial
 2. **NO usar emojis en codigo** - A menos que el usuario lo pida
 3. **Commits en espanol** - El proyecto es para Peru
 4. **Push = Deploy** - El push automaticamente despliega
-5. **NO incluir Co-Authored-By** - No agregar coautoria de Claude en commits
+5. **Usuario GitHub:** rachcampitos (para operaciones con gh CLI)
 
 ---
-Ultima actualizacion: 2026-01-29
+Ultima actualizacion: 2026-01-30
