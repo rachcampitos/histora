@@ -43,6 +43,44 @@ export class NursesController {
     private readonly reniecValidationService: ReniecValidationService,
   ) {}
 
+  // Public endpoint: Get featured professionals for landing page
+  @Get('featured')
+  @ApiOperation({ summary: 'Get featured professionals for landing page' })
+  @ApiResponse({
+    status: 200,
+    description: 'Featured professionals with stats',
+    schema: {
+      properties: {
+        professionals: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              firstName: { type: 'string' },
+              rating: { type: 'number' },
+              specialty: { type: 'string' },
+              photoUrl: { type: 'string' },
+              verified: { type: 'boolean' },
+              totalReviews: { type: 'number' },
+            },
+          },
+        },
+        stats: {
+          type: 'object',
+          properties: {
+            totalProfessionals: { type: 'number' },
+            totalServices: { type: 'number' },
+            averageRating: { type: 'number' },
+          },
+        },
+      },
+    },
+  })
+  async getFeatured(@Query('limit') limit?: number) {
+    return this.nursesService.getFeatured(limit || 3);
+  }
+
   // Public endpoint: Search nurses nearby
   @Get('search')
   @ApiOperation({ summary: 'Search nurses nearby by location' })
