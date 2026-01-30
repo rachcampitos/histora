@@ -17,8 +17,8 @@ histora/
 
 ## Despliegue
 
-### App (histora-care)
-- **Hosting:** Vercel
+### App Movil (histora-care / NurseLite)
+- **Hosting:** Cloudflare Pages
 - **URL:** https://care.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
 
@@ -27,8 +27,12 @@ histora/
 - **URL:** https://api.historahealth.com
 - **Despliegue:** AUTOMATICO con git push a main
 
+### App Web Legacy (histora-front)
+- **Hosting:** Railway
+- **Estado:** Legacy, no en uso activo
+
 > **IMPORTANTE:** Solo hacer `git push origin main` y el despliegue es automatico.
-> **NO ejecutar:** `railway up` manualmente.
+> **NO ejecutar:** `railway up` ni `wrangler pages deploy` manualmente.
 
 ## APIs Externas
 
