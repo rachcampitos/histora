@@ -96,48 +96,55 @@
         <h2>Especialidades</h2>
       </div>
 
-      <!-- Current Specialties -->
-      <div class="specialties-chips" *ngIf="specialties().length > 0">
-        <ion-chip *ngFor="let specialty of specialties()" color="primary">
+      <!-- Current Specialties as Chips -->
+      <div class="selected-specialties" *ngIf="specialties().length > 0">
+        <ion-chip *ngFor="let specialty of specialties()" class="specialty-chip">
           <ion-label>{{ specialty }}</ion-label>
           <ion-icon name="close-circle" (click)="removeSpecialty(specialty)"></ion-icon>
         </ion-chip>
       </div>
-      <p class="empty-text" *ngIf="specialties().length === 0">
-        Agrega tus especialidades para que los pacientes puedan encontrarte
-      </p>
+
+      <!-- Custom Specialty Input -->
+      <div class="specialty-input-container">
+        <div class="specialty-input-wrapper">
+          <ion-icon name="add-circle-outline" class="input-icon"></ion-icon>
+          <ion-input
+            [value]="newSpecialty()"
+            (ionInput)="onNewSpecialtyChange($event)"
+            placeholder="Escribe una especialidad..."
+            (keyup.enter)="addSpecialty()"
+            class="specialty-input">
+          </ion-input>
+        </div>
+        <ion-button
+          *ngIf="newSpecialty()"
+          fill="solid"
+          size="small"
+          (click)="addSpecialty()"
+          class="add-specialty-btn">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Agregar
+        </ion-button>
+      </div>
 
       <!-- Common Specialties Suggestions -->
       <div class="suggestions" *ngIf="getAvailableCommonSpecialties().length > 0">
-        <p class="suggestions-label">Toca para agregar:</p>
+        <p class="suggestions-label">Sugerencias populares:</p>
         <div class="suggestions-chips">
           <ion-chip
             *ngFor="let specialty of getAvailableCommonSpecialties()"
-            color="primary"
-            outline
+            class="suggestion-chip"
             (click)="addCommonSpecialty(specialty)">
-            <ion-icon name="add-circle-outline"></ion-icon>
+            <ion-icon name="add-outline"></ion-icon>
             <ion-label>{{ specialty }}</ion-label>
           </ion-chip>
         </div>
       </div>
 
-      <!-- Add Custom Specialty -->
-      <div class="add-specialty-section">
-        <p class="add-specialty-label">O escribe una especialidad personalizada:</p>
-        <div class="add-specialty">
-          <ion-icon name="search-outline" class="search-icon"></ion-icon>
-          <ion-input
-            [value]="newSpecialty()"
-            (ionInput)="onNewSpecialtyChange($event)"
-            placeholder="Buscar o escribir especialidad..."
-            (keyup.enter)="addSpecialty()">
-          </ion-input>
-          <ion-button fill="solid" size="small" (click)="addSpecialty()" [disabled]="!newSpecialty()" class="add-btn">
-            Agregar
-          </ion-button>
-        </div>
-      </div>
+      <p class="helper-text" *ngIf="specialties().length === 0">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Agrega especialidades para que los pacientes puedan encontrarte mas facilmente
+      </p>
     </div>
 
     <!-- Experience Section -->
@@ -324,19 +331,6 @@
       </div>
     </div>
 
-    <!-- Save Button -->
-    <div class="save-section" id="tour-save-button">
-      <ion-button
-        expand="block"
-        (click)="saveProfile()"
-        [disabled]="isSaving()"
-        class="save-button">
-        <ion-spinner *ngIf="isSaving()" name="crescent" slot="start"></ion-spinner>
-        <span *ngIf="!isSaving()">Guardar Cambios</span>
-        <span *ngIf="isSaving()">Guardando...</span>
-      </ion-button>
-    </div>
-
     <!-- Payment Methods Section (P2P) -->
     <div class="section payment-methods-section">
       <div class="section-header">
@@ -456,5 +450,24 @@
       <p>NurseLite v1.0.0</p>
       <p class="powered-by">by Histora Health</p>
     </div>
+
+    <!-- Spacer for sticky footer when visible -->
+    <div class="footer-spacer" *ngIf="hasUnsavedChanges()"></div>
   </ng-container>
 </ion-content>
+
+<!-- Sticky Footer for Save Actions -->
+<ion-footer class="save-footer" *ngIf="hasUnsavedChanges() && !isLoading()" id="tour-save-button">
+  <div class="footer-content">
+    <ion-button fill="clear" (click)="cancelChanges()" [disabled]="isSaving()" class="cancel-btn">
+      Cancelar
+    </ion-button>
+    <ion-button (click)="saveProfile()" [disabled]="isSaving()" class="save-btn">
+      <ion-spinner *ngIf="isSaving()" name="crescent" slot="start"></ion-spinner>
+      <ion-icon *ngIf="justSaved()" name="checkmark-circle" slot="start"></ion-icon>
+      <span *ngIf="!isSaving() && !justSaved()">Guardar cambios</span>
+      <span *ngIf="isSaving()">Guardando...</span>
+      <span *ngIf="justSaved()">Guardado</span>
+    </ion-button>
+  </div>
+</ion-footer>
