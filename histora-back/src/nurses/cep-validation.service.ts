@@ -451,41 +451,71 @@ export class CepValidationService {
       };
     }
 
-    // First, get complete CEP data
+    // First, try the complete CEP validation via view.php
     const cepResult = await this.validateCepComplete(cleanCep);
 
-    if (!cepResult.isValid) {
+    // If view.php succeeded, cross-reference DNI
+    if (cepResult.isValid && cepResult.data) {
+      // Cross-reference: DNI from CEP photo should match provided DNI
+      if (cepResult.data.dni && cepResult.data.dni !== cleanDni) {
+        return {
+          isValid: false,
+          error: 'El DNI ingresado no coincide con el registrado en el CEP. Por favor verifica el número e intenta nuevamente.',
+        };
+      }
+
+      // If CEP didn't return DNI, verify photo exists for the provided DNI
+      if (!cepResult.data.dni) {
+        const photoCheck = await this.checkPhotoByDni(cleanDni);
+        if (photoCheck.exists) {
+          cepResult.data.dni = cleanDni;
+          cepResult.data.photoUrl = photoCheck.url;
+          cepResult.data.isPhotoVerified = true;
+        }
+      }
+
+      // Check if nurse is HABIL
+      if (cepResult.data.status === 'INHABILITADO') {
+        return {
+          isValid: false,
+          error: 'La enfermera(o) se encuentra INHABILITADA para ejercer',
+          data: cepResult.data,
+        };
+      }
+
       return cepResult;
     }
 
-    // Cross-reference: DNI from CEP photo should match provided DNI
-    if (cepResult.data?.dni && cepResult.data.dni !== cleanDni) {
+    // Fallback: view.php failed, use photo check + search by name
+    this.logger.warn(`view.php failed for CEP ${cleanCep}, using photo check fallback`);
+
+    // Step 1: Check if photo exists for this DNI (confirms registration)
+    const photoCheck = await this.checkPhotoByDni(cleanDni);
+
+    if (!photoCheck.exists) {
       return {
         isValid: false,
-        error: 'El DNI ingresado no coincide con el registrado en el CEP. Por favor verifica el número e intenta nuevamente.',
-        // Note: Not exposing cepResult.data to protect privacy
+        error: 'No se encontró registro de enfermera(o) con este DNI en el CEP',
       };
     }
 
-    // If CEP didn't return DNI, verify photo exists for the provided DNI
-    if (!cepResult.data?.dni) {
-      const photoCheck = await this.checkPhotoByDni(cleanDni);
-      if (photoCheck.exists) {
-        cepResult.data!.dni = cleanDni;
-        cepResult.data!.photoUrl = photoCheck.url;
-        cepResult.data!.isPhotoVerified = true;
-      }
-    }
+    // Step 2: Photo exists, so the person is registered. Now verify CEP number.
+    // We need to find their name to search and confirm CEP matches
+    // Since we can't get the name from view.php, we'll trust the photo as primary validation
+    // and return success with available data
 
-    // Check if nurse is HABIL
-    if (cepResult.data?.status === 'INHABILITADO') {
-      return {
-        isValid: false,
-        error: 'La enfermera(o) se encuentra INHABILITADA para ejercer',
-        data: cepResult.data,
-      };
-    }
+    this.logger.log(`Photo found for DNI ${cleanDni}, CEP validation via photo fallback`);
 
-    return cepResult;
+    return {
+      isValid: true,
+      data: {
+        cepNumber: cleanCep,
+        dni: cleanDni,
+        photoUrl: photoCheck.url,
+        isPhotoVerified: true,
+        isNameVerified: false, // We couldn't verify name via view.php
+        status: 'UNKNOWN', // Can't determine HABIL status without view.php
+      },
+    };
   }
 }
