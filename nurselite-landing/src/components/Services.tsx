@@ -124,9 +124,9 @@ export function Services() {
                 {bentoServices[0].description}
               </p>
 
-              <div className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-2xl sm:text-3xl font-bold whitespace-nowrap">{bentoServices[0].price}</p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <p className="text-2xl sm:text-3xl font-bold">{bentoServices[0].price}</p>
                   <p className="text-white/70 text-sm flex items-center gap-1">
                     <Clock className="w-4 h-4 flex-shrink-0" />
                     {bentoServices[0].duration}
@@ -134,7 +134,7 @@ export function Services() {
                 </div>
                 <Link
                   href="https://care.historahealth.com/auth/register?type=patient"
-                  className="flex items-center gap-2 px-6 py-3 bg-white text-[#1e3a5f] font-semibold rounded-xl hover:bg-white/90 transition-colors"
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#1e3a5f] font-semibold rounded-xl hover:bg-white/90 transition-colors w-full sm:w-auto"
                 >
                   Solicitar
                   <ChevronRight className="w-5 h-5" />
