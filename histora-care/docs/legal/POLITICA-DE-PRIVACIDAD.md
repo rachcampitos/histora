@@ -231,7 +231,7 @@ Finalidades del tratamiento de datos sensibles:
   - Servicios de almacenamiento en la nube (MongoDB Atlas, Cloudinary)
   - Servicios de notificaciones push
   - Servicios de análisis y estadísticas
-  - Proveedores de hosting (Railway, Vercel)
+  - Proveedores de hosting (Railway, Cloudflare)
 
 Todos nuestros proveedores están obligados contractualmente a proteger sus datos y solo pueden usarlos para las finalidades que les hemos encomendado.
 

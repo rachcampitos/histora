@@ -166,7 +166,7 @@ export function CEPVerification() {
 
                 {/* CTA */}
                 <Link
-                  href="https://care.historahealth.com/auth/register"
+                  href="https://app.nurse-lite.com/auth/register"
                   className="mt-8 block w-full py-4 bg-white text-[#1e3a5f] font-semibold text-center rounded-xl hover:bg-white/90 transition-colors"
                 >
                   Buscar Enfermeras Verificadas

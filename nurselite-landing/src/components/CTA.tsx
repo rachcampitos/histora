@@ -79,7 +79,7 @@ export function CTA() {
                   className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
                 >
                   <Link
-                    href="https://care.historahealth.com/auth/register?type=patient"
+                    href="https://app.nurse-lite.com/auth/register?type=patient"
                     className="flex items-center gap-2 px-8 py-4 bg-white text-[#1e3a5f] font-semibold rounded-xl hover:bg-white/90 transition-colors shadow-lg"
                   >
                     <Heart className="w-5 h-5" />
@@ -87,7 +87,7 @@ export function CTA() {
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                   <Link
-                    href="https://care.historahealth.com/auth/register?type=nurse"
+                    href="https://app.nurse-lite.com/auth/register?type=nurse"
                     className="flex items-center gap-2 px-8 py-4 bg-white/20 backdrop-blur text-white font-semibold rounded-xl border-2 border-white/30 hover:bg-white/30 transition-colors"
                   >
                     <Stethoscope className="w-5 h-5" />

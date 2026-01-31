@@ -25,7 +25,7 @@ histora/
 
 ### App Movil (histora-care / NurseLite)
 - **Hosting:** Cloudflare Pages
-- **URL:** https://care.historahealth.com
+- **URL:** https://app.nurse-lite.com
 - **Despliegue:** AUTOMATICO con git push a main
 
 ### Backend API (histora-back)
@@ -191,7 +191,7 @@ npx cap open android   # Abrir Android Studio
 | Servicio | URL |
 |----------|-----|
 | Landing NurseLite | https://nurse-lite.com |
-| App NurseLite | https://care.historahealth.com |
+| App NurseLite | https://app.nurse-lite.com |
 | API Backend | https://api.historahealth.com |
 
 ## Notas Importantes

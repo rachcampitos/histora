@@ -17,7 +17,7 @@ const footerLinks = {
     { label: "Politica de Privacidad", href: "/privacidad" },
   ],
   enfermeras: [
-    { label: "Unete como Enfermera", href: "https://care.historahealth.com/auth/register?type=nurse" },
+    { label: "Unete como Enfermera", href: "https://app.nurse-lite.com/auth/register?type=nurse" },
     { label: "Beneficios", href: "#segmentos" },
     { label: "Proceso de Verificacion", href: "#verificacion" },
   ],
