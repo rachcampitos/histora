@@ -135,13 +135,13 @@ export function Header() {
             <div className="hidden lg:flex items-center gap-4">
               <ThemeToggle />
               <Link
-                href="https://care.historahealth.com/auth/login"
+                href="https://app.nurse-lite.com/auth/login"
                 className="text-[#1e3a5f] dark:text-white font-semibold hover:text-[#4a9d9a] transition-colors"
               >
                 Iniciar Sesion
               </Link>
               <Link
-                href="https://care.historahealth.com/auth/register"
+                href="https://app.nurse-lite.com/auth/register"
                 className="btn-primary flex items-center gap-2 !py-3 !px-6 text-sm"
               >
                 <Download className="w-4 h-4" />
@@ -211,14 +211,14 @@ export function Header() {
 
               <div className="pt-6 border-t border-[#e2e8f0] dark:border-[#334155] flex flex-col gap-4">
                 <Link
-                  href="https://care.historahealth.com/auth/login"
+                  href="https://app.nurse-lite.com/auth/login"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-center py-3 text-[#1e3a5f] dark:text-white font-semibold border-2 border-[#1e3a5f] dark:border-[#4a9d9a] rounded-xl hover:bg-[#1e3a5f] dark:hover:bg-[#4a9d9a] hover:text-white transition-colors"
                 >
                   Iniciar Sesion
                 </Link>
                 <Link
-                  href="https://care.historahealth.com/auth/register"
+                  href="https://app.nurse-lite.com/auth/register"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="btn-primary text-center flex items-center justify-center gap-2"
                 >

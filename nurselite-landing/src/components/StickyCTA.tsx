@@ -47,7 +47,7 @@ export function StickyCTA() {
 
             {/* CTA Button */}
             <Link
-              href="https://care.historahealth.com/auth/register?type=patient"
+              href="https://app.nurse-lite.com/auth/register?type=patient"
               className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a] text-white font-semibold rounded-2xl shadow-2xl hover:shadow-xl transition-shadow focus:outline-none focus:ring-2 focus:ring-[#4a9d9a] focus:ring-offset-2"
             >
               <span>Encontrar enfermera</span>

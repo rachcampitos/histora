@@ -133,7 +133,7 @@ export function Services() {
                   </p>
                 </div>
                 <Link
-                  href="https://care.historahealth.com/auth/register?type=patient"
+                  href="https://app.nurse-lite.com/auth/register?type=patient"
                   className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#1e3a5f] font-semibold rounded-xl hover:bg-white/90 transition-colors w-full sm:w-auto"
                 >
                   Solicitar
@@ -175,7 +175,7 @@ export function Services() {
                     </p>
                   </div>
                   <Link
-                    href="https://care.historahealth.com/auth/register?type=patient"
+                    href="https://app.nurse-lite.com/auth/register?type=patient"
                     className="text-[#1e3a5f] dark:text-[#4a9d9a] hover:text-[#4a9d9a] dark:hover:text-white transition-colors"
                     aria-label={`Ver enfermeras para ${service.title}`}
                   >
@@ -212,7 +212,7 @@ export function Services() {
         {/* CTA */}
         <AnimatedSection delay={0.4} className="mt-10 text-center">
           <Link
-            href="https://care.historahealth.com/auth/register?type=patient"
+            href="https://app.nurse-lite.com/auth/register?type=patient"
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg"
           >
             Ver Todos los Servicios

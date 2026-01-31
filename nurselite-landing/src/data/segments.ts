@@ -15,7 +15,7 @@ export const segments: Segment[] = [
       "Acompanamiento y compania",
     ],
     cta: "Ver enfermeras",
-    ctaLink: "https://care.historahealth.com/auth/register?type=patient&segment=elderly",
+    ctaLink: "https://app.nurse-lite.com/auth/register?type=patient&segment=elderly",
   },
   {
     id: "postop",
@@ -30,7 +30,7 @@ export const segments: Segment[] = [
       "Inyecciones y medicamentos",
     ],
     cta: "Agendar cuidado",
-    ctaLink: "https://care.historahealth.com/auth/register?type=patient&segment=postop",
+    ctaLink: "https://app.nurse-lite.com/auth/register?type=patient&segment=postop",
   },
   {
     id: "newmom",
@@ -45,6 +45,6 @@ export const segments: Segment[] = [
       "Orientacion y acompanamiento",
     ],
     cta: "Ver especialistas",
-    ctaLink: "https://care.historahealth.com/auth/register?type=patient&segment=newmom",
+    ctaLink: "https://app.nurse-lite.com/auth/register?type=patient&segment=newmom",
   },
 ];

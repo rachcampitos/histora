@@ -98,9 +98,9 @@ Lima Metropolitana: Miraflores, San Isidro, San Borja, Surco, La Molina, Barranc
 - Seguimiento GPS en tiempo real
 
 ## LINKS IMPORTANTES
-- Registro paciente: https://care.historahealth.com/auth/register?type=patient
-- Registro enfermera: https://care.historahealth.com/auth/register?type=nurse
-- Ver enfermeras: https://care.historahealth.com
+- Registro paciente: https://app.nurse-lite.com/auth/register?type=patient
+- Registro enfermera: https://app.nurse-lite.com/auth/register?type=nurse
+- Ver enfermeras: https://app.nurse-lite.com
 
 ## DATOS DEL USUARIO ACTUAL
 ${capturedInfo}

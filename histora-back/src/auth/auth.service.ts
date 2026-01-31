@@ -560,7 +560,7 @@ export class AuthService {
 
     if (platform === 'histora-care') {
       // Histora Care (NurseLite) uses regular routing
-      const careUrl = this.configService.get<string>('CARE_FRONTEND_URL', 'https://care.historahealth.com');
+      const careUrl = this.configService.get<string>('CARE_FRONTEND_URL', 'https://app.nurse-lite.com');
       resetLink = `${careUrl}/auth/reset-password?token=${resetToken}`;
       appName = 'NurseLite';
     } else {

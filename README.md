@@ -6,7 +6,7 @@
 
 | Servicio | URL |
 |----------|-----|
-| App Web (Histora Care) | https://care.historahealth.com |
+| App Web (Histora Care) | https://app.nurse-lite.com |
 | Backend API | https://api.historahealth.com |
 | Swagger Docs | https://api.historahealth.com/docs |
 
@@ -256,8 +256,8 @@ CULQI_API_KEY=sk_test_xxx
 # Server
 PORT=3000
 NODE_ENV=production
-CORS_ORIGINS=https://care.historahealth.com
-FRONTEND_URL=https://care.historahealth.com
+CORS_ORIGINS=https://app.nurse-lite.com
+FRONTEND_URL=https://app.nurse-lite.com
 ```
 
 ---

@@ -309,7 +309,7 @@ export class AuthController {
     // Allowed frontend origins for security
     const allowedOrigins = [
       'https://app.historahealth.com',
-      'https://care.historahealth.com',
+      'https://app.nurse-lite.com',
       'http://localhost:4200',
       'http://localhost:8100',
     ];

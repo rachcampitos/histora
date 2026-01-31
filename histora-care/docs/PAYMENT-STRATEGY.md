@@ -190,7 +190,7 @@ Margen neto app:        S/. 35.23 por servicio
 
 | Concepto | Costo |
 |----------|-------|
-| Hosting (Railway + Vercel) | S/. 150 |
+| Hosting (Railway + Cloudflare) | S/. 150 |
 | MongoDB Atlas | S/. 100 |
 | Cloudinary | S/. 50 |
 | SMS/Notificaciones | S/. 200 |

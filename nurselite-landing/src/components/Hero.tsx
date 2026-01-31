@@ -33,7 +33,7 @@ const audiences = {
     subtitle:
       "Conectamos familias con profesionales de enfermeria verificados oficialmente por el CEP y RENIEC. Seguimiento GPS en tiempo real para tu completa tranquilidad.",
     cta: "Encontrar enfermera verificada",
-    ctaLink: "https://care.historahealth.com/auth/register?type=patient",
+    ctaLink: "https://app.nurse-lite.com/auth/register?type=patient",
     microCopy: "Sin registro previo. Proceso en menos de 3 minutos.",
     benefits: [
       { icon: ShieldCheck, text: "Verificacion oficial CEP + RENIEC" },
@@ -48,7 +48,7 @@ const audiences = {
     subtitle:
       "Unete a la red de profesionales de salud mas confiable. Tu defines tu horario, tus precios, y te quedas con el 100% de tus ingresos.",
     cta: "Comenzar a ganar mas",
-    ctaLink: "https://care.historahealth.com/auth/register?type=nurse",
+    ctaLink: "https://app.nurse-lite.com/auth/register?type=nurse",
     microCopy: "Registro gratuito. Sin comisiones por servicio.",
     benefits: [
       { icon: DollarSign, text: "100% de tus ingresos son tuyos" },

@@ -237,7 +237,7 @@ export class TrackingService {
 
     // Generate unique tracking URL
     const trackingToken = this.generateTrackingToken();
-    const trackingUrl = `https://care.historahealth.com/track/${trackingToken}`;
+    const trackingUrl = `https://app.nurse-lite.com/track/${trackingToken}`;
 
     tracking.sharedWith.push({
       name: dto.name,

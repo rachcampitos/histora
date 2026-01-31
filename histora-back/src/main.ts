@@ -84,7 +84,7 @@ async function bootstrap() {
     'http://localhost:8103',
     'https://app.historahealth.com',
     'https://historahealth.com',
-    'https://care.historahealth.com',
+    'https://app.nurse-lite.com',
   ];
 
   const corsOrigins = process.env.CORS_ORIGINS
