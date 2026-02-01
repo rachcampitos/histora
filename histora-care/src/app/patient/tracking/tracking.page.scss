@@ -56,6 +56,188 @@
   }
 }
 
+// Rejected and Cancelled Status Containers
+.status-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px;
+  height: 100%;
+  overflow-y: auto;
+
+  .status-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    ion-icon {
+      font-size: 40px;
+      color: #ffffff;
+    }
+
+    &.rejected {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    }
+
+    &.cancelled {
+      background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: center;
+  }
+
+  .status-subtitle {
+    margin: 0 0 24px;
+    font-size: 15px;
+    color: #64748b;
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.5;
+  }
+
+  .service-details-card {
+    width: 100%;
+    max-width: 340px;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+
+    h4 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e2e8f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .detail-label {
+        font-size: 14px;
+        color: #64748b;
+      }
+
+      .detail-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+      }
+    }
+  }
+
+  .next-steps {
+    width: 100%;
+    max-width: 340px;
+    margin-bottom: 24px;
+
+    h4 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #475569;
+        line-height: 1.4;
+
+        ion-icon {
+          flex-shrink: 0;
+          font-size: 18px;
+          margin-top: 1px;
+        }
+      }
+    }
+  }
+
+  .status-actions {
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    ion-button {
+      --border-radius: 12px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Dark mode for status containers
+.dark {
+  .status-container {
+    h3 {
+      color: #f1f5f9;
+    }
+
+    .status-subtitle {
+      color: #94a3b8;
+    }
+
+    .service-details-card {
+      background: #1e293b;
+
+      h4 {
+        color: #94a3b8;
+      }
+
+      .detail-row {
+        border-bottom-color: #334155;
+
+        .detail-label {
+          color: #94a3b8;
+        }
+
+        .detail-value {
+          color: #f1f5f9;
+        }
+      }
+    }
+
+    .next-steps {
+      h4 {
+        color: #f1f5f9;
+      }
+
+      ul li {
+        color: #cbd5e1;
+      }
+    }
+  }
+}
+
 // Map Container
 .map-container {
   position: absolute;

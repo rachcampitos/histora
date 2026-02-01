@@ -344,12 +344,27 @@ export class HistoryPage implements OnInit {
   async viewReview(request: ServiceRequest, event: Event) {
     event.stopPropagation();
 
+    // Generate star display
+    const stars = Array(5).fill(0).map((_, i) =>
+      i < (request.rating || 0) ? '★' : '☆'
+    ).join('');
+
     const alert = await this.alertController.create({
+      cssClass: 'histora-alert review-view-alert',
       header: 'Tu Reseña',
-      subHeader: `${request.rating} de 5 estrellas`,
-      message: request.review || 'Sin comentario',
-      buttons: ['Cerrar'],
-      cssClass: 'view-review-alert'
+      message: `
+        <div class="review-display">
+          <div class="review-stars">${stars}</div>
+          <div class="review-rating">${request.rating} de 5 estrellas</div>
+          ${request.review ? `<div class="review-comment">"${request.review}"</div>` : '<div class="review-no-comment">Sin comentario adicional</div>'}
+        </div>
+      `,
+      buttons: [
+        {
+          text: 'Cerrar',
+          role: 'cancel'
+        }
+      ]
     });
     await alert.present();
   }
