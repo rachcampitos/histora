@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NursesController } from './nurses.controller';
 import { NursesService } from './nurses.service';
@@ -13,6 +13,8 @@ import { CepValidationService } from './cep-validation.service';
 import { CepRevalidationScheduler } from './cep-revalidation.scheduler';
 import { ReniecValidationService } from './reniec-validation.service';
 import { UploadsModule } from '../uploads/uploads.module';
+import { AdminModule } from '../admin/admin.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { UploadsModule } from '../uploads/uploads.module';
       { name: User.name, schema: UserSchema },
     ]),
     UploadsModule,
+    forwardRef(() => AdminModule),
+    NotificationsModule,
   ],
   controllers: [NursesController, NurseVerificationController],
   providers: [NursesService, NurseVerificationService, CepValidationService, CepRevalidationScheduler, ReniecValidationService],

@@ -3,9 +3,11 @@ import { Router } from '@angular/router';
 import { Observable, from, switchMap } from 'rxjs';
 import { Browser } from '@capacitor/browser';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
 import { SessionGuardService } from './session-guard.service';
+import { WebPushService } from './web-push.service';
 import { environment } from '../../../environments/environment';
 import {
   AuthUser,
@@ -28,6 +30,7 @@ export class AuthService {
   private router = inject(Router);
   private ngZone = inject(NgZone);
   private sessionGuard = inject(SessionGuardService);
+  private webPushService = inject(WebPushService);
 
   // Signals for reactive state
   private userSignal = signal<AuthUser | null>(null);
@@ -88,6 +91,11 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
+      // Unsubscribe from web push notifications
+      if (!Capacitor.isNativePlatform()) {
+        await this.webPushService.unsubscribe().catch(() => {});
+      }
+
       // Call backend logout endpoint
       await this.api.post('/auth/logout', {}).toPromise();
     } catch {
@@ -140,6 +148,20 @@ export class AuthService {
         this.sessionGuard.setRefreshTokenCallback(() => this.refreshToken());
         await this.sessionGuard.initializeSession(response.session);
         console.log('[AUTH] Session monitoring initialized');
+      }
+
+      // Subscribe to web push notifications (only on web platform)
+      if (!Capacitor.isNativePlatform()) {
+        console.log('[AUTH] Subscribing to web push notifications...');
+        this.webPushService.subscribe().then(subscribed => {
+          if (subscribed) {
+            console.log('[AUTH] Web push subscription successful');
+          } else {
+            console.log('[AUTH] Web push subscription skipped or denied');
+          }
+        }).catch(err => {
+          console.warn('[AUTH] Web push subscription failed:', err);
+        });
       }
     } catch (error) {
       console.error('[AUTH] Error in handleAuthResponse:', error);

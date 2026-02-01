@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { Event, Router, NavigationStart, NavigationEnd, RouterModule } from '@angular/router';
 import { PageLoaderComponent } from './layout/page-loader/page-loader.component';
+import { CommandPaletteService } from './core/service/command-palette.service';
 
 @Component({
   standalone: true,
@@ -18,6 +19,8 @@ export class AppComponent implements OnInit, OnDestroy {
   currentUrl!: string;
   private platformId = inject(PLATFORM_ID);
   private blurHandler: ((event: FocusEvent) => void) | null = null;
+  // Inject command palette service to initialize keyboard shortcuts
+  private commandPaletteService = inject(CommandPaletteService);
 
   constructor(public _router: Router) {
     this._router.events.subscribe((routerEvent: Event) => {

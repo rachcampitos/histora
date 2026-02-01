@@ -26,7 +26,7 @@ function initializeApp(authService: AuthService) {
       mode: 'ios', // Use iOS styling for consistency
     }),
     AppRoutingModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
+    ServiceWorkerModule.register('sw-push.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).

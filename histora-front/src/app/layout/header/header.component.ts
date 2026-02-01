@@ -5,6 +5,7 @@ import {
   Inject,
   ElementRef,
   OnInit,
+  OnDestroy,
   Renderer2,
   DOCUMENT,
 } from '@angular/core';
@@ -26,6 +27,7 @@ import { LanguageListComponent } from '../components/language-list/language-list
 import { UserProfileMenuComponent } from '../components/user-profile-menu/user-profile-menu.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { NotificationsService } from '@core/service/notifications.service';
+import { AdminWebSocketService, AdminNotification } from '@core/service/admin-websocket.service';
 
 @Component({
   standalone: true,
@@ -47,7 +49,7 @@ import { NotificationsService } from '@core/service/notifications.service';
 })
 export class HeaderComponent
   extends UnsubscribeOnDestroyAdapter
-  implements OnInit
+  implements OnInit, OnDestroy
 {
   public config!: InConfiguration;
   userImg?: string;
@@ -60,6 +62,7 @@ export class HeaderComponent
   isOpenSidebar?: boolean;
   docElement?: HTMLElement;
   isFullScreen = false;
+  isAdmin = false;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -70,9 +73,15 @@ export class HeaderComponent
     private router: Router,
     public languageService: LanguageService,
     private notificationsService: NotificationsService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    public adminWsService: AdminWebSocketService
   ) {
     super();
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.adminWsService.disconnect();
   }
 
   listLang = [
@@ -98,6 +107,13 @@ export class HeaderComponent
       this.loadNotifications();
       // Start polling for new notifications
       this.subs.sink = this.notificationsService.startPolling(30000).subscribe();
+
+      // Check if user is admin and connect to real-time notifications
+      const userRole = currentUser.roles?.[0]?.name;
+      if (userRole === Role.PlatformAdmin || userRole === Role.PlatformAdminUI) {
+        this.isAdmin = true;
+        this.initAdminWebSocket();
+      }
     }
 
     this.langStoreValue = localStorage.getItem('lang') as string;
@@ -110,6 +126,72 @@ export class HeaderComponent
     } else {
       this.flagvalue = val.map((element) => element.flag);
     }
+  }
+
+  private initAdminWebSocket(): void {
+    // Connect to admin WebSocket for real-time notifications
+    this.adminWsService.connect();
+
+    // Request browser notification permission
+    this.adminWsService.requestNotificationPermission();
+
+    // Listen for real-time notifications and add to UI
+    this.subs.sink = this.adminWsService.onNotification.subscribe((notification: AdminNotification) => {
+      const uiNotification = this.adminNotificationToUi(notification);
+      // Add to the beginning of the list
+      this.notifications = [uiNotification, ...this.notifications].slice(0, 20);
+    });
+
+    // Listen for panic alerts (critical) - show in a special way
+    this.subs.sink = this.adminWsService.onPanicAlert.subscribe((alert: AdminNotification) => {
+      // Could show a dialog or special alert here
+      console.warn('PANIC ALERT:', alert);
+    });
+  }
+
+  private adminNotificationToUi(notification: AdminNotification): Notifications {
+    const iconMap: Record<string, string> = {
+      nurse_registered: 'person_add',
+      verification_pending: 'verified_user',
+      panic_alert: 'warning',
+      negative_review: 'star_half',
+      service_completed: 'check_circle',
+      payment_received: 'payments',
+    };
+
+    const colorMap: Record<string, string> = {
+      nurse_registered: 'nfc-blue',
+      verification_pending: 'nfc-orange',
+      panic_alert: 'nfc-red',
+      negative_review: 'nfc-yellow',
+      service_completed: 'nfc-green',
+      payment_received: 'nfc-green',
+    };
+
+    const statusClass = notification.priority === 'critical' ? 'msg-unread critical-alert' :
+                       notification.priority === 'high' ? 'msg-unread high-priority' :
+                       'msg-unread';
+
+    // Format message with title prefix
+    const fullMessage = `<strong>${notification.title}</strong><br>${notification.message}`;
+
+    return {
+      id: notification.id,
+      icon: iconMap[notification.type] || 'notifications',
+      message: fullMessage,
+      time: this.formatTimeAgo(new Date(notification.timestamp)),
+      status: statusClass,
+      color: colorMap[notification.type] || 'nfc-blue',
+      data: notification.data,
+    };
+  }
+
+  private formatTimeAgo(date: Date): string {
+    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (seconds < 60) return 'Ahora';
+    if (seconds < 3600) return `Hace ${Math.floor(seconds / 60)} min`;
+    if (seconds < 86400) return `Hace ${Math.floor(seconds / 3600)} h`;
+    return `Hace ${Math.floor(seconds / 86400)} d`;
   }
 
   private loadNotifications(): void {

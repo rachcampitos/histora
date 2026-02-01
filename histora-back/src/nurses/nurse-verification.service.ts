@@ -3,6 +3,9 @@ import {
   NotFoundException,
   BadRequestException,
   Logger,
+  Inject,
+  forwardRef,
+  Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -17,6 +20,8 @@ import {
   VerificationQueryDto,
   UploadVerificationDocumentDto,
 } from './dto/nurse-verification.dto';
+import { AdminNotificationsGateway } from '../admin/admin-notifications.gateway';
+import { WebPushService } from '../notifications/web-push.service';
 
 @Injectable()
 export class NurseVerificationService {
@@ -30,6 +35,9 @@ export class NurseVerificationService {
     @InjectModel(User.name) private userModel: Model<User>,
     private cloudinaryProvider: CloudinaryProvider,
     private cepValidationService: CepValidationService,
+    @Optional() @Inject(forwardRef(() => AdminNotificationsGateway))
+    private adminNotifications?: AdminNotificationsGateway,
+    @Optional() private webPushService?: WebPushService,
   ) {}
 
   /**
@@ -107,6 +115,15 @@ export class NurseVerificationService {
 
       this.logger.log(`Verification documents added to existing verification for nurse ${nurseId}`);
 
+      // Notify admins about pending verification
+      if (this.adminNotifications) {
+        this.adminNotifications.notifyVerificationPending({
+          id: (existingVerification as any)._id.toString(),
+          nurseName: nurse.cepRegisteredName || dto.fullNameOnDni || 'Enfermera',
+          cepNumber: nurse.cepNumber,
+        });
+      }
+
       return existingVerification;
     }
 
@@ -135,6 +152,15 @@ export class NurseVerificationService {
     });
 
     this.logger.log(`Verification submitted for nurse ${nurseId}, attempt #${previousAttempts + 1}`);
+
+    // Notify admins about pending verification
+    if (this.adminNotifications) {
+      this.adminNotifications.notifyVerificationPending({
+        id: (verification as any)._id.toString(),
+        nurseName: nurse.cepRegisteredName || dto.fullNameOnDni || 'Enfermera',
+        cepNumber: nurse.cepNumber,
+      });
+    }
 
     return verification;
   }
@@ -329,6 +355,33 @@ export class NurseVerificationService {
       this.logger.log(
         `[REVIEW] Nurse ${nurse._id} verificationStatus updated: ${previousNurseStatus} -> ${dto.status}`,
       );
+
+      // Send Web Push notification to the nurse
+      if (this.webPushService) {
+        const user = await this.userModel.findById(nurse.userId);
+        if (user) {
+          const nurseName = nurse.cepRegisteredName || `${user.firstName} ${user.lastName}`;
+
+          if (dto.status === VerificationStatus.APPROVED) {
+            this.webPushService.notifyNurseVerified(
+              nurse.userId.toString(),
+              nurseName,
+            ).catch(err => {
+              this.logger.error(`Failed to send verification push notification: ${err.message}`);
+            });
+            this.logger.log(`[WEB PUSH] Sent verification approved notification to ${nurseName}`);
+          } else if (dto.status === VerificationStatus.REJECTED) {
+            this.webPushService.notifyNurseRejected(
+              nurse.userId.toString(),
+              nurseName,
+              dto.rejectionReason,
+            ).catch(err => {
+              this.logger.error(`Failed to send rejection push notification: ${err.message}`);
+            });
+            this.logger.log(`[WEB PUSH] Sent verification rejected notification to ${nurseName}`);
+          }
+        }
+      }
     }
 
     this.logger.log(
