@@ -56,16 +56,28 @@ export const authApi = {
 
 // Dashboard endpoints
 export const dashboardApi = {
-  getMetrics: async (period: '7d' | '30d' | '90d' = '30d') => {
-    const response = await api.get(`/admin/metrics?period=${period}`);
+  getStats: async () => {
+    const response = await api.get('/admin/dashboard/stats');
     return response.data;
   },
-  getRecentActivity: async (limit = 10) => {
-    const response = await api.get(`/admin/activity?limit=${limit}`);
+  getRecentActivity: async (limit = 20) => {
+    const response = await api.get(`/admin/dashboard/activity?limit=${limit}`);
     return response.data;
   },
   getAlerts: async () => {
-    const response = await api.get('/admin/alerts');
+    const response = await api.get('/admin/dashboard/alerts');
+    return response.data;
+  },
+  getServicesChart: async (period: '7d' | '30d' = '7d') => {
+    const response = await api.get(`/admin/dashboard/services/chart?period=${period}`);
+    return response.data;
+  },
+  getLowRatedReviews: async () => {
+    const response = await api.get('/admin/dashboard/reviews/low-rated');
+    return response.data;
+  },
+  getExpiringVerifications: async () => {
+    const response = await api.get('/admin/dashboard/verifications/expiring');
     return response.data;
   },
 };
@@ -112,8 +124,10 @@ export const nursesApi = {
 };
 
 // Services endpoints
+// Note: Admin service endpoints are not yet implemented in the backend
+// The servicios page uses demo data as fallback
 export const servicesApi = {
-  getAll: async (params?: {
+  getAll: async (_params?: {
     page?: number;
     limit?: number;
     status?: string;
@@ -121,20 +135,18 @@ export const servicesApi = {
     startDate?: string;
     endDate?: string;
   }) => {
-    const response = await api.get('/admin/services', { params });
-    return response.data;
+    // TODO: Implement /admin/services endpoint in backend
+    // For now, throw to use placeholderData in React Query
+    throw new Error('Not implemented');
   },
-  getById: async (id: string) => {
-    const response = await api.get(`/admin/services/${id}`);
-    return response.data;
+  getById: async (_id: string) => {
+    throw new Error('Not implemented');
   },
   getActive: async () => {
-    const response = await api.get('/admin/services/active');
-    return response.data;
+    throw new Error('Not implemented');
   },
-  updateStatus: async (id: string, status: string) => {
-    const response = await api.patch(`/admin/services/${id}/status`, { status });
-    return response.data;
+  updateStatus: async (_id: string, _status: string) => {
+    throw new Error('Not implemented');
   },
 };
 

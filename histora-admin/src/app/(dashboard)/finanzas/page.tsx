@@ -1,10 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { financeApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -158,32 +156,25 @@ const paymentMethodData = [
 ];
 
 export default function FinanzasPage() {
-  const [tab, setTab] = useState('overview');
   const [search, setSearch] = useState('');
   const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d');
 
-  // Fetch financial data
-  const { data: transactions, isLoading } = useQuery<Transaction[]>({
-    queryKey: ['transactions', search],
-    queryFn: () => financeApi.getTransactions({ search }),
-    placeholderData: demoTransactions,
-  });
+  // Note: Finance endpoints not yet implemented in backend
+  // Using demo data for now
+  const transactions = demoTransactions;
+  const isLoading = false;
 
-  const { data: metrics } = useQuery({
-    queryKey: ['finance-metrics', period],
-    queryFn: () => financeApi.getMetrics(period),
-    placeholderData: {
-      totalRevenue: 14700,
-      revenueChange: 12.5,
-      totalCommissions: 1470,
-      commissionsChange: 12.5,
-      totalRefunds: 260,
-      refundsChange: -15.3,
-      totalPayouts: 11760,
-      pendingPayouts: 2500,
-      avgTransactionValue: 75,
-    },
-  });
+  const metrics = {
+    totalRevenue: 14700,
+    revenueChange: 12.5,
+    totalCommissions: 1470,
+    commissionsChange: 12.5,
+    totalRefunds: 260,
+    refundsChange: -15.3,
+    totalPayouts: 11760,
+    pendingPayouts: 2500,
+    avgTransactionValue: 75,
+  };
 
   // Filter transactions
   const filteredTransactions = transactions?.filter((tx) => {

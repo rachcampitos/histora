@@ -1,14 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { toast } from 'sonner';
-import { couponsApi } from '@/lib/api';
 import { Coupon } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -152,14 +150,11 @@ type CouponFormData = z.infer<typeof couponSchema>;
 export default function MarketingPage() {
   const [tab, setTab] = useState('coupons');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const queryClient = useQueryClient();
 
-  // Fetch coupons
-  const { data: coupons, isLoading } = useQuery<Coupon[]>({
-    queryKey: ['coupons'],
-    queryFn: () => couponsApi.getAll(),
-    placeholderData: demoCoupons,
-  });
+  // Note: Coupons endpoints not yet implemented in backend
+  // Using demo data for now
+  const coupons = demoCoupons;
+  const isLoading = false;
 
   // Form
   const {
@@ -180,31 +175,25 @@ export default function MarketingPage() {
 
   const couponType = watch('type');
 
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: (data: CouponFormData) => couponsApi.create(data),
-    onSuccess: () => {
-      toast.success('Cupon creado exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['coupons'] });
+  // Note: Coupons endpoints not yet implemented in backend
+  // Mock mutations for now
+  const createMutation = {
+    mutate: (data: CouponFormData) => {
+      console.log('Creating coupon:', data);
+      toast.success('Cupon creado exitosamente (demo)');
       setShowCreateDialog(false);
       reset();
     },
-    onError: () => {
-      toast.error('Error al crear cupon');
-    },
-  });
+    isPending: false,
+  };
 
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => couponsApi.delete(id),
-    onSuccess: () => {
-      toast.success('Cupon eliminado');
-      queryClient.invalidateQueries({ queryKey: ['coupons'] });
+  const deleteMutation = {
+    mutate: (id: string) => {
+      console.log('Deleting coupon:', id);
+      toast.success('Cupon eliminado (demo)');
     },
-    onError: () => {
-      toast.error('Error al eliminar cupon');
-    },
-  });
+    isPending: false,
+  };
 
   const onSubmit = (data: CouponFormData) => {
     createMutation.mutate(data);

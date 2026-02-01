@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { analyticsApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -111,25 +109,22 @@ const nursePerformance = [
 export default function AnalyticsPage() {
   const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d');
 
-  // Fetch analytics data
-  const { data: metrics } = useQuery({
-    queryKey: ['analytics-metrics', period],
-    queryFn: () => analyticsApi.getMetrics(period),
-    placeholderData: {
-      conversionRate: 68.5,
-      conversionChange: 5.2,
-      avgResponseTime: 4.5, // minutes
-      responseTimeChange: -12.3,
-      repeatRate: 42,
-      repeatRateChange: 8.1,
-      cancellationRate: 4.2,
-      cancellationChange: -2.5,
-      avgRating: 4.7,
-      nps: 72,
-      avgServicesPerNurse: 12.5,
-      peakHour: '10am',
-    },
-  });
+  // Note: Analytics endpoints not yet implemented in backend
+  // Using demo data for now
+  const metrics = {
+    conversionRate: 68.5,
+    conversionChange: 5.2,
+    avgResponseTime: 4.5, // minutes
+    responseTimeChange: -12.3,
+    repeatRate: 42,
+    repeatRateChange: 8.1,
+    cancellationRate: 4.2,
+    cancellationChange: -2.5,
+    avgRating: 4.7,
+    nps: 72,
+    avgServicesPerNurse: 12.5,
+    peakHour: '10am',
+  };
 
   return (
     <div className="space-y-6">

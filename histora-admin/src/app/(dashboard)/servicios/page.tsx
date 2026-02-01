@@ -1,10 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { servicesApi } from '@/lib/api';
 import { serviceStatus, serviceCategories } from '@/lib/constants';
 import { ServiceRequest, ServiceRequestStatus } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -183,12 +181,10 @@ export default function ServiciosPage() {
   const [selectedService, setSelectedService] = useState<typeof demoServices[0] | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
 
-  // Fetch services
-  const { data: services, isLoading } = useQuery<DemoService[]>({
-    queryKey: ['services', tab, search],
-    queryFn: () => servicesApi.getAll({ status: tab, search }),
-    placeholderData: demoServices,
-  });
+  // Note: Admin services endpoint not yet implemented in backend
+  // Using demo data for now
+  const services = demoServices;
+  const isLoading = false;
 
   // Filter services
   const filteredServices = services?.filter((service) => {
