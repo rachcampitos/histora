@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { subscriptionsApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -160,26 +158,21 @@ export default function SuscripcionesPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [planFilter, setPlanFilter] = useState<string>('all');
 
-  const { data: subscriptions, isLoading } = useQuery({
-    queryKey: ['subscriptions'],
-    queryFn: () => subscriptionsApi.getAll(),
-    placeholderData: demoSubscriptions,
-  });
+  // Note: Subscriptions endpoints not yet implemented in backend
+  // Using demo data for now
+  const subscriptions = demoSubscriptions;
+  const isLoading = false;
 
-  const { data: metrics } = useQuery({
-    queryKey: ['subscription-metrics'],
-    queryFn: () => subscriptionsApi.getMetrics(),
-    placeholderData: {
-      mrr: 3200,
-      mrrGrowth: 10.7,
-      arr: 38400,
-      arpu: 35.50,
-      conversionRate: 45,
-      churnRate: 2.3,
-      activeSubscriptions: 90,
-      trialSubscriptions: 15,
-    },
-  });
+  const metrics = {
+    mrr: 3200,
+    mrrGrowth: 10.7,
+    arr: 38400,
+    arpu: 35.50,
+    conversionRate: 45,
+    churnRate: 2.3,
+    activeSubscriptions: 90,
+    trialSubscriptions: 15,
+  };
 
   const filteredSubscriptions = (subscriptions || demoSubscriptions).filter((sub: Subscription) => {
     if (statusFilter !== 'all' && sub.status !== statusFilter) return false;

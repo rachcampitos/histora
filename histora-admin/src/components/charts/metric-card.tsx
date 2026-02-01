@@ -13,6 +13,7 @@ interface MetricCardProps {
   trend?: 'up' | 'down' | 'neutral';
   prefix?: string;
   suffix?: string;
+  subtitle?: string;
   className?: string;
   loading?: boolean;
 }
@@ -26,6 +27,7 @@ export function MetricCard({
   trend,
   prefix,
   suffix,
+  subtitle,
   className,
   loading,
 }: MetricCardProps) {
@@ -82,6 +84,9 @@ export function MetricCard({
             </span>
             <span className="text-muted-foreground">{changeLabel}</span>
           </div>
+        )}
+        {subtitle && !change && (
+          <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
         )}
       </CardContent>
     </Card>

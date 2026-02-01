@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { reportsApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -93,44 +91,23 @@ export default function ReportesPage() {
   const [period, setPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [activeTab, setActiveTab] = useState('overview');
 
-  const { data: metrics } = useQuery({
-    queryKey: ['report-metrics', period],
-    queryFn: () => reportsApi.getMetrics(period),
-    placeholderData: {
-      totalServices: 1245,
-      servicesGrowth: 12.5,
-      totalRevenue: 49800,
-      revenueGrowth: 8.3,
-      totalUsers: 890,
-      usersGrowth: 15.2,
-      averageRating: 4.7,
-      completionRate: 94.5,
-    },
-  });
+  // Note: Reports endpoints not yet implemented in backend
+  // Using demo data for now
+  const metrics = {
+    totalServices: 1245,
+    servicesGrowth: 12.5,
+    totalRevenue: 49800,
+    revenueGrowth: 8.3,
+    totalUsers: 890,
+    usersGrowth: 15.2,
+    averageRating: 4.7,
+    completionRate: 94.5,
+  };
 
-  const { data: servicesData } = useQuery({
-    queryKey: ['services-chart', period],
-    queryFn: () => reportsApi.getServicesChart(period),
-    placeholderData: demoServicesData,
-  });
-
-  const { data: regionData } = useQuery({
-    queryKey: ['region-data', period],
-    queryFn: () => reportsApi.getRegionData(period),
-    placeholderData: demoRegionData,
-  });
-
-  const { data: categoryData } = useQuery({
-    queryKey: ['category-data', period],
-    queryFn: () => reportsApi.getCategoryData(period),
-    placeholderData: demoServiceCategories,
-  });
-
-  const { data: topNurses } = useQuery({
-    queryKey: ['top-nurses', period],
-    queryFn: () => reportsApi.getTopNurses(period),
-    placeholderData: demoTopNurses,
-  });
+  const servicesData = demoServicesData;
+  const regionData = demoRegionData;
+  const categoryData = demoServiceCategories;
+  const topNurses = demoTopNurses;
 
   const handleExport = (type: 'pdf' | 'excel') => {
     // In a real app, this would trigger a download
