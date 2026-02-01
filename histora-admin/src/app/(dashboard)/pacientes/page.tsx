@@ -152,20 +152,32 @@ const demoPatients: Patient[] = [
   },
 ];
 
+interface PatientsResponse {
+  data: Patient[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
 export default function PacientesPage() {
   const [search, setSearch] = useState('');
   const [selectedPatient, setSelectedPatient] = useState<typeof demoPatients[0] | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
 
   // Fetch patients
-  const { data: patients, isLoading } = useQuery<Patient[]>({
+  const { data: patientsResponse, isLoading } = useQuery<PatientsResponse>({
     queryKey: ['patients', search],
     queryFn: () => patientsApi.getAll({ search }),
-    placeholderData: demoPatients,
   });
 
+  // Extract patients array from response, fallback to demo data
+  const patients = patientsResponse?.data || demoPatients;
+
   // Filter patients
-  const filteredPatients = patients?.filter((patient) => {
+  const filteredPatients = patients.filter((patient) => {
     if (!search) return true;
     return (
       patient.firstName.toLowerCase().includes(search.toLowerCase()) ||
@@ -177,10 +189,10 @@ export default function PacientesPage() {
 
   // Calculate stats
   const stats = {
-    total: patients?.length || 0,
-    active: patients?.filter((p) => p.isActive).length || 0,
-    totalRevenue: patients?.reduce((sum, p) => sum + p.totalSpent, 0) || 0,
-    avgSpent: patients?.length ? Math.round((patients?.reduce((sum, p) => sum + p.totalSpent, 0) || 0) / patients.length) : 0,
+    total: patients.length,
+    active: patients.filter((p) => p.isActive).length,
+    totalRevenue: patients.reduce((sum, p) => sum + p.totalSpent, 0),
+    avgSpent: patients.length ? Math.round(patients.reduce((sum, p) => sum + p.totalSpent, 0) / patients.length) : 0,
   };
 
   return (

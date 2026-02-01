@@ -138,11 +138,13 @@ export default function UsuariosPage() {
     password: '',
   });
 
-  const { data: users, isLoading } = useQuery({
+  const { data: usersResponse, isLoading } = useQuery<{ data: AdminUser[]; pagination: { total: number } }>({
     queryKey: ['admin-users'],
     queryFn: () => usersApi.getAll(),
-    placeholderData: demoUsers,
   });
+
+  // Extract users array from response, fallback to demo data
+  const users = usersResponse?.data || demoUsers;
 
   const createMutation = useMutation({
     mutationFn: (data: typeof formData) => usersApi.create(data),
@@ -224,7 +226,7 @@ export default function UsuariosPage() {
     }
   };
 
-  const filteredUsers = (users || demoUsers).filter((user: AdminUser) => {
+  const filteredUsers = users.filter((user: AdminUser) => {
     if (roleFilter !== 'all' && user.role !== roleFilter) return false;
     if (search) {
       const searchLower = search.toLowerCase();
