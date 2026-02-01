@@ -228,7 +228,7 @@ export function AppFeatures() {
   return (
     <section
       id="tecnologia"
-      className="py-20 md:py-28 relative overflow-hidden"
+      className="pt-12 pb-12 md:pt-16 md:pb-16 relative overflow-hidden"
       aria-labelledby="features-title"
     >
       {/* Background */}

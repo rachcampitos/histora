@@ -32,7 +32,8 @@ const audiences = {
     highlight: "sin culpa ni preocupacion",
     subtitle:
       "Conectamos familias con profesionales de enfermeria verificados oficialmente por el CEP y RENIEC. Seguimiento GPS en tiempo real para tu completa tranquilidad.",
-    cta: "Encontrar enfermera verificada",
+    cta: "Buscar enfermera",
+    ctaMobile: "Buscar ahora",
     ctaLink: "https://app.nurse-lite.com/auth/register?type=patient",
     microCopy: "Sin registro previo. Proceso en menos de 3 minutos.",
     benefits: [
@@ -47,7 +48,8 @@ const audiences = {
     highlight: "en enfermeria independiente",
     subtitle:
       "Unete a la red de profesionales de salud mas confiable. Tu defines tu horario, tus precios, y te quedas con el 100% de tus ingresos.",
-    cta: "Comenzar a ganar mas",
+    cta: "Comenzar ahora",
+    ctaMobile: "Comenzar",
     ctaLink: "https://app.nurse-lite.com/auth/register?type=nurse",
     microCopy: "Registro gratuito. Sin comisiones por servicio.",
     benefits: [
@@ -82,20 +84,13 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center pt-20 overflow-hidden"
+      className="relative pt-24 pb-16 md:pb-20 bg-gradient-to-b from-[#f8fafc] via-white to-white dark:from-[#1e293b] dark:via-[#0f172a] dark:to-[#0f172a]"
       aria-labelledby="hero-title"
     >
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#f8fafc] via-white to-white dark:from-[#1e293b] dark:via-[#0f172a] dark:to-[#0f172a]" />
-
-      {/* Decorative Elements */}
-      <div className="absolute top-40 right-0 w-96 h-96 bg-[#4a9d9a]/5 dark:bg-[#4a9d9a]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-0 w-80 h-80 bg-[#1e3a5f]/5 dark:bg-[#1e3a5f]/10 rounded-full blur-3xl" />
-
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left Content */}
-          <div className="max-w-xl min-h-[600px]">
+          <div className="max-w-xl">
             {/* Audience Selector */}
             <AnimatedSection delay={0.1}>
               <p className="text-sm text-[#64748b] dark:text-[#94a3b8] mb-3">
@@ -191,17 +186,19 @@ export function Hero() {
                 <div className="flex flex-col sm:flex-row gap-4 mb-3">
                   <Link
                     href={content.ctaLink}
-                    className="btn-primary flex items-center justify-center gap-2 text-base"
+                    className="btn-primary flex items-center justify-center gap-2 text-base whitespace-nowrap"
                   >
-                    {content.cta}
+                    <span className="hidden sm:inline">{content.cta}</span>
+                    <span className="sm:hidden">{content.ctaMobile}</span>
                     <ChevronRight className="w-5 h-5" />
                   </Link>
                   <Link
                     href="#como-funciona"
-                    className="btn-secondary flex items-center justify-center gap-2 text-base"
+                    className="btn-secondary flex items-center justify-center gap-2 text-base whitespace-nowrap"
                   >
                     <Play className="w-5 h-5" />
-                    Ver como funciona
+                    <span className="hidden sm:inline">Ver como funciona</span>
+                    <span className="sm:hidden">Como funciona</span>
                   </Link>
                 </div>
 

@@ -9,7 +9,7 @@ export function Segments() {
   return (
     <section
       id="segmentos"
-      className="bg-white dark:bg-[#0f172a] relative overflow-hidden"
+      className="py-16 md:py-24 bg-white dark:bg-[#0f172a] relative overflow-hidden"
       aria-labelledby="segments-title"
     >
       {/* Background decoration */}
