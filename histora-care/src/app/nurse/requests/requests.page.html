@@ -249,7 +249,7 @@
       @if (historyRequests().length > 0) {
         <ion-list class="request-list history-list">
           @for (request of historyRequests(); track request) {
-            <ion-item (click)="viewRequest(request)" button detail>
+            <ion-item lines="none">
               <div class="request-card history-card">
                 <!-- Header -->
                 <div class="card-header">
