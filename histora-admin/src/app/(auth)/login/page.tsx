@@ -123,8 +123,12 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4 text-center">
           {/* Logo */}
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-blue-600 shadow-lg">
-            <span className="text-2xl font-bold text-white">N</span>
+          <div className="mx-auto">
+            <img
+              src="/nurselite.png"
+              alt="NurseLite"
+              className="h-16 w-16 rounded-2xl shadow-lg mx-auto"
+            />
           </div>
           <div>
             <CardTitle className="text-2xl">NurseLite Admin</CardTitle>

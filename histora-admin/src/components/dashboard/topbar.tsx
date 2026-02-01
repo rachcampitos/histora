@@ -107,13 +107,29 @@ export function TopBar() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={() => {
+                // Add transitioning class for smooth animation
+                document.documentElement.classList.add('theme-transitioning');
+                setTheme(theme === 'dark' ? 'light' : 'dark');
+                // Remove class after transition
+                setTimeout(() => {
+                  document.documentElement.classList.remove('theme-transitioning');
+                }, 300);
+              }}
+              className="relative overflow-hidden"
             >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
+              <Sun className={cn(
+                "h-5 w-5 transition-all duration-300",
+                theme === 'dark'
+                  ? "rotate-0 scale-100"
+                  : "rotate-90 scale-0 absolute"
+              )} />
+              <Moon className={cn(
+                "h-5 w-5 transition-all duration-300",
+                theme === 'dark'
+                  ? "-rotate-90 scale-0 absolute"
+                  : "rotate-0 scale-100"
+              )} />
             </Button>
           )}
 
