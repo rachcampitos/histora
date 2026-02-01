@@ -3,6 +3,9 @@ import {
   NotFoundException,
   ConflictException,
   ForbiddenException,
+  Inject,
+  forwardRef,
+  Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -15,12 +18,15 @@ import {
   NurseServiceDto,
 } from './dto';
 import { CreateNurseReviewDto } from './dto/nurse-review.dto';
+import { AdminNotificationsGateway } from '../admin/admin-notifications.gateway';
 
 @Injectable()
 export class NursesService {
   constructor(
     @InjectModel(Nurse.name) private nurseModel: Model<Nurse>,
     @InjectModel(NurseReview.name) private nurseReviewModel: Model<NurseReviewDocument>,
+    @Optional() @Inject(forwardRef(() => AdminNotificationsGateway))
+    private adminNotifications?: AdminNotificationsGateway,
   ) {}
 
   async create(userId: string, createNurseDto: CreateNurseDto): Promise<Nurse> {
@@ -62,7 +68,18 @@ export class NursesService {
       verificationStatus: verificationStatus || 'pending',
     });
 
-    return nurse.save();
+    const savedNurse = await nurse.save();
+
+    // Notify admins about new nurse registration
+    if (this.adminNotifications) {
+      this.adminNotifications.notifyNurseRegistered({
+        id: (savedNurse as any)._id.toString(),
+        name: createNurseDto.cepRegisteredName || 'Nueva enfermera',
+        cepNumber: createNurseDto.cepNumber,
+      });
+    }
+
+    return savedNurse;
   }
 
   async findById(id: string): Promise<Record<string, unknown>> {
@@ -638,6 +655,16 @@ export class NursesService {
 
     // Update nurse's average rating and total reviews
     await this.recalculateNurseRating(nurseId);
+
+    // Notify admins about negative reviews (1-2 stars)
+    if (this.adminNotifications && createReviewDto.rating <= 2) {
+      this.adminNotifications.notifyNegativeReview({
+        id: (savedReview as any)._id.toString(),
+        nurseName: nurse.cepRegisteredName || 'Enfermera',
+        rating: createReviewDto.rating,
+        comment: createReviewDto.comment,
+      });
+    }
 
     return savedReview;
   }

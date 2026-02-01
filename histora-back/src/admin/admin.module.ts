@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
+import { AdminNotificationsGateway } from './admin-notifications.gateway';
 import { User, UserSchema } from '../users/schema/user.schema';
 import { Nurse, NurseSchema } from '../nurses/schema/nurse.schema';
 import { NurseVerification, NurseVerificationSchema } from '../nurses/schema/nurse-verification.schema';
@@ -20,10 +23,18 @@ import { UploadsModule } from '../uploads/uploads.module';
       { name: ServiceRequest.name, schema: ServiceRequestSchema },
       { name: PanicAlert.name, schema: PanicAlertSchema },
     ]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '7d' },
+      }),
+      inject: [ConfigService],
+    }),
     UploadsModule,
   ],
   controllers: [AdminController],
-  providers: [AdminService],
-  exports: [AdminService],
+  providers: [AdminService, AdminNotificationsGateway],
+  exports: [AdminService, AdminNotificationsGateway],
 })
 export class AdminModule {}

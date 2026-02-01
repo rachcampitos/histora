@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SafetyIncident, SafetyIncidentDocument, IncidentType, IncidentSeverity, IncidentStatus } from './schema/safety-incident.schema';
 import { PanicAlert, PanicAlertDocument, PanicAlertLevel, PanicAlertStatus } from './schema/panic-alert.schema';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AdminNotificationsGateway } from '../admin/admin-notifications.gateway';
 
 export interface ReportIncidentDto {
   serviceRequestId?: string;
@@ -63,6 +64,8 @@ export class SafetyService {
     @InjectModel(PanicAlert.name)
     private panicAlertModel: Model<PanicAlertDocument>,
     private notificationsService: NotificationsService,
+    @Optional() @Inject(forwardRef(() => AdminNotificationsGateway))
+    private adminNotifications?: AdminNotificationsGateway,
   ) {}
 
   async reportIncident(reporterId: string, dto: ReportIncidentDto): Promise<SafetyIncident> {
@@ -320,12 +323,20 @@ export class SafetyService {
         ? 'EMERGENCIA'
         : 'Ayuda necesaria';
 
-      // Use the notifications service to notify all platform admins
-      // This would be implemented based on existing notification patterns
       console.log(`[PANIC ALERT] ${levelText} triggered by nurse ${alert.nurseId}`);
 
-      // TODO: Implement admin notification through NotificationsService
-      // await this.notificationsService.notifyAdminsPanicAlert(alert);
+      // Send real-time WebSocket notification to all connected admins
+      if (this.adminNotifications) {
+        this.adminNotifications.notifyPanicAlert({
+          id: (alert as any)._id.toString(),
+          nurseName: 'Enfermera', // Would need to populate nurse name
+          patientName: 'Paciente', // Would need to populate patient name
+          location: alert.location ? {
+            lat: alert.location.latitude,
+            lng: alert.location.longitude,
+          } : undefined,
+        });
+      }
     } catch (error) {
       console.error('Error notifying admins of panic alert:', error);
     }

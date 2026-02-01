@@ -1,0 +1,66 @@
+<div class="command-palette-overlay" (click)="close()">
+  <div class="command-palette" @fadeInOut (click)="$event.stopPropagation()">
+    <!-- Search Input -->
+    <div class="command-search">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        #searchInput
+        type="text"
+        class="search-input"
+        placeholder="Buscar comandos..."
+        [value]="searchQuery()"
+        (input)="onSearchChange($any($event.target).value)"
+        autocomplete="off"
+      />
+      <span class="shortcut-hint">ESC</span>
+    </div>
+
+    <!-- Results -->
+    <div class="command-results">
+      @for (group of groupedCommands(); track group.title; let groupIdx = $index) {
+        <div class="command-group">
+          <div class="group-title">{{ group.title }}</div>
+          @for (command of group.items; track command.id; let idx = $index) {
+            <div
+              class="command-item"
+              [class.selected]="selectedIndex() === getGlobalIndex(groupIdx, idx)"
+              (mouseenter)="selectCommand(getGlobalIndex(groupIdx, idx))"
+              (click)="executeCommand(command)"
+            >
+              <mat-icon class="command-icon">{{ command.icon }}</mat-icon>
+              <div class="command-info">
+                <span class="command-label">{{ command.label }}</span>
+                @if (command.description) {
+                  <span class="command-description">{{ command.description }}</span>
+                }
+              </div>
+              @if (command.shortcut) {
+                <span class="command-shortcut">{{ command.shortcut }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (filteredCommands().length === 0) {
+        <div class="no-results">
+          <mat-icon>search_off</mat-icon>
+          <span>No se encontraron comandos</span>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="command-footer">
+      <div class="footer-hint">
+        <span class="key">&#8593;</span>
+        <span class="key">&#8595;</span>
+        <span class="hint-text">para navegar</span>
+      </div>
+      <div class="footer-hint">
+        <span class="key">&#8629;</span>
+        <span class="hint-text">para seleccionar</span>
+      </div>
+    </div>
+  </div>
+</div>
