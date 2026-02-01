@@ -232,14 +232,15 @@ ion-segment-button {
 
       .currency {
         font-size: 12px;
-        color: rgba(255, 255, 255, 0.85);
+        color: #ffffff;
         font-weight: 500;
+        opacity: 0.9;
       }
 
       .amount {
         font-size: 16px;
         font-weight: 700;
-        color: var(--ion-color-primary-contrast, #ffffff);
+        color: #ffffff;
       }
     }
   }
@@ -248,7 +249,6 @@ ion-segment-button {
   .card-details {
     padding: 12px 0;
     border-top: 1px solid var(--histora-border-light, #f1f5f9);
-    border-bottom: 1px solid var(--histora-border-light, #f1f5f9);
 
     &.compact {
       display: flex;
@@ -357,17 +357,22 @@ ion-segment-button {
 .active-card {
   position: relative;
   overflow: hidden;
+  padding-top: 40px; // Make room for status banner
 
   .status-banner {
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
+    display: flex;
+    justify-content: flex-end;
     padding: 8px 12px;
+    z-index: 1;
 
     ion-badge {
       font-size: 12px;
       padding: 4px 10px;
-      border-radius: 0 12px 0 12px;
+      border-radius: 0 0 8px 8px;
     }
   }
 
