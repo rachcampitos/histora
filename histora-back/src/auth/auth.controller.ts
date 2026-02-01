@@ -310,8 +310,10 @@ export class AuthController {
     const allowedOrigins = [
       'https://app.historahealth.com',
       'https://app.nurse-lite.com',
+      'https://admin.nurse-lite.com',
       'http://localhost:4200',
       'http://localhost:8100',
+      'http://localhost:4000',
     ];
 
     try {
