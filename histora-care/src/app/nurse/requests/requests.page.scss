@@ -28,10 +28,24 @@ ion-segment-button {
 
   // When segment button is selected, invert badge colors for better contrast
   &.segment-button-checked {
+    // Badge "primary" cuando el tab esta activo - invertir colores
     ion-badge[color="primary"] {
-      --background: rgba(255, 255, 255, 0.95);
-      --color: var(--ion-color-primary, #1e3a5f);
+      --background: #ffffff !important;
+      --color: var(--ion-color-primary, #1e3a5f) !important;
+      background: #ffffff !important;
+      color: var(--ion-color-primary, #1e3a5f) !important;
       font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    // Badge "warning" tambien necesita contraste cuando esta activo
+    ion-badge[color="warning"] {
+      --background: #ffffff !important;
+      --color: var(--ion-color-warning-shade, #d97706) !important;
+      background: #ffffff !important;
+      color: var(--ion-color-warning-shade, #d97706) !important;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
   }
 }
@@ -518,11 +532,16 @@ ion-item-options {
       --color: var(--ion-color-contrast);
     }
 
-    // When selected in dark mode
+    // When selected in dark mode - invert badge for contrast
     &.segment-button-checked {
-      ion-badge[color="primary"] {
-        --background: rgba(255, 255, 255, 0.95);
-        --color: var(--ion-color-primary, #1e3a5f);
+      ion-badge[color="primary"],
+      ion-badge[color="warning"] {
+        --background: rgba(255, 255, 255, 0.95) !important;
+        --color: #1e293b !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        color: #1e293b !important;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
       }
     }
   }
