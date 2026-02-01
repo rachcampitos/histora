@@ -240,4 +240,155 @@ export const notificationsApi = {
   },
 };
 
+// Verifications endpoints (CEP)
+export const verificationsApi = {
+  getAll: async (params?: { status?: string; page?: number; limit?: number }) => {
+    const response = await api.get('/nurses/admin/verifications', { params });
+    return response.data;
+  },
+  getById: async (id: string) => {
+    const response = await api.get(`/nurses/admin/verifications/${id}`);
+    return response.data;
+  },
+  getStats: async () => {
+    const response = await api.get('/nurses/admin/verifications/stats');
+    return response.data;
+  },
+  markUnderReview: async (id: string) => {
+    const response = await api.patch(`/nurses/admin/verifications/${id}/under-review`);
+    return response.data;
+  },
+  review: async (id: string, status: 'approved' | 'rejected', notes: string) => {
+    const response = await api.patch(`/nurses/admin/verifications/${id}/review`, {
+      status,
+      reviewNotes: notes,
+    });
+    return response.data;
+  },
+};
+
+// Admin Users endpoints
+export const usersApi = {
+  getAll: async (params?: { role?: string; status?: string; search?: string }) => {
+    const response = await api.get('/admin/users', { params });
+    return response.data;
+  },
+  getById: async (id: string) => {
+    const response = await api.get(`/admin/users/${id}`);
+    return response.data;
+  },
+  create: async (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    role: string;
+    password: string;
+  }) => {
+    const response = await api.post('/admin/users', data);
+    return response.data;
+  },
+  update: async (id: string, data: Partial<{
+    firstName: string;
+    lastName: string;
+    phone: string;
+    role: string;
+  }>) => {
+    const response = await api.patch(`/admin/users/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: string) => {
+    const response = await api.delete(`/admin/users/${id}`);
+    return response.data;
+  },
+  toggleStatus: async (id: string) => {
+    const response = await api.patch(`/admin/users/${id}/toggle-status`);
+    return response.data;
+  },
+  resetPassword: async (id: string) => {
+    const response = await api.post(`/admin/users/${id}/reset-password`);
+    return response.data;
+  },
+};
+
+// Moderation endpoints
+export const moderationApi = {
+  getAtRiskUsers: async () => {
+    const response = await api.get('/admin/dashboard/moderation/at-risk');
+    return response.data;
+  },
+  getLowReviews: async () => {
+    const response = await api.get('/admin/dashboard/reviews/low-rated');
+    return response.data;
+  },
+  getStats: async () => {
+    const response = await api.get('/admin/dashboard/moderation/stats');
+    return response.data;
+  },
+  sendWarning: async (userId: string, message: string) => {
+    const response = await api.post(`/admin/moderation/${userId}/warning`, { message });
+    return response.data;
+  },
+  suspendUser: async (userId: string) => {
+    const response = await api.post(`/admin/moderation/${userId}/suspend`);
+    return response.data;
+  },
+  respondToReview: async (reviewId: string, response: string) => {
+    const res = await api.post(`/admin/reviews/${reviewId}/respond`, { response });
+    return res.data;
+  },
+};
+
+// Subscriptions endpoints
+export const subscriptionsApi = {
+  getAll: async (params?: { status?: string; plan?: string }) => {
+    const response = await api.get('/admin/subscriptions', { params });
+    return response.data;
+  },
+  getMetrics: async () => {
+    const response = await api.get('/admin/subscriptions/metrics');
+    return response.data;
+  },
+  getById: async (id: string) => {
+    const response = await api.get(`/admin/subscriptions/${id}`);
+    return response.data;
+  },
+};
+
+// Reports endpoints
+export const reportsApi = {
+  getMetrics: async (period: string) => {
+    const response = await api.get(`/admin/reports/metrics?period=${period}`);
+    return response.data;
+  },
+  getServicesChart: async (period: string) => {
+    const response = await api.get(`/admin/dashboard/services/chart?period=${period}`);
+    return response.data;
+  },
+  getRegionData: async (period: string) => {
+    const response = await api.get(`/admin/reports/by-region?period=${period}`);
+    return response.data;
+  },
+  getCategoryData: async (period: string) => {
+    const response = await api.get(`/admin/reports/by-category?period=${period}`);
+    return response.data;
+  },
+  getTopNurses: async (period: string) => {
+    const response = await api.get(`/admin/analytics/top-nurses?period=${period}`);
+    return response.data;
+  },
+  exportPdf: async (period: string) => {
+    const response = await api.get(`/admin/reports/export/pdf?period=${period}`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+  exportExcel: async (period: string) => {
+    const response = await api.get(`/admin/reports/export/excel?period=${period}`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+};
+
 export default api;

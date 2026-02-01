@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -28,17 +29,30 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b px-4">
         {!isCollapsed && (
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-blue-600">
-              <span className="text-sm font-bold text-white">N</span>
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <Image
+              src="/nurselite.png"
+              alt="NurseLite"
+              width={36}
+              height={36}
+              className="rounded-lg"
+            />
+            <div className="flex flex-col">
+              <span className="font-semibold text-foreground leading-tight">NurseLite</span>
+              <span className="text-[10px] text-muted-foreground">Admin Panel</span>
             </div>
-            <span className="font-semibold text-foreground">NurseLite</span>
           </Link>
         )}
         {isCollapsed && (
-          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-blue-600">
-            <span className="text-sm font-bold text-white">N</span>
-          </div>
+          <Link href="/dashboard" className="mx-auto">
+            <Image
+              src="/nurselite.png"
+              alt="NurseLite"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+          </Link>
         )}
       </div>
 

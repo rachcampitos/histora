@@ -7,6 +7,11 @@ import {
   Target,
   BarChart3,
   Settings,
+  ShieldCheck,
+  UserCog,
+  AlertTriangle,
+  CreditCard,
+  FileText,
   LucideIcon,
 } from 'lucide-react';
 
@@ -31,6 +36,11 @@ export const navItems: NavItem[] = [
     icon: Users,
   },
   {
+    title: 'Verificaciones',
+    href: '/verificaciones',
+    icon: ShieldCheck,
+  },
+  {
     title: 'Servicios',
     href: '/servicios',
     icon: Stethoscope,
@@ -41,9 +51,29 @@ export const navItems: NavItem[] = [
     icon: UserCircle,
   },
   {
+    title: 'Usuarios',
+    href: '/usuarios',
+    icon: UserCog,
+  },
+  {
+    title: 'Moderacion',
+    href: '/moderacion',
+    icon: AlertTriangle,
+  },
+  {
+    title: 'Suscripciones',
+    href: '/suscripciones',
+    icon: CreditCard,
+  },
+  {
     title: 'Finanzas',
     href: '/finanzas',
     icon: Wallet,
+  },
+  {
+    title: 'Reportes',
+    href: '/reportes',
+    icon: FileText,
   },
   {
     title: 'Marketing',
