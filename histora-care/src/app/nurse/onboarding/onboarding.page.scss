@@ -203,16 +203,15 @@ swiper-slide {
     .search-container {
       position: relative;
 
-      // Search icon - absolutely positioned
-      > ion-icon.search-icon,
-      .distrito-input ion-icon[slot="start"] {
+      // Search icon - absolutely positioned outside the input
+      > ion-icon.search-icon {
         position: absolute;
         left: 14px;
         top: 50%;
         transform: translateY(-50%);
         font-size: 18px;
         color: #6b7280;
-        z-index: 1;
+        z-index: 2;
         pointer-events: none;
       }
 
@@ -959,8 +958,7 @@ swiper-slide {
       }
 
       .search-container {
-        > ion-icon.search-icon,
-        .distrito-input ion-icon[slot="start"] {
+        > ion-icon.search-icon {
           color: #64748b;
         }
 

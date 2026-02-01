@@ -234,110 +234,115 @@ Los Profesionales de Enfermería pueden brindar primeros auxilios básicos, pero
 
 ---
 
-## 8. TARIFAS, PAGOS Y COMISIONES
+## 8. TARIFAS, PAGOS Y SUSCRIPCIONES
 
-### 8.1 Determinación de Precios
+### 8.1 Modelo de Negocio
 
-Los precios de los servicios son establecidos por cada Profesional de Enfermería de manera independiente, considerando:
-- Tipo de servicio a prestar
-- Duración estimada
-- Complejidad y experiencia requerida
-- Ubicación geográfica
+NurseLite opera como una plataforma de conexión entre Pacientes y Profesionales de Enfermería. El modelo económico se basa en:
+- **Para Pacientes:** Uso gratuito de la plataforma. No cobramos comisiones por solicitar servicios.
+- **Para Enfermeras:** Sistema de suscripción mensual para acceder a solicitudes de servicio.
 
-Histora NO fija los precios de los servicios profesionales.
+### 8.2 Planes de Suscripción para Profesionales de Enfermería
 
-### 8.2 Comisión de la Plataforma
+#### Plan Básico (Gratuito)
+- Costo: S/. 0.00/mes
+- Beneficios:
+  - Acceso a la plataforma
+  - Visualización de hasta 5 solicitudes de servicio por mes
+  - Perfil verificado con badge CEP
+  - Notificaciones de nuevas solicitudes en su zona
 
-Por el uso de la Plataforma y los servicios de intermediación, Histora cobra una **comisión del 15% sobre el valor bruto del servicio**, la cual es asumida por el Profesional de Enfermería.
+#### Plan Pro
+- Costo: S/. 29.00/mes
+- Beneficios:
+  - Acceso ilimitado a solicitudes de servicio
+  - Prioridad en notificaciones
+  - Estadísticas de desempeño
+  - Soporte prioritario
+  - Sin límite de solicitudes mensuales
 
-**Ejemplo:**
-- Precio del servicio: S/. 100.00
-- Comisión de Histora (15%): S/. 15.00
-- Monto que recibe el Profesional: S/. 85.00
+La suscripción se renueva automáticamente cada mes. El Profesional puede cancelar en cualquier momento desde su perfil, sin penalidades. La cancelación aplica al finalizar el período ya pagado.
 
-Esta comisión cubre:
-- Infraestructura tecnológica
-- Procesamiento de pagos
-- Verificación de credenciales
-- Soporte al cliente
-- Mantenimiento y mejoras de la Plataforma
+### 8.3 Pagos por Servicios de Enfermería
 
-### 8.3 Métodos de Pago
+**El pago del servicio de enfermería se realiza directamente entre el Paciente y el Profesional de Enfermería.** NurseLite NO procesa, retiene ni intermedia estos pagos.
 
-Los Pacientes pueden pagar a través de:
+**Métodos de pago aceptados** (acordados directamente entre las partes):
+- Efectivo
+- Transferencia bancaria
+- Yape
+- Plin
+- Otros medios digitales acordados
 
-**Pago en la Plataforma (recomendado):**
-- Tarjetas de crédito/débito (Visa, Mastercard, American Express)
-- Yape (transferencia digital)
-- Otros métodos habilitados en la Plataforma
+**Tarifas de servicios:**
+- Cada Profesional establece sus propias tarifas por servicio
+- Las tarifas deben ser claramente informadas al Paciente antes de confirmar el servicio
+- El Paciente visualiza la tarifa propuesta antes de aceptar
+- NurseLite NO cobra comisión sobre el valor del servicio
 
-**Pago en efectivo:**
-- Directamente al Profesional al finalizar el servicio
-- El Paciente debe confirmar el pago en la Plataforma
-- La comisión de Histora se deduce del siguiente cobro del Profesional
+**Ejemplo de transacción:**
+- Precio del servicio acordado: S/. 100.00
+- Comisión de NurseLite: S/. 0.00 (0%)
+- Monto que recibe el Profesional: S/. 100.00 (100%)
+- El Paciente paga S/. 100.00 directamente al Profesional
 
-**Ventajas del pago en la Plataforma:**
-- Mayor seguridad para ambas partes
-- Comprobante de pago automático
-- Protección en caso de disputas
-- Proceso de reembolso más ágil
+### 8.4 Facturación y Comprobantes
 
-### 8.4 Facturación
+#### Para Suscripciones
+NurseLite emite comprobante electrónico (boleta o factura) por el pago de la suscripción mensual del Profesional.
 
-- Los Pacientes reciben un comprobante electrónico por cada transacción
-- Los Profesionales pueden solicitar facturas mensuales por concepto de comisiones
-- Para emitir facturas o boletas, proporcionar los datos correspondientes a hola@nurselite.pe
+#### Para Servicios de Enfermería
+La emisión de comprobantes de pago (recibo, boleta) por el servicio prestado es responsabilidad del Profesional de Enfermería, según lo acordado con el Paciente y en cumplimiento de las normas tributarias peruanas.
 
-### 8.5 Retención de Pagos
+### 8.5 Política de Suscripciones
 
-Histora se reserva el derecho de retener pagos en los siguientes casos:
-- Disputas abiertas sobre la calidad del servicio
-- Sospecha de fraude o uso indebido de la Plataforma
-- Incumplimiento de estos Términos y Condiciones
-- Investigación de quejas formales
-
-Los fondos retenidos se liberarán una vez resuelta la situación.
+- El cobro de la suscripción se realiza el mismo día de cada mes
+- En caso de que el pago no se complete, el acceso al Plan Pro se suspende hasta regularizar
+- No hay reembolsos por períodos no utilizados, excepto en casos de error técnico comprobado
+- El cambio de Plan Básico a Pro es inmediato
+- El cambio de Pro a Básico aplica al finalizar el período pagado
 
 ---
 
 ## 9. CANCELACIONES Y REPROGRAMACIONES
 
-### 9.1 Cancelación por el Paciente
+### 9.1 Responsabilidad de las Partes
 
-**Cancelación con más de 4 horas de anticipación:**
-- Sin penalidad
-- Reembolso completo si pagó por adelantado
+Dado que NurseLite no procesa pagos ni retiene fondos de servicios, las cancelaciones y sus consecuencias económicas son responsabilidad directa del Paciente y el Profesional de Enfermería involucrados.
 
-**Cancelación entre 2 y 4 horas de anticipación:**
-- Cargo del 30% del valor del servicio
-- Si pagó por adelantado, se reembolsa el 70%
+### 9.2 Políticas Recomendadas
 
-**Cancelación con menos de 2 horas de anticipación:**
-- Cargo del 50% del valor del servicio
-- Si pagó por adelantado, se reembolsa el 50%
+NurseLite recomienda, mas no ejecuta, las siguientes buenas prácticas:
 
-**No presentación (No-Show):**
-- Cargo del 100% del valor del servicio
-- Sin derecho a reembolso
+**Cancelación por el Paciente:**
+- Con más de 4 horas de anticipación: Sin cargo
+- Entre 2-4 horas de anticipación: Considerar compensación acordada directamente
+- Menos de 2 horas: Considerar compensación acordada directamente
+- No-show (no avisar): El Profesional puede reportar el caso en la plataforma
 
-**Excepciones:** En caso de emergencias médicas documentadas, Histora evaluará cada caso individualmente.
+**Cancelación por el Profesional:**
+- Con más de 4 horas de anticipación: Sin penalidad
+- Menos de 4 horas: Se registra en el historial del Profesional y puede afectar su calificación
+- No-show: Puede resultar en suspensión temporal o permanente de la cuenta
 
-### 9.2 Cancelación por el Profesional
+### 9.3 Sistema de Reputación
 
-Si el Profesional cancela:
+NurseLite mantiene un sistema de calificaciones y reseñas donde:
+- Los Pacientes pueden calificar la puntualidad y profesionalismo del Profesional
+- Los Profesionales pueden reportar cancelaciones de último minuto o no-shows de Pacientes
+- Patrones reiterados de cancelaciones pueden resultar en suspensión de cuenta
 
-**Con más de 4 horas de anticipación:**
-- Sin penalidad
-- Histora ayudará al Paciente a encontrar un reemplazo
+### 9.4 Reprogramaciones
 
-**Con menos de 4 horas de anticipación o No-Show:**
-- Amonestación en el perfil del Profesional
-- Posible suspensión temporal o permanente en caso de reincidencia
-- Indemnización al Paciente equivalente al 50% del valor del servicio
+Las reprogramaciones deben coordinarse directamente entre el Paciente y el Profesional a través de la plataforma o los canales de comunicación que hayan acordado.
 
-### 9.3 Reprogramaciones
+### 9.5 Resolución de Disputas por Cancelaciones
 
-Las reprogramaciones de servicios deben hacerse con al menos 4 horas de anticipación y requieren la aceptación de ambas partes. No generan penalidades si se realizan dentro del plazo.
+En caso de conflicto relacionado con cancelaciones:
+1. Las partes deben intentar resolverlo directamente
+2. Si no hay acuerdo, pueden contactar a soporte@nurse-lite.com
+3. NurseLite puede mediar la comunicación, pero no puede obligar pagos o reembolsos
+4. En casos graves, NurseLite puede suspender cuentas que demuestren comportamiento abusivo
 
 ---
 

@@ -87,6 +87,7 @@
           <div class="form-group">
             <label>Distrito</label>
             <div class="search-container">
+              <ion-icon name="search-outline" class="search-icon"></ion-icon>
               <ion-input
                 [value]="distritoSearch()"
                 (ionInput)="onDistritoSearchInput($event)"
@@ -95,7 +96,6 @@
                 placeholder="Escribe para buscar tu distrito..."
                 class="distrito-input"
                 [class.has-value]="selectedDistrito()">
-                <ion-icon slot="start" name="search-outline"></ion-icon>
               </ion-input>
 
               @if (selectedDistrito()) {
