@@ -50,6 +50,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   isLoading = signal(true);
   isMapReady = signal(false);
   loadError = signal<string | null>(null);
+  isRejected = signal(false);
+  isCancelled = signal(false);
   hasReviewed = signal(false);
   showReviewModal = signal(false);
   copiedPayment = signal<'yape' | 'plin' | null>(null);
@@ -287,14 +289,28 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
       // Check if request was cancelled
       if (request.status === 'cancelled') {
-        this.loadError.set('Este servicio ha sido cancelado');
+        this.isCancelled.set(true);
+        this.request.set(request);
         this.isLoading.set(false);
         return;
       }
 
       // Check if request was rejected
       if (request.status === 'rejected') {
-        this.loadError.set('Este servicio fue rechazado');
+        this.isRejected.set(true);
+        this.request.set(request);
+        // Load nurse info if available for context
+        if (request.nurse && request.nurseId) {
+          this.nurse.set({
+            id: request.nurseId,
+            firstName: request.nurse.firstName,
+            lastName: request.nurse.lastName,
+            avatar: request.nurse.avatar,
+            phone: request.nurse.phone,
+            rating: 0,
+            totalReviews: 0
+          });
+        }
         this.isLoading.set(false);
         return;
       }
@@ -683,6 +699,13 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    */
   goBack() {
     this.router.navigate(['/patient/history']);
+  }
+
+  /**
+   * Navigate to search for another nurse (from rejected/cancelled state)
+   */
+  searchAnotherNurse() {
+    this.router.navigate(['/patient/tabs/map']);
   }
 
   /**

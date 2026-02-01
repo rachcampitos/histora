@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, AfterViewInit, effect, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, AfterViewInit, effect, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { GeolocationService } from '../../core/services/geolocation.service';
@@ -46,7 +46,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   // Search results
   nearbyNurses: NurseSearchResult[] = [];
   selectedNurse: NurseSearchResult | null = null;
-  isSearching = false;
+  isSearching = signal(false);
 
   // Filter options
   selectedCategory = '';
@@ -73,7 +73,30 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
+  /**
+   * Called every time the view enters (including when returning from other tabs)
+   */
+  ionViewDidEnter() {
+    // Check if map container exists but map is not initialized
+    const mapContainer = document.getElementById('map');
+    if (mapContainer && !this.mapInitialized) {
+      setTimeout(() => {
+        this.initMap();
+        this.getUserLocation();
+      }, 100);
+    } else if (this.mapInitialized) {
+      // Map is initialized, just trigger a resize to fix any rendering issues
+      const map = this.mapboxService.getMap();
+      if (map) {
+        setTimeout(() => {
+          map.resize();
+        }, 100);
+      }
+    }
+  }
+
   ngOnDestroy() {
+    this.mapInitialized = false;
     this.mapboxService.destroy();
   }
 
@@ -167,7 +190,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async searchNearbyNurses() {
-    this.isSearching = true;
+    this.isSearching.set(true);
 
     try {
       const results = await this.nurseService.searchNearby({
@@ -200,7 +223,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       });
       await toast.present();
     } finally {
-      this.isSearching = false;
+      this.isSearching.set(false);
     }
   }
 

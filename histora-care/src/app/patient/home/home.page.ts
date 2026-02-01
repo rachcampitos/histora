@@ -122,12 +122,12 @@ export class HomePage implements OnInit {
     this.router.navigate(['/patient/tabs/history']);
   }
 
-  goToFavorites() {
-    this.showComingSoon('Favoritas');
+  goToMyNurses() {
+    this.showComingSoon('Mis Enfermeras');
   }
 
   goToSettings() {
-    this.router.navigate(['/patient/tabs/profile']);
+    this.router.navigate(['/patient/tabs/settings']);
   }
 
   viewActiveRequest() {

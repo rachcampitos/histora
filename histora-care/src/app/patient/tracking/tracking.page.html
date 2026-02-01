@@ -7,8 +7,8 @@
   </div>
   }
 
-  <!-- Error State -->
-  @if (!isLoading() && loadError()) {
+  <!-- Error State (generic errors only) -->
+  @if (!isLoading() && loadError() && !isRejected() && !isCancelled()) {
   <div class="error-container">
     <ion-icon name="alert-circle-outline" color="danger" class="error-icon"></ion-icon>
     <h3>Error</h3>
@@ -21,6 +21,99 @@
       <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
       Volver al historial
     </ion-button>
+  </div>
+  }
+
+  <!-- Rejected State - Empathetic design -->
+  @if (!isLoading() && isRejected()) {
+  <div class="status-container rejected-container">
+    <div class="status-icon-wrapper rejected">
+      <ion-icon name="calendar-clear-outline"></ion-icon>
+    </div>
+    <h3>Este servicio no pudo completarse</h3>
+    <p class="status-subtitle">La enfermera no estuvo disponible para atender tu solicitud</p>
+
+    <!-- Service Details Card -->
+    <div class="service-details-card">
+      <h4>Detalles de la solicitud</h4>
+      <div class="detail-row">
+        <span class="detail-label">Servicio</span>
+        <span class="detail-value">{{ request()?.service?.name }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Fecha solicitada</span>
+        <span class="detail-value">{{ request()?.requestedDate | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      @if (nurse()) {
+      <div class="detail-row">
+        <span class="detail-label">Enfermera</span>
+        <span class="detail-value">{{ nurse()?.firstName }} {{ nurse()?.lastName }}</span>
+      </div>
+      }
+    </div>
+
+    <!-- Next Steps -->
+    <div class="next-steps">
+      <h4>¿Que puedes hacer ahora?</h4>
+      <ul>
+        <li>
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Solicitar el mismo servicio con otra enfermera disponible</span>
+        </li>
+        <li>
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Revisar otras fechas u horarios disponibles</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Actions -->
+    <div class="status-actions">
+      <ion-button expand="block" (click)="searchAnotherNurse()">
+        <ion-icon name="search-outline" slot="start"></ion-icon>
+        Buscar otra enfermera
+      </ion-button>
+      <ion-button expand="block" fill="outline" routerLink="/patient/history">
+        <ion-icon name="list-outline" slot="start"></ion-icon>
+        Ver historial
+      </ion-button>
+    </div>
+  </div>
+  }
+
+  <!-- Cancelled State -->
+  @if (!isLoading() && isCancelled()) {
+  <div class="status-container cancelled-container">
+    <div class="status-icon-wrapper cancelled">
+      <ion-icon name="close-circle-outline"></ion-icon>
+    </div>
+    <h3>Servicio cancelado</h3>
+    <p class="status-subtitle">Este servicio fue cancelado</p>
+
+    <!-- Service Details Card -->
+    <div class="service-details-card">
+      <h4>Detalles de la solicitud</h4>
+      <div class="detail-row">
+        <span class="detail-label">Servicio</span>
+        <span class="detail-value">{{ request()?.service?.name }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Fecha</span>
+        <span class="detail-value">{{ request()?.requestedDate | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="status-actions">
+      <ion-button expand="block" (click)="searchAnotherNurse()">
+        <ion-icon name="search-outline" slot="start"></ion-icon>
+        Solicitar nuevo servicio
+      </ion-button>
+      <ion-button expand="block" fill="outline" routerLink="/patient/history">
+        <ion-icon name="list-outline" slot="start"></ion-icon>
+        Ver historial
+      </ion-button>
+    </div>
   </div>
   }
 

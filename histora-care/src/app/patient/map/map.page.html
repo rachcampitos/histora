@@ -55,7 +55,7 @@
   }
 
   <!-- Loading Overlay -->
-  @if (isSearching) {
+  @if (isSearching()) {
     <div class="loading-overlay" role="status" aria-live="polite" aria-label="Buscando enfermeras">
       <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
       <p>Buscando enfermeras...</p>
