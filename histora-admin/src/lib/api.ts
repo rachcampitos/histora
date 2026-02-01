@@ -76,9 +76,13 @@ export const nursesApi = {
     page?: number;
     limit?: number;
     status?: string;
+    verificationStatus?: string;
+    availability?: string;
+    district?: string;
     search?: string;
   }) => {
     const response = await api.get('/admin/nurses', { params });
+    // Backend returns { data: [...], pagination: {...} }
     return response.data;
   },
   getById: async (id: string) => {
@@ -86,19 +90,23 @@ export const nursesApi = {
     return response.data;
   },
   getPendingVerifications: async () => {
-    const response = await api.get('/admin/nurses/pending-verifications');
+    const response = await api.get('/admin/dashboard/verifications/pending');
     return response.data;
   },
-  approve: async (id: string) => {
-    const response = await api.post(`/admin/nurses/${id}/approve`);
+  toggleStatus: async (id: string) => {
+    const response = await api.patch(`/admin/nurses/${id}/toggle-status`);
     return response.data;
   },
-  reject: async (id: string, reason: string) => {
-    const response = await api.post(`/admin/nurses/${id}/reject`, { reason });
+  toggleAvailability: async (id: string) => {
+    const response = await api.patch(`/admin/nurses/${id}/toggle-availability`);
     return response.data;
   },
-  toggleActive: async (id: string, isActive: boolean) => {
-    const response = await api.patch(`/admin/nurses/${id}`, { isActive });
+  update: async (id: string, data: Record<string, unknown>) => {
+    const response = await api.patch(`/admin/nurses/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: string) => {
+    const response = await api.delete(`/admin/nurses/${id}`);
     return response.data;
   },
 };
@@ -244,6 +252,7 @@ export const notificationsApi = {
 export const verificationsApi = {
   getAll: async (params?: { status?: string; page?: number; limit?: number }) => {
     const response = await api.get('/nurses/admin/verifications', { params });
+    // Returns { data: [...], pagination: {...} }
     return response.data;
   },
   getById: async (id: string) => {
@@ -252,6 +261,10 @@ export const verificationsApi = {
   },
   getStats: async () => {
     const response = await api.get('/nurses/admin/verifications/stats');
+    return response.data;
+  },
+  getPending: async () => {
+    const response = await api.get('/admin/dashboard/verifications/pending');
     return response.data;
   },
   markUnderReview: async (id: string) => {

@@ -78,6 +78,7 @@ async function bootstrap() {
   // Enable CORS for frontend - configurable via environment
   const defaultOrigins = [
     'http://localhost:4200',
+    'http://localhost:4000',
     'http://localhost:8100',
     'http://localhost:8101',
     'http://localhost:8102',
@@ -85,6 +86,7 @@ async function bootstrap() {
     'https://app.historahealth.com',
     'https://historahealth.com',
     'https://app.nurse-lite.com',
+    'https://admin.nurse-lite.com',
   ];
 
   const corsOrigins = process.env.CORS_ORIGINS

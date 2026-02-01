@@ -31,7 +31,6 @@ import { toast } from 'sonner';
 import {
   Search,
   ShieldCheck,
-  ShieldX,
   Clock,
   Eye,
   CheckCircle2,
@@ -40,36 +39,95 @@ import {
   FileText,
   Image as ImageIcon,
   Loader2,
+  MapPin,
+  Camera,
+  User,
+  BadgeCheck,
+  ExternalLink,
+  Phone,
+  Mail,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { es } from 'date-fns/locale';
+
+// Types matching the backend API response
+interface CepValidationResult {
+  isValid?: boolean;
+  region?: string;
+  isHabil?: boolean;
+  status?: string;
+  fullName?: string;
+  photoUrl?: string;
+  validatedAt?: string;
+}
+
+interface VerificationDocument {
+  url: string;
+  type: 'cep_front' | 'cep_back' | 'dni_front' | 'dni_back' | 'selfie_with_dni';
+  uploadedAt: string;
+}
+
+interface NurseUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  avatar?: string;
+}
+
+interface VerificationNurse {
+  _id: string;
+  cepNumber: string;
+  specialties: string[];
+  officialCepPhotoUrl?: string;
+  selfieUrl?: string;
+  cepRegisteredName?: string;
+  bio?: string;
+  yearsOfExperience?: number;
+  user?: NurseUser;
+}
 
 interface Verification {
   _id: string;
+  id?: string;
   nurseId: string;
+  userId: string;
   status: 'pending' | 'under_review' | 'approved' | 'rejected';
-  cepNumber: string;
-  dni: string;
-  cepData?: {
-    fullName: string;
-    photoUrl: string;
-    isHabil: boolean;
-  };
-  documents: {
-    type: string;
-    url: string;
-  }[];
-  attemptNumber: number;
+  dniNumber?: string;
+  fullNameOnDni?: string;
+  documents: VerificationDocument[];
+  officialCepPhotoUrl?: string;
+  cepIdentityConfirmed?: boolean;
+  cepIdentityConfirmedAt?: string;
+  cepValidation?: CepValidationResult;
+  reviewedAt?: string;
   reviewNotes?: string;
-  reviewedBy?: string;
+  rejectionReason?: string;
+  attemptNumber: number;
   createdAt: string;
   updatedAt: string;
-  nurse?: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    avatar?: string;
+  nurse?: VerificationNurse;
+}
+
+interface VerificationStats {
+  pending: number;
+  under_review?: number;
+  underReview?: number;
+  approved: number;
+  rejected: number;
+  total?: number;
+}
+
+interface VerificationsResponse {
+  data: Verification[];
+  pagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
   };
+  verifications?: Verification[];
+  total?: number;
 }
 
 const statusConfig = {
@@ -79,102 +137,13 @@ const statusConfig = {
   rejected: { label: 'Rechazada', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200', icon: XCircle },
 };
 
-// Demo data
-const demoVerifications: Verification[] = [
-  {
-    _id: '1',
-    nurseId: 'n1',
-    status: 'pending',
-    cepNumber: '108887',
-    dni: '44119536',
-    cepData: {
-      fullName: 'CHAVEZ TORRES MARIA CLAUDIA',
-      photoUrl: 'https://randomuser.me/api/portraits/women/1.jpg',
-      isHabil: true,
-    },
-    documents: [
-      { type: 'dni_front', url: '/doc1.jpg' },
-      { type: 'dni_back', url: '/doc2.jpg' },
-      { type: 'selfie', url: '/doc3.jpg' },
-    ],
-    attemptNumber: 1,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    nurse: {
-      firstName: 'Maria',
-      lastName: 'Chavez',
-      email: 'maria.chavez@email.com',
-    },
-  },
-  {
-    _id: '2',
-    nurseId: 'n2',
-    status: 'under_review',
-    cepNumber: '125432',
-    dni: '72345678',
-    cepData: {
-      fullName: 'LOPEZ GARCIA ANA LUCIA',
-      photoUrl: 'https://randomuser.me/api/portraits/women/2.jpg',
-      isHabil: true,
-    },
-    documents: [
-      { type: 'dni_front', url: '/doc1.jpg' },
-      { type: 'selfie', url: '/doc3.jpg' },
-    ],
-    attemptNumber: 1,
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-    nurse: {
-      firstName: 'Ana',
-      lastName: 'Lopez',
-      email: 'ana.lopez@email.com',
-    },
-  },
-  {
-    _id: '3',
-    nurseId: 'n3',
-    status: 'approved',
-    cepNumber: '098765',
-    dni: '45678901',
-    cepData: {
-      fullName: 'RODRIGUEZ MENDEZ CARMEN ROSA',
-      photoUrl: 'https://randomuser.me/api/portraits/women/3.jpg',
-      isHabil: true,
-    },
-    documents: [],
-    attemptNumber: 1,
-    reviewNotes: 'Documentos verificados correctamente',
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    nurse: {
-      firstName: 'Carmen',
-      lastName: 'Rodriguez',
-      email: 'carmen.rodriguez@email.com',
-    },
-  },
-  {
-    _id: '4',
-    nurseId: 'n4',
-    status: 'rejected',
-    cepNumber: '111222',
-    dni: '33445566',
-    cepData: {
-      fullName: 'TORRES SILVA PATRICIA',
-      photoUrl: 'https://randomuser.me/api/portraits/women/4.jpg',
-      isHabil: false,
-    },
-    documents: [],
-    attemptNumber: 2,
-    reviewNotes: 'CEP no se encuentra HABIL en el registro oficial',
-    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    nurse: {
-      firstName: 'Patricia',
-      lastName: 'Torres',
-      email: 'patricia.torres@email.com',
-    },
-  },
-];
+const documentLabels: Record<string, string> = {
+  cep_front: 'CEP (Frente)',
+  cep_back: 'CEP (Dorso)',
+  dni_front: 'DNI (Frente)',
+  dni_back: 'DNI (Dorso)',
+  selfie_with_dni: 'Selfie con DNI',
+};
 
 export default function VerificacionesPage() {
   const queryClient = useQueryClient();
@@ -182,72 +151,115 @@ export default function VerificacionesPage() {
   const [activeTab, setActiveTab] = useState('pending');
   const [selectedVerification, setSelectedVerification] = useState<Verification | null>(null);
   const [reviewNotes, setReviewNotes] = useState('');
-  const [actionType, setActionType] = useState<'approve' | 'reject' | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [showRejectionForm, setShowRejectionForm] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<VerificationDocument | null>(null);
 
-  const { data: verifications, isLoading } = useQuery({
+  // Fetch verifications
+  const { data: verificationsResponse, isLoading, error } = useQuery<VerificationsResponse>({
     queryKey: ['verifications', activeTab],
     queryFn: () => verificationsApi.getAll({ status: activeTab }),
-    placeholderData: demoVerifications,
   });
 
-  const { data: stats } = useQuery({
+  // Extract verifications from response (handle both formats)
+  const verifications = verificationsResponse?.data || verificationsResponse?.verifications || [];
+
+  // Fetch stats
+  const { data: stats } = useQuery<VerificationStats>({
     queryKey: ['verification-stats'],
     queryFn: () => verificationsApi.getStats(),
-    placeholderData: {
-      pending: 5,
-      under_review: 2,
-      approved: 45,
-      rejected: 8,
-    },
   });
 
+  // Review mutation
   const reviewMutation = useMutation({
     mutationFn: ({ id, status, notes }: { id: string; status: 'approved' | 'rejected'; notes: string }) =>
       verificationsApi.review(id, status, notes),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['verifications'] });
       queryClient.invalidateQueries({ queryKey: ['verification-stats'] });
-      toast.success(actionType === 'approve' ? 'Verificacion aprobada' : 'Verificacion rechazada');
-      setSelectedVerification(null);
-      setReviewNotes('');
-      setActionType(null);
+      toast.success(showRejectionForm ? 'Verificacion rechazada' : 'Verificacion aprobada');
+      closeDialog();
     },
     onError: () => {
       toast.error('Error al procesar la verificacion');
     },
   });
 
+  // Mark under review mutation
   const markUnderReviewMutation = useMutation({
     mutationFn: (id: string) => verificationsApi.markUnderReview(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['verifications'] });
+      queryClient.invalidateQueries({ queryKey: ['verification-stats'] });
       toast.success('Verificacion marcada en revision');
     },
   });
 
-  const filteredVerifications = (verifications || demoVerifications).filter((v: Verification) => {
+  const closeDialog = () => {
+    setSelectedVerification(null);
+    setReviewNotes('');
+    setRejectionReason('');
+    setShowRejectionForm(false);
+    setSelectedDocument(null);
+  };
+
+  const filteredVerifications = verifications.filter((v: Verification) => {
     if (activeTab !== 'all' && v.status !== activeTab) return false;
     if (search) {
       const searchLower = search.toLowerCase();
+      const cepNumber = v.nurse?.cepNumber || '';
+      const dniNumber = v.dniNumber || '';
+      const firstName = v.nurse?.user?.firstName || '';
+      const lastName = v.nurse?.user?.lastName || '';
+      const fullName = v.fullNameOnDni || v.cepValidation?.fullName || '';
       return (
-        v.cepNumber.includes(search) ||
-        v.dni.includes(search) ||
-        v.nurse?.firstName?.toLowerCase().includes(searchLower) ||
-        v.nurse?.lastName?.toLowerCase().includes(searchLower) ||
-        v.cepData?.fullName?.toLowerCase().includes(searchLower)
+        cepNumber.includes(search) ||
+        dniNumber.includes(search) ||
+        firstName.toLowerCase().includes(searchLower) ||
+        lastName.toLowerCase().includes(searchLower) ||
+        fullName.toLowerCase().includes(searchLower)
       );
     }
     return true;
   });
 
-  const handleReview = () => {
-    if (!selectedVerification || !actionType) return;
+  const handleApprove = () => {
+    if (!selectedVerification) return;
+    const id = selectedVerification._id || selectedVerification.id;
+    if (!id) return;
     reviewMutation.mutate({
-      id: selectedVerification._id,
-      status: actionType === 'approve' ? 'approved' : 'rejected',
+      id,
+      status: 'approved',
       notes: reviewNotes,
     });
   };
+
+  const handleReject = () => {
+    if (!selectedVerification || !rejectionReason) return;
+    const id = selectedVerification._id || selectedVerification.id;
+    if (!id) return;
+    reviewMutation.mutate({
+      id,
+      status: 'rejected',
+      notes: `${reviewNotes}\n\nMotivo de rechazo: ${rejectionReason}`,
+    });
+  };
+
+  const getInitials = (firstName?: string, lastName?: string): string => {
+    const first = firstName?.charAt(0) || '';
+    const last = lastName?.charAt(0) || '';
+    return (first + last).toUpperCase() || '??';
+  };
+
+  const getCepPhotoUrl = (verification: Verification): string | null => {
+    return verification.officialCepPhotoUrl
+      || verification.nurse?.officialCepPhotoUrl
+      || verification.cepValidation?.photoUrl
+      || null;
+  };
+
+  // Get under_review count (handle both formats)
+  const underReviewCount = stats?.under_review ?? stats?.underReview ?? 0;
 
   return (
     <div className="space-y-6">
@@ -275,7 +287,7 @@ export default function VerificacionesPage() {
             <Eye className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats?.under_review || 0}</div>
+            <div className="text-2xl font-bold">{underReviewCount}</div>
           </CardContent>
         </Card>
         <Card>
@@ -346,6 +358,14 @@ export default function VerificacionesPage() {
                     <Skeleton key={i} className="h-16 w-full" />
                   ))}
                 </div>
+              ) : error ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <AlertCircle className="h-12 w-12 text-red-500/50" />
+                  <h3 className="mt-4 text-lg font-semibold">Error al cargar</h3>
+                  <p className="text-muted-foreground">
+                    No se pudieron cargar las verificaciones
+                  </p>
+                </div>
               ) : filteredVerifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <ShieldCheck className="h-12 w-12 text-muted-foreground/50" />
@@ -362,6 +382,7 @@ export default function VerificacionesPage() {
                       <TableHead>CEP</TableHead>
                       <TableHead>DNI</TableHead>
                       <TableHead>Estado CEP</TableHead>
+                      <TableHead>Documentos</TableHead>
                       <TableHead>Intento</TableHead>
                       <TableHead>Fecha</TableHead>
                       <TableHead className="text-right">Acciones</TableHead>
@@ -370,42 +391,57 @@ export default function VerificacionesPage() {
                   <TableBody>
                     {filteredVerifications.map((verification: Verification) => {
                       const StatusIcon = statusConfig[verification.status].icon;
+                      const docsCount = verification.documents?.length || 0;
                       return (
-                        <TableRow key={verification._id}>
+                        <TableRow key={verification._id || verification.id}>
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <Avatar className="h-10 w-10">
-                                <AvatarImage src={verification.cepData?.photoUrl} />
+                                <AvatarImage src={getCepPhotoUrl(verification) || verification.nurse?.user?.avatar} />
                                 <AvatarFallback>
-                                  {verification.nurse?.firstName?.[0]}
-                                  {verification.nurse?.lastName?.[0]}
+                                  {getInitials(
+                                    verification.nurse?.user?.firstName,
+                                    verification.nurse?.user?.lastName
+                                  )}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="font-medium">
-                                  {verification.cepData?.fullName || `${verification.nurse?.firstName} ${verification.nurse?.lastName}`}
+                                  {verification.fullNameOnDni ||
+                                    verification.cepValidation?.fullName ||
+                                    `${verification.nurse?.user?.firstName || ''} ${verification.nurse?.user?.lastName || ''}`}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                  {verification.nurse?.email}
+                                  {verification.nurse?.user?.email}
                                 </p>
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell className="font-mono">{verification.cepNumber}</TableCell>
-                          <TableCell className="font-mono">{verification.dni}</TableCell>
+                          <TableCell className="font-mono">{verification.nurse?.cepNumber || '-'}</TableCell>
+                          <TableCell className="font-mono">{verification.dniNumber || '-'}</TableCell>
                           <TableCell>
-                            {verification.cepData?.isHabil ? (
-                              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                HABIL
-                              </Badge>
+                            {verification.cepValidation?.isHabil !== undefined ? (
+                              verification.cepValidation.isHabil ? (
+                                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                  HABIL
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                  NO HABIL
+                                </Badge>
+                              )
                             ) : (
-                              <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                NO HABIL
-                              </Badge>
+                              <Badge variant="outline">Sin validar</Badge>
                             )}
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline">#{verification.attemptNumber}</Badge>
+                            <Badge variant="outline" className="gap-1">
+                              <FileText className="h-3 w-3" />
+                              {docsCount}/5
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">#{verification.attemptNumber || 1}</Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground">
                             {formatDistanceToNow(new Date(verification.createdAt), {
@@ -427,10 +463,21 @@ export default function VerificacionesPage() {
                                   <Button
                                     variant="ghost"
                                     size="icon"
+                                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                    onClick={() => {
+                                      const id = verification._id || verification.id;
+                                      if (id) markUnderReviewMutation.mutate(id);
+                                    }}
+                                    title="Marcar en revision"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
                                     className="text-green-600 hover:text-green-700 hover:bg-green-50"
                                     onClick={() => {
                                       setSelectedVerification(verification);
-                                      setActionType('approve');
                                     }}
                                   >
                                     <CheckCircle2 className="h-4 w-4" />
@@ -441,7 +488,7 @@ export default function VerificacionesPage() {
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                     onClick={() => {
                                       setSelectedVerification(verification);
-                                      setActionType('reject');
+                                      setShowRejectionForm(true);
                                     }}
                                   >
                                     <XCircle className="h-4 w-4" />
@@ -462,151 +509,396 @@ export default function VerificacionesPage() {
       </Tabs>
 
       {/* Detail/Review Dialog */}
-      <Dialog
-        open={!!selectedVerification}
-        onOpenChange={() => {
-          setSelectedVerification(null);
-          setReviewNotes('');
-          setActionType(null);
-        }}
-      >
-        <DialogContent className="max-w-2xl">
+      <Dialog open={!!selectedVerification} onOpenChange={() => closeDialog()}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {actionType === 'approve'
-                ? 'Aprobar Verificacion'
-                : actionType === 'reject'
+              {showRejectionForm
                 ? 'Rechazar Verificacion'
                 : 'Detalle de Verificacion'}
             </DialogTitle>
             <DialogDescription>
-              {actionType
-                ? 'Revisa los datos antes de continuar'
-                : 'Informacion completa de la verificacion'}
+              {showRejectionForm
+                ? 'Indica el motivo del rechazo para que la enfermera pueda corregirlo'
+                : 'Revisa los documentos y fotos antes de aprobar'}
             </DialogDescription>
           </DialogHeader>
 
           {selectedVerification && (
-            <div className="space-y-4">
-              {/* Nurse Info */}
+            <div className="space-y-6">
+              {/* Nurse Info Header */}
               <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src={selectedVerification.cepData?.photoUrl} />
+                  <AvatarImage src={getCepPhotoUrl(selectedVerification) || selectedVerification.nurse?.user?.avatar} />
                   <AvatarFallback className="text-lg">
-                    {selectedVerification.nurse?.firstName?.[0]}
-                    {selectedVerification.nurse?.lastName?.[0]}
+                    {getInitials(
+                      selectedVerification.nurse?.user?.firstName,
+                      selectedVerification.nurse?.user?.lastName
+                    )}
                   </AvatarFallback>
                 </Avatar>
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold text-lg">
-                    {selectedVerification.cepData?.fullName}
+                    {selectedVerification.fullNameOnDni ||
+                      selectedVerification.cepValidation?.fullName ||
+                      `${selectedVerification.nurse?.user?.firstName || ''} ${selectedVerification.nurse?.user?.lastName || ''}`}
                   </h3>
-                  <p className="text-muted-foreground">{selectedVerification.nurse?.email}</p>
-                  <div className="flex gap-2 mt-2">
-                    <Badge variant="outline">CEP: {selectedVerification.cepNumber}</Badge>
-                    <Badge variant="outline">DNI: {selectedVerification.dni}</Badge>
-                    {selectedVerification.cepData?.isHabil ? (
-                      <Badge className="bg-green-100 text-green-800">HABIL</Badge>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    {selectedVerification.nurse?.user?.email && (
+                      <span className="flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        {selectedVerification.nurse.user.email}
+                      </span>
+                    )}
+                    {selectedVerification.nurse?.user?.phone && (
+                      <span className="flex items-center gap-1">
+                        <Phone className="h-3 w-3" />
+                        {selectedVerification.nurse.user.phone}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Badge className={statusConfig[selectedVerification.status].color}>
+                  {statusConfig[selectedVerification.status].label}
+                </Badge>
+              </div>
+
+              {/* Info Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-1">Numero CEP</p>
+                  <p className="font-semibold font-mono">{selectedVerification.nurse?.cepNumber || '-'}</p>
+                </div>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-1">Numero DNI</p>
+                  <p className="font-semibold font-mono">{selectedVerification.dniNumber || '-'}</p>
+                </div>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-1">Nombre en CEP</p>
+                  <p className="font-semibold text-sm">
+                    {selectedVerification.cepValidation?.fullName || selectedVerification.fullNameOnDni || '-'}
+                  </p>
+                </div>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-1">Intento #</p>
+                  <p className="font-semibold">{selectedVerification.attemptNumber || 1}</p>
+                </div>
+              </div>
+
+              {/* CEP Validation Section */}
+              {selectedVerification.cepValidation && (
+                <div className="p-4 rounded-lg border-2 border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
+                  <h4 className="flex items-center gap-2 font-semibold text-green-800 dark:text-green-200 mb-3">
+                    <BadgeCheck className="h-5 w-5" />
+                    Validacion CEP Oficial
+                  </h4>
+                  <div className="flex flex-wrap gap-3">
+                    <Badge
+                      className={
+                        selectedVerification.cepValidation.isHabil
+                          ? 'bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-100'
+                          : 'bg-red-200 text-red-800 dark:bg-red-800 dark:text-red-100'
+                      }
+                    >
+                      {selectedVerification.cepValidation.isHabil ? (
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                      ) : (
+                        <XCircle className="h-3 w-3 mr-1" />
+                      )}
+                      {selectedVerification.cepValidation.status || (selectedVerification.cepValidation.isHabil ? 'HABIL' : 'INHABILITADO')}
+                    </Badge>
+                    {selectedVerification.cepValidation.region && (
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-200">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {selectedVerification.cepValidation.region}
+                      </Badge>
+                    )}
+                  </div>
+                  {selectedVerification.cepValidation.validatedAt && (
+                    <p className="text-xs text-green-700 dark:text-green-300 mt-2">
+                      Verificado el {format(new Date(selectedVerification.cepValidation.validatedAt), 'dd/MM/yyyy HH:mm')}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Identity Confirmation Badge */}
+              {selectedVerification.cepIdentityConfirmed && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 text-green-800 dark:text-green-100">
+                  <BadgeCheck className="h-5 w-5" />
+                  <span className="font-medium">Identidad confirmada por el usuario</span>
+                  {selectedVerification.cepIdentityConfirmedAt && (
+                    <span className="ml-auto text-sm">
+                      {format(new Date(selectedVerification.cepIdentityConfirmedAt), 'dd/MM/yyyy HH:mm')}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Photo Comparison Section */}
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <h4 className="flex items-center gap-2 font-semibold mb-2">
+                  <Camera className="h-5 w-5 text-primary" />
+                  Comparacion de Fotos
+                </h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Verifica que la persona en las tres fotos sea la misma antes de aprobar
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Official CEP Photo */}
+                  <div className="bg-background p-4 rounded-lg text-center border">
+                    <div className="flex items-center justify-center gap-2 mb-3 text-sm font-medium">
+                      <BadgeCheck className="h-4 w-4" />
+                      Foto Oficial CEP
+                    </div>
+                    {getCepPhotoUrl(selectedVerification) ? (
+                      <div className="relative">
+                        <img
+                          src={getCepPhotoUrl(selectedVerification)!}
+                          alt="Foto oficial CEP"
+                          className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-green-200"
+                        />
+                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-green-600 text-white">
+                          Registro Oficial
+                        </Badge>
+                      </div>
                     ) : (
-                      <Badge className="bg-red-100 text-red-800">NO HABIL</Badge>
+                      <div className="w-32 h-32 mx-auto rounded-full bg-muted flex flex-col items-center justify-center">
+                        <Camera className="h-8 w-8 text-muted-foreground" />
+                        <span className="text-xs mt-1">Sin foto en CEP</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Selfie Photo */}
+                  <div className="bg-background p-4 rounded-lg text-center border">
+                    <div className="flex items-center justify-center gap-2 mb-3 text-sm font-medium">
+                      <Camera className="h-4 w-4" />
+                      Selfie de Verificacion
+                    </div>
+                    {selectedVerification.nurse?.selfieUrl ? (
+                      <div className="relative">
+                        <img
+                          src={selectedVerification.nurse.selfieUrl}
+                          alt="Selfie de verificacion"
+                          className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-blue-200"
+                        />
+                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-blue-600 text-white">
+                          Tomada por Usuario
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="w-32 h-32 mx-auto rounded-full bg-muted flex flex-col items-center justify-center">
+                        <Camera className="h-8 w-8 text-muted-foreground" />
+                        <span className="text-xs mt-1">Sin selfie</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Profile Avatar */}
+                  <div className="bg-background p-4 rounded-lg text-center border">
+                    <div className="flex items-center justify-center gap-2 mb-3 text-sm font-medium">
+                      <User className="h-4 w-4" />
+                      Avatar de Perfil
+                    </div>
+                    {selectedVerification.nurse?.user?.avatar ? (
+                      <div className="relative">
+                        <img
+                          src={selectedVerification.nurse.user.avatar}
+                          alt="Avatar de perfil"
+                          className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-yellow-200"
+                        />
+                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-600 text-white">
+                          Foto de Perfil
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                        {getInitials(
+                          selectedVerification.nurse?.user?.firstName,
+                          selectedVerification.nurse?.user?.lastName
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Documents */}
-              {selectedVerification.documents.length > 0 && (
+              {/* Specialties */}
+              {selectedVerification.nurse?.specialties && selectedVerification.nurse.specialties.length > 0 && (
                 <div>
-                  <h4 className="font-medium mb-2 flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Documentos ({selectedVerification.documents.length})
-                  </h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    {selectedVerification.documents.map((doc, i) => (
-                      <div
-                        key={i}
-                        className="aspect-square bg-muted rounded-lg flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
-                      >
-                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                      </div>
+                  <h4 className="font-semibold mb-2">Especialidades</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedVerification.nurse.specialties.map((specialty, i) => (
+                      <Badge key={i} variant="secondary">{specialty}</Badge>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Previous Review Notes */}
-              {selectedVerification.reviewNotes && !actionType && (
-                <div className="p-4 bg-muted rounded-lg">
-                  <h4 className="font-medium mb-1">Notas de revision</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedVerification.reviewNotes}
+              {/* Documents Section */}
+              {selectedVerification.documents && selectedVerification.documents.length > 0 && (
+                <div>
+                  <h4 className="flex items-center gap-2 font-semibold mb-3">
+                    <FileText className="h-5 w-5" />
+                    Documentos ({selectedVerification.documents.length}/5)
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    {selectedVerification.documents.map((doc, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedDocument(doc)}
+                        className="aspect-square bg-muted rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors border-2 border-transparent hover:border-primary p-2"
+                      >
+                        <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                        <span className="text-xs text-center font-medium">
+                          {documentLabels[doc.type] || doc.type}
+                        </span>
+                      </button>
+                    ))}
+                    {/* Show missing documents */}
+                    {['cep_front', 'cep_back', 'dni_front', 'dni_back', 'selfie_with_dni']
+                      .filter(type => !selectedVerification.documents.some(d => d.type === type))
+                      .map((missingType, i) => (
+                        <div
+                          key={`missing-${i}`}
+                          className="aspect-square bg-red-50 dark:bg-red-950 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-red-300 dark:border-red-700 p-2"
+                        >
+                          <AlertCircle className="h-8 w-8 text-red-400 mb-2" />
+                          <span className="text-xs text-center font-medium text-red-600 dark:text-red-400">
+                            {documentLabels[missingType]} (Faltante)
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Previous Review Info */}
+              {selectedVerification.reviewedAt && (
+                <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
+                  <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Revision Anterior</h4>
+                  <p className="text-sm">
+                    <strong>Fecha:</strong> {format(new Date(selectedVerification.reviewedAt), 'dd/MM/yyyy HH:mm')}
                   </p>
+                  {selectedVerification.reviewNotes && (
+                    <p className="text-sm mt-1">
+                      <strong>Notas:</strong> {selectedVerification.reviewNotes}
+                    </p>
+                  )}
+                  {selectedVerification.rejectionReason && (
+                    <p className="text-sm mt-1 text-red-600 dark:text-red-400">
+                      <strong>Motivo de rechazo:</strong> {selectedVerification.rejectionReason}
+                    </p>
+                  )}
                 </div>
               )}
 
               {/* Review Form */}
-              {actionType && (
-                <div>
-                  <label className="text-sm font-medium">
-                    Notas de revision {actionType === 'reject' && '(requerido)'}
-                  </label>
-                  <Textarea
-                    placeholder={
-                      actionType === 'approve'
-                        ? 'Documentos verificados correctamente...'
-                        : 'Motivo del rechazo...'
-                    }
-                    value={reviewNotes}
-                    onChange={(e) => setReviewNotes(e.target.value)}
-                    className="mt-1"
-                    rows={3}
-                  />
+              {(selectedVerification.status === 'pending' || selectedVerification.status === 'under_review') && (
+                <div className="space-y-4 p-4 rounded-lg bg-muted/50">
+                  <h4 className="font-semibold">Revision</h4>
+                  <div>
+                    <label className="text-sm font-medium">Notas internas (opcional)</label>
+                    <Textarea
+                      placeholder="Notas que solo veran los administradores..."
+                      value={reviewNotes}
+                      onChange={(e) => setReviewNotes(e.target.value)}
+                      className="mt-1"
+                      rows={2}
+                    />
+                  </div>
+                  {showRejectionForm && (
+                    <div>
+                      <label className="text-sm font-medium text-red-600">
+                        Motivo de rechazo (la enfermera vera este mensaje) *
+                      </label>
+                      <Textarea
+                        placeholder="Se especifico para ayudarla a corregir su solicitud..."
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        className="mt-1 border-red-300 focus:border-red-500"
+                        rows={2}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           )}
 
-          <DialogFooter>
-            {actionType ? (
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            {showRejectionForm ? (
               <>
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setActionType(null);
-                    setReviewNotes('');
+                    setShowRejectionForm(false);
+                    setRejectionReason('');
                   }}
                 >
                   Cancelar
                 </Button>
                 <Button
-                  variant={actionType === 'approve' ? 'default' : 'destructive'}
-                  onClick={handleReview}
-                  disabled={reviewMutation.isPending || (actionType === 'reject' && !reviewNotes)}
+                  variant="destructive"
+                  onClick={handleReject}
+                  disabled={reviewMutation.isPending || !rejectionReason}
                 >
                   {reviewMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {actionType === 'approve' ? 'Aprobar' : 'Rechazar'}
+                  Confirmar Rechazo
+                </Button>
+              </>
+            ) : selectedVerification?.status === 'pending' || selectedVerification?.status === 'under_review' ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowRejectionForm(true)}
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Rechazar
+                </Button>
+                <Button
+                  onClick={handleApprove}
+                  disabled={reviewMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {reviewMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                  Aprobar
                 </Button>
               </>
             ) : (
-              <div className="flex gap-2">
-                {selectedVerification?.status === 'pending' && (
-                  <>
-                    <Button
-                      variant="outline"
-                      onClick={() => setActionType('reject')}
-                    >
-                      <XCircle className="mr-2 h-4 w-4" />
-                      Rechazar
-                    </Button>
-                    <Button onClick={() => setActionType('approve')}>
-                      <CheckCircle2 className="mr-2 h-4 w-4" />
-                      Aprobar
-                    </Button>
-                  </>
-                )}
-              </div>
+              <Button variant="outline" onClick={closeDialog}>
+                Cerrar
+              </Button>
             )}
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Document Viewer Dialog */}
+      <Dialog open={!!selectedDocument} onOpenChange={() => setSelectedDocument(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedDocument ? documentLabels[selectedDocument.type] || selectedDocument.type : 'Documento'}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedDocument && (
+            <div className="flex flex-col items-center gap-4">
+              <img
+                src={selectedDocument.url}
+                alt={documentLabels[selectedDocument.type] || selectedDocument.type}
+                className="max-w-full max-h-[60vh] rounded-lg shadow-lg object-contain"
+              />
+              <Button asChild variant="outline">
+                <a href={selectedDocument.url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Abrir en nueva pestana
+                </a>
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
