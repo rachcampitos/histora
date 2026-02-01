@@ -4,7 +4,7 @@ export const faqs: FAQItem[] = [
   {
     question: "¿Cuanto cuesta el servicio?",
     answer:
-      "Los precios varian segun el tipo de servicio. Por ejemplo, una inyeccion intramuscular cuesta desde S/. 30, control de signos vitales desde S/. 35, y curacion de heridas desde S/. 60. Cada enfermera establece sus propios precios, los cuales puedes ver en su perfil antes de solicitar el servicio. No hay costos ocultos ni comisiones adicionales.",
+      "Los precios varian segun el tipo de servicio y la experiencia de cada profesional. La mayoria de servicios basicos como inyecciones o control de signos vitales cuestan menos de S/. 50. Cada enfermera establece sus propios precios, los cuales puedes ver en su perfil antes de solicitar el servicio. No hay costos ocultos ni comisiones adicionales.",
   },
   {
     question: "¿Como se que las enfermeras estan realmente verificadas?",
@@ -39,7 +39,7 @@ export const faqs: FAQItem[] = [
   {
     question: "¿NurseLite tiene algun costo para las enfermeras?",
     answer:
-      "El registro y la verificacion CEP son completamente gratis. Para recibir solicitudes de pacientes, NurseLite ofrece planes de suscripcion mensual accesibles. A diferencia de otras plataformas que cobran comision por cada servicio (15-30%), con NurseLite pagas una cuota fija y el 100% de tus ingresos son para ti. Esto significa que mientras mas servicios realices, mas rentable es para ti. Puedes cancelar en cualquier momento sin penalidad.",
+      "El registro y la verificacion CEP son completamente gratis. Para recibir solicitudes de pacientes, NurseLite ofrece planes de suscripcion mensual accesibles. Con nuestra suscripcion mensual fija, el 100% de tus ingresos son para ti - mientras mas servicios realices, mas rentable es para ti. Puedes cancelar en cualquier momento sin penalidad.",
   },
 ];
 
