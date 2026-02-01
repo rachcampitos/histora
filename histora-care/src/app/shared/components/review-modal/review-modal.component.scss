@@ -293,3 +293,107 @@ ion-footer {
     }
   }
 }
+
+// Responsive adjustments for short screens (avoid scroll in modal)
+@media (max-height: 700px) {
+  .review-container {
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  .nurse-info {
+    padding-bottom: 8px;
+
+    .nurse-label {
+      font-size: 12px;
+    }
+
+    .nurse-name {
+      font-size: 16px;
+    }
+  }
+
+  .rating-section {
+    .rating-instruction {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .star-button {
+      padding: 3px;
+
+      ion-icon {
+        font-size: 30px;
+      }
+    }
+
+    .rating-label {
+      margin-top: 6px;
+      font-size: 13px;
+    }
+  }
+
+  .comment-section {
+    .comment-label {
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .comment-textarea {
+      min-height: 60px;
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+    }
+  }
+
+  ion-footer .footer-buttons {
+    ion-button {
+      height: 40px;
+      font-size: 14px;
+    }
+  }
+}
+
+// Extra small height (iPhone SE, older devices)
+@media (max-height: 600px) {
+  .review-container {
+    gap: 8px;
+    padding-bottom: 4px;
+  }
+
+  .nurse-info {
+    padding-bottom: 6px;
+  }
+
+  .rating-section {
+    .rating-instruction {
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .star-button {
+      padding: 2px;
+
+      ion-icon {
+        font-size: 26px;
+      }
+    }
+
+    .rating-label {
+      margin-top: 4px;
+      font-size: 12px;
+    }
+  }
+
+  .comment-section {
+    .comment-textarea {
+      min-height: 50px;
+    }
+  }
+
+  ion-footer .footer-buttons {
+    ion-button {
+      height: 38px;
+    }
+  }
+}
