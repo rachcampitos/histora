@@ -111,10 +111,10 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     setIsGoogleLoading(true);
-    // Redirect to backend Google OAuth endpoint
+    // Redirect to backend Google OAuth endpoint (uses /api prefix)
     // The callback will be handled by /callback/google
     const callbackUrl = `${window.location.origin}/callback/google`;
-    const googleAuthUrl = `${API_URL}/auth/google?redirect_uri=${encodeURIComponent(callbackUrl)}`;
+    const googleAuthUrl = `${API_URL}/api/auth/google?redirect_uri=${encodeURIComponent(callbackUrl)}`;
     window.location.href = googleAuthUrl;
   };
 
