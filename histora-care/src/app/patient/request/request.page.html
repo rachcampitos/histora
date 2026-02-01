@@ -270,7 +270,7 @@
         </ion-card-header>
         <ion-card-content>
           <ion-textarea
-            placeholder="¿Hay algo que debamos saber para cuidarte mejor? Alergias, medicamentos actuales, movilidad reducida, etc. Toda informacion nos ayuda a darte una mejor atencion."
+            placeholder="Alergias, medicamentos, movilidad reducida..."
             [value]="patientNotes()"
             (ionInput)="patientNotes.set($any($event).target.value)"
             [autoGrow]="true"
