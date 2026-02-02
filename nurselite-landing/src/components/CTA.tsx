@@ -66,8 +66,8 @@ export function CTA() {
                   viewport={{ once: true }}
                   className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto"
                 >
-                  Unete a miles de familias en Lima que confian en NurseLite para
-                  recibir atencion de enfermeria profesional y verificada.
+                  Únete a miles de familias en Lima que confían en NurseLite para
+                  recibir atención de enfermería profesional y verificada.
                 </motion.p>
 
                 {/* CTA Buttons */}

@@ -6,20 +6,20 @@ import Image from "next/image";
 
 const footerLinks = {
   producto: [
-    { label: "Como Funciona", href: "#como-funciona" },
+    { label: "Cómo Funciona", href: "#como-funciona" },
     { label: "Servicios", href: "#servicios" },
-    { label: "Verificacion CEP", href: "#verificacion" },
+    { label: "Verificación CEP", href: "#verificacion" },
     { label: "Testimonios", href: "#testimonios" },
     { label: "FAQ", href: "#faq" },
   ],
   legal: [
-    { label: "Terminos de Servicio", href: "/terminos" },
-    { label: "Politica de Privacidad", href: "/privacidad" },
+    { label: "Términos de Servicio", href: "/terminos" },
+    { label: "Política de Privacidad", href: "/privacidad" },
   ],
   enfermeras: [
-    { label: "Unete como Enfermera", href: "https://app.nurse-lite.com/auth/register?type=nurse" },
+    { label: "Únete como Enfermera", href: "https://app.nurse-lite.com/auth/register?type=nurse" },
     { label: "Beneficios", href: "#segmentos" },
-    { label: "Proceso de Verificacion", href: "#verificacion" },
+    { label: "Proceso de Verificación", href: "#verificacion" },
   ],
 };
 
@@ -52,7 +52,7 @@ export function Footer() {
             </Link>
             <p className="text-[#94a3b8] mb-6 max-w-xs leading-relaxed text-sm">
               Conectamos familias con enfermeras profesionales verificadas por el CEP.
-              Atencion de calidad en la comodidad de tu hogar.
+              Atención de calidad en la comodidad de tu hogar.
             </p>
 
             {/* Contact Info */}
@@ -75,7 +75,7 @@ export function Footer() {
               </a>
               <div className="flex items-center gap-2 text-[#94a3b8]">
                 <MapPin className="w-4 h-4 flex-shrink-0" />
-                <span>Lima, Peru</span>
+                <span>Lima, Perú</span>
               </div>
             </div>
 

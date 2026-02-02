@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://nurse-lite.com"),
   title: "NurseLite - Enfermeras a Domicilio en Lima | CEP Verificadas",
-  description: "Conectamos pacientes con enfermeras profesionales verificadas por el CEP. Atencion medica de calidad en la comodidad de tu hogar. Inyecciones, curaciones, control de signos vitales y mas.",
+  description: "Conectamos pacientes con enfermeras profesionales verificadas por el CEP. Atención médica de calidad en la comodidad de tu hogar. Inyecciones, curaciones, control de signos vitales y más.",
   authors: [{ name: "Histora Health" }],
   creator: "Histora Health",
   publisher: "Histora Health",
@@ -60,7 +60,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "MedicalBusiness",
   name: "NurseLite",
-  description: "Plataforma que conecta pacientes con enfermeras profesionales verificadas por el CEP para servicios de enfermeria a domicilio en Lima, Peru.",
+  description: "Plataforma que conecta pacientes con enfermeras profesionales verificadas por el CEP para servicios de enfermería a domicilio en Lima, Perú.",
   url: "https://nurse-lite.com",
   logo: "https://nurse-lite.com/nurselite.png",
   image: "https://nurse-lite.com/og-image.png",

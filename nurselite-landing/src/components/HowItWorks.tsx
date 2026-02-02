@@ -27,7 +27,7 @@ const steps = [
     icon: UserCheck,
     title: "Verifica su perfil",
     description:
-      "Revisa su verificacion CEP, experiencia, servicios ofrecidos y resenas de otros pacientes.",
+      "Revisa su verificación CEP, experiencia, servicios ofrecidos y reseñas de otros pacientes.",
     color: "#2d5f8a",
   },
   {
@@ -35,15 +35,15 @@ const steps = [
     icon: Calendar,
     title: "Agenda tu cita",
     description:
-      "Selecciona el servicio que necesitas, elige fecha y hora. La enfermera confirmara tu solicitud.",
+      "Selecciona el servicio que necesitas, elige fecha y hora. La enfermera confirmará tu solicitud.",
     color: "#4a9d9a",
   },
   {
     number: "04",
     icon: Home,
-    title: "Recibe atencion en casa",
+    title: "Recibe atención en casa",
     description:
-      "La enfermera llegara a tu domicilio puntualmente. Tu y tu familia en las mejores manos.",
+      "La enfermera llegará a tu domicilio puntualmente. Tú y tu familia en las mejores manos.",
     color: "#6bb5b3",
   },
 ];
@@ -51,8 +51,8 @@ const steps = [
 const features = [
   {
     icon: Smartphone,
-    title: "Facil de usar",
-    description: "Interfaz intuitiva disenada para todas las edades",
+    title: "Fácil de usar",
+    description: "Interfaz intuitiva diseñada para todas las edades",
   },
   {
     icon: Shield,
@@ -61,7 +61,7 @@ const features = [
   },
   {
     icon: Clock,
-    title: "Rapido",
+    title: "Rápido",
     description: "Encuentra enfermera disponible en minutos",
   },
 ];
@@ -76,13 +76,13 @@ export function HowItWorks() {
         {/* Section Header */}
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-block px-4 py-2 bg-[#4a9d9a]/10 dark:bg-[#4a9d9a]/20 text-[#4a9d9a] rounded-full text-sm font-semibold mb-4">
-            Simple y Rapido
+            Simple y Rápido
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a1a2e] dark:text-white mb-6">
-            Como Funciona NurseLite
+            Cómo Funciona NurseLite
           </h2>
           <p className="text-lg text-[#64748b] dark:text-[#94a3b8]">
-            En solo 4 pasos, conecta con una enfermera profesional y recibe atencion
+            En solo 4 pasos, conecta con una enfermera profesional y recibe atención
             de calidad en la comodidad de tu hogar.
           </p>
         </AnimatedSection>
