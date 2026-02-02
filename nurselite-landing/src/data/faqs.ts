@@ -2,44 +2,44 @@ import { FAQItem } from "@/types";
 
 export const faqs: FAQItem[] = [
   {
-    question: "¿Cuanto cuesta el servicio?",
+    question: "¿Cuánto cuesta el servicio?",
     answer:
-      "Los precios varian segun el tipo de servicio y la experiencia de cada profesional. La mayoria de servicios basicos como inyecciones o control de signos vitales cuestan menos de S/. 50. Cada enfermera establece sus propios precios, los cuales puedes ver en su perfil antes de solicitar el servicio. No hay costos ocultos ni comisiones adicionales.",
+      "Los precios varían según el tipo de servicio y la experiencia de cada profesional. La mayoría de servicios básicos como inyecciones o control de signos vitales cuestan menos de S/. 50. Cada enfermera establece sus propios precios, los cuales puedes ver en su perfil antes de solicitar el servicio. No hay costos ocultos ni comisiones adicionales.",
   },
   {
-    question: "¿Como se que las enfermeras estan realmente verificadas?",
+    question: "¿Cómo sé que las enfermeras están realmente verificadas?",
     answer:
-      "Todas las enfermeras en NurseLite pasan por un riguroso proceso de triple verificacion: validamos su colegiatura directamente con el Colegio de Enfermeros del Peru (CEP), verificamos su identidad con RENIEC, y usamos biometria con inteligencia artificial para confirmar que la persona es quien dice ser. Solo las enfermeras que pasan esta verificacion obtienen el badge de 'CEP Verificado'.",
+      "Todas las enfermeras en NurseLite pasan por un riguroso proceso de triple verificación: validamos su colegiatura directamente con el Colegio de Enfermeros del Perú (CEP), verificamos su identidad con RENIEC, y usamos biometría con inteligencia artificial para confirmar que la persona es quien dice ser. Solo las enfermeras que pasan esta verificación obtienen el badge de 'CEP Verificado'.",
   },
   {
-    question: "¿En que zonas de Lima estan disponibles?",
+    question: "¿En qué zonas de Lima están disponibles?",
     answer:
-      "Actualmente tenemos cobertura en los principales distritos de Lima Metropolitana: San Isidro, Miraflores, Surco, La Molina, San Borja, Lince, Jesus Maria, Magdalena, Pueblo Libre, entre otros. Estamos expandiendo constantemente nuestra red de enfermeras. Al buscar, te mostramos las enfermeras disponibles cerca de tu ubicacion.",
+      "Actualmente tenemos cobertura en los principales distritos de Lima Metropolitana: San Isidro, Miraflores, Surco, La Molina, San Borja, Lince, Jesús María, Magdalena, Pueblo Libre, entre otros. Estamos expandiendo constantemente nuestra red de enfermeras. Al buscar, te mostramos las enfermeras disponibles cerca de tu ubicación.",
   },
   {
     question: "¿Puedo solicitar servicio de emergencia?",
     answer:
-      "NurseLite esta disenado para servicios programados y no es un servicio de emergencias medicas. Si tienes una emergencia de salud, te recomendamos llamar al 106 (SAMU) o ir directamente a urgencias. Para servicios que pueden esperar algunas horas o dias, NurseLite es la opcion ideal.",
+      "NurseLite está diseñado para servicios programados y no es un servicio de emergencias médicas. Si tienes una emergencia de salud, te recomendamos llamar al 106 (SAMU) o ir directamente a urgencias. Para servicios que pueden esperar algunas horas o días, NurseLite es la opción ideal.",
   },
   {
-    question: "¿Como funciona el pago?",
+    question: "¿Cómo funciona el pago?",
     answer:
-      "El pago se coordina directamente con la enfermera al finalizar el servicio. Puedes pagar en efectivo, Yape, Plin o transferencia bancaria segun lo acordado. Estamos trabajando en integrar pagos seguros dentro de la app para mayor comodidad y proteccion.",
+      "El pago se coordina directamente con la enfermera al finalizar el servicio. Puedes pagar en efectivo, Yape, Plin o transferencia bancaria según lo acordado. Estamos trabajando en integrar pagos seguros dentro de la app para mayor comodidad y protección.",
   },
   {
-    question: "¿Que pasa si no estoy satisfecho con el servicio?",
+    question: "¿Qué pasa si no estoy satisfecho con el servicio?",
     answer:
-      "Tu satisfaccion es nuestra prioridad. Si tienes algun inconveniente con el servicio, contactanos dentro de las primeras 24 horas y resolveremos el problema. Investigamos cada caso y tomamos las medidas necesarias. Las enfermeras con malas calificaciones consistentes son retiradas de la plataforma.",
+      "Tu satisfacción es nuestra prioridad. Si tienes algún inconveniente con el servicio, contáctanos dentro de las primeras 24 horas y resolveremos el problema. Investigamos cada caso y tomamos las medidas necesarias. Las enfermeras con malas calificaciones consistentes son retiradas de la plataforma.",
   },
   {
-    question: "Soy enfermera, ¿como puedo unirme a NurseLite?",
+    question: "Soy enfermera, ¿cómo puedo unirme a NurseLite?",
     answer:
-      "Si eres enfermera colegiada con estado HABIL en el CEP, puedes registrarte en nuestra app. El proceso incluye: crear tu cuenta, ingresar tu numero CEP para verificacion automatica, completar tu perfil con servicios y precios, y empezar a recibir solicitudes. Es gratis registrarse y tu controlas tu disponibilidad.",
+      "Si eres enfermera colegiada con estado HÁBIL en el CEP, puedes registrarte en nuestra app. El proceso incluye: crear tu cuenta, ingresar tu número CEP para verificación automática, completar tu perfil con servicios y precios, y empezar a recibir solicitudes. Es gratis registrarse y tú controlas tu disponibilidad.",
   },
   {
-    question: "¿NurseLite tiene algun costo para las enfermeras?",
+    question: "¿NurseLite tiene algún costo para las enfermeras?",
     answer:
-      "El registro y la verificacion CEP son completamente gratis. Para recibir solicitudes de pacientes, NurseLite ofrece planes de suscripcion mensual accesibles. Con nuestra suscripcion mensual fija, el 100% de tus ingresos son para ti - mientras mas servicios realices, mas rentable es para ti. Puedes cancelar en cualquier momento sin penalidad.",
+      "El registro y la verificación CEP son completamente gratis. Para recibir solicitudes de pacientes, NurseLite ofrece planes de suscripción mensual accesibles. Con nuestra suscripción mensual fija, el 100% de tus ingresos son para ti - mientras más servicios realices, más rentable es para ti. Puedes cancelar en cualquier momento sin penalidad.",
   },
 ];
 
