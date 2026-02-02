@@ -90,6 +90,7 @@ interface AdminNurse {
   cepNumber: string;
   cepVerified: boolean;
   cepVerifiedAt?: string;
+  officialCepPhotoUrl?: string;
   verificationStatus: 'pending' | 'under_review' | 'approved' | 'rejected';
   specialties: string[];
   bio?: string;
@@ -347,7 +348,7 @@ export default function EnfermerasPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10">
-                            <AvatarImage src={nurse.user?.avatar} />
+                            <AvatarImage src={nurse.officialCepPhotoUrl || nurse.user?.avatar} />
                             <AvatarFallback>
                               {nurse.user?.firstName?.[0]}{nurse.user?.lastName?.[0]}
                             </AvatarFallback>
@@ -512,7 +513,7 @@ export default function EnfermerasPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src={selectedNurse.user?.avatar} />
+                  <AvatarImage src={selectedNurse.officialCepPhotoUrl || selectedNurse.user?.avatar} />
                   <AvatarFallback className="text-lg">
                     {selectedNurse.user?.firstName?.[0]}{selectedNurse.user?.lastName?.[0]}
                   </AvatarFallback>
