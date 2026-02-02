@@ -32,7 +32,7 @@ import { NotificationPanel } from './notification-panel';
 
 export function TopBar() {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const { isCollapsed, setMobileOpen } = useSidebarStore();
   const { user, logout } = useAuthStore();
   const { unreadCount, toggle: toggleNotifications } = useNotificationStore();
@@ -110,7 +110,7 @@ export function TopBar() {
               onClick={() => {
                 // Add transitioning class for smooth animation
                 document.documentElement.classList.add('theme-transitioning');
-                setTheme(theme === 'dark' ? 'light' : 'dark');
+                setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
                 // Remove class after transition
                 setTimeout(() => {
                   document.documentElement.classList.remove('theme-transitioning');
@@ -120,13 +120,13 @@ export function TopBar() {
             >
               <Sun className={cn(
                 "h-5 w-5 transition-all duration-300",
-                theme === 'dark'
+                resolvedTheme === 'dark'
                   ? "rotate-0 scale-100"
                   : "rotate-90 scale-0 absolute"
               )} />
               <Moon className={cn(
                 "h-5 w-5 transition-all duration-300",
-                theme === 'dark'
+                resolvedTheme === 'dark'
                   ? "-rotate-90 scale-0 absolute"
                   : "rotate-0 scale-100"
               )} />
