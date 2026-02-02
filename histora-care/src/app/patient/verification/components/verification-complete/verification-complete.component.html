@@ -1,0 +1,79 @@
+<div class="complete-step">
+  <div class="success-animation">
+    <div class="checkmark-circle">
+      <ion-icon name="checkmark"></ion-icon>
+    </div>
+    <div class="confetti"></div>
+  </div>
+
+  <h1>¡Verificacion completa!</h1>
+  <p class="subtitle">
+    Tu identidad ha sido verificada exitosamente. Ahora puedes solicitar servicios de enfermeria con total seguridad.
+  </p>
+
+  <div class="badge-container">
+    <div class="verification-badge" [class]="badgeColor">
+      <ion-icon name="shield-checkmark"></ion-icon>
+      <span>{{ badgeName }}</span>
+    </div>
+  </div>
+
+  <div class="status-summary">
+    <div class="summary-item">
+      <ion-icon name="call" color="success"></ion-icon>
+      <span>Telefono verificado</span>
+    </div>
+    <div class="summary-item">
+      <ion-icon name="card" color="success"></ion-icon>
+      <span>DNI verificado</span>
+    </div>
+    <div class="summary-item">
+      <ion-icon name="person-circle" color="success"></ion-icon>
+      <span>Selfie verificada</span>
+    </div>
+    <div class="summary-item">
+      <ion-icon name="people" color="success"></ion-icon>
+      <span>Contactos registrados</span>
+    </div>
+  </div>
+
+  <div class="trust-score-container">
+    <div class="trust-header">
+      <span>Tu nivel de confianza</span>
+      <span class="score">{{ trustScore }}/100</span>
+    </div>
+    <div class="trust-bar">
+      <div class="trust-fill" [style.width.%]="trustScore"></div>
+    </div>
+    <p class="trust-hint">
+      Tu score aumenta con cada servicio completado exitosamente.
+    </p>
+  </div>
+
+  <div class="benefits-unlock">
+    <h3>Lo que puedes hacer ahora:</h3>
+    <div class="benefit-item">
+      <ion-icon name="search-outline" color="primary"></ion-icon>
+      <span>Buscar enfermeras verificadas</span>
+    </div>
+    <div class="benefit-item">
+      <ion-icon name="calendar-outline" color="primary"></ion-icon>
+      <span>Solicitar servicios a domicilio</span>
+    </div>
+    <div class="benefit-item">
+      <ion-icon name="star-outline" color="primary"></ion-icon>
+      <span>Calificar y dar feedback</span>
+    </div>
+    <div class="benefit-item">
+      <ion-icon name="chatbubbles-outline" color="primary"></ion-icon>
+      <span>Chatear con profesionales</span>
+    </div>
+  </div>
+
+  <div class="step-actions">
+    <ion-button expand="block" (click)="onContinue()" class="primary-btn">
+      Comenzar a buscar
+      <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+    </ion-button>
+  </div>
+</div>

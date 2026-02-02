@@ -1,0 +1,222 @@
+.emergency-step {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 200px);
+}
+
+.step-header {
+  text-align: center;
+  padding: 24px 0;
+
+  .step-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+
+    ion-icon {
+      font-size: 28px;
+      color: white;
+    }
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--histora-text-primary);
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--histora-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Contacts list
+.contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.contact-card {
+  background: var(--histora-surface);
+  border: 1px solid var(--histora-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.contact-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--histora-border);
+
+  .contact-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+  }
+
+  ion-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: 32px;
+  }
+}
+
+// Form fields
+.form-field {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  ion-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--histora-text-secondary);
+    margin-bottom: 6px;
+  }
+
+  ion-input,
+  ion-select {
+    --background: var(--histora-background);
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border: 1px solid var(--histora-border);
+    border-radius: 8px;
+    font-size: 15px;
+
+    &:focus-within {
+      border-color: var(--ion-color-primary);
+    }
+
+    &.invalid {
+      border-color: var(--ion-color-danger);
+    }
+  }
+
+  .field-error {
+    display: block;
+    font-size: 12px;
+    color: var(--ion-color-danger);
+    margin-top: 4px;
+  }
+}
+
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--histora-background);
+  border: 1px solid var(--histora-border);
+  border-radius: 8px;
+  overflow: hidden;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+  }
+
+  .phone-prefix {
+    padding: 12px;
+    background: var(--histora-surface);
+    border-right: 1px solid var(--histora-border);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--histora-text-secondary);
+  }
+
+  ion-input {
+    border: none;
+    --background: transparent;
+  }
+}
+
+// Add button
+.add-btn {
+  --border-radius: 12px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+// Info note
+.info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(30, 58, 95, 0.05);
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  ion-icon {
+    font-size: 18px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  span {
+    font-size: 13px;
+    color: var(--histora-text-secondary);
+    line-height: 1.4;
+  }
+}
+
+// Error message
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+  color: var(--ion-color-danger);
+  font-size: 14px;
+  margin-bottom: 16px;
+
+  ion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// Actions
+.step-actions {
+  margin-top: auto;
+  padding-top: 16px;
+
+  .primary-btn {
+    --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+    --border-radius: 12px;
+    height: 52px;
+    font-weight: 600;
+    font-size: 16px;
+
+    ion-spinner {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// Dark mode
+:host-context(.dark) {
+  .info-note {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}

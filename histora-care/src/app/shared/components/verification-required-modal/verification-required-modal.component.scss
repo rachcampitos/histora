@@ -1,0 +1,108 @@
+ion-content {
+  --background: var(--histora-surface);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 520px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 8px;
+
+  .close-btn {
+    --color: var(--histora-text-secondary);
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+}
+
+.modal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.shield-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  ion-icon {
+    font-size: 40px;
+    color: white;
+  }
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--histora-text-primary);
+  margin: 0 0 12px;
+}
+
+.description {
+  font-size: 15px;
+  color: var(--histora-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 24px;
+  max-width: 280px;
+}
+
+.benefits {
+  width: 100%;
+  background: var(--histora-background);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--histora-border);
+  }
+
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--histora-text-primary);
+    text-align: left;
+  }
+}
+
+.modal-footer {
+  padding-top: 20px;
+}
+
+.verify-btn {
+  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+  --border-radius: 12px;
+  height: 52px;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.later-btn {
+  --color: var(--histora-text-secondary);
+  font-size: 14px;
+}

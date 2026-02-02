@@ -9,7 +9,8 @@ import {
   landingGuard,
   landingAccessGuard,
   postAuthOnboardingGuard,
-  tutorialAccessGuard
+  tutorialAccessGuard,
+  patientVerificationGuard
 } from './core/guards';
 
 /**
@@ -238,15 +239,21 @@ const routes: Routes = [
       },
       // Standalone pages (outside tabs)
       {
+        path: 'verification',
+        loadChildren: () => import('./patient/verification/verification.module').then(m => m.VerificationPageModule),
+      },
+      {
         path: 'search',
         loadChildren: () => import('./patient/search/search.module').then(m => m.SearchPageModule),
       },
       {
         path: 'request',
+        canActivate: [patientVerificationGuard],
         loadChildren: () => import('./patient/request/request.module').then(m => m.RequestPageModule),
       },
       {
         path: 'checkout/:requestId',
+        canActivate: [patientVerificationGuard],
         loadChildren: () => import('./patient/checkout/checkout.module').then(m => m.CheckoutPageModule),
       },
       {

@@ -1,0 +1,165 @@
+<div class="selfie-step">
+  <!-- Instructions -->
+  @if (subStep() === 'instructions') {
+    <div class="step-header">
+      <div class="step-icon">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </div>
+      <h2>Selfie con tu DNI</h2>
+      <p>Este paso verifica que eres la persona del DNI.</p>
+    </div>
+
+    <div class="instructions-container">
+      <div class="instruction-image">
+        <div class="selfie-demo">
+          <div class="face-outline"></div>
+          <div class="dni-mini">
+            <ion-icon name="card-outline"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="instructions-list">
+        <div class="instruction-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Sostén tu DNI al lado de tu rostro</span>
+        </div>
+        <div class="instruction-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Asegurate de que ambos sean visibles</span>
+        </div>
+        <div class="instruction-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Usa buena iluminacion</span>
+        </div>
+        <div class="instruction-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Mira directamente a la camara</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <ion-button
+        expand="block"
+        (click)="startCapture()"
+        class="primary-btn">
+        <ion-icon name="camera-outline" slot="start"></ion-icon>
+        Tomar selfie
+      </ion-button>
+    </div>
+  }
+
+  <!-- Capture -->
+  @if (subStep() === 'capture') {
+    <div class="step-header">
+      <div class="step-icon">
+        <ion-icon name="camera-outline"></ion-icon>
+      </div>
+      <h2>Toma tu selfie</h2>
+      <p>Sostén tu DNI junto a tu rostro y presiona el boton.</p>
+    </div>
+
+    <div class="capture-container">
+      <div class="camera-preview">
+        <div class="selfie-guide">
+          <div class="face-guide"></div>
+          <div class="dni-guide">
+            <ion-icon name="card-outline"></ion-icon>
+            <span>DNI aqui</span>
+          </div>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="error-message">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          {{ error() }}
+        </div>
+      }
+    </div>
+
+    <div class="step-actions">
+      <ion-button
+        expand="block"
+        [disabled]="isUploading()"
+        (click)="takeSelfie()"
+        class="primary-btn capture-btn">
+        @if (isUploading()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <div class="shutter-icon"></div>
+        }
+      </ion-button>
+      <ion-button
+        expand="block"
+        fill="outline"
+        (click)="goBack()">
+        Volver a instrucciones
+      </ion-button>
+    </div>
+  }
+
+  <!-- Review -->
+  @if (subStep() === 'review') {
+    <div class="step-header">
+      <div class="step-icon success">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <h2>Revisa tu selfie</h2>
+      <p>Asegurate de que tu rostro y DNI se vean claramente.</p>
+    </div>
+
+    <div class="review-container">
+      @if (selfiePhoto()) {
+        <div class="selfie-preview">
+          <img [src]="'data:' + selfiePhoto()!.mimeType + ';base64,' + selfiePhoto()!.base64" alt="Selfie">
+        </div>
+      }
+
+      <div class="checklist">
+        <div class="check-item">
+          <ion-icon name="eye-outline"></ion-icon>
+          <span>Tu rostro es visible</span>
+        </div>
+        <div class="check-item">
+          <ion-icon name="card-outline"></ion-icon>
+          <span>El DNI es legible</span>
+        </div>
+        <div class="check-item">
+          <ion-icon name="sunny-outline"></ion-icon>
+          <span>La foto es clara</span>
+        </div>
+      </div>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="step-actions">
+      <ion-button
+        expand="block"
+        [disabled]="!canSubmit || isLoading()"
+        (click)="submitSelfie()"
+        class="primary-btn">
+        @if (isLoading()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Confirmar selfie
+          <ion-icon name="checkmark-outline" slot="end"></ion-icon>
+        }
+      </ion-button>
+      <ion-button
+        expand="block"
+        fill="outline"
+        (click)="retakeSelfie()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Tomar otra
+      </ion-button>
+    </div>
+  }
+</div>

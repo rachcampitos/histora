@@ -1,0 +1,260 @@
+<div class="dni-step">
+  <!-- Enter DNI Number -->
+  @if (subStep() === 'enter-number') {
+    <div class="step-header">
+      <div class="step-icon">
+        <ion-icon name="card-outline"></ion-icon>
+      </div>
+      <h2>Ingresa tu DNI</h2>
+      <p>Necesitamos verificar tu documento de identidad peruano.</p>
+    </div>
+
+    <div class="dni-input-container">
+      <ion-input
+        type="text"
+        placeholder="12345678"
+        [value]="dniNumber()"
+        (ionInput)="onDniInput($event)"
+        [maxlength]="8"
+        inputmode="numeric"
+        class="dni-input">
+      </ion-input>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="hint-text">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>El DNI debe tener 8 digitos</span>
+    </div>
+
+    <div class="step-actions">
+      <ion-button
+        expand="block"
+        [disabled]="!isDniValid"
+        (click)="proceedToFrontPhoto()"
+        class="primary-btn">
+        Continuar
+        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+  }
+
+  <!-- Front Photo -->
+  @if (subStep() === 'front-photo') {
+    <div class="step-header">
+      <div class="step-icon">
+        <ion-icon name="camera-outline"></ion-icon>
+      </div>
+      <h2>Foto frontal del DNI</h2>
+      <p>Toma una foto clara de la parte frontal de tu DNI.</p>
+    </div>
+
+    <div class="photo-capture-area">
+      @if (frontPhoto()) {
+        <div class="photo-preview">
+          <img [src]="'data:' + frontPhoto()!.mimeType + ';base64,' + frontPhoto()!.base64" alt="DNI Frontal">
+          <ion-button fill="clear" class="retake-btn" (click)="retakeFrontPhoto()">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Tomar otra
+          </ion-button>
+        </div>
+      } @else {
+        <div class="dni-placeholder front">
+          <div class="placeholder-content">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>Parte frontal</span>
+          </div>
+        </div>
+
+        <div class="photo-tips">
+          <div class="tip">
+            <ion-icon name="sunny-outline"></ion-icon>
+            <span>Buena iluminacion</span>
+          </div>
+          <div class="tip">
+            <ion-icon name="scan-outline"></ion-icon>
+            <span>DNI completo visible</span>
+          </div>
+          <div class="tip">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>Datos legibles</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="step-actions">
+      @if (!frontPhoto()) {
+        <ion-button
+          expand="block"
+          [disabled]="isUploading()"
+          (click)="takeFrontPhoto()"
+          class="primary-btn">
+          @if (isUploading()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            Tomar foto frontal
+          }
+        </ion-button>
+      } @else {
+        <ion-button
+          expand="block"
+          (click)="subStep.set('back-photo')"
+          class="primary-btn">
+          Continuar
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      }
+    </div>
+  }
+
+  <!-- Back Photo -->
+  @if (subStep() === 'back-photo') {
+    <div class="step-header">
+      <div class="step-icon">
+        <ion-icon name="camera-outline"></ion-icon>
+      </div>
+      <h2>Foto trasera del DNI</h2>
+      <p>Ahora toma una foto de la parte trasera de tu DNI.</p>
+    </div>
+
+    <div class="photo-capture-area">
+      @if (backPhoto()) {
+        <div class="photo-preview">
+          <img [src]="'data:' + backPhoto()!.mimeType + ';base64,' + backPhoto()!.base64" alt="DNI Trasero">
+          <ion-button fill="clear" class="retake-btn" (click)="retakeBackPhoto()">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Tomar otra
+          </ion-button>
+        </div>
+      } @else {
+        <div class="dni-placeholder back">
+          <div class="placeholder-content">
+            <div class="barcode-icon"></div>
+            <span>Parte trasera</span>
+          </div>
+        </div>
+
+        <div class="photo-tips">
+          <div class="tip">
+            <ion-icon name="sunny-outline"></ion-icon>
+            <span>Buena iluminacion</span>
+          </div>
+          <div class="tip">
+            <ion-icon name="barcode-outline"></ion-icon>
+            <span>Codigo de barras visible</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="step-actions">
+      @if (!backPhoto()) {
+        <ion-button
+          expand="block"
+          [disabled]="isUploading()"
+          (click)="takeBackPhoto()"
+          class="primary-btn">
+          @if (isUploading()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <ion-icon name="camera-outline" slot="start"></ion-icon>
+            Tomar foto trasera
+          }
+        </ion-button>
+      } @else {
+        <ion-button
+          expand="block"
+          (click)="subStep.set('review')"
+          class="primary-btn">
+          Continuar
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      }
+    </div>
+  }
+
+  <!-- Review -->
+  @if (subStep() === 'review') {
+    <div class="step-header">
+      <div class="step-icon success">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <h2>Revisa tus fotos</h2>
+      <p>Asegurate de que las fotos sean claras y legibles.</p>
+    </div>
+
+    <div class="review-container">
+      <div class="review-item">
+        <span class="review-label">DNI</span>
+        <span class="review-value">{{ dniNumber() }}</span>
+      </div>
+
+      <div class="photos-grid">
+        <div class="photo-item">
+          <span class="photo-label">Frontal</span>
+          @if (frontPhoto()) {
+            <img [src]="'data:' + frontPhoto()!.mimeType + ';base64,' + frontPhoto()!.base64" alt="DNI Frontal">
+            <ion-button fill="clear" size="small" (click)="retakeFrontPhoto()">
+              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              Cambiar
+            </ion-button>
+          }
+        </div>
+        <div class="photo-item">
+          <span class="photo-label">Trasera</span>
+          @if (backPhoto()) {
+            <img [src]="'data:' + backPhoto()!.mimeType + ';base64,' + backPhoto()!.base64" alt="DNI Trasero">
+            <ion-button fill="clear" size="small" (click)="retakeBackPhoto()">
+              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              Cambiar
+            </ion-button>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="step-actions">
+      <ion-button
+        expand="block"
+        [disabled]="!canProceedToReview || isLoading()"
+        (click)="submitDni()"
+        class="primary-btn">
+        @if (isLoading()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Verificar DNI
+          <ion-icon name="checkmark-outline" slot="end"></ion-icon>
+        }
+      </ion-button>
+    </div>
+  }
+</div>

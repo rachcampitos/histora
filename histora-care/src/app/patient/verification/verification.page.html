@@ -1,0 +1,149 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button
+        [defaultHref]="'/patient/tabs/home'"
+        (click)="goBack(); $event.preventDefault(); $event.stopPropagation()">
+      </ion-back-button>
+    </ion-buttons>
+    <ion-title>Verificacion de Identidad</ion-title>
+  </ion-toolbar>
+
+  <!-- Progress bar -->
+  @if (currentStep() !== 'intro' && currentStep() !== 'complete') {
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="completionPercentage()"></div>
+      </div>
+      <span class="progress-text">{{ completionPercentage() }}% completado</span>
+    </div>
+  }
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (error() && !isLoading()) {
+    <div class="error-container">
+      <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+      <p>{{ error() }}</p>
+      <ion-button fill="outline" (click)="loadVerificationStatus()">
+        Reintentar
+      </ion-button>
+    </div>
+  }
+
+  <!-- Content based on current step -->
+  @if (!isLoading() && !error()) {
+    <!-- Intro Step -->
+    @if (currentStep() === 'intro') {
+      <div class="intro-container">
+        <div class="intro-header">
+          <div class="shield-icon">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+          <h1>Verifica tu identidad</h1>
+          <p class="subtitle">
+            Para la seguridad de nuestras enfermeras y la tuya, necesitamos verificar tu identidad antes de que puedas solicitar servicios.
+          </p>
+        </div>
+
+        <div class="benefits-list">
+          <div class="benefit-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Acceso a todas las enfermeras verificadas</span>
+          </div>
+          <div class="benefit-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Solicita servicios de forma segura</span>
+          </div>
+          <div class="benefit-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Contactos de emergencia protegidos</span>
+          </div>
+          <div class="benefit-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <span>Proceso rapido (menos de 5 minutos)</span>
+          </div>
+        </div>
+
+        <!-- Steps overview -->
+        <div class="steps-overview">
+          <h3>Pasos de verificacion</h3>
+          @for (step of steps(); track step.id) {
+            <div class="step-preview" [class.completed]="step.completed">
+              <div class="step-icon">
+                @if (step.completed) {
+                  <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                } @else {
+                  <ion-icon [name]="step.icon" color="medium"></ion-icon>
+                }
+              </div>
+              <div class="step-info">
+                <span class="step-title">{{ step.title }}</span>
+                <span class="step-desc">{{ step.description }}</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="intro-actions">
+          <ion-button expand="block" (click)="startVerification()" class="primary-btn">
+            Comenzar verificacion
+            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+          <ion-button expand="block" fill="clear" (click)="skipForNow()" class="skip-btn">
+            Hacerlo despues
+          </ion-button>
+        </div>
+      </div>
+    }
+
+    <!-- Phone Step -->
+    @if (currentStep() === 'phone') {
+      <app-phone-step
+        (completed)="onStepComplete('phone')"
+        (skip)="goToStep('dni')">
+      </app-phone-step>
+    }
+
+    <!-- DNI Step -->
+    @if (currentStep() === 'dni') {
+      <app-dni-step
+        (completed)="onStepComplete('dni')"
+        (back)="goToStep('phone')">
+      </app-dni-step>
+    }
+
+    <!-- Selfie Step -->
+    @if (currentStep() === 'selfie') {
+      <app-selfie-step
+        (completed)="onStepComplete('selfie')"
+        (back)="goToStep('dni')">
+      </app-selfie-step>
+    }
+
+    <!-- Emergency Contacts Step -->
+    @if (currentStep() === 'emergency-contacts') {
+      <app-emergency-contact-step
+        (completed)="onStepComplete('emergency-contacts')"
+        (back)="goToStep('selfie')">
+      </app-emergency-contact-step>
+    }
+
+    <!-- Complete Step -->
+    @if (currentStep() === 'complete') {
+      <app-verification-complete
+        [status]="status()"
+        (continue)="onVerificationComplete()">
+      </app-verification-complete>
+    }
+  }
+</ion-content>
