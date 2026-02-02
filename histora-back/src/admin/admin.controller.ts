@@ -26,6 +26,21 @@ import { AdminService } from './admin.service';
 import { CreateUserDto, UpdateUserDto, UserQueryDto } from './dto/admin-user.dto';
 import { NurseQueryDto, UpdateNurseDto, PatientQueryDto } from './dto/admin-nurse.dto';
 import {
+  ServiceRequestQueryDto,
+  ServiceRequestListItemDto,
+  ServiceRequestDetailDto,
+  ServiceAnalyticsDto,
+  AdminServiceActionDto,
+} from './dto/admin-service-request.dto';
+import {
+  PaymentQueryDto,
+  PaymentListItemDto,
+  PaymentDetailDto,
+  PaymentAnalyticsDto,
+  AdminRefundDto,
+} from './dto/admin-payment.dto';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import {
   DashboardStatsDto,
   PanicAlertDto,
   ActivityItemDto,
@@ -235,5 +250,80 @@ export class AdminController {
   @ApiResponse({ status: 409, description: 'Tiene servicios activos' })
   async deletePatient(@Param('id') id: string) {
     return this.adminService.deletePatient(id);
+  }
+
+  // ==================== SERVICE REQUEST MANAGEMENT ENDPOINTS ====================
+
+  @Get('services')
+  @ApiOperation({ summary: 'Listar todas las solicitudes de servicio con filtros y paginación' })
+  @ApiResponse({ status: 200, description: 'Lista de solicitudes de servicio', type: [ServiceRequestListItemDto] })
+  async getServiceRequests(@Query() query: ServiceRequestQueryDto) {
+    return this.adminService.getServiceRequests(query);
+  }
+
+  @Get('services/analytics')
+  @ApiOperation({ summary: 'Obtener analytics de servicios' })
+  @ApiResponse({ status: 200, description: 'Analytics de servicios', type: ServiceAnalyticsDto })
+  async getServiceAnalytics() {
+    return this.adminService.getServiceAnalytics();
+  }
+
+  @Get('services/:id')
+  @ApiOperation({ summary: 'Obtener detalle de una solicitud de servicio' })
+  @ApiResponse({ status: 200, description: 'Detalle de la solicitud', type: ServiceRequestDetailDto })
+  @ApiResponse({ status: 404, description: 'Solicitud no encontrada' })
+  async getServiceRequest(@Param('id') id: string) {
+    return this.adminService.getServiceRequest(id);
+  }
+
+  @Patch('services/:id/action')
+  @ApiOperation({ summary: 'Ejecutar acción administrativa en servicio (cancelar, reembolsar)' })
+  @ApiResponse({ status: 200, description: 'Acción ejecutada' })
+  @ApiResponse({ status: 404, description: 'Solicitud no encontrada' })
+  @ApiResponse({ status: 409, description: 'Acción no permitida' })
+  async adminServiceAction(
+    @Param('id') id: string,
+    @Body() dto: AdminServiceActionDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.adminService.adminServiceAction(id, dto, user?.id || user?._id);
+  }
+
+  // ==================== PAYMENT MANAGEMENT ENDPOINTS ====================
+
+  @Get('payments')
+  @ApiOperation({ summary: 'Listar todos los pagos con filtros y paginación' })
+  @ApiResponse({ status: 200, description: 'Lista de pagos', type: [PaymentListItemDto] })
+  async getPayments(@Query() query: PaymentQueryDto) {
+    return this.adminService.getPayments(query);
+  }
+
+  @Get('payments/analytics')
+  @ApiOperation({ summary: 'Obtener analytics de pagos' })
+  @ApiResponse({ status: 200, description: 'Analytics de pagos', type: PaymentAnalyticsDto })
+  async getPaymentAnalytics() {
+    return this.adminService.getPaymentAnalytics();
+  }
+
+  @Get('payments/:id')
+  @ApiOperation({ summary: 'Obtener detalle de un pago' })
+  @ApiResponse({ status: 200, description: 'Detalle del pago', type: PaymentDetailDto })
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
+  async getPayment(@Param('id') id: string) {
+    return this.adminService.getPayment(id);
+  }
+
+  @Post('payments/:id/refund')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reembolsar un pago' })
+  @ApiResponse({ status: 200, description: 'Pago reembolsado' })
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
+  @ApiResponse({ status: 409, description: 'No se puede reembolsar' })
+  async adminRefundPayment(
+    @Param('id') id: string,
+    @Body() dto: AdminRefundDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.adminService.adminRefundPayment(id, dto, user?.id || user?._id);
   }
 }
