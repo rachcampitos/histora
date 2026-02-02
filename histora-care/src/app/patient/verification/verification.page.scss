@@ -1,0 +1,217 @@
+// Progress bar
+.progress-bar-container {
+  padding: 8px 16px 12px;
+  background: var(--histora-surface);
+  border-bottom: 1px solid var(--histora-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--histora-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ion-color-primary) 0%, var(--ion-color-success) 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: var(--histora-text-secondary);
+  white-space: nowrap;
+}
+
+// Loading and error states
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  gap: 16px;
+
+  ion-icon {
+    font-size: 48px;
+  }
+
+  p {
+    color: var(--histora-text-secondary);
+    margin: 0;
+  }
+}
+
+// Intro container
+.intro-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 180px);
+}
+
+.intro-header {
+  text-align: center;
+  padding: 24px 0;
+
+  .shield-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+
+    ion-icon {
+      font-size: 40px;
+      color: white;
+    }
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--histora-text-primary);
+    margin: 0 0 12px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--histora-text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
+
+// Benefits list
+.benefits-list {
+  padding: 16px;
+  background: var(--histora-surface);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid var(--histora-border);
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--histora-border);
+  }
+
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--histora-text-primary);
+  }
+}
+
+// Steps overview
+.steps-overview {
+  margin-bottom: 24px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--histora-text-primary);
+    margin: 0 0 16px;
+  }
+}
+
+.step-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--histora-surface);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  border: 1px solid var(--histora-border);
+  transition: all 0.2s ease;
+
+  &.completed {
+    background: rgba(22, 163, 74, 0.05);
+    border-color: rgba(22, 163, 74, 0.2);
+  }
+
+  .step-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--histora-background);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  .step-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--histora-text-primary);
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--histora-text-secondary);
+    }
+  }
+}
+
+// Intro actions
+.intro-actions {
+  margin-top: auto;
+  padding-top: 24px;
+
+  .primary-btn {
+    --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+    --border-radius: 12px;
+    height: 52px;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .skip-btn {
+    --color: var(--histora-text-secondary);
+    font-size: 14px;
+  }
+}
+
+// Dark mode adjustments
+:host-context(.dark) {
+  .intro-header .shield-icon {
+    background: linear-gradient(135deg, #3182ce 0%, var(--ion-color-primary) 100%);
+  }
+
+  .step-preview.completed {
+    background: rgba(22, 163, 74, 0.1);
+    border-color: rgba(22, 163, 74, 0.3);
+  }
+}

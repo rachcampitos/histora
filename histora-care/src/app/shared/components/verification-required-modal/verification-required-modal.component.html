@@ -1,0 +1,46 @@
+<ion-content class="ion-padding">
+  <div class="modal-content">
+    <div class="modal-header">
+      <ion-button fill="clear" class="close-btn" (click)="dismiss()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="modal-body">
+      <div class="shield-icon">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+      </div>
+
+      <h2>Verificacion requerida</h2>
+
+      <p class="description">
+        Para la seguridad de nuestras enfermeras y la tuya, necesitas verificar tu identidad antes de solicitar servicios.
+      </p>
+
+      <div class="benefits">
+        <div class="benefit-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Proceso rapido (5 minutos)</span>
+        </div>
+        <div class="benefit-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Tus datos estan protegidos</span>
+        </div>
+        <div class="benefit-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <span>Solo se hace una vez</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <ion-button expand="block" (click)="goToVerification()" class="verify-btn">
+        Verificar ahora
+        <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+      <ion-button expand="block" fill="clear" (click)="dismiss()" class="later-btn">
+        Hacerlo despues
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

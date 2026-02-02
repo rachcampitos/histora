@@ -1,0 +1,248 @@
+.complete-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: calc(100vh - 200px);
+  padding: 16px;
+}
+
+// Success animation
+.success-animation {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.checkmark-circle {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--ion-color-success) 0%, #15803d 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.5s ease-out, pulse 2s infinite 0.5s;
+
+  ion-icon {
+    font-size: 48px;
+    color: white;
+    animation: checkIn 0.3s ease-out 0.2s both;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes checkIn {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 20px rgba(22, 163, 74, 0);
+  }
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--histora-text-primary);
+  margin: 0 0 12px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--histora-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 24px;
+  max-width: 300px;
+}
+
+// Badge
+.badge-container {
+  margin-bottom: 24px;
+}
+
+.verification-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &.success {
+    background: linear-gradient(135deg, var(--ion-color-success) 0%, #15803d 100%);
+    color: white;
+  }
+
+  &.gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+  }
+
+  &.medium {
+    background: var(--histora-border);
+    color: var(--histora-text-secondary);
+  }
+}
+
+// Status summary
+.status-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(22, 163, 74, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+
+  ion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 12px;
+    color: var(--histora-text-primary);
+    text-align: left;
+  }
+}
+
+// Trust score
+.trust-score-container {
+  width: 100%;
+  background: var(--histora-surface);
+  border: 1px solid var(--histora-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.trust-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+
+  span {
+    font-size: 14px;
+    color: var(--histora-text-secondary);
+  }
+
+  .score {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ion-color-success);
+  }
+}
+
+.trust-bar {
+  height: 8px;
+  background: var(--histora-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.trust-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--ion-color-success) 0%, #15803d 100%);
+  border-radius: 4px;
+  transition: width 1s ease-out;
+}
+
+.trust-hint {
+  font-size: 12px;
+  color: var(--histora-text-secondary);
+  margin: 0;
+}
+
+// Benefits
+.benefits-unlock {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 24px;
+
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--histora-text-primary);
+    margin: 0 0 12px;
+  }
+}
+
+.benefits-unlock .benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--histora-border);
+  }
+
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--histora-text-primary);
+  }
+}
+
+// Actions
+.step-actions {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 16px;
+
+  .primary-btn {
+    --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+    --border-radius: 12px;
+    height: 52px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+}
+
+// Dark mode
+:host-context(.dark) {
+  .summary-item {
+    background: rgba(22, 163, 74, 0.1);
+    border-color: rgba(22, 163, 74, 0.3);
+  }
+}

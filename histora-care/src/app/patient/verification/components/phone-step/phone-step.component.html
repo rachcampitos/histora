@@ -1,0 +1,122 @@
+<div class="phone-step">
+  <!-- Enter Phone Sub-step -->
+  @if (subStep() === 'enter-phone') {
+    <div class="step-header">
+      <div class="step-icon">
+        <ion-icon name="call-outline"></ion-icon>
+      </div>
+      <h2>Verifica tu numero</h2>
+      <p>Te enviaremos un codigo de 6 digitos por SMS para confirmar tu numero de celular.</p>
+    </div>
+
+    <div class="phone-input-container">
+      <div class="phone-prefix">
+        <span class="flag">+51</span>
+      </div>
+      <ion-input
+        type="tel"
+        placeholder="987 654 321"
+        [value]="phoneNumber()"
+        (ionInput)="onPhoneInput($event)"
+        [maxlength]="9"
+        inputmode="numeric"
+        class="phone-input">
+      </ion-input>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="hint-text">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>Solo numeros peruanos que empiecen con 9</span>
+    </div>
+
+    <div class="step-actions">
+      <ion-button
+        expand="block"
+        [disabled]="!isPhoneValid || isLoading()"
+        (click)="sendCode()"
+        class="primary-btn">
+        @if (isLoading()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Enviar codigo
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        }
+      </ion-button>
+    </div>
+  }
+
+  <!-- Enter Code Sub-step -->
+  @if (subStep() === 'enter-code') {
+    <div class="step-header">
+      <div class="step-icon success">
+        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+      </div>
+      <h2>Ingresa el codigo</h2>
+      <p>Enviamos un codigo de 6 digitos a</p>
+      <div class="phone-display">
+        <span>{{ formattedPhone }}</span>
+        <ion-button fill="clear" size="small" (click)="changePhone()">
+          Cambiar
+        </ion-button>
+      </div>
+    </div>
+
+    <div class="code-input-container" (paste)="onCodePaste($event)">
+      @for (digit of codeDigits(); track $index) {
+        <input
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          [id]="'code-input-' + $index"
+          [value]="digit"
+          (input)="onCodeInput($index, $event)"
+          (keydown)="onCodeKeydown($index, $event)"
+          class="code-input"
+          [class.filled]="digit !== ''"
+          [class.error]="error()">
+      }
+    </div>
+
+    @if (error()) {
+      <div class="error-message">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ error() }}
+      </div>
+    }
+
+    <div class="resend-container">
+      @if (resendTimer() > 0) {
+        <span class="resend-timer">
+          Reenviar codigo en {{ resendTimer() }}s
+        </span>
+      } @else {
+        <ion-button fill="clear" (click)="resendCode()" [disabled]="isLoading()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Reenviar codigo
+        </ion-button>
+      }
+    </div>
+
+    <div class="step-actions">
+      <ion-button
+        expand="block"
+        [disabled]="!isCodeComplete || isLoading()"
+        (click)="verifyCode()"
+        class="primary-btn">
+        @if (isLoading()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Verificar
+          <ion-icon name="checkmark-outline" slot="end"></ion-icon>
+        }
+      </ion-button>
+    </div>
+  }
+</div>

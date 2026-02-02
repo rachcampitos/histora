@@ -1635,3 +1635,24 @@ body.dark ion-modal.service-modal {
     }
   }
 }
+
+// ==========================================================================
+// Verification Modal Styles
+// ==========================================================================
+ion-modal.verification-modal {
+  --border-radius: 20px 20px 0 0;
+  --background: var(--histora-surface);
+
+  ion-content {
+    --background: var(--histora-surface);
+  }
+}
+
+body.ion-palette-dark ion-modal.verification-modal,
+body.dark ion-modal.verification-modal {
+  --background: #1e293b;
+
+  ion-content {
+    --background: #1e293b;
+  }
+}
