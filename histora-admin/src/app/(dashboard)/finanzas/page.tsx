@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { financeApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -49,100 +51,119 @@ import {
   Bar,
 } from 'recharts';
 
-// Transaction type
-interface Transaction {
-  _id: string;
-  type: string;
-  amount: number;
-  fee: number;
-  net: number;
-  description: string;
-  paymentMethod?: string;
+// Payment type matching backend response
+interface Payment {
+  id: string;
+  reference: string;
   status: string;
-  serviceId?: string;
-  nurseId?: string;
-  nurseName?: string;
-  patientName?: string;
+  method: string;
+  amount: number;
+  currency: string;
+  serviceFee: number;
+  nurseEarnings: number;
+  patient: { id: string; firstName: string; lastName: string } | null;
+  nurse: { id: string; firstName: string; lastName: string; cepNumber: string } | null;
+  serviceRequestId: string;
+  cardBrand?: string;
+  cardLast4?: string;
   createdAt: string;
+  paidAt?: string;
+  refundedAt?: string;
 }
 
-// Demo data
-const demoTransactions: Transaction[] = [
+interface PaymentsResponse {
+  data: Payment[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+interface PaymentAnalytics {
+  summary: {
+    totalTransactions: number;
+    totalVolume: number;
+    totalFees: number;
+    totalNurseEarnings: number;
+    pendingPayments: number;
+    pendingAmount: number;
+    refundedCount: number;
+    refundedAmount: number;
+  };
+  byMethod: { method: string; count: number; amount: number }[];
+  byStatus: { status: string; count: number; amount: number }[];
+  dailyVolume: { date: string; count: number; amount: number; fees: number }[];
+}
+
+// Demo data for fallback
+const demoPayments: Payment[] = [
   {
-    _id: '1',
-    type: 'payment',
+    id: '1',
+    reference: 'PAY-001',
+    status: 'completed',
+    method: 'yape',
     amount: 45,
-    fee: 4.5,
-    net: 40.5,
-    description: 'Pago servicio #1234',
-    paymentMethod: 'yape',
-    status: 'completed',
-    serviceId: 's1',
-    nurseId: 'n1',
-    nurseName: 'Maria Chavez',
-    patientName: 'Juan Perez',
+    currency: 'PEN',
+    serviceFee: 4.5,
+    nurseEarnings: 40.5,
+    patient: { id: 'p1', firstName: 'Juan', lastName: 'Perez' },
+    nurse: { id: 'n1', firstName: 'Maria', lastName: 'Chavez', cepNumber: '108887' },
+    serviceRequestId: 's1',
     createdAt: '2025-01-28T10:35:00Z',
+    paidAt: '2025-01-28T10:35:00Z',
   },
   {
-    _id: '2',
-    type: 'payment',
-    amount: 80,
-    fee: 8,
-    net: 72,
-    description: 'Pago servicio #1235',
-    paymentMethod: 'card',
+    id: '2',
+    reference: 'PAY-002',
     status: 'completed',
-    serviceId: 's2',
-    nurseId: 'n2',
-    nurseName: 'Ana Rodriguez',
-    patientName: 'Carmen Garcia',
+    method: 'card',
+    amount: 80,
+    currency: 'PEN',
+    serviceFee: 8,
+    nurseEarnings: 72,
+    patient: { id: 'p2', firstName: 'Carmen', lastName: 'Garcia' },
+    nurse: { id: 'n2', firstName: 'Ana', lastName: 'Rodriguez', cepNumber: '109234' },
+    serviceRequestId: 's2',
+    cardBrand: 'Visa',
+    cardLast4: '4242',
     createdAt: '2025-01-28T14:20:00Z',
+    paidAt: '2025-01-28T14:20:00Z',
   },
   {
-    _id: '3',
-    type: 'payment',
-    amount: 120,
-    fee: 12,
-    net: 108,
-    description: 'Pago servicio #1236',
-    paymentMethod: 'card',
+    id: '3',
+    reference: 'PAY-003',
     status: 'pending',
-    serviceId: 's3',
-    nurseId: 'n3',
-    nurseName: 'Carmen Perez',
-    patientName: 'Laura Mendoza',
+    method: 'card',
+    amount: 120,
+    currency: 'PEN',
+    serviceFee: 12,
+    nurseEarnings: 108,
+    patient: { id: 'p3', firstName: 'Laura', lastName: 'Mendoza' },
+    nurse: { id: 'n3', firstName: 'Carmen', lastName: 'Perez', cepNumber: '107654' },
+    serviceRequestId: 's3',
     createdAt: '2025-01-28T17:45:00Z',
   },
   {
-    _id: '4',
-    type: 'refund',
-    amount: -45,
-    fee: 0,
-    net: -45,
-    description: 'Reembolso servicio #1200',
-    paymentMethod: 'yape',
-    status: 'completed',
-    serviceId: 's4',
-    nurseId: 'n1',
-    nurseName: 'Maria Chavez',
-    patientName: 'Miguel Torres',
+    id: '4',
+    reference: 'PAY-004',
+    status: 'refunded',
+    method: 'yape',
+    amount: 45,
+    currency: 'PEN',
+    serviceFee: 0,
+    nurseEarnings: 0,
+    patient: { id: 'p4', firstName: 'Miguel', lastName: 'Torres' },
+    nurse: { id: 'n1', firstName: 'Maria', lastName: 'Chavez', cepNumber: '108887' },
+    serviceRequestId: 's4',
     createdAt: '2025-01-27T09:00:00Z',
-  },
-  {
-    _id: '5',
-    type: 'payout',
-    amount: -500,
-    fee: 0,
-    net: -500,
-    description: 'Pago semanal a Maria Chavez',
-    status: 'completed',
-    nurseId: 'n1',
-    nurseName: 'Maria Chavez',
-    createdAt: '2025-01-26T12:00:00Z',
+    refundedAt: '2025-01-27T10:00:00Z',
   },
 ];
 
-const revenueData = [
+// Demo chart data (will be replaced with analytics.dailyVolume)
+const demoRevenueData = [
   { date: '01 Ene', ingresos: 2450, comisiones: 245, reembolsos: 90 },
   { date: '08 Ene', ingresos: 3280, comisiones: 328, reembolsos: 45 },
   { date: '15 Ene', ingresos: 2800, comisiones: 280, reembolsos: 80 },
@@ -150,7 +171,7 @@ const revenueData = [
   { date: '29 Ene', ingresos: 3840, comisiones: 384, reembolsos: 45 },
 ];
 
-const paymentMethodData = [
+const demoPaymentMethodData = [
   { method: 'Yape', total: 8500, count: 156 },
   { method: 'Tarjeta', total: 6200, count: 78 },
 ];
@@ -159,32 +180,37 @@ export default function FinanzasPage() {
   const [search, setSearch] = useState('');
   const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d');
 
-  // Note: Finance endpoints not yet implemented in backend
-  // Using demo data for now
-  const transactions = demoTransactions;
-  const isLoading = false;
+  // Fetch payments from API
+  const { data: paymentsResponse, isLoading: isLoadingPayments } = useQuery<PaymentsResponse>({
+    queryKey: ['admin-payments', search],
+    queryFn: () => financeApi.getPayments({ search, limit: 100 }),
+  });
 
+  // Fetch analytics from API
+  const { data: analytics } = useQuery<PaymentAnalytics>({
+    queryKey: ['admin-payments-analytics'],
+    queryFn: () => financeApi.getAnalytics(),
+  });
+
+  // Extract payments array from response, fallback to demo data
+  const payments = paymentsResponse?.data || demoPayments;
+  const isLoading = isLoadingPayments;
+
+  // Calculate metrics from analytics or use demo values
   const metrics = {
-    totalRevenue: 14700,
+    totalRevenue: analytics?.summary.totalVolume || 14700,
     revenueChange: 12.5,
-    totalCommissions: 1470,
+    totalCommissions: analytics?.summary.totalFees || 1470,
     commissionsChange: 12.5,
-    totalRefunds: 260,
+    totalRefunds: analytics?.summary.refundedAmount || 260,
     refundsChange: -15.3,
-    totalPayouts: 11760,
-    pendingPayouts: 2500,
+    totalPayouts: analytics?.summary.totalNurseEarnings || 11760,
+    pendingPayouts: analytics?.summary.pendingAmount || 2500,
     avgTransactionValue: 75,
   };
 
-  // Filter transactions
-  const filteredTransactions = transactions?.filter((tx) => {
-    if (!search) return true;
-    return (
-      tx.description.toLowerCase().includes(search.toLowerCase()) ||
-      tx.nurseName?.toLowerCase().includes(search.toLowerCase()) ||
-      tx.patientName?.toLowerCase().includes(search.toLowerCase())
-    );
-  });
+  // Filter payments (search is already applied in API call, this is for client-side filtering)
+  const filteredPayments = payments;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -194,21 +220,36 @@ export default function FinanzasPage() {
         return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Pendiente</Badge>;
       case 'failed':
         return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Fallido</Badge>;
+      case 'refunded':
+        return <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Reembolsado</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'payment':
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
         return <ArrowUpRight className="h-4 w-4 text-green-500" />;
-      case 'refund':
+      case 'refunded':
         return <ArrowDownRight className="h-4 w-4 text-red-500" />;
-      case 'payout':
-        return <Wallet className="h-4 w-4 text-blue-500" />;
+      case 'pending':
+        return <Wallet className="h-4 w-4 text-yellow-500" />;
       default:
         return <DollarSign className="h-4 w-4" />;
+    }
+  };
+
+  const getMethodLabel = (method: string) => {
+    switch (method) {
+      case 'yape':
+        return 'Yape';
+      case 'card':
+        return 'Tarjeta';
+      case 'cash':
+        return 'Efectivo';
+      default:
+        return method;
     }
   };
 
@@ -312,7 +353,11 @@ export default function FinanzasPage() {
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
+                <AreaChart data={analytics?.dailyVolume?.map(d => ({
+                  date: format(new Date(d.date), 'dd MMM', { locale: es }),
+                  ingresos: d.amount,
+                  comisiones: d.fees,
+                })) || demoRevenueData}>
                   <defs>
                     <linearGradient id="colorIngresos" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
@@ -376,7 +421,11 @@ export default function FinanzasPage() {
           <CardContent>
             <div className="h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={paymentMethodData} layout="vertical">
+                <BarChart data={analytics?.byMethod?.map(m => ({
+                  method: m.method === 'yape' ? 'Yape' : m.method === 'card' ? 'Tarjeta' : 'Efectivo',
+                  total: m.amount,
+                  count: m.count,
+                })) || demoPaymentMethodData} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis
                     type="number"
@@ -404,11 +453,11 @@ export default function FinanzasPage() {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 space-y-2">
-              {paymentMethodData.map((item) => (
+              {(analytics?.byMethod || demoPaymentMethodData).map((item) => (
                 <div key={item.method} className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-muted-foreground" />
-                    <span>{item.method}</span>
+                    <span>{item.method === 'yape' ? 'Yape' : item.method === 'card' ? 'Tarjeta' : item.method}</span>
                   </div>
                   <span className="text-muted-foreground">{item.count} transacciones</span>
                 </div>
@@ -450,70 +499,80 @@ export default function FinanzasPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Descripcion</TableHead>
+                  <TableHead>Referencia</TableHead>
+                  <TableHead>Metodo</TableHead>
+                  <TableHead>Paciente</TableHead>
                   <TableHead>Enfermera</TableHead>
                   <TableHead>Monto</TableHead>
                   <TableHead>Comision</TableHead>
-                  <TableHead>Neto</TableHead>
+                  <TableHead>Neto Enfermera</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead>Fecha</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTransactions?.map((tx) => (
-                  <TableRow key={tx._id}>
+                {filteredPayments?.map((payment) => (
+                  <TableRow key={payment.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {getTypeIcon(tx.type)}
-                        <span className="capitalize text-sm">
-                          {tx.type === 'payment' ? 'Pago' :
-                           tx.type === 'refund' ? 'Reembolso' : 'Pago Enfermera'}
-                        </span>
+                        {getStatusIcon(payment.status)}
+                        <span className="text-sm font-mono">{payment.reference}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm">{tx.description}</span>
+                      <div className="flex items-center gap-1">
+                        <CreditCard className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-sm">{getMethodLabel(payment.method)}</span>
+                        {payment.cardLast4 && (
+                          <span className="text-xs text-muted-foreground">
+                            ****{payment.cardLast4}
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm">{tx.nurseName || '-'}</span>
+                      <span className="text-sm">
+                        {payment.patient ? `${payment.patient.firstName} ${payment.patient.lastName}` : '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm">
+                        {payment.nurse ? `${payment.nurse.firstName} ${payment.nurse.lastName}` : '-'}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <span className={cn(
                         'font-medium',
-                        tx.amount > 0 ? 'text-green-600' : 'text-red-600'
+                        payment.status === 'refunded' ? 'text-red-600' : 'text-green-600'
                       )}>
-                        {tx.amount > 0 ? '+' : ''}S/ {Math.abs(tx.amount)}
+                        {payment.status === 'refunded' ? '-' : '+'}S/ {payment.amount}
                       </span>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-muted-foreground">
-                        S/ {tx.fee}
+                        S/ {payment.serviceFee}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className={cn(
-                        'font-medium',
-                        tx.net > 0 ? 'text-green-600' : 'text-red-600'
-                      )}>
-                        {tx.net > 0 ? '+' : ''}S/ {Math.abs(tx.net)}
+                      <span className="font-medium text-green-600">
+                        S/ {payment.nurseEarnings}
                       </span>
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(tx.status)}
+                      {getStatusBadge(payment.status)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="h-3 w-3" />
-                        {format(new Date(tx.createdAt), 'dd MMM HH:mm', { locale: es })}
+                        {format(new Date(payment.createdAt), 'dd MMM HH:mm', { locale: es })}
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
-                {(!filteredTransactions || filteredTransactions.length === 0) && (
+                {(!filteredPayments || filteredPayments.length === 0) && (
                   <TableRow>
-                    <TableCell colSpan={8} className="h-24 text-center">
-                      No se encontraron transacciones
+                    <TableCell colSpan={9} className="h-24 text-center">
+                      No se encontraron pagos
                     </TableCell>
                   </TableRow>
                 )}

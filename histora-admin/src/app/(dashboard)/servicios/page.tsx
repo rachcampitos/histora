@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { servicesApi } from '@/lib/api';
 import { serviceStatus, serviceCategories } from '@/lib/constants';
-import { ServiceRequest, ServiceRequestStatus } from '@/types';
+import { ServiceRequestStatus } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -56,115 +58,97 @@ import {
   XCircle,
 } from 'lucide-react';
 
-// Service demo type
-interface DemoService {
-  _id: string;
-  patientId: string;
-  patient?: { firstName: string; lastName: string; email: string; phone: string };
-  nurseId?: string;
-  nurse?: { user?: { firstName: string; lastName: string; avatar: string | null }; cepNumber: string };
-  service: { name: string; category: string; price: number; currency: string; durationMinutes: number };
+// Service type matching backend response
+interface ServiceItem {
+  id: string;
   status: ServiceRequestStatus;
-  location: { address: string; district: string; city: string; reference?: string };
+  paymentStatus: 'pending' | 'paid' | 'refunded' | 'failed';
+  service: { name: string; category: string; price: number; currency: string };
+  patient: { id: string; firstName: string; lastName: string; avatar?: string } | null;
+  nurse: { id: string; firstName: string; lastName: string; cepNumber: string; avatar?: string } | null;
+  location: { district: string; city: string; address: string };
   requestedDate: string;
   requestedTimeSlot: 'morning' | 'afternoon' | 'evening' | 'asap';
-  scheduledAt?: string;
-  startedAt?: string;
+  rating?: number;
+  createdAt: string;
   completedAt?: string;
   cancelledAt?: string;
-  cancelReason?: string;
-  rating?: number;
-  review?: string;
-  paymentStatus: 'pending' | 'paid' | 'refunded';
-  paymentMethod?: 'card' | 'yape';
-  createdAt: string;
-  updatedAt: string;
 }
 
-// Demo data
-const demoServices: DemoService[] = [
+interface ServicesResponse {
+  data: ServiceItem[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+// Demo data for fallback
+const demoServices: ServiceItem[] = [
   {
-    _id: '1',
-    patientId: 'p1',
-    patient: { firstName: 'Juan', lastName: 'Perez', email: 'juan@email.com', phone: '999111222' },
-    nurseId: 'n1',
-    nurse: { user: { firstName: 'Maria', lastName: 'Chavez', avatar: null }, cepNumber: '108887' },
-    service: { name: 'Inyectable intramuscular', category: 'injection', price: 45, currency: 'PEN', durationMinutes: 30 },
+    id: '1',
     status: 'completed' as ServiceRequestStatus,
-    location: { address: 'Av. Javier Prado 123', district: 'San Isidro', city: 'Lima', reference: 'Edificio azul' },
+    paymentStatus: 'paid',
+    service: { name: 'Inyectable intramuscular', category: 'injection', price: 45, currency: 'PEN' },
+    patient: { id: 'p1', firstName: 'Juan', lastName: 'Perez' },
+    nurse: { id: 'n1', firstName: 'Maria', lastName: 'Chavez', cepNumber: '108887' },
+    location: { address: 'Av. Javier Prado 123', district: 'San Isidro', city: 'Lima' },
     requestedDate: '2025-01-28',
-    requestedTimeSlot: 'morning' as const,
-    scheduledAt: '2025-01-28T10:00:00Z',
-    startedAt: '2025-01-28T10:05:00Z',
-    completedAt: '2025-01-28T10:35:00Z',
+    requestedTimeSlot: 'morning',
     rating: 5,
-    review: 'Excelente servicio, muy profesional',
-    paymentStatus: 'paid' as const,
-    paymentMethod: 'yape' as const,
     createdAt: '2025-01-27T15:00:00Z',
-    updatedAt: '2025-01-28T10:35:00Z',
+    completedAt: '2025-01-28T10:35:00Z',
   },
   {
-    _id: '2',
-    patientId: 'p2',
-    patient: { firstName: 'Carmen', lastName: 'Garcia', email: 'carmen@email.com', phone: '999333444' },
-    nurseId: 'n2',
-    nurse: { user: { firstName: 'Ana', lastName: 'Rodriguez', avatar: null }, cepNumber: '109234' },
-    service: { name: 'Curacion de herida', category: 'wound_care', price: 80, currency: 'PEN', durationMinutes: 45 },
+    id: '2',
     status: 'in_progress' as ServiceRequestStatus,
+    paymentStatus: 'pending',
+    service: { name: 'Curacion de herida', category: 'wound_care', price: 80, currency: 'PEN' },
+    patient: { id: 'p2', firstName: 'Carmen', lastName: 'Garcia' },
+    nurse: { id: 'n2', firstName: 'Ana', lastName: 'Rodriguez', cepNumber: '109234' },
     location: { address: 'Calle Los Olivos 456', district: 'Miraflores', city: 'Lima' },
     requestedDate: '2025-01-28',
-    requestedTimeSlot: 'afternoon' as const,
-    scheduledAt: '2025-01-28T14:00:00Z',
-    startedAt: '2025-01-28T14:10:00Z',
-    paymentStatus: 'pending' as const,
+    requestedTimeSlot: 'afternoon',
     createdAt: '2025-01-28T12:00:00Z',
-    updatedAt: '2025-01-28T14:10:00Z',
   },
   {
-    _id: '3',
-    patientId: 'p3',
-    patient: { firstName: 'Roberto', lastName: 'Silva', email: 'roberto@email.com', phone: '999555666' },
-    service: { name: 'Control de signos vitales', category: 'vital_signs', price: 35, currency: 'PEN', durationMinutes: 20 },
+    id: '3',
     status: 'pending' as ServiceRequestStatus,
+    paymentStatus: 'pending',
+    service: { name: 'Control de signos vitales', category: 'vital_signs', price: 35, currency: 'PEN' },
+    patient: { id: 'p3', firstName: 'Roberto', lastName: 'Silva' },
+    nurse: null,
     location: { address: 'Jr. Union 789', district: 'La Molina', city: 'Lima' },
     requestedDate: '2025-01-29',
-    requestedTimeSlot: 'asap' as const,
-    paymentStatus: 'pending' as const,
+    requestedTimeSlot: 'asap',
     createdAt: '2025-01-28T16:00:00Z',
-    updatedAt: '2025-01-28T16:00:00Z',
   },
   {
-    _id: '4',
-    patientId: 'p4',
-    patient: { firstName: 'Laura', lastName: 'Mendoza', email: 'laura@email.com', phone: '999777888' },
-    nurseId: 'n3',
-    nurse: { user: { firstName: 'Carmen', lastName: 'Perez', avatar: null }, cepNumber: '107654' },
-    service: { name: 'Terapia IV', category: 'iv_therapy', price: 120, currency: 'PEN', durationMinutes: 60 },
+    id: '4',
     status: 'on_the_way' as ServiceRequestStatus,
+    paymentStatus: 'paid',
+    service: { name: 'Terapia IV', category: 'iv_therapy', price: 120, currency: 'PEN' },
+    patient: { id: 'p4', firstName: 'Laura', lastName: 'Mendoza' },
+    nurse: { id: 'n3', firstName: 'Carmen', lastName: 'Perez', cepNumber: '107654' },
     location: { address: 'Av. Arequipa 1234', district: 'San Borja', city: 'Lima' },
     requestedDate: '2025-01-28',
-    requestedTimeSlot: 'evening' as const,
-    scheduledAt: '2025-01-28T18:00:00Z',
-    paymentStatus: 'paid' as const,
-    paymentMethod: 'card' as const,
+    requestedTimeSlot: 'evening',
     createdAt: '2025-01-28T14:00:00Z',
-    updatedAt: '2025-01-28T17:30:00Z',
   },
   {
-    _id: '5',
-    patientId: 'p5',
-    patient: { firstName: 'Miguel', lastName: 'Torres', email: 'miguel@email.com', phone: '999999000' },
-    service: { name: 'Cuidado adulto mayor', category: 'elderly_care', price: 150, currency: 'PEN', durationMinutes: 180 },
+    id: '5',
     status: 'cancelled' as ServiceRequestStatus,
+    paymentStatus: 'refunded',
+    service: { name: 'Cuidado adulto mayor', category: 'elderly_care', price: 150, currency: 'PEN' },
+    patient: { id: 'p5', firstName: 'Miguel', lastName: 'Torres' },
+    nurse: null,
     location: { address: 'Calle Las Flores 567', district: 'Surco', city: 'Lima' },
     requestedDate: '2025-01-27',
-    requestedTimeSlot: 'morning' as const,
-    cancelledAt: '2025-01-27T08:00:00Z',
-    cancelReason: 'Paciente cancelo por emergencia',
-    paymentStatus: 'refunded' as const,
+    requestedTimeSlot: 'morning',
     createdAt: '2025-01-26T20:00:00Z',
-    updatedAt: '2025-01-27T08:00:00Z',
+    cancelledAt: '2025-01-27T08:00:00Z',
   },
 ];
 
@@ -178,15 +162,19 @@ const timeSlotLabels = {
 export default function ServiciosPage() {
   const [tab, setTab] = useState('all');
   const [search, setSearch] = useState('');
-  const [selectedService, setSelectedService] = useState<typeof demoServices[0] | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
 
-  // Note: Admin services endpoint not yet implemented in backend
-  // Using demo data for now
-  const services = demoServices;
-  const isLoading = false;
+  // Fetch services from API
+  const { data: servicesResponse, isLoading } = useQuery<ServicesResponse>({
+    queryKey: ['admin-services', search],
+    queryFn: () => servicesApi.getAll({ search, limit: 100 }),
+  });
 
-  // Filter services
+  // Extract services array from response, fallback to demo data
+  const services = servicesResponse?.data || demoServices;
+
+  // Filter services by tab (search is already applied in API call)
   const filteredServices = services?.filter((service) => {
     const matchesTab =
       tab === 'all' ||
@@ -194,14 +182,7 @@ export default function ServiciosPage() {
       (tab === 'completed' && service.status === 'completed') ||
       (tab === 'cancelled' && ['cancelled', 'rejected'].includes(service.status));
 
-    const matchesSearch =
-      !search ||
-      service.patient?.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      service.patient?.lastName.toLowerCase().includes(search.toLowerCase()) ||
-      service.service.name.toLowerCase().includes(search.toLowerCase()) ||
-      service.location.district.toLowerCase().includes(search.toLowerCase());
-
-    return matchesTab && matchesSearch;
+    return matchesTab;
   });
 
   const stats = {
@@ -325,7 +306,7 @@ export default function ServiciosPage() {
                   </TableHeader>
                   <TableBody>
                     {filteredServices?.map((service) => (
-                      <TableRow key={service._id}>
+                      <TableRow key={service.id}>
                         <TableCell>
                           <div>
                             <p className="font-medium">{service.service.name}</p>
@@ -337,6 +318,7 @@ export default function ServiciosPage() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
+                              <AvatarImage src={service.patient?.avatar} />
                               <AvatarFallback className="text-xs">
                                 {service.patient?.firstName?.charAt(0)}
                                 {service.patient?.lastName?.charAt(0)}
@@ -351,14 +333,14 @@ export default function ServiciosPage() {
                           {service.nurse ? (
                             <div className="flex items-center gap-2">
                               <Avatar className="h-8 w-8">
-                                <AvatarImage src={service.nurse.user?.avatar || undefined} />
+                                <AvatarImage src={service.nurse.avatar} />
                                 <AvatarFallback className="bg-gradient-to-br from-teal-500 to-blue-600 text-white text-xs">
-                                  {service.nurse.user?.firstName?.charAt(0)}
-                                  {service.nurse.user?.lastName?.charAt(0)}
+                                  {service.nurse.firstName?.charAt(0)}
+                                  {service.nurse.lastName?.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
                               <span className="text-sm">
-                                {service.nurse.user?.firstName} {service.nurse.user?.lastName}
+                                {service.nurse.firstName} {service.nurse.lastName}
                               </span>
                             </div>
                           ) : (
@@ -457,6 +439,7 @@ export default function ServiciosPage() {
                   <p className="mb-2 text-sm font-medium text-muted-foreground">Paciente</p>
                   <div className="flex items-center gap-3">
                     <Avatar>
+                      <AvatarImage src={selectedService.patient?.avatar} />
                       <AvatarFallback>
                         {selectedService.patient?.firstName?.charAt(0)}
                         {selectedService.patient?.lastName?.charAt(0)}
@@ -466,9 +449,6 @@ export default function ServiciosPage() {
                       <p className="font-medium">
                         {selectedService.patient?.firstName} {selectedService.patient?.lastName}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {selectedService.patient?.phone}
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -477,15 +457,15 @@ export default function ServiciosPage() {
                   {selectedService.nurse ? (
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src={selectedService.nurse.user?.avatar || undefined} />
+                        <AvatarImage src={selectedService.nurse.avatar} />
                         <AvatarFallback className="bg-gradient-to-br from-teal-500 to-blue-600 text-white">
-                          {selectedService.nurse.user?.firstName?.charAt(0)}
-                          {selectedService.nurse.user?.lastName?.charAt(0)}
+                          {selectedService.nurse.firstName?.charAt(0)}
+                          {selectedService.nurse.lastName?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium">
-                          {selectedService.nurse.user?.firstName} {selectedService.nurse.user?.lastName}
+                          {selectedService.nurse.firstName} {selectedService.nurse.lastName}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           CEP: {selectedService.nurse.cepNumber}
@@ -508,11 +488,6 @@ export default function ServiciosPage() {
                     <p className="text-sm text-muted-foreground">
                       {selectedService.location.district}, {selectedService.location.city}
                     </p>
-                    {selectedService.location.reference && (
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Ref: {selectedService.location.reference}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -541,7 +516,7 @@ export default function ServiciosPage() {
                 </div>
               </div>
 
-              {/* Rating & Review */}
+              {/* Rating */}
               {selectedService.rating && (
                 <div className="rounded-lg border p-4">
                   <p className="mb-2 text-sm font-medium text-muted-foreground">Calificacion</p>
@@ -559,22 +534,19 @@ export default function ServiciosPage() {
                     ))}
                     <span className="ml-2 text-lg font-semibold">{selectedService.rating}/5</span>
                   </div>
-                  {selectedService.review && (
-                    <p className="mt-2 text-sm italic text-muted-foreground">
-                      "{selectedService.review}"
-                    </p>
-                  )}
                 </div>
               )}
 
-              {/* Cancel reason */}
-              {selectedService.cancelReason && (
+              {/* Cancelled status */}
+              {selectedService.status === 'cancelled' && (
                 <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
                   <p className="text-sm font-medium text-red-800 dark:text-red-200">
-                    Motivo de cancelacion
+                    Servicio cancelado
                   </p>
                   <p className="text-sm text-red-700 dark:text-red-300">
-                    {selectedService.cancelReason}
+                    {selectedService.cancelledAt
+                      ? format(new Date(selectedService.cancelledAt), "dd 'de' MMMM 'de' yyyy, HH:mm", { locale: es })
+                      : 'Fecha no disponible'}
                   </p>
                 </div>
               )}
