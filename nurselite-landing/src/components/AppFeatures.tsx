@@ -268,7 +268,7 @@ export function AppFeatures() {
           </div>
 
           {/* Center - Phone mockup */}
-          <div className="order-1 lg:order-2 flex justify-center py-8 lg:py-0">
+          <div className="order-1 lg:order-2 flex flex-col items-center py-8 lg:py-0">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
