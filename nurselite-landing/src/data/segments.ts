@@ -7,12 +7,12 @@ export const segments: Segment[] = [
     icon: UserRound,
     title: "Cuidadores de Adultos Mayores",
     description:
-      "Cuida a tus padres sin sacrificar tu trabajo. Enfermeras especializadas en geriatria que brindan atencion integral, control de signos vitales y companía.",
+      "Cuida a tus padres sin sacrificar tu trabajo. Enfermeras especializadas en geriatría que brindan atención integral, control de signos vitales y compañía.",
     services: [
       "Control de signos vitales",
-      "Administracion de medicamentos",
+      "Administración de medicamentos",
       "Aseo y cuidado personal",
-      "Acompanamiento y compania",
+      "Acompañamiento y compañía",
     ],
     cta: "Ver enfermeras",
     ctaLink: "https://app.nurse-lite.com/auth/register?type=patient&segment=elderly",
@@ -20,13 +20,13 @@ export const segments: Segment[] = [
   {
     id: "postop",
     icon: Stethoscope,
-    title: "Recuperacion Post-Operatoria",
+    title: "Recuperación Post-Operatoria",
     description:
-      "Recuperate en la comodidad de tu hogar con atencion profesional. Curaciones, retiro de puntos y control post-quirurgico sin el riesgo de infecciones hospitalarias.",
+      "Recupérate en la comodidad de tu hogar con atención profesional. Curaciones, retiro de puntos y control post-quirúrgico sin el riesgo de infecciones hospitalarias.",
     services: [
-      "Curacion de heridas",
+      "Curación de heridas",
       "Retiro de puntos",
-      "Control post-quirurgico",
+      "Control post-quirúrgico",
       "Inyecciones y medicamentos",
     ],
     cta: "Agendar cuidado",
@@ -35,14 +35,14 @@ export const segments: Segment[] = [
   {
     id: "newmom",
     icon: Baby,
-    title: "Nuevas Mamas",
+    title: "Nuevas Mamás",
     description:
-      "Apoyo profesional en tus primeras semanas. Enfermeras especializadas en neonatologia y lactancia materna para que te sientas acompanada y segura.",
+      "Apoyo profesional en tus primeras semanas. Enfermeras especializadas en neonatología y lactancia materna para que te sientas acompañada y segura.",
     services: [
       "Apoyo en lactancia materna",
-      "Cuidados del recien nacido",
-      "Control de la mama",
-      "Orientacion y acompanamiento",
+      "Cuidados del recién nacido",
+      "Control de la mamá",
+      "Orientación y acompañamiento",
     ],
     cta: "Ver especialistas",
     ctaLink: "https://app.nurse-lite.com/auth/register?type=patient&segment=newmom",

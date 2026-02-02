@@ -4,7 +4,7 @@ import { ServiceCategory, ServicesByCategory } from "@/types";
 export const serviceCategories: ServiceCategory[] = [
   {
     id: "basic",
-    name: "Procedimientos Basicos",
+    name: "Procedimientos Básicos",
     icon: Stethoscope,
     color: "#1e3a5f",
   },
@@ -32,47 +32,47 @@ export const services: ServicesByCategory = {
   basic: [
     {
       name: "Control de Signos Vitales",
-      description: "Presion arterial, temperatura, frecuencia cardiaca y respiratoria",
+      description: "Presión arterial, temperatura, frecuencia cardíaca y respiratoria",
       duration: "15-30 min",
       price: "Desde S/. 35",
     },
     {
       name: "Toma de Glucosa",
-      description: "Medicion de nivel de azucar en sangre con glucometro",
+      description: "Medición de nivel de azúcar en sangre con glucómetro",
       duration: "10-15 min",
       price: "Desde S/. 25",
     },
     {
-      name: "Nebulizacion",
-      description: "Administracion de medicamentos por via respiratoria",
+      name: "Nebulización",
+      description: "Administración de medicamentos por vía respiratoria",
       duration: "20-30 min",
       price: "Desde S/. 45",
     },
   ],
   injections: [
     {
-      name: "Inyeccion Intramuscular",
-      description: "Aplicacion de medicamentos por via intramuscular",
+      name: "Inyección Intramuscular",
+      description: "Aplicación de medicamentos por vía intramuscular",
       duration: "10-15 min",
       price: "Desde S/. 30",
     },
     {
-      name: "Inyeccion Subcutanea",
-      description: "Aplicacion de insulina u otros medicamentos subcutaneos",
+      name: "Inyección Subcutánea",
+      description: "Aplicación de insulina u otros medicamentos subcutáneos",
       duration: "10-15 min",
       price: "Desde S/. 30",
     },
     {
-      name: "Inyeccion Endovenosa",
-      description: "Administracion de medicamentos por via intravenosa",
+      name: "Inyección Endovenosa",
+      description: "Administración de medicamentos por vía intravenosa",
       duration: "15-30 min",
       price: "Desde S/. 50",
     },
   ],
   care: [
     {
-      name: "Curacion de Heridas",
-      description: "Limpieza, desinfeccion y vendaje de heridas",
+      name: "Curación de Heridas",
+      description: "Limpieza, desinfección y vendaje de heridas",
       duration: "30-45 min",
       price: "Desde S/. 60",
     },
@@ -83,8 +83,8 @@ export const services: ServicesByCategory = {
       price: "Desde S/. 45",
     },
     {
-      name: "Colocacion de Sonda",
-      description: "Sonda vesical o nasogastrica segun indicacion medica",
+      name: "Colocación de Sonda",
+      description: "Sonda vesical o nasogástrica según indicación médica",
       duration: "30-45 min",
       price: "Desde S/. 80",
     },
@@ -92,19 +92,19 @@ export const services: ServicesByCategory = {
   elderly: [
     {
       name: "Cuidado Integral",
-      description: "Aseo personal, alimentacion y acompanamiento",
+      description: "Aseo personal, alimentación y acompañamiento",
       duration: "2-4 horas",
       price: "Desde S/. 120",
     },
     {
-      name: "Acompanamiento Hospitalario",
-      description: "Cuidado y supervision durante hospitalizacion",
+      name: "Acompañamiento Hospitalario",
+      description: "Cuidado y supervisión durante hospitalización",
       duration: "12 horas",
       price: "Desde S/. 250",
     },
     {
-      name: "Terapia Fisica Basica",
-      description: "Ejercicios de movilidad y rehabilitacion",
+      name: "Terapia Física Básica",
+      description: "Ejercicios de movilidad y rehabilitación",
       duration: "45-60 min",
       price: "Desde S/. 80",
     },
