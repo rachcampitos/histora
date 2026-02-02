@@ -418,6 +418,7 @@ export class NurseVerificationService {
 
   /**
    * Get verification statistics (admin dashboard)
+   * Filters out verifications for deleted users to match the list view
    */
   async getVerificationStats(): Promise<{
     pending: number;
@@ -426,12 +427,49 @@ export class NurseVerificationService {
     rejected: number;
     total: number;
   }> {
-    const [pending, underReview, approved, rejected] = await Promise.all([
-      this.verificationModel.countDocuments({ status: VerificationStatus.PENDING }),
-      this.verificationModel.countDocuments({ status: VerificationStatus.UNDER_REVIEW }),
-      this.verificationModel.countDocuments({ status: VerificationStatus.APPROVED }),
-      this.verificationModel.countDocuments({ status: VerificationStatus.REJECTED }),
+    // Use aggregation to filter out verifications for deleted users
+    const stats = await this.verificationModel.aggregate([
+      // Lookup nurse data
+      {
+        $lookup: {
+          from: 'nurses',
+          localField: 'nurseId',
+          foreignField: '_id',
+          as: 'nurse',
+        },
+      },
+      { $unwind: { path: '$nurse', preserveNullAndEmptyArrays: false } },
+      // Lookup user data
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'nurse.userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: { path: '$user', preserveNullAndEmptyArrays: false } },
+      // Filter out deleted users
+      { $match: { 'user.isDeleted': { $ne: true } } },
+      // Group by status and count
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
     ]);
+
+    // Convert aggregation result to expected format
+    const statsByStatus: Record<string, number> = {};
+    stats.forEach((s) => {
+      statsByStatus[s._id] = s.count;
+    });
+
+    const pending = statsByStatus[VerificationStatus.PENDING] || 0;
+    const underReview = statsByStatus[VerificationStatus.UNDER_REVIEW] || 0;
+    const approved = statsByStatus[VerificationStatus.APPROVED] || 0;
+    const rejected = statsByStatus[VerificationStatus.REJECTED] || 0;
 
     return {
       pending,
