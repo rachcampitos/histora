@@ -338,6 +338,11 @@ export default function VerificacionesPage() {
           <TabsTrigger value="under_review" className="gap-2">
             <Eye className="h-4 w-4" />
             En Revision
+            {underReviewCount > 0 && (
+              <Badge variant="secondary" className="ml-1">
+                {underReviewCount}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="approved" className="gap-2">
             <CheckCircle2 className="h-4 w-4" />
@@ -646,80 +651,92 @@ export default function VerificacionesPage() {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Official CEP Photo */}
-                  <div className="bg-background p-4 rounded-lg text-center border">
+                  <div className="bg-background p-4 pb-6 rounded-lg text-center border">
                     <div className="flex items-center justify-center gap-2 mb-3 text-sm font-medium">
-                      <BadgeCheck className="h-4 w-4" />
+                      <BadgeCheck className="h-4 w-4 text-green-600" />
                       Foto Oficial CEP
                     </div>
-                    {getCepPhotoUrl(selectedVerification) ? (
-                      <div className="relative">
-                        <img
-                          src={getCepPhotoUrl(selectedVerification)!}
-                          alt="Foto oficial CEP"
-                          className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-green-200"
-                        />
-                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-green-600 text-white">
-                          Registro Oficial
-                        </Badge>
-                      </div>
-                    ) : (
-                      <div className="w-32 h-32 mx-auto rounded-full bg-muted flex flex-col items-center justify-center">
-                        <Camera className="h-8 w-8 text-muted-foreground" />
-                        <span className="text-xs mt-1">Sin foto en CEP</span>
-                      </div>
-                    )}
+                    <div className="relative inline-block">
+                      {getCepPhotoUrl(selectedVerification) ? (
+                        <>
+                          <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-green-200">
+                            <img
+                              src={getCepPhotoUrl(selectedVerification)!}
+                              alt="Foto oficial CEP"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-green-600 text-white whitespace-nowrap">
+                            Registro Oficial
+                          </Badge>
+                        </>
+                      ) : (
+                        <div className="w-32 h-32 mx-auto rounded-full bg-muted flex flex-col items-center justify-center">
+                          <Camera className="h-8 w-8 text-muted-foreground" />
+                          <span className="text-xs mt-1">Sin foto en CEP</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Selfie Photo */}
-                  <div className="bg-background p-4 rounded-lg text-center border">
+                  <div className="bg-background p-4 pb-6 rounded-lg text-center border">
                     <div className="flex items-center justify-center gap-2 mb-3 text-sm font-medium">
-                      <Camera className="h-4 w-4" />
+                      <Camera className="h-4 w-4 text-blue-600" />
                       Selfie de Verificacion
                     </div>
-                    {selectedVerification.nurse?.selfieUrl ? (
-                      <div className="relative">
-                        <img
-                          src={selectedVerification.nurse.selfieUrl}
-                          alt="Selfie de verificacion"
-                          className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-blue-200"
-                        />
-                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-blue-600 text-white">
-                          Tomada por Usuario
-                        </Badge>
-                      </div>
-                    ) : (
-                      <div className="w-32 h-32 mx-auto rounded-full bg-muted flex flex-col items-center justify-center">
-                        <Camera className="h-8 w-8 text-muted-foreground" />
-                        <span className="text-xs mt-1">Sin selfie</span>
-                      </div>
-                    )}
+                    <div className="relative inline-block">
+                      {selectedVerification.nurse?.selfieUrl ? (
+                        <>
+                          <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-blue-200">
+                            <img
+                              src={selectedVerification.nurse.selfieUrl}
+                              alt="Selfie de verificacion"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-blue-600 text-white whitespace-nowrap">
+                            Tomada por Usuario
+                          </Badge>
+                        </>
+                      ) : (
+                        <div className="w-32 h-32 mx-auto rounded-full bg-muted flex flex-col items-center justify-center">
+                          <Camera className="h-8 w-8 text-muted-foreground" />
+                          <span className="text-xs mt-1">Sin selfie</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Profile Avatar */}
-                  <div className="bg-background p-4 rounded-lg text-center border">
+                  <div className="bg-background p-4 pb-6 rounded-lg text-center border">
                     <div className="flex items-center justify-center gap-2 mb-3 text-sm font-medium">
-                      <User className="h-4 w-4" />
+                      <User className="h-4 w-4 text-yellow-600" />
                       Avatar de Perfil
                     </div>
-                    {selectedVerification.nurse?.user?.avatar ? (
-                      <div className="relative">
-                        <img
-                          src={selectedVerification.nurse.user.avatar}
-                          alt="Avatar de perfil"
-                          className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-yellow-200"
-                        />
-                        <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-600 text-white">
-                          Foto de Perfil
-                        </Badge>
-                      </div>
-                    ) : (
-                      <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
-                        {getInitials(
-                          selectedVerification.nurse?.user?.firstName,
-                          selectedVerification.nurse?.user?.lastName
-                        )}
-                      </div>
-                    )}
+                    <div className="relative inline-block">
+                      {selectedVerification.nurse?.user?.avatar ? (
+                        <>
+                          <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-yellow-200">
+                            <img
+                              src={selectedVerification.nurse.user.avatar}
+                              alt="Avatar de perfil"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <Badge className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-yellow-600 text-white whitespace-nowrap">
+                            Foto de Perfil
+                          </Badge>
+                        </>
+                      ) : (
+                        <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                          {getInitials(
+                            selectedVerification.nurse?.user?.firstName,
+                            selectedVerification.nurse?.user?.lastName
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
