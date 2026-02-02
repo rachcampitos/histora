@@ -42,10 +42,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Calendar,
-  DollarSign,
   Eye,
   Mail,
-  MapPin,
   MoreHorizontal,
   Phone,
   Search,
@@ -55,100 +53,108 @@ import {
   Users,
 } from 'lucide-react';
 
-// Patient type
+// Patient type matching backend response
 interface Patient {
-  _id: string;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-  district: string;
-  totalServices: number;
-  totalSpent: number;
-  lastServiceDate: string;
-  createdAt: string;
+  avatar?: string;
   isActive: boolean;
+  isEmailVerified: boolean;
+  authProvider: string;
+  totalServicesRequested: number;
+  totalServicesCompleted: number;
+  createdAt: string;
+  lastServiceAt: string | null;
 }
 
 // Demo data
 const demoPatients: Patient[] = [
   {
-    _id: '1',
+    id: '1',
     firstName: 'Juan',
     lastName: 'Perez',
     email: 'juan.perez@email.com',
     phone: '999111222',
-    district: 'San Isidro',
-    totalServices: 12,
-    totalSpent: 540,
-    lastServiceDate: '2025-01-28T10:35:00Z',
-    createdAt: '2024-06-15T10:00:00Z',
     isActive: true,
+    isEmailVerified: true,
+    authProvider: 'local',
+    totalServicesRequested: 12,
+    totalServicesCompleted: 10,
+    createdAt: '2024-06-15T10:00:00Z',
+    lastServiceAt: '2025-01-28T10:35:00Z',
   },
   {
-    _id: '2',
+    id: '2',
     firstName: 'Carmen',
     lastName: 'Garcia',
     email: 'carmen.garcia@email.com',
     phone: '999333444',
-    district: 'Miraflores',
-    totalServices: 5,
-    totalSpent: 280,
-    lastServiceDate: '2025-01-28T14:10:00Z',
-    createdAt: '2024-09-20T10:00:00Z',
     isActive: true,
+    isEmailVerified: true,
+    authProvider: 'local',
+    totalServicesRequested: 5,
+    totalServicesCompleted: 5,
+    createdAt: '2024-09-20T10:00:00Z',
+    lastServiceAt: '2025-01-28T14:10:00Z',
   },
   {
-    _id: '3',
+    id: '3',
     firstName: 'Roberto',
     lastName: 'Silva',
     email: 'roberto.silva@email.com',
     phone: '999555666',
-    district: 'La Molina',
-    totalServices: 2,
-    totalSpent: 90,
-    lastServiceDate: '2025-01-15T10:00:00Z',
-    createdAt: '2025-01-10T10:00:00Z',
     isActive: true,
+    isEmailVerified: true,
+    authProvider: 'local',
+    totalServicesRequested: 2,
+    totalServicesCompleted: 2,
+    createdAt: '2025-01-10T10:00:00Z',
+    lastServiceAt: '2025-01-15T10:00:00Z',
   },
   {
-    _id: '4',
+    id: '4',
     firstName: 'Laura',
     lastName: 'Mendoza',
     email: 'laura.mendoza@email.com',
     phone: '999777888',
-    district: 'San Borja',
-    totalServices: 8,
-    totalSpent: 720,
-    lastServiceDate: '2025-01-27T10:00:00Z',
-    createdAt: '2024-08-05T10:00:00Z',
     isActive: true,
+    isEmailVerified: true,
+    authProvider: 'local',
+    totalServicesRequested: 8,
+    totalServicesCompleted: 7,
+    createdAt: '2024-08-05T10:00:00Z',
+    lastServiceAt: '2025-01-27T10:00:00Z',
   },
   {
-    _id: '5',
+    id: '5',
     firstName: 'Miguel',
     lastName: 'Torres',
     email: 'miguel.torres@email.com',
     phone: '999999000',
-    district: 'Surco',
-    totalServices: 1,
-    totalSpent: 45,
-    lastServiceDate: '2024-12-20T10:00:00Z',
-    createdAt: '2024-12-15T10:00:00Z',
     isActive: false,
+    isEmailVerified: true,
+    authProvider: 'local',
+    totalServicesRequested: 1,
+    totalServicesCompleted: 1,
+    createdAt: '2024-12-15T10:00:00Z',
+    lastServiceAt: '2024-12-20T10:00:00Z',
   },
   {
-    _id: '6',
+    id: '6',
     firstName: 'Patricia',
     lastName: 'Flores',
     email: 'patricia.flores@email.com',
     phone: '999222333',
-    district: 'Jesus Maria',
-    totalServices: 15,
-    totalSpent: 1250,
-    lastServiceDate: '2025-01-26T10:00:00Z',
-    createdAt: '2024-03-10T10:00:00Z',
     isActive: true,
+    isEmailVerified: true,
+    authProvider: 'local',
+    totalServicesRequested: 15,
+    totalServicesCompleted: 14,
+    createdAt: '2024-03-10T10:00:00Z',
+    lastServiceAt: '2025-01-26T10:00:00Z',
   },
 ];
 
@@ -176,14 +182,13 @@ export default function PacientesPage() {
   // Extract patients array from response, fallback to demo data
   const patients = patientsResponse?.data || demoPatients;
 
-  // Filter patients
+  // Filter patients (search is also applied in API)
   const filteredPatients = patients.filter((patient) => {
     if (!search) return true;
     return (
       patient.firstName.toLowerCase().includes(search.toLowerCase()) ||
       patient.lastName.toLowerCase().includes(search.toLowerCase()) ||
-      patient.email.toLowerCase().includes(search.toLowerCase()) ||
-      patient.district.toLowerCase().includes(search.toLowerCase())
+      patient.email.toLowerCase().includes(search.toLowerCase())
     );
   });
 
@@ -191,8 +196,8 @@ export default function PacientesPage() {
   const stats = {
     total: patients.length,
     active: patients.filter((p) => p.isActive).length,
-    totalRevenue: patients.reduce((sum, p) => sum + p.totalSpent, 0),
-    avgSpent: patients.length ? Math.round(patients.reduce((sum, p) => sum + p.totalSpent, 0) / patients.length) : 0,
+    totalServices: patients.reduce((sum, p) => sum + (p.totalServicesCompleted || 0), 0),
+    avgServices: patients.length ? Math.round(patients.reduce((sum, p) => sum + (p.totalServicesCompleted || 0), 0) / patients.length) : 0,
   };
 
   return (
@@ -234,23 +239,23 @@ export default function PacientesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Ingresos Totales
+              Total Servicios
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
+            <ShoppingBag className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">S/ {stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{stats.totalServices}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Ticket Promedio
+              Promedio por Paciente
             </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">S/ {stats.avgSpent}</div>
+            <div className="text-2xl font-bold">{stats.avgServices} servicios</div>
           </CardContent>
         </Card>
       </div>
@@ -289,9 +294,8 @@ export default function PacientesPage() {
                 <TableRow>
                   <TableHead>Paciente</TableHead>
                   <TableHead>Contacto</TableHead>
-                  <TableHead>Distrito</TableHead>
-                  <TableHead>Servicios</TableHead>
-                  <TableHead>Total Gastado</TableHead>
+                  <TableHead>Servicios Solicitados</TableHead>
+                  <TableHead>Servicios Completados</TableHead>
                   <TableHead>Ultimo Servicio</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
@@ -299,7 +303,7 @@ export default function PacientesPage() {
               </TableHeader>
               <TableBody>
                 {filteredPatients?.map((patient) => (
-                  <TableRow key={patient._id}>
+                  <TableRow key={patient.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar>
@@ -329,23 +333,22 @@ export default function PacientesPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3 text-muted-foreground" />
-                        <span>{patient.district}</span>
+                        <ShoppingBag className="h-3 w-3 text-muted-foreground" />
+                        <span className="font-medium">{patient.totalServicesRequested}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <ShoppingBag className="h-3 w-3 text-muted-foreground" />
-                        <span className="font-medium">{patient.totalServices}</span>
+                        <ShoppingBag className="h-3 w-3 text-green-500" />
+                        <span className="font-medium text-green-600">{patient.totalServicesCompleted}</span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-medium">S/ {patient.totalSpent.toLocaleString()}</span>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="h-3 w-3" />
-                        {format(new Date(patient.lastServiceDate), 'dd MMM yyyy', { locale: es })}
+                        {patient.lastServiceAt
+                          ? format(new Date(patient.lastServiceAt), 'dd MMM yyyy', { locale: es })
+                          : 'Sin servicios'}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -379,7 +382,7 @@ export default function PacientesPage() {
                 ))}
                 {(!filteredPatients || filteredPatients.length === 0) && (
                   <TableRow>
-                    <TableCell colSpan={8} className="h-24 text-center">
+                    <TableCell colSpan={7} className="h-24 text-center">
                       No se encontraron pacientes
                     </TableCell>
                   </TableRow>
@@ -428,10 +431,6 @@ export default function PacientesPage() {
                   <span>{selectedPatient.phone}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{selectedPatient.district}, Lima</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span>
                     Miembro desde {format(new Date(selectedPatient.createdAt), 'MMMM yyyy', { locale: es })}
@@ -442,12 +441,12 @@ export default function PacientesPage() {
               {/* Stats */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-lg border p-4 text-center">
-                  <p className="text-2xl font-bold">{selectedPatient.totalServices}</p>
-                  <p className="text-sm text-muted-foreground">Servicios</p>
+                  <p className="text-2xl font-bold">{selectedPatient.totalServicesRequested}</p>
+                  <p className="text-sm text-muted-foreground">Servicios Solicitados</p>
                 </div>
                 <div className="rounded-lg border p-4 text-center">
-                  <p className="text-2xl font-bold">S/ {selectedPatient.totalSpent}</p>
-                  <p className="text-sm text-muted-foreground">Total Gastado</p>
+                  <p className="text-2xl font-bold text-green-600">{selectedPatient.totalServicesCompleted}</p>
+                  <p className="text-sm text-muted-foreground">Servicios Completados</p>
                 </div>
               </div>
 
@@ -455,7 +454,9 @@ export default function PacientesPage() {
               <div className="rounded-lg border p-4">
                 <p className="text-sm font-medium text-muted-foreground">Ultimo Servicio</p>
                 <p className="font-medium">
-                  {format(new Date(selectedPatient.lastServiceDate), "dd 'de' MMMM 'de' yyyy", { locale: es })}
+                  {selectedPatient.lastServiceAt
+                    ? format(new Date(selectedPatient.lastServiceAt), "dd 'de' MMMM 'de' yyyy", { locale: es })
+                    : 'Sin servicios aun'}
                 </p>
               </div>
             </div>
