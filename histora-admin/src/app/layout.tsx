@@ -10,9 +10,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'NurseLite Admin',
-  description: 'Panel de administracion de NurseLite - Enfermeria a domicilio',
+  description: 'Panel de administración de NurseLite - Enfermería a domicilio',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon-32.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -23,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>
