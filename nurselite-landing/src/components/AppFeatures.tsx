@@ -17,9 +17,9 @@ const features = [
   {
     id: "cep-verification",
     icon: ShieldCheck,
-    title: "Verificacion CEP",
+    title: "Verificación CEP",
     description:
-      "Todos los profesionales validados por el Colegio de Enfermeros del Peru",
+      "Todos los profesionales validados por el Colegio de Enfermeros del Perú",
     color: "from-green-500 to-emerald-600",
     bgColor: "bg-green-50 dark:bg-green-900/20",
     iconColor: "text-green-600 dark:text-green-400",
@@ -30,7 +30,7 @@ const features = [
     icon: MapPin,
     title: "GPS en tiempo real",
     description:
-      "Sigue la ubicacion de tu profesional desde que acepta hasta que llega",
+      "Sigue la ubicación de tu profesional desde que acepta hasta que llega",
     color: "from-blue-500 to-cyan-600",
     bgColor: "bg-blue-50 dark:bg-blue-900/20",
     iconColor: "text-blue-600 dark:text-blue-400",
@@ -39,7 +39,7 @@ const features = [
   {
     id: "reviews",
     icon: Star,
-    title: "Sistema de resenas",
+    title: "Sistema de reseñas",
     description:
       "Miles de familias comparten su experiencia para ayudarte a elegir",
     color: "from-amber-500 to-yellow-600",
@@ -52,7 +52,7 @@ const features = [
     icon: MessageCircle,
     title: "Chat en tiempo real",
     description:
-      "Comunicacion directa con tu profesional antes, durante y despues",
+      "Comunicación directa con tu profesional antes, durante y después",
     color: "from-purple-500 to-violet-600",
     bgColor: "bg-purple-50 dark:bg-purple-900/20",
     iconColor: "text-purple-600 dark:text-purple-400",
@@ -243,17 +243,17 @@ export function AppFeatures() {
         <AnimatedSection className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#1e3a5f]/10 dark:bg-[#4a9d9a]/20 text-[#1e3a5f] dark:text-[#4a9d9a] rounded-full text-sm font-semibold mb-4">
             <Smartphone className="w-4 h-4" />
-            Tecnologia de Confianza
+            Tecnología de Confianza
           </span>
           <h2
             id="features-title"
             className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a1a2e] dark:text-white mb-6"
           >
-            Una app disenada para{" "}
+            Una app diseñada para{" "}
             <span className="gradient-text">tu tranquilidad</span>
           </h2>
           <p className="text-lg text-[#64748b] dark:text-[#94a3b8]">
-            Tecnologia que pone tu bienestar primero. Desde la verificacion
+            Tecnología que pone tu bienestar primero. Desde la verificación
             hasta el seguimiento en tiempo real.
           </p>
         </AnimatedSection>
@@ -429,6 +429,63 @@ export function AppFeatures() {
                   </span>
                 </div>
               </motion.div>
+            </motion.div>
+
+            {/* App Store Badges - Coming Soon */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="mt-8 text-center"
+            >
+              <p className="text-sm text-[#64748b] dark:text-[#94a3b8] mb-4">
+                Disponible para iPhone y Android
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                {/* App Store Badge */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative group cursor-pointer"
+                >
+                  <div className="flex items-center gap-3 px-5 py-3 bg-[#1a1a2e] dark:bg-white/10 rounded-xl border border-[#334155] dark:border-white/20 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wide">Próximamente en</p>
+                      <p className="text-base font-semibold text-white -mt-0.5">App Store</p>
+                    </div>
+                  </div>
+                  <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-[#4a9d9a] text-white text-[10px] font-semibold rounded-full">
+                    Pronto
+                  </div>
+                </motion.div>
+
+                {/* Google Play Badge */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative group cursor-pointer"
+                >
+                  <div className="flex items-center gap-3 px-5 py-3 bg-[#1a1a2e] dark:bg-white/10 rounded-xl border border-[#334155] dark:border-white/20 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-8 h-8" viewBox="0 0 24 24">
+                      <path fill="#EA4335" d="M3.609 1.814L13.445 12 3.609 22.186a2.02 2.02 0 0 1-.609-1.452V3.266c0-.56.226-1.066.609-1.452z"/>
+                      <path fill="#FBBC04" d="M16.547 8.85l-3.1 3.15 3.1 3.15 3.502-2.017c.79-.455.79-1.61 0-2.066L16.547 8.85z"/>
+                      <path fill="#4285F4" d="M3.609 1.814L13.445 12l3.102-3.15L6.167.473c-.451-.26-.954-.39-1.447-.39-.403 0-.8.086-1.111.259L3.609 1.814z"/>
+                      <path fill="#34A853" d="M3.609 22.186l.001-.001L6.167 23.527c-.002 0 10.378-5.987 10.38-5.988l-3.102-3.15L3.609 22.186z"/>
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wide">Próximamente en</p>
+                      <p className="text-base font-semibold text-white -mt-0.5">Google Play</p>
+                    </div>
+                  </div>
+                  <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-[#4a9d9a] text-white text-[10px] font-semibold rounded-full">
+                    Pronto
+                  </div>
+                </motion.div>
+              </div>
             </motion.div>
           </div>
 
