@@ -13,6 +13,7 @@ import { NurseVerification, VerificationStatus } from '../nurses/schema/nurse-ve
 import { ReniecUsage } from '../nurses/schema/reniec-usage.schema';
 import { ServiceRequest } from '../service-requests/schema/service-request.schema';
 import { PanicAlert, PanicAlertStatus, PanicAlertLevel } from '../safety/schema/panic-alert.schema';
+import { ServicePayment, ServicePaymentStatus } from '../service-payments/schema/service-payment.schema';
 import { CreateUserDto, UpdateUserDto, UserQueryDto } from './dto/admin-user.dto';
 import {
   NurseQueryDto,
@@ -43,6 +44,7 @@ export class AdminService {
     @InjectModel(ReniecUsage.name) private reniecUsageModel: Model<ReniecUsage>,
     @InjectModel(ServiceRequest.name) private serviceRequestModel: Model<ServiceRequest>,
     @InjectModel(PanicAlert.name) private panicAlertModel: Model<PanicAlert>,
+    @InjectModel(ServicePayment.name) private servicePaymentModel: Model<ServicePayment>,
     private readonly uploadsService: UploadsService,
   ) {}
 
@@ -1501,6 +1503,890 @@ export class AdminService {
 
     return {
       message: 'Paciente eliminado exitosamente',
+    };
+  }
+
+  // ==================== SERVICE REQUEST MANAGEMENT METHODS ====================
+
+  /**
+   * Get all service requests with filters and pagination
+   */
+  async getServiceRequests(query: any) {
+    const {
+      search,
+      status,
+      paymentStatus,
+      category,
+      district,
+      dateFrom,
+      dateTo,
+      minRating,
+      maxRating,
+      page = 1,
+      limit = 10,
+    } = query;
+    const skip = (page - 1) * limit;
+
+    // Build filter
+    const filter: any = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (paymentStatus) {
+      filter.paymentStatus = paymentStatus;
+    }
+
+    if (category) {
+      filter['service.category'] = category;
+    }
+
+    if (district) {
+      filter['location.district'] = { $regex: sanitizeRegex(district), $options: 'i' };
+    }
+
+    if (dateFrom || dateTo) {
+      filter.createdAt = {};
+      if (dateFrom) {
+        filter.createdAt.$gte = new Date(dateFrom);
+      }
+      if (dateTo) {
+        filter.createdAt.$lte = new Date(dateTo);
+      }
+    }
+
+    if (minRating !== undefined || maxRating !== undefined) {
+      filter.rating = {};
+      if (minRating !== undefined) {
+        filter.rating.$gte = minRating;
+      }
+      if (maxRating !== undefined) {
+        filter.rating.$lte = maxRating;
+      }
+    }
+
+    // Get total count
+    let total = await this.serviceRequestModel.countDocuments(filter);
+
+    // Get service requests with populated data
+    let serviceRequests = await this.serviceRequestModel
+      .find(filter)
+      .populate('patientId', 'firstName lastName email phone avatar')
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName avatar phone' },
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Apply search filter on populated fields (patient/nurse name, service name)
+    if (search) {
+      const searchLower = search.toLowerCase();
+      serviceRequests = serviceRequests.filter((sr) => {
+        const patient = sr.patientId as any;
+        const nurse = sr.nurseId as any;
+        const nurseUser = nurse?.userId as any;
+
+        const patientName = `${patient?.firstName || ''} ${patient?.lastName || ''}`.toLowerCase();
+        const nurseName = `${nurseUser?.firstName || ''} ${nurseUser?.lastName || ''}`.toLowerCase();
+        const serviceName = sr.service.name.toLowerCase();
+        const cepNumber = nurse?.cepNumber?.toLowerCase() || '';
+
+        return (
+          patientName.includes(searchLower) ||
+          nurseName.includes(searchLower) ||
+          serviceName.includes(searchLower) ||
+          cepNumber.includes(searchLower)
+        );
+      });
+      total = serviceRequests.length;
+    }
+
+    // Paginate
+    const paginatedRequests = serviceRequests.slice(skip, skip + limit);
+
+    // Transform data
+    const data = paginatedRequests.map((sr) => {
+      const patient = sr.patientId as any;
+      const nurse = sr.nurseId as any;
+      const nurseUser = nurse?.userId as any;
+
+      return {
+        id: (sr as any)._id.toString(),
+        status: sr.status,
+        paymentStatus: sr.paymentStatus,
+        service: {
+          name: sr.service.name,
+          category: sr.service.category,
+          price: sr.service.price,
+          currency: sr.service.currency || 'PEN',
+        },
+        patient: patient
+          ? {
+              id: patient._id.toString(),
+              firstName: patient.firstName,
+              lastName: patient.lastName,
+              avatar: patient.avatar,
+            }
+          : null,
+        nurse: nurse
+          ? {
+              id: (nurse as any)._id.toString(),
+              firstName: nurseUser?.firstName || '',
+              lastName: nurseUser?.lastName || '',
+              cepNumber: nurse.cepNumber,
+              avatar: nurseUser?.avatar,
+            }
+          : null,
+        location: {
+          district: sr.location.district,
+          city: sr.location.city,
+          address: sr.location.address,
+        },
+        requestedDate: sr.requestedDate,
+        requestedTimeSlot: sr.requestedTimeSlot,
+        rating: sr.rating,
+        createdAt: (sr as any).createdAt,
+        completedAt: sr.completedAt,
+        cancelledAt: sr.cancelledAt,
+      };
+    });
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Get single service request detail
+   */
+  async getServiceRequest(id: string) {
+    const sr = await this.serviceRequestModel
+      .findById(id)
+      .populate('patientId', 'firstName lastName email phone avatar')
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName avatar phone email' },
+      })
+      .exec();
+
+    if (!sr) {
+      throw new NotFoundException('Solicitud de servicio no encontrada');
+    }
+
+    const patient = sr.patientId as any;
+    const nurse = sr.nurseId as any;
+    const nurseUser = nurse?.userId as any;
+
+    return {
+      id: (sr as any)._id.toString(),
+      status: sr.status,
+      paymentStatus: sr.paymentStatus,
+      paymentMethod: sr.paymentMethod,
+      paymentId: sr.paymentId,
+      service: {
+        name: sr.service.name,
+        category: sr.service.category,
+        price: sr.service.price,
+        currency: sr.service.currency || 'PEN',
+        durationMinutes: sr.service.durationMinutes || 60,
+      },
+      patient: patient
+        ? {
+            id: patient._id.toString(),
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            email: patient.email,
+            phone: patient.phone,
+            avatar: patient.avatar,
+          }
+        : null,
+      nurse: nurse
+        ? {
+            id: (nurse as any)._id.toString(),
+            userId: nurseUser?._id?.toString(),
+            firstName: nurseUser?.firstName || '',
+            lastName: nurseUser?.lastName || '',
+            cepNumber: nurse.cepNumber,
+            phone: nurseUser?.phone,
+            avatar: nurseUser?.avatar,
+            averageRating: nurse.averageRating || 0,
+          }
+        : null,
+      location: {
+        coordinates: sr.location.coordinates,
+        address: sr.location.address,
+        reference: sr.location.reference,
+        district: sr.location.district,
+        city: sr.location.city,
+      },
+      requestedDate: sr.requestedDate,
+      requestedTimeSlot: sr.requestedTimeSlot,
+      scheduledAt: sr.scheduledAt,
+      patientNotes: sr.patientNotes,
+      nurseNotes: sr.nurseNotes,
+      rating: sr.rating,
+      review: sr.review,
+      reviewedAt: sr.reviewedAt,
+      completedAt: sr.completedAt,
+      cancelledAt: sr.cancelledAt,
+      cancellationReason: sr.cancellationReason,
+      statusHistory: sr.statusHistory.map((sh) => ({
+        status: sh.status,
+        changedAt: sh.changedAt,
+        changedBy: sh.changedBy?.toString(),
+        note: sh.note,
+      })),
+      createdAt: (sr as any).createdAt,
+      updatedAt: (sr as any).updatedAt,
+    };
+  }
+
+  /**
+   * Get service analytics
+   */
+  async getServiceAnalytics() {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Summary stats
+    const summaryAgg = await this.serviceRequestModel.aggregate([
+      {
+        $facet: {
+          total: [{ $count: 'count' }],
+          pending: [{ $match: { status: 'pending' } }, { $count: 'count' }],
+          inProgress: [
+            { $match: { status: { $in: ['accepted', 'on_the_way', 'arrived', 'in_progress'] } } },
+            { $count: 'count' },
+          ],
+          completed: [{ $match: { status: 'completed' } }, { $count: 'count' }],
+          cancelled: [{ $match: { status: 'cancelled' } }, { $count: 'count' }],
+          rejected: [{ $match: { status: 'rejected' } }, { $count: 'count' }],
+        },
+      },
+    ]);
+
+    const summary = summaryAgg[0] || {};
+
+    // Revenue stats
+    const revenueAgg = await this.serviceRequestModel.aggregate([
+      {
+        $facet: {
+          total: [
+            { $match: { status: 'completed' } },
+            { $group: { _id: null, sum: { $sum: '$service.price' } } },
+          ],
+          thisWeek: [
+            { $match: { status: 'completed', completedAt: { $gte: startOfWeek } } },
+            { $group: { _id: null, sum: { $sum: '$service.price' } } },
+          ],
+          thisMonth: [
+            { $match: { status: 'completed', completedAt: { $gte: startOfMonth } } },
+            { $group: { _id: null, sum: { $sum: '$service.price' } } },
+          ],
+          pending: [
+            { $match: { paymentStatus: 'pending', status: { $ne: 'cancelled' } } },
+            { $group: { _id: null, sum: { $sum: '$service.price' } } },
+          ],
+          paid: [
+            { $match: { paymentStatus: 'paid' } },
+            { $group: { _id: null, sum: { $sum: '$service.price' } } },
+          ],
+          refunded: [
+            { $match: { paymentStatus: 'refunded' } },
+            { $group: { _id: null, sum: { $sum: '$service.price' } } },
+          ],
+        },
+      },
+    ]);
+
+    const revenue = revenueAgg[0] || {};
+
+    // Performance stats
+    const performanceAgg = await this.serviceRequestModel.aggregate([
+      {
+        $facet: {
+          ratings: [
+            { $match: { rating: { $exists: true, $ne: null } } },
+            { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } },
+          ],
+          completionRate: [
+            { $match: { status: { $in: ['completed', 'cancelled', 'rejected'] } } },
+            {
+              $group: {
+                _id: null,
+                total: { $sum: 1 },
+                completed: { $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] } },
+                cancelled: { $sum: { $cond: [{ $eq: ['$status', 'cancelled'] }, 1, 0] } },
+              },
+            },
+          ],
+          responseTime: [
+            { $match: { status: { $in: ['accepted', 'on_the_way', 'arrived', 'in_progress', 'completed'] } } },
+            {
+              $project: {
+                responseMinutes: {
+                  $divide: [
+                    { $subtract: [{ $arrayElemAt: ['$statusHistory.changedAt', 1] }, '$createdAt'] },
+                    60000,
+                  ],
+                },
+              },
+            },
+            { $group: { _id: null, avg: { $avg: '$responseMinutes' } } },
+          ],
+        },
+      },
+    ]);
+
+    const performance = performanceAgg[0] || {};
+    const completionData = performance.completionRate?.[0] || { total: 0, completed: 0, cancelled: 0 };
+
+    // By category
+    const byCategory = await this.serviceRequestModel.aggregate([
+      { $match: { status: 'completed' } },
+      {
+        $group: {
+          _id: '$service.category',
+          count: { $sum: 1 },
+          revenue: { $sum: '$service.price' },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+    ]);
+
+    // By district
+    const byDistrict = await this.serviceRequestModel.aggregate([
+      { $match: { status: 'completed' } },
+      {
+        $group: {
+          _id: '$location.district',
+          count: { $sum: 1 },
+          revenue: { $sum: '$service.price' },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+    ]);
+
+    // By time slot
+    const byTimeSlot = await this.serviceRequestModel.aggregate([
+      {
+        $group: {
+          _id: '$requestedTimeSlot',
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    return {
+      summary: {
+        total: summary.total?.[0]?.count || 0,
+        pending: summary.pending?.[0]?.count || 0,
+        inProgress: summary.inProgress?.[0]?.count || 0,
+        completed: summary.completed?.[0]?.count || 0,
+        cancelled: summary.cancelled?.[0]?.count || 0,
+        rejected: summary.rejected?.[0]?.count || 0,
+      },
+      revenue: {
+        total: revenue.total?.[0]?.sum || 0,
+        thisWeek: revenue.thisWeek?.[0]?.sum || 0,
+        thisMonth: revenue.thisMonth?.[0]?.sum || 0,
+        pending: revenue.pending?.[0]?.sum || 0,
+        paid: revenue.paid?.[0]?.sum || 0,
+        refunded: revenue.refunded?.[0]?.sum || 0,
+      },
+      performance: {
+        averageRating: Math.round((performance.ratings?.[0]?.avg || 0) * 10) / 10,
+        completionRate:
+          completionData.total > 0
+            ? Math.round((completionData.completed / completionData.total) * 100)
+            : 0,
+        cancellationRate:
+          completionData.total > 0
+            ? Math.round((completionData.cancelled / completionData.total) * 100)
+            : 0,
+        averageResponseTime: Math.round(performance.responseTime?.[0]?.avg || 0),
+      },
+      byCategory: byCategory.map((c) => ({
+        category: c._id,
+        count: c.count,
+        revenue: c.revenue,
+      })),
+      byDistrict: byDistrict.map((d) => ({
+        district: d._id,
+        count: d.count,
+        revenue: d.revenue,
+      })),
+      byTimeSlot: byTimeSlot.map((t) => ({
+        timeSlot: t._id,
+        count: t.count,
+      })),
+    };
+  }
+
+  /**
+   * Admin action on service request (cancel, refund)
+   */
+  async adminServiceAction(id: string, dto: any, adminUserId: string) {
+    const sr = await this.serviceRequestModel.findById(id);
+
+    if (!sr) {
+      throw new NotFoundException('Solicitud de servicio no encontrada');
+    }
+
+    const { action, reason, adminNotes } = dto;
+
+    if (action === 'cancel') {
+      // Check if can be cancelled
+      if (['completed', 'cancelled', 'rejected'].includes(sr.status)) {
+        throw new ConflictException('No se puede cancelar este servicio');
+      }
+
+      sr.status = 'cancelled';
+      sr.cancelledAt = new Date();
+      sr.cancellationReason = reason || 'Cancelado por administrador';
+      sr.statusHistory.push({
+        status: 'cancelled',
+        changedAt: new Date(),
+        changedBy: adminUserId ? new (require('mongoose').Types.ObjectId)(adminUserId) : undefined,
+        note: adminNotes || 'Cancelado por admin',
+      });
+
+      await sr.save();
+
+      this.logger.log(`Admin cancelled service request: ${id}`);
+
+      return {
+        id: (sr as any)._id.toString(),
+        status: sr.status,
+        message: 'Servicio cancelado exitosamente',
+      };
+    }
+
+    if (action === 'refund') {
+      // Check if can be refunded
+      if (sr.paymentStatus !== 'paid') {
+        throw new ConflictException('Solo se puede reembolsar un pago completado');
+      }
+
+      sr.paymentStatus = 'refunded';
+      sr.statusHistory.push({
+        status: 'refunded',
+        changedAt: new Date(),
+        changedBy: adminUserId ? new (require('mongoose').Types.ObjectId)(adminUserId) : undefined,
+        note: adminNotes || `Reembolso: ${reason || 'Autorizado por admin'}`,
+      });
+
+      await sr.save();
+
+      this.logger.log(`Admin refunded service request: ${id}`);
+
+      return {
+        id: (sr as any)._id.toString(),
+        paymentStatus: sr.paymentStatus,
+        message: 'Reembolso procesado exitosamente',
+      };
+    }
+
+    throw new ConflictException('Acción no válida');
+  }
+
+  // ==================== PAYMENT MANAGEMENT METHODS ====================
+
+  /**
+   * Get all payments with filters and pagination
+   */
+  async getPayments(query: any) {
+    const {
+      search,
+      status,
+      method,
+      dateFrom,
+      dateTo,
+      minAmount,
+      maxAmount,
+      page = 1,
+      limit = 10,
+    } = query;
+    const skip = (page - 1) * limit;
+
+    // Build filter
+    const filter: any = { isDeleted: { $ne: true } };
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (method) {
+      filter.method = method;
+    }
+
+    if (dateFrom || dateTo) {
+      filter.createdAt = {};
+      if (dateFrom) {
+        filter.createdAt.$gte = new Date(dateFrom);
+      }
+      if (dateTo) {
+        filter.createdAt.$lte = new Date(dateTo);
+      }
+    }
+
+    if (minAmount !== undefined || maxAmount !== undefined) {
+      filter.amount = {};
+      if (minAmount !== undefined) {
+        filter.amount.$gte = minAmount * 100; // Convert to cents
+      }
+      if (maxAmount !== undefined) {
+        filter.amount.$lte = maxAmount * 100;
+      }
+    }
+
+    // Get total count
+    let total = await this.servicePaymentModel.countDocuments(filter);
+
+    // Get payments with populated data
+    let payments = await this.servicePaymentModel
+      .find(filter)
+      .populate('patientId', 'firstName lastName email')
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName' },
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Apply search filter on populated fields
+    if (search) {
+      const searchLower = search.toLowerCase();
+      payments = payments.filter((p) => {
+        const patient = p.patientId as any;
+        const nurse = p.nurseId as any;
+        const nurseUser = nurse?.userId as any;
+
+        const patientName = `${patient?.firstName || ''} ${patient?.lastName || ''}`.toLowerCase();
+        const nurseName = `${nurseUser?.firstName || ''} ${nurseUser?.lastName || ''}`.toLowerCase();
+        const reference = p.reference.toLowerCase();
+        const cepNumber = nurse?.cepNumber?.toLowerCase() || '';
+
+        return (
+          patientName.includes(searchLower) ||
+          nurseName.includes(searchLower) ||
+          reference.includes(searchLower) ||
+          cepNumber.includes(searchLower)
+        );
+      });
+      total = payments.length;
+    }
+
+    // Paginate
+    const paginatedPayments = payments.slice(skip, skip + limit);
+
+    // Transform data
+    const data = paginatedPayments.map((p) => {
+      const patient = p.patientId as any;
+      const nurse = p.nurseId as any;
+      const nurseUser = nurse?.userId as any;
+
+      return {
+        id: (p as any)._id.toString(),
+        reference: p.reference,
+        status: p.status,
+        method: p.method,
+        amount: p.amount / 100, // Convert from cents
+        currency: p.currency || 'PEN',
+        serviceFee: (p.serviceFee || 0) / 100,
+        nurseEarnings: (p.nurseEarnings || 0) / 100,
+        patient: patient
+          ? {
+              id: patient._id.toString(),
+              firstName: patient.firstName,
+              lastName: patient.lastName,
+            }
+          : null,
+        nurse: nurse
+          ? {
+              id: (nurse as any)._id.toString(),
+              firstName: nurseUser?.firstName || '',
+              lastName: nurseUser?.lastName || '',
+              cepNumber: nurse.cepNumber,
+            }
+          : null,
+        serviceRequestId: p.serviceRequestId?.toString(),
+        cardBrand: p.cardBrand,
+        cardLast4: p.cardLast4,
+        createdAt: (p as any).createdAt,
+        paidAt: p.paidAt,
+        refundedAt: p.refundedAt,
+      };
+    });
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Get single payment detail
+   */
+  async getPayment(id: string) {
+    const p = await this.servicePaymentModel
+      .findById(id)
+      .populate('patientId', 'firstName lastName email phone')
+      .populate({
+        path: 'nurseId',
+        populate: { path: 'userId', select: 'firstName lastName phone' },
+      })
+      .exec();
+
+    if (!p) {
+      throw new NotFoundException('Pago no encontrado');
+    }
+
+    const patient = p.patientId as any;
+    const nurse = p.nurseId as any;
+    const nurseUser = nurse?.userId as any;
+
+    return {
+      id: (p as any)._id.toString(),
+      reference: p.reference,
+      status: p.status,
+      method: p.method,
+      amount: p.amount / 100,
+      currency: p.currency || 'PEN',
+      serviceFee: (p.serviceFee || 0) / 100,
+      culqiFee: (p.culqiFee || 0) / 100,
+      nurseEarnings: (p.nurseEarnings || 0) / 100,
+      patient: patient
+        ? {
+            id: patient._id.toString(),
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            email: patient.email,
+            phone: patient.phone,
+          }
+        : null,
+      nurse: nurse
+        ? {
+            id: (nurse as any)._id.toString(),
+            firstName: nurseUser?.firstName || '',
+            lastName: nurseUser?.lastName || '',
+            cepNumber: nurse.cepNumber,
+            phone: nurseUser?.phone,
+          }
+        : null,
+      serviceRequestId: p.serviceRequestId?.toString(),
+      culqiChargeId: p.culqiChargeId,
+      culqiOrderId: p.culqiOrderId,
+      cardBrand: p.cardBrand,
+      cardLast4: p.cardLast4,
+      yapeNumber: p.yapeNumber,
+      yapeOperationNumber: p.yapeOperationNumber,
+      customerEmail: p.customerEmail,
+      customerName: p.customerName,
+      customerPhone: p.customerPhone,
+      description: p.description,
+      errorCode: p.errorCode,
+      errorMessage: p.errorMessage,
+      metadata: p.metadata,
+      createdAt: (p as any).createdAt,
+      updatedAt: (p as any).updatedAt,
+      paidAt: p.paidAt,
+      refundedAt: p.refundedAt,
+      failedAt: p.failedAt,
+      releasedAt: p.releasedAt,
+    };
+  }
+
+  /**
+   * Get payment analytics
+   */
+  async getPaymentAnalytics() {
+    const now = new Date();
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // Summary stats
+    const summaryAgg = await this.servicePaymentModel.aggregate([
+      { $match: { isDeleted: { $ne: true } } },
+      {
+        $facet: {
+          total: [
+            { $match: { status: ServicePaymentStatus.COMPLETED } },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 },
+                volume: { $sum: '$amount' },
+                fees: { $sum: { $add: ['$serviceFee', '$culqiFee'] } },
+                nurseEarnings: { $sum: '$nurseEarnings' },
+              },
+            },
+          ],
+          pending: [
+            { $match: { status: ServicePaymentStatus.PENDING } },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 },
+                amount: { $sum: '$amount' },
+              },
+            },
+          ],
+          refunded: [
+            { $match: { status: ServicePaymentStatus.REFUNDED } },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 },
+                amount: { $sum: '$amount' },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    const summary = summaryAgg[0] || {};
+
+    // By method
+    const byMethod = await this.servicePaymentModel.aggregate([
+      { $match: { isDeleted: { $ne: true }, status: ServicePaymentStatus.COMPLETED } },
+      {
+        $group: {
+          _id: '$method',
+          count: { $sum: 1 },
+          amount: { $sum: '$amount' },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // By status
+    const byStatus = await this.servicePaymentModel.aggregate([
+      { $match: { isDeleted: { $ne: true } } },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+          amount: { $sum: '$amount' },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // Daily volume (last 7 days)
+    const dailyVolume = await this.servicePaymentModel.aggregate([
+      {
+        $match: {
+          isDeleted: { $ne: true },
+          status: ServicePaymentStatus.COMPLETED,
+          paidAt: { $gte: sevenDaysAgo },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$paidAt' } },
+          count: { $sum: 1 },
+          amount: { $sum: '$amount' },
+          fees: { $sum: { $add: ['$serviceFee', '$culqiFee'] } },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    return {
+      summary: {
+        totalTransactions: summary.total?.[0]?.count || 0,
+        totalVolume: (summary.total?.[0]?.volume || 0) / 100,
+        totalFees: (summary.total?.[0]?.fees || 0) / 100,
+        totalNurseEarnings: (summary.total?.[0]?.nurseEarnings || 0) / 100,
+        pendingPayments: summary.pending?.[0]?.count || 0,
+        pendingAmount: (summary.pending?.[0]?.amount || 0) / 100,
+        refundedCount: summary.refunded?.[0]?.count || 0,
+        refundedAmount: (summary.refunded?.[0]?.amount || 0) / 100,
+      },
+      byMethod: byMethod.map((m) => ({
+        method: m._id,
+        count: m.count,
+        amount: m.amount / 100,
+      })),
+      byStatus: byStatus.map((s) => ({
+        status: s._id,
+        count: s.count,
+        amount: s.amount / 100,
+      })),
+      dailyVolume: dailyVolume.map((d) => ({
+        date: d._id,
+        count: d.count,
+        amount: d.amount / 100,
+        fees: d.fees / 100,
+      })),
+    };
+  }
+
+  /**
+   * Admin refund payment
+   */
+  async adminRefundPayment(id: string, dto: any, adminUserId: string) {
+    const payment = await this.servicePaymentModel.findById(id);
+
+    if (!payment) {
+      throw new NotFoundException('Pago no encontrado');
+    }
+
+    if (payment.status !== ServicePaymentStatus.COMPLETED) {
+      throw new ConflictException('Solo se puede reembolsar un pago completado');
+    }
+
+    const { reason, partialAmount } = dto;
+
+    // Mark as refunded
+    payment.status = ServicePaymentStatus.REFUNDED;
+    payment.refundedAt = new Date();
+    payment.metadata = {
+      ...payment.metadata,
+      refundReason: reason || 'Reembolso autorizado por administrador',
+      refundedBy: adminUserId,
+      refundedAt: new Date().toISOString(),
+      partialAmount: partialAmount ? partialAmount * 100 : undefined,
+    };
+
+    await payment.save();
+
+    // Also update the service request payment status
+    if (payment.serviceRequestId) {
+      await this.serviceRequestModel.findByIdAndUpdate(payment.serviceRequestId, {
+        paymentStatus: 'refunded',
+      });
+    }
+
+    this.logger.log(`Admin refunded payment: ${payment.reference}`);
+
+    return {
+      id: (payment as any)._id.toString(),
+      reference: payment.reference,
+      status: payment.status,
+      refundedAt: payment.refundedAt,
+      message: 'Pago reembolsado exitosamente',
     };
   }
 }
