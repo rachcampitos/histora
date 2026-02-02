@@ -124,29 +124,38 @@ export const nursesApi = {
 };
 
 // Services endpoints
-// Note: Admin service endpoints are not yet implemented in the backend
-// The servicios page uses demo data as fallback
 export const servicesApi = {
-  getAll: async (_params?: {
+  getAll: async (params?: {
     page?: number;
     limit?: number;
     status?: string;
+    paymentStatus?: string;
+    category?: string;
+    district?: string;
     search?: string;
-    startDate?: string;
-    endDate?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    minRating?: number;
+    maxRating?: number;
   }) => {
-    // TODO: Implement /admin/services endpoint in backend
-    // For now, throw to use placeholderData in React Query
-    throw new Error('Not implemented');
+    const response = await api.get('/admin/services', { params });
+    return response.data;
   },
-  getById: async (_id: string) => {
-    throw new Error('Not implemented');
+  getById: async (id: string) => {
+    const response = await api.get(`/admin/services/${id}`);
+    return response.data;
   },
-  getActive: async () => {
-    throw new Error('Not implemented');
+  getAnalytics: async () => {
+    const response = await api.get('/admin/services/analytics');
+    return response.data;
   },
-  updateStatus: async (_id: string, _status: string) => {
-    throw new Error('Not implemented');
+  adminAction: async (id: string, action: 'cancel' | 'refund', reason?: string, adminNotes?: string) => {
+    const response = await api.patch(`/admin/services/${id}/action`, {
+      action,
+      reason,
+      adminNotes,
+    });
+    return response.data;
   },
 };
 
@@ -166,8 +175,38 @@ export const patientsApi = {
   },
 };
 
-// Finance endpoints
+// Finance/Payments endpoints
 export const financeApi = {
+  getPayments: async (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+    method?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    minAmount?: number;
+    maxAmount?: number;
+  }) => {
+    const response = await api.get('/admin/payments', { params });
+    return response.data;
+  },
+  getPaymentById: async (id: string) => {
+    const response = await api.get(`/admin/payments/${id}`);
+    return response.data;
+  },
+  getAnalytics: async () => {
+    const response = await api.get('/admin/payments/analytics');
+    return response.data;
+  },
+  refundPayment: async (id: string, reason?: string, partialAmount?: number) => {
+    const response = await api.post(`/admin/payments/${id}/refund`, {
+      reason,
+      partialAmount,
+    });
+    return response.data;
+  },
+  // Legacy aliases
   getTransactions: async (params?: {
     page?: number;
     limit?: number;
@@ -176,15 +215,24 @@ export const financeApi = {
     endDate?: string;
     type?: string;
   }) => {
-    const response = await api.get('/admin/transactions', { params });
+    // Map old params to new format
+    const newParams = {
+      page: params?.page,
+      limit: params?.limit,
+      search: params?.search,
+      dateFrom: params?.startDate,
+      dateTo: params?.endDate,
+      method: params?.type,
+    };
+    const response = await api.get('/admin/payments', { params: newParams });
     return response.data;
   },
-  getMetrics: async (period: '7d' | '30d' | '90d' | '1y' = '30d') => {
-    const response = await api.get(`/admin/finance/metrics?period=${period}`);
+  getMetrics: async () => {
+    const response = await api.get('/admin/payments/analytics');
     return response.data;
   },
-  getRevenue: async (period: '7d' | '30d' | '90d' | '1y' = '30d') => {
-    const response = await api.get(`/admin/revenue?period=${period}`);
+  getRevenue: async () => {
+    const response = await api.get('/admin/payments/analytics');
     return response.data;
   },
 };
