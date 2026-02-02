@@ -29,32 +29,32 @@ const audiences = {
   patient: {
     badge: "Profesionales CEP Verificados",
     title: "Cuida a tu familia",
-    highlight: "sin culpa ni preocupacion",
+    highlight: "sin culpa ni preocupación",
     subtitle:
-      "Conectamos familias con profesionales de enfermeria verificados oficialmente por el CEP y RENIEC. Seguimiento GPS en tiempo real para tu completa tranquilidad.",
+      "Conectamos familias con profesionales de enfermería verificados oficialmente por el CEP y RENIEC. Seguimiento GPS en tiempo real para tu completa tranquilidad.",
     cta: "Buscar enfermera",
     ctaMobile: "Buscar ahora",
     ctaLink: "https://app.nurse-lite.com/auth/register?type=patient",
     microCopy: "Sin registro previo. Proceso en menos de 3 minutos.",
     benefits: [
-      { icon: ShieldCheck, text: "Verificacion oficial CEP + RENIEC" },
+      { icon: ShieldCheck, text: "Verificación oficial CEP + RENIEC" },
       { icon: Clock, text: "Profesionales disponibles hoy" },
-      { icon: Star, text: "4.9/5 de calificacion promedio" },
+      { icon: Star, text: "4.9/5 de calificación promedio" },
     ],
   },
   nurse: {
-    badge: "Unete a NurseLite",
+    badge: "Únete a NurseLite",
     title: "Haz crecer tu carrera",
-    highlight: "en enfermeria independiente",
+    highlight: "en enfermería independiente",
     subtitle:
-      "Unete a la red de profesionales de salud mas confiable. Tu defines tu horario, tus precios, y te quedas con el 100% de tus ingresos.",
+      "Únete a la red de profesionales de salud más confiable. Tú defines tu horario, tus precios, y te quedas con el 100% de tus ingresos.",
     cta: "Comenzar ahora",
     ctaMobile: "Comenzar",
     ctaLink: "https://app.nurse-lite.com/auth/register?type=nurse",
     microCopy: "Registro gratuito. Sin comisiones por servicio.",
     benefits: [
       { icon: DollarSign, text: "100% de tus ingresos son tuyos" },
-      { icon: Calendar, text: "Tu defines tu disponibilidad" },
+      { icon: Calendar, text: "Tú defines tu disponibilidad" },
       { icon: Users, text: "500+ profesionales activos" },
     ],
   },
@@ -94,7 +94,7 @@ export function Hero() {
             {/* Audience Selector */}
             <AnimatedSection delay={0.1}>
               <p className="text-sm text-[#64748b] dark:text-[#94a3b8] mb-3">
-                ¿Que buscas?
+                ¿Qué buscas?
               </p>
               <div
                 className="inline-flex bg-[#f1f5f9] dark:bg-[#334155] p-1.5 rounded-full mb-8"
@@ -197,8 +197,8 @@ export function Hero() {
                     className="btn-secondary flex items-center justify-center gap-2 text-base whitespace-nowrap"
                   >
                     <Play className="w-5 h-5" />
-                    <span className="hidden sm:inline">Ver como funciona</span>
-                    <span className="sm:hidden">Como funciona</span>
+                    <span className="hidden sm:inline">Ver cómo funciona</span>
+                    <span className="sm:hidden">Cómo funciona</span>
                   </Link>
                 </div>
 
@@ -212,7 +212,7 @@ export function Hero() {
             {/* Trust Indicators */}
             <AnimatedSection delay={0.6} className="mt-10 pt-8 border-t border-[#e2e8f0] dark:border-[#334155]">
               <p className="text-xs text-[#94a3b8] dark:text-[#64748b] uppercase tracking-wider mb-4">
-                Confian en nosotros
+                Confían en nosotros
               </p>
               <div className="flex flex-wrap items-center gap-6">
                 <div className="flex items-center gap-2">
@@ -251,7 +251,7 @@ export function Hero() {
                     ))}
                   </div>
                   <span className="text-sm text-[#64748b] dark:text-[#94a3b8]">
-                    <strong className="text-[#1a1a2e] dark:text-white">{stats.averageRating}/5</strong> calificacion promedio
+                    <strong className="text-[#1a1a2e] dark:text-white">{stats.averageRating}/5</strong> calificación promedio
                   </span>
                 </div>
               </div>
@@ -353,7 +353,7 @@ export function Hero() {
                     <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#1a1a2e] dark:text-white">Triple Verificacion</p>
+                    <p className="text-sm font-semibold text-[#1a1a2e] dark:text-white">Triple Verificación</p>
                     <p className="text-xs text-[#64748b] dark:text-[#94a3b8]">CEP + RENIEC + IA</p>
                   </div>
                 </div>

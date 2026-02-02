@@ -17,41 +17,41 @@ import Link from "next/link";
 const verificationSteps = [
   {
     icon: FileCheck,
-    title: "Registro de numero CEP",
-    description: "La enfermera ingresa su numero de colegiatura oficial",
+    title: "Registro de número CEP",
+    description: "La enfermera ingresa su número de colegiatura oficial",
   },
   {
     icon: Shield,
-    title: "Validacion en tiempo real",
-    description: "Verificamos directamente con el Colegio de Enfermeros del Peru",
+    title: "Validación en tiempo real",
+    description: "Verificamos directamente con el Colegio de Enfermeros del Perú",
   },
   {
     icon: UserCheck,
-    title: "Confirmacion de identidad",
-    description: "Cruzamos datos: nombre completo, foto oficial y estado HABIL",
+    title: "Confirmación de identidad",
+    description: "Cruzamos datos: nombre completo, foto oficial y estado HÁBIL",
   },
   {
     icon: BadgeCheck,
-    title: "Sello de verificacion",
-    description: "Solo enfermeras HABILES obtienen el badge de verificacion",
+    title: "Sello de verificación",
+    description: "Solo enfermeras HÁBILES obtienen el badge de verificación",
   },
 ];
 
 const guarantees = [
   {
     icon: Award,
-    title: "Titulo profesional valido",
-    description: "Licenciatura en enfermeria verificada",
+    title: "Título profesional válido",
+    description: "Licenciatura en enfermería verificada",
   },
   {
     icon: CheckCircle2,
     title: "Colegiatura activa",
-    description: "Habilitada para ejercer en Peru",
+    description: "Habilitada para ejercer en Perú",
   },
   {
     icon: Lock,
     title: "Sin sanciones",
-    description: "Estado HABIL sin inhabilitaciones",
+    description: "Estado HÁBIL sin inhabilitaciones",
   },
 ];
 
@@ -81,17 +81,17 @@ export function CEPVerification() {
 
             <AnimatedSection delay={0.1}>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a1a2e] dark:text-white mb-6">
-                Verificacion{" "}
+                Verificación{" "}
                 <span className="gradient-text">CEP Garantizada</span>
               </h2>
             </AnimatedSection>
 
             <AnimatedSection delay={0.2}>
               <p className="text-lg text-[#64748b] dark:text-[#94a3b8] mb-8 leading-relaxed">
-                El <strong className="dark:text-white">Colegio de Enfermeros del Peru (CEP)</strong> es la entidad
-                oficial que regula y supervisa el ejercicio profesional de enfermeria
-                en el pais. En NurseLite, validamos cada enfermera directamente con el
-                CEP para garantizar que estes en las mejores manos.
+                El <strong className="dark:text-white">Colegio de Enfermeros del Perú (CEP)</strong> es la entidad
+                oficial que regula y supervisa el ejercicio profesional de enfermería
+                en el país. En NurseLite, validamos cada enfermera directamente con el
+                CEP para garantizar que estés en las mejores manos.
               </p>
             </AnimatedSection>
 
@@ -116,7 +116,7 @@ export function CEPVerification() {
               <div className="flex items-center gap-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-700/50">
                 <AlertCircle className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0" />
                 <p className="text-sm text-amber-800 dark:text-amber-200">
-                  <strong>Importante:</strong> Nunca contrates servicios de enfermeria
+                  <strong>Importante:</strong> Nunca contrates servicios de enfermería
                   sin verificar la colegiatura. Tu seguridad y la de tu familia dependen
                   de ello.
                 </p>
@@ -133,9 +133,9 @@ export function CEPVerification() {
                   <div className="w-20 h-20 mx-auto rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mb-4">
                     <Shield className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-2 text-white">Proceso de Verificacion</h3>
+                  <h3 className="text-2xl font-bold mb-2 text-white">Proceso de Verificación</h3>
                   <p className="text-white/80 text-sm">
-                    Asi garantizamos profesionales de confianza
+                    Así garantizamos profesionales de confianza
                   </p>
                 </div>
 
@@ -190,7 +190,7 @@ export function CEPVerification() {
                   />
                   <div>
                     <p className="text-xs text-[#64748b] dark:text-[#94a3b8]">Verificado por</p>
-                    <p className="text-sm font-bold text-[#1e3a5f] dark:text-white">CEP Peru</p>
+                    <p className="text-sm font-bold text-[#1e3a5f] dark:text-white">CEP Perú</p>
                   </div>
                 </div>
               </motion.div>
