@@ -1014,6 +1014,7 @@ export class AdminService {
         cepNumber: nurse.cepNumber,
         cepVerified: nurse.cepVerified,
         cepVerifiedAt: nurse.cepVerifiedAt,
+        officialCepPhotoUrl: nurse.officialCepPhotoUrl,
         verificationStatus: nurse.verificationStatus,
         specialties: nurse.specialties,
         bio: nurse.bio,
