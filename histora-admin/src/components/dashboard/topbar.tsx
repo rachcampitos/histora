@@ -72,7 +72,12 @@ export function TopBar() {
       <header
         className={cn(
           'fixed top-0 right-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 transition-all duration-300',
-          isCollapsed ? 'left-16' : 'left-64'
+          // Mobile: full width (sidebar is a drawer)
+          'left-0',
+          // Tablet (md): sidebar always collapsed
+          'md:left-16',
+          // Desktop (lg): sidebar full or collapsed based on state
+          isCollapsed ? 'lg:left-16' : 'lg:left-64'
         )}
       >
         {/* Mobile menu button */}

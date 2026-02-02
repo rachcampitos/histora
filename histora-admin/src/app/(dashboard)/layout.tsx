@@ -45,10 +45,15 @@ export default function DashboardLayout({
       <main
         className={cn(
           'min-h-screen pt-16 transition-all duration-300',
-          isCollapsed ? 'pl-16' : 'pl-64'
+          // Mobile: no left padding (sidebar is a drawer)
+          'pl-0',
+          // Tablet (md): sidebar collapsed
+          'md:pl-16',
+          // Desktop (lg): sidebar full or collapsed based on state
+          isCollapsed ? 'lg:pl-16' : 'lg:pl-64'
         )}
       >
-        <div className="container mx-auto p-6">{children}</div>
+        <div className="p-4 md:p-6">{children}</div>
       </main>
     </div>
   );
