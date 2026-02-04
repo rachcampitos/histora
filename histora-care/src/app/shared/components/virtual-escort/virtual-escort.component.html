@@ -1,0 +1,85 @@
+<div class="virtual-escort-container">
+  <!-- Header / Toggle -->
+  <button class="escort-header" (click)="toggleExpanded()" [class.expanded]="isExpanded()">
+    <div class="header-left">
+      <div class="icon-container">
+        <ion-icon name="people"></ion-icon>
+        @if (activeShares().length > 0) {
+          <span class="badge">{{ activeShares().length }}</span>
+        }
+      </div>
+      <div class="header-text">
+        <span class="title">Escolta Virtual</span>
+        <span class="subtitle">
+          @if (activeShares().length === 0) {
+            Comparte tu ubicacion con alguien de confianza
+          } @else {
+            {{ activeShares().length }} contacto{{ activeShares().length > 1 ? 's' : '' }} siguiendote
+          }
+        </span>
+      </div>
+    </div>
+    <ion-icon [name]="isExpanded() ? 'chevron-up' : 'chevron-down'" class="chevron"></ion-icon>
+  </button>
+
+  <!-- Expanded Content -->
+  @if (isExpanded()) {
+    <div class="escort-content" @fadeInOut>
+      <!-- Active Shares List -->
+      @if (activeShares().length > 0) {
+        <div class="shares-list">
+          @for (share of activeShares(); track share.phone) {
+            <div class="share-item">
+              <div class="share-info">
+                <div class="share-avatar">
+                  <ion-icon name="person"></ion-icon>
+                </div>
+                <div class="share-details">
+                  <span class="share-name">{{ share.name }}</span>
+                  <span class="share-relationship">{{ share.relationship }}</span>
+                </div>
+              </div>
+              <div class="share-actions">
+                <ion-button fill="clear" size="small" (click)="reshareWithContact(share)">
+                  <ion-icon slot="icon-only" name="logo-whatsapp" color="success"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" size="small" color="danger" (click)="removeContact(share)">
+                  <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Add Contact Button -->
+      @if (canAddMore) {
+        <ion-button
+          expand="block"
+          fill="outline"
+          class="add-contact-btn"
+          (click)="addContact()"
+          [disabled]="isLoading()">
+          @if (isLoading()) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            Compartiendo...
+          } @else {
+            <ion-icon slot="start" name="add-circle"></ion-icon>
+            Agregar Contacto
+          }
+        </ion-button>
+      } @else {
+        <p class="max-contacts-notice">
+          <ion-icon name="information-circle"></ion-icon>
+          Maximo 3 contactos alcanzado
+        </p>
+      }
+
+      <!-- Info Text -->
+      <p class="info-text">
+        <ion-icon name="shield-checkmark"></ion-icon>
+        Tus contactos recibiran un enlace por WhatsApp para seguir tu ubicacion en tiempo real durante el servicio.
+      </p>
+    </div>
+  }
+</div>

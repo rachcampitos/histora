@@ -1,0 +1,15 @@
+@if (hasBadges) {
+  <div class="trust-badges-container" [class]="'size-' + size">
+    @for (badge of badges(); track badge.id) {
+      <div
+        class="trust-badge"
+        [style]="getBadgeStyle(badge)"
+        [attr.title]="badge.description">
+        <ion-icon [name]="badge.icon"></ion-icon>
+        @if (showLabels && size !== 'small') {
+          <span class="badge-label">{{ badge.label }}</span>
+        }
+      </div>
+    }
+  </div>
+}

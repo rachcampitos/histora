@@ -199,6 +199,10 @@ const routes: Routes = [
         loadChildren: () => import('./nurse/subscription/subscription.module').then(m => m.SubscriptionPageModule),
       },
       {
+        path: 'active-service/:requestId',
+        loadChildren: () => import('./nurse/active-service/active-service.module').then(m => m.ActiveServicePageModule),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

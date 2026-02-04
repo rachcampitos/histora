@@ -1,0 +1,267 @@
+.virtual-escort-container {
+  background: var(--histora-card-bg, #ffffff);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--histora-border, #e2e8f0);
+}
+
+// Header
+.escort-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:active {
+    background: var(--histora-hover-bg, #f1f5f9);
+  }
+
+  &.expanded {
+    border-bottom: 1px solid var(--histora-border, #e2e8f0);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .icon-container {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--ion-color-primary, #3b82f6) 0%, var(--ion-color-primary-shade, #2563eb) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 22px;
+      color: white;
+    }
+
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      background: var(--ion-color-success, #22c55e);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+  }
+
+  .header-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+
+    .title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--histora-text-primary, #1e293b);
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--histora-text-muted, #94a3b8);
+    }
+  }
+
+  .chevron {
+    font-size: 20px;
+    color: var(--histora-text-muted, #94a3b8);
+    transition: transform 0.2s ease;
+  }
+}
+
+// Content
+.escort-content {
+  padding: 16px;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Shares List
+.shares-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.share-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--histora-surface, #f8fafc);
+  border-radius: 12px;
+  border: 1px solid var(--histora-border-light, #f1f5f9);
+
+  .share-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .share-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--ion-color-primary-tint, #60a5fa);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 18px;
+      color: white;
+    }
+  }
+
+  .share-details {
+    display: flex;
+    flex-direction: column;
+
+    .share-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--histora-text-primary, #1e293b);
+    }
+
+    .share-relationship {
+      font-size: 12px;
+      color: var(--histora-text-muted, #94a3b8);
+    }
+  }
+
+  .share-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      margin: 0;
+    }
+  }
+}
+
+// Add Contact Button
+.add-contact-btn {
+  --border-radius: 12px;
+  --border-width: 2px;
+  --border-style: dashed;
+  margin: 0 0 12px 0;
+  height: 48px;
+}
+
+// Max Contacts Notice
+.max-contacts-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 12px 0;
+  padding: 12px;
+  background: var(--histora-surface, #f8fafc);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--histora-text-muted, #94a3b8);
+
+  ion-icon {
+    font-size: 16px;
+  }
+}
+
+// Info Text
+.info-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+  background: var(--ion-color-primary-tint, #60a5fa);
+  background: rgba(var(--ion-color-primary-rgb, 59, 130, 246), 0.1);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ion-color-primary, #3b82f6);
+
+  ion-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+}
+
+// Dark Mode
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .virtual-escort-container {
+    background: var(--histora-card-bg-dark, #1e293b);
+    border-color: var(--histora-border-dark, #334155);
+  }
+
+  .escort-header {
+    &:active {
+      background: var(--histora-hover-bg-dark, #334155);
+    }
+
+    .header-text {
+      .title {
+        color: var(--histora-text-primary-dark, #f1f5f9);
+      }
+
+      .subtitle {
+        color: var(--histora-text-muted-dark, #64748b);
+      }
+    }
+  }
+
+  .share-item {
+    background: var(--histora-surface-dark, #0f172a);
+    border-color: var(--histora-border-dark, #334155);
+
+    .share-details {
+      .share-name {
+        color: var(--histora-text-primary-dark, #f1f5f9);
+      }
+    }
+  }
+
+  .max-contacts-notice {
+    background: var(--histora-surface-dark, #0f172a);
+  }
+
+  .info-text {
+    background: rgba(var(--ion-color-primary-rgb, 59, 130, 246), 0.15);
+  }
+}

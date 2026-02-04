@@ -24,36 +24,20 @@
   <div class="panic-button-container" [class.compact]="compact">
     <button
       class="panic-button"
-      [class.holding]="isHolding()"
+      [class.active]="isActive()"
       [class.loading]="isLoading()"
-      (touchstart)="onPressStart()"
-      (touchend)="onPressEnd()"
-      (touchcancel)="onPressEnd()"
-      (mousedown)="onPressStart()"
-      (mouseup)="onPressEnd()"
-      (mouseleave)="onPressEnd()"
+      [class.tap-1]="tapCount() === 1"
+      [class.tap-2]="tapCount() === 2"
+      [class.tap-3]="tapCount() === 3"
+      (click)="onTap()"
       [disabled]="isLoading()">
 
-      <!-- Progress ring -->
-      <svg class="progress-ring" viewBox="0 0 100 100">
-        <circle
-          class="progress-ring-background"
-          cx="50"
-          cy="50"
-          r="45"
-          fill="none"
-          stroke-width="8"
-        />
-        <circle
-          class="progress-ring-fill"
-          cx="50"
-          cy="50"
-          r="45"
-          fill="none"
-          stroke-width="8"
-          [style.stroke-dashoffset]="283 - (283 * holdProgress() / 100)"
-        />
-      </svg>
+      <!-- Tap counter indicator -->
+      <div class="tap-indicators">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="tap-dot" [class.filled]="tapCount() >= i"></div>
+        }
+      </div>
 
       <!-- Button content -->
       <div class="button-content">
@@ -66,10 +50,21 @@
           }
         }
       </div>
+
+      <!-- Tap count display -->
+      @if (tapCount() > 0 && tapCount() < 3) {
+        <div class="tap-count">{{ tapCount() }}/3</div>
+      }
     </button>
 
     @if (!compact) {
-      <p class="help-text">Mantén presionado 3 segundos para activar</p>
+      <p class="help-text">
+        @if (tapCount() === 0) {
+          Toca 3 veces rapido para activar
+        } @else {
+          {{ 3 - tapCount() }} toque{{ (3 - tapCount()) !== 1 ? 's' : '' }} mas
+        }
+      </p>
     }
   </div>
 }

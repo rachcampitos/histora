@@ -1,0 +1,72 @@
+@if (showReminder()) {
+  <div class="reminder-overlay">
+    <div class="reminder-modal">
+      <!-- Icon -->
+      <div class="reminder-icon" [class.warning]="missedCount > 0">
+        <ion-icon [name]="missedCount > 0 ? 'warning' : 'checkmark-circle'"></ion-icon>
+      </div>
+
+      <!-- Title -->
+      <h2 class="reminder-title">
+        @if (missedCount === 0) {
+          Todo bien?
+        } @else {
+          Check-in pendiente
+        }
+      </h2>
+
+      <!-- Message -->
+      <p class="reminder-message">
+        @if (missedCount === 0) {
+          Confirma que estas bien para que tus contactos de emergencia sepan que todo esta en orden.
+        } @else if (missedCount === 1) {
+          Perdiste 1 check-in. Tus contactos seran notificados si no respondes.
+        } @else {
+          Perdiste {{ missedCount }} check-ins. Tus contactos seran notificados pronto si no respondes.
+        }
+      </p>
+
+      <!-- Countdown -->
+      <div class="countdown-container">
+        <span class="countdown-label">Tiempo restante</span>
+        <span class="countdown-value">{{ countdown() }}</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="reminder-actions">
+        <ion-button
+          expand="block"
+          color="success"
+          class="confirm-btn"
+          (click)="confirmOk()"
+          [disabled]="isLoading()">
+          @if (isLoading()) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            Confirmando...
+          } @else {
+            <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+            Estoy Bien
+          }
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="medium"
+          class="dismiss-btn"
+          (click)="dismiss()"
+          [disabled]="isLoading()">
+          Ahora no
+        </ion-button>
+      </div>
+
+      <!-- Warning for missed -->
+      @if (missedCount >= 2) {
+        <div class="warning-notice">
+          <ion-icon name="alert-circle"></ion-icon>
+          <span>Un check-in mas perdido activara una alerta automatica</span>
+        </div>
+      }
+    </div>
+  </div>
+}

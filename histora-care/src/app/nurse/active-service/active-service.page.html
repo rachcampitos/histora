@@ -1,0 +1,118 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Servicio Activo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="active-service-content">
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando servicio...</p>
+    </div>
+  } @else if (request()) {
+    <!-- Timer Header -->
+    <div class="timer-header">
+      <div class="timer-display">
+        <ion-icon name="time-outline"></ion-icon>
+        <span class="timer-value">{{ elapsedTime() }}</span>
+      </div>
+      <ion-badge [color]="statusColor()">{{ statusLabel() }}</ion-badge>
+    </div>
+
+    <!-- Map Preview -->
+    @if (mapUrl()) {
+      <div class="map-container" (click)="openNavigation()">
+        <img [src]="mapUrl()" alt="Ubicacion del paciente" class="map-image">
+        <div class="map-overlay">
+          <ion-icon name="navigate"></ion-icon>
+          <span>Abrir navegacion</span>
+        </div>
+      </div>
+    }
+
+    <!-- Patient Info Card -->
+    <ion-card class="patient-card">
+      <ion-card-content>
+        <div class="patient-header">
+          <div class="patient-avatar">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <div class="patient-info">
+            <h3>{{ patientName() }}</h3>
+            <p class="service-type">{{ serviceType() }}</p>
+          </div>
+          <ion-button fill="clear" (click)="callPatient()">
+            <ion-icon slot="icon-only" name="call" color="primary"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="address-section">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ patientAddress() }}</span>
+        </div>
+
+        @if (request()?.patientNotes) {
+          <div class="notes-section">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <span>{{ request()?.patientNotes }}</span>
+          </div>
+        }
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Virtual Escort Component -->
+    <div class="escort-section">
+      <app-virtual-escort
+        [serviceRequestId]="request()!._id"
+        [initialShares]="activeShares()">
+      </app-virtual-escort>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions-section">
+      @if (nextAction) {
+        <ion-button
+          expand="block"
+          [color]="nextAction.color"
+          class="main-action-btn"
+          (click)="nextAction.action()">
+          {{ nextAction.label }}
+        </ion-button>
+      }
+
+      @if (request()?.status === 'on_the_way') {
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="primary"
+          class="nav-btn"
+          (click)="openNavigation()">
+          <ion-icon slot="start" name="navigate"></ion-icon>
+          Abrir Navegacion
+        </ion-button>
+      }
+    </div>
+  }
+</ion-content>
+
+<!-- Panic Button Fixed Footer -->
+@if (request()) {
+  <ion-footer class="panic-footer ion-no-border">
+    <div class="panic-container">
+      <app-panic-button
+        [serviceRequestId]="request()!._id"
+        [patientId]="request()!.patientId"
+        [compact]="true">
+      </app-panic-button>
+    </div>
+  </ion-footer>
+}
+
+<!-- Check-in Reminder Overlay -->
+<app-check-in-reminder></app-check-in-reminder>

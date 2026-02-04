@@ -29,18 +29,20 @@ export class PanicButtonComponent implements OnInit, OnDestroy {
   // State
   isLoading = signal(false);
   activeAlert = signal<PanicAlert | null>(null);
-  holdProgress = signal(0);
-  isHolding = signal(false);
+  tapCount = signal(0);
+  isActive = signal(false);
 
-  private holdTimer: ReturnType<typeof setInterval> | null = null;
-  private readonly HOLD_DURATION = 3000; // 3 seconds to trigger
+  // Triple tap configuration
+  private readonly TAP_WINDOW = 1500; // 1.5 seconds window for triple tap
+  private readonly REQUIRED_TAPS = 3;
+  private tapResetTimer: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit() {
     this.checkActiveAlert();
   }
 
   ngOnDestroy() {
-    this.clearHoldTimer();
+    this.clearTapTimer();
   }
 
   async checkActiveAlert() {
@@ -56,48 +58,61 @@ export class PanicButtonComponent implements OnInit, OnDestroy {
       });
   }
 
-  // Handle press start
-  onPressStart() {
-    if (this.activeAlert()) return;
+  // Handle tap for triple-tap detection
+  async onTap() {
+    if (this.activeAlert() || this.isLoading()) return;
 
-    this.isHolding.set(true);
-    this.holdProgress.set(0);
+    const currentTaps = this.tapCount() + 1;
+    this.tapCount.set(currentTaps);
+    this.isActive.set(true);
 
-    // Vibrate to indicate holding
-    Haptics.impact({ style: ImpactStyle.Medium }).catch(() => {});
+    // Progressive haptic feedback: light -> medium -> heavy
+    const hapticStyle = this.getHapticStyleForTap(currentTaps);
+    await Haptics.impact({ style: hapticStyle }).catch(() => {});
 
-    const startTime = Date.now();
-    const interval = 50;
+    // Reset the timer with each tap
+    this.clearTapTimer();
 
-    this.holdTimer = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min((elapsed / this.HOLD_DURATION) * 100, 100);
-      this.holdProgress.set(progress);
-
-      if (progress >= 100) {
-        this.clearHoldTimer();
-        this.showPanicOptions();
-      }
-    }, interval);
+    if (currentTaps >= this.REQUIRED_TAPS) {
+      // Triple tap completed - show panic options
+      this.clearTapTimer();
+      this.showPanicOptions();
+    } else {
+      // Set timer to reset tap count after window expires
+      this.tapResetTimer = setTimeout(() => {
+        this.resetTapState();
+      }, this.TAP_WINDOW);
+    }
   }
 
-  // Handle press end
-  onPressEnd() {
-    if (!this.isHolding()) return;
-
-    this.clearHoldTimer();
-    this.isHolding.set(false);
-    this.holdProgress.set(0);
+  private getHapticStyleForTap(tapNumber: number): ImpactStyle {
+    switch (tapNumber) {
+      case 1:
+        return ImpactStyle.Light;
+      case 2:
+        return ImpactStyle.Medium;
+      case 3:
+      default:
+        return ImpactStyle.Heavy;
+    }
   }
 
-  private clearHoldTimer() {
-    if (this.holdTimer) {
-      clearInterval(this.holdTimer);
-      this.holdTimer = null;
+  private resetTapState() {
+    this.tapCount.set(0);
+    this.isActive.set(false);
+  }
+
+  private clearTapTimer() {
+    if (this.tapResetTimer) {
+      clearTimeout(this.tapResetTimer);
+      this.tapResetTimer = null;
     }
   }
 
   async showPanicOptions() {
+    // Reset tap state
+    this.resetTapState();
+
     // Strong haptic feedback
     await Haptics.impact({ style: ImpactStyle.Heavy });
 

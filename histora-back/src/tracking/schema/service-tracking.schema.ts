@@ -112,11 +112,17 @@ export class SharedWithContact {
   @Prop({ required: true, default: Date.now })
   notifiedAt: Date;
 
+  @Prop({ required: true })
+  token: string; // Unique token for this contact to access tracking
+
   @Prop()
-  trackingUrl: string; // Unique URL for this contact to track
+  trackingUrl: string; // Full URL for this contact to track
 
   @Prop({ default: true })
   isActive: boolean;
+
+  @Prop()
+  expiresAt?: Date; // Optional expiration
 }
 
 @Schema({ timestamps: true })
@@ -193,3 +199,4 @@ ServiceTrackingSchema.index({ patientId: 1 });
 ServiceTrackingSchema.index({ isActive: 1 });
 ServiceTrackingSchema.index({ 'panicAlerts.status': 1 });
 ServiceTrackingSchema.index({ nextCheckInDue: 1, isActive: 1 });
+ServiceTrackingSchema.index({ 'sharedWith.token': 1 }); // For public tracking lookup
