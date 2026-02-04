@@ -2382,7 +2382,7 @@ export class AdminService {
       .select('_id')
       .exec();
 
-    const existingNurseIds = new Set(existingNurses.map(n => n._id.toString()));
+    const existingNurseIds = new Set(existingNurses.map((n: any) => n._id.toString()));
     const nonExistentNurseIds = nurseIdsInRequests.filter(id => id && !existingNurseIds.has(id));
 
     // Find requests with non-existent nurses
