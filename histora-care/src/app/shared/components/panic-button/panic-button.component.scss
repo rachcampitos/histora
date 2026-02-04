@@ -103,6 +103,10 @@
           font-size: 24px;
         }
       }
+
+      .tap-indicators {
+        top: -8px;
+      }
     }
   }
 }
@@ -117,18 +121,31 @@
   background: linear-gradient(135deg, var(--ion-color-danger, #ef4444) 0%, var(--ion-color-danger-shade, #dc2626) 100%);
   box-shadow: 0 4px 20px rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.4);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   -webkit-tap-highlight-color: transparent;
-  touch-action: none;
+  touch-action: manipulation;
   user-select: none;
 
   &:active:not(.loading) {
-    transform: scale(0.95);
+    transform: scale(0.92);
   }
 
-  &.holding {
+  &.active {
+    animation: tap-feedback 0.15s ease;
+  }
+
+  &.tap-1 {
+    box-shadow: 0 4px 25px rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.5);
+  }
+
+  &.tap-2 {
+    box-shadow: 0 5px 30px rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.6);
+    transform: scale(1.02);
+  }
+
+  &.tap-3 {
+    box-shadow: 0 6px 35px rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.7);
     transform: scale(1.05);
-    box-shadow: 0 6px 30px rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.6);
   }
 
   &.loading {
@@ -136,25 +153,45 @@
     cursor: not-allowed;
   }
 
-  // Progress Ring
-  .progress-ring {
+  // Tap Indicators (dots above button)
+  .tap-indicators {
     position: absolute;
-    top: -4px;
-    left: -4px;
-    width: calc(100% + 8px);
-    height: calc(100% + 8px);
-    transform: rotate(-90deg);
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
 
-    .progress-ring-background {
-      stroke: rgba(255, 255, 255, 0.2);
-    }
+    .tap-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: all 0.15s ease;
 
-    .progress-ring-fill {
-      stroke: white;
-      stroke-linecap: round;
-      stroke-dasharray: 283;
-      transition: stroke-dashoffset 0.05s linear;
+      &.filled {
+        background: white;
+        border-color: white;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        animation: dot-fill 0.2s ease;
+      }
     }
+  }
+
+  // Tap count display
+  .tap-count {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: white;
+    color: var(--ion-color-danger, #ef4444);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    animation: count-appear 0.15s ease;
   }
 
   // Button Content
@@ -186,14 +223,50 @@
   }
 }
 
+@keyframes tap-feedback {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dot-fill {
+  0% {
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes count-appear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 // Help Text
 .help-text {
   margin: 0;
   font-size: 12px;
   color: var(--histora-text-muted, #94a3b8);
   text-align: center;
-  max-width: 120px;
+  max-width: 140px;
   line-height: 1.3;
+  transition: color 0.2s ease;
 }
 
 // Dark Mode

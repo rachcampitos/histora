@@ -1,0 +1,103 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Calificar Paciente</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="rating-content">
+  <!-- Header -->
+  <div class="rating-header">
+    <div class="patient-avatar">
+      <ion-icon name="person"></ion-icon>
+    </div>
+    <h2>{{ data.patientName }}</h2>
+    <p class="header-subtitle">Tu calificacion ayuda a mejorar la comunidad</p>
+  </div>
+
+  <!-- Overall Rating Display -->
+  @if (allRated) {
+    <div class="overall-rating">
+      <span class="overall-value">{{ overallRating }}</span>
+      <div class="overall-stars">
+        @for (star of [1, 2, 3, 4, 5]; track star) {
+          <ion-icon
+            [name]="star <= overallRating ? 'star' : 'star-outline'"
+            [class.filled]="star <= overallRating">
+          </ion-icon>
+        }
+      </div>
+      <span class="overall-label">{{ getRatingLabel(Math.round(overallRating)) }}</span>
+    </div>
+  }
+
+  <!-- Rating Categories -->
+  <div class="categories-container">
+    @for (category of categories(); track category.id) {
+      <div class="rating-category">
+        <div class="category-header">
+          <span class="category-label">{{ category.label }}</span>
+          @if (category.value > 0) {
+            <span class="category-value">{{ getRatingLabel(category.value) }}</span>
+          }
+        </div>
+        <p class="category-description">{{ category.description }}</p>
+        <div class="stars-row">
+          @for (star of [1, 2, 3, 4, 5]; track star) {
+            <button
+              class="star-btn"
+              [class.filled]="star <= category.value"
+              [class.active]="star === category.value"
+              (click)="setRating(category.id, star)">
+              <ion-icon [name]="star <= category.value ? 'star' : 'star-outline'"></ion-icon>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Comment -->
+  <div class="comment-section">
+    <ion-label>Comentario (opcional)</ion-label>
+    <ion-textarea
+      [value]="comment()"
+      (ionInput)="comment.set($any($event).target.value)"
+      placeholder="Comparte tu experiencia con este paciente..."
+      [rows]="3"
+      [maxlength]="500">
+    </ion-textarea>
+  </div>
+
+  <!-- Double-Blind Notice -->
+  <div class="notice-card">
+    <ion-icon name="eye-off"></ion-icon>
+    <p>Tu calificacion permanecera oculta hasta que el paciente tambien te califique.</p>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <div class="footer-actions">
+      <ion-button
+        fill="clear"
+        color="medium"
+        (click)="skip()">
+        Omitir
+      </ion-button>
+      <ion-button
+        color="primary"
+        [disabled]="!canSubmit || isLoading()"
+        (click)="submit()">
+        @if (isLoading()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        Enviar Calificacion
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

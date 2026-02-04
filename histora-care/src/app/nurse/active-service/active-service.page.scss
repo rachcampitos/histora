@@ -1,0 +1,251 @@
+.active-service-content {
+  --background: var(--histora-bg, #f8fafc);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  gap: 16px;
+
+  p {
+    color: var(--histora-text-muted, #94a3b8);
+    font-size: 14px;
+  }
+}
+
+// Timer Header
+.timer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--histora-card-bg, #ffffff);
+  border-bottom: 1px solid var(--histora-border, #e2e8f0);
+
+  .timer-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-icon {
+      font-size: 24px;
+      color: var(--ion-color-primary, #3b82f6);
+    }
+
+    .timer-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--histora-text-primary, #1e293b);
+      letter-spacing: 1px;
+    }
+  }
+
+  ion-badge {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Map Container
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  cursor: pointer;
+  overflow: hidden;
+
+  .map-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .map-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  &:active .map-overlay {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  }
+}
+
+// Patient Card
+.patient-card {
+  margin: 16px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  ion-card-content {
+    padding: 16px;
+  }
+
+  .patient-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .patient-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--ion-color-primary-tint, #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      ion-icon {
+        font-size: 24px;
+        color: white;
+      }
+    }
+
+    .patient-info {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 4px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--histora-text-primary, #1e293b);
+      }
+
+      .service-type {
+        margin: 0;
+        font-size: 13px;
+        color: var(--histora-text-muted, #94a3b8);
+      }
+    }
+
+    ion-button {
+      margin: 0;
+    }
+  }
+
+  .address-section,
+  .notes-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    background: var(--histora-surface, #f8fafc);
+    border-radius: 10px;
+    margin-top: 8px;
+
+    ion-icon {
+      font-size: 18px;
+      color: var(--histora-text-muted, #94a3b8);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    span {
+      font-size: 14px;
+      color: var(--histora-text-secondary, #64748b);
+      line-height: 1.4;
+    }
+  }
+}
+
+// Escort Section
+.escort-section {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+// Actions Section
+.actions-section {
+  padding: 16px;
+  padding-bottom: 100px; // Space for panic button
+
+  .main-action-btn {
+    margin-bottom: 12px;
+    --border-radius: 12px;
+    height: 52px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .nav-btn {
+    --border-radius: 12px;
+    height: 48px;
+    font-size: 14px;
+  }
+}
+
+// Panic Footer
+.panic-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--histora-card-bg, #ffffff);
+  border-top: 1px solid var(--histora-border, #e2e8f0);
+  padding: 12px 16px;
+  padding-bottom: calc(12px + var(--ion-safe-area-bottom, 0));
+
+  .panic-container {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+// Dark Mode
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .active-service-content {
+    --background: var(--histora-bg-dark, #0f172a);
+  }
+
+  .timer-header {
+    background: var(--histora-card-bg-dark, #1e293b);
+    border-bottom-color: var(--histora-border-dark, #334155);
+
+    .timer-display .timer-value {
+      color: var(--histora-text-primary-dark, #f1f5f9);
+    }
+  }
+
+  .patient-card {
+    --background: var(--histora-card-bg-dark, #1e293b);
+
+    .patient-header {
+      .patient-info h3 {
+        color: var(--histora-text-primary-dark, #f1f5f9);
+      }
+    }
+
+    .address-section,
+    .notes-section {
+      background: var(--histora-surface-dark, #0f172a);
+    }
+  }
+
+  .panic-footer {
+    background: var(--histora-card-bg-dark, #1e293b);
+    border-top-color: var(--histora-border-dark, #334155);
+  }
+}

@@ -232,23 +232,104 @@ export class TrackingService {
     return tracking.save();
   }
 
-  async shareTracking(serviceRequestId: string, nurseId: string, dto: ShareTrackingDto): Promise<ServiceTracking> {
+  async shareTracking(serviceRequestId: string, nurseId: string, dto: ShareTrackingDto): Promise<{ tracking: ServiceTracking; shareUrl: string; token: string }> {
     const tracking = await this.getActiveTracking(serviceRequestId, nurseId);
 
-    // Generate unique tracking URL
-    const trackingToken = this.generateTrackingToken();
-    const trackingUrl = `https://app.nurse-lite.com/track/${trackingToken}`;
+    // Check if already shared with this contact (max 3 contacts)
+    if (tracking.sharedWith.length >= 3) {
+      throw new BadRequestException('Maximo 3 contactos de emergencia permitidos');
+    }
+
+    const existingShare = tracking.sharedWith.find(s => s.phone === dto.phone && s.isActive);
+    if (existingShare) {
+      // Return existing share info
+      return {
+        tracking,
+        shareUrl: existingShare.trackingUrl,
+        token: existingShare.token,
+      };
+    }
+
+    // Generate unique tracking token
+    const token = this.generateTrackingToken();
+    const trackingUrl = `https://app.nurse-lite.com/track/${token}`;
 
     tracking.sharedWith.push({
       name: dto.name,
       phone: dto.phone,
       relationship: dto.relationship,
+      token,
       trackingUrl,
       notifiedAt: new Date(),
       isActive: true,
     });
 
-    // TODO: Send SMS/notification to the contact with the tracking URL
+    await tracking.save();
+
+    return {
+      tracking,
+      shareUrl: trackingUrl,
+      token,
+    };
+  }
+
+  async getPublicTracking(token: string): Promise<{
+    nurseFirstName: string;
+    serviceType: string;
+    lastLocation: { latitude: number; longitude: number; timestamp: Date } | null;
+    isActive: boolean;
+    startedAt: Date;
+    patientAddress: { district: string };
+    hasPanicAlert: boolean;
+  }> {
+    const tracking = await this.trackingModel.findOne({
+      'sharedWith.token': token,
+      'sharedWith.isActive': true,
+    }).populate('nurseId', 'firstName').populate('serviceRequestId', 'serviceType');
+
+    if (!tracking) {
+      throw new NotFoundException('Enlace de tracking invalido o expirado');
+    }
+
+    // Check if the specific share is still active
+    const share = tracking.sharedWith.find(s => s.token === token);
+    if (!share || !share.isActive) {
+      throw new NotFoundException('Enlace de tracking invalido o expirado');
+    }
+
+    // Check expiration if set
+    if (share.expiresAt && share.expiresAt < new Date()) {
+      throw new NotFoundException('Enlace de tracking expirado');
+    }
+
+    const nurse = tracking.nurseId as unknown as { firstName: string };
+    const serviceRequest = tracking.serviceRequestId as unknown as { serviceType: string };
+    const hasActivePanic = tracking.panicAlerts.some(a => a.status === 'active');
+
+    return {
+      nurseFirstName: nurse?.firstName || 'Enfermera',
+      serviceType: serviceRequest?.serviceType || 'Servicio',
+      lastLocation: tracking.lastKnownLocation ? {
+        latitude: tracking.lastKnownLocation.latitude,
+        longitude: tracking.lastKnownLocation.longitude,
+        timestamp: tracking.lastKnownLocation.timestamp,
+      } : null,
+      isActive: tracking.isActive,
+      startedAt: tracking.startedAt,
+      patientAddress: {
+        district: tracking.patientAddress?.district || '',
+      },
+      hasPanicAlert: hasActivePanic,
+    };
+  }
+
+  async revokeShare(serviceRequestId: string, nurseId: string, phone: string): Promise<ServiceTracking> {
+    const tracking = await this.getActiveTracking(serviceRequestId, nurseId);
+
+    const share = tracking.sharedWith.find(s => s.phone === phone && s.isActive);
+    if (share) {
+      share.isActive = false;
+    }
 
     return tracking.save();
   }
