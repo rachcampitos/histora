@@ -289,6 +289,32 @@ export class AdminController {
     return this.adminService.adminServiceAction(id, dto, user?.id || user?._id);
   }
 
+  // ==================== ORPHANED SERVICES MANAGEMENT ====================
+
+  @Get('services/orphaned')
+  @ApiOperation({ summary: 'Listar servicios huérfanos (enfermera eliminada o inexistente)' })
+  @ApiResponse({ status: 200, description: 'Lista de servicios huérfanos con count y data' })
+  async getOrphanedServiceRequests() {
+    return this.adminService.getOrphanedServiceRequests();
+  }
+
+  @Delete('services/orphaned')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Eliminar servicios huérfanos específicos por IDs' })
+  @ApiResponse({ status: 200, description: 'Servicios eliminados' })
+  @ApiResponse({ status: 400, description: 'IDs inválidos o no son huérfanos' })
+  async deleteOrphanedServiceRequests(@Body() body: { ids: string[] }) {
+    return this.adminService.deleteOrphanedServiceRequests(body.ids);
+  }
+
+  @Delete('services/orphaned/all')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Eliminar TODOS los servicios huérfanos' })
+  @ApiResponse({ status: 200, description: 'Todos los servicios huérfanos eliminados' })
+  async deleteAllOrphanedServiceRequests() {
+    return this.adminService.deleteAllOrphanedServiceRequests();
+  }
+
   // ==================== PAYMENT MANAGEMENT ENDPOINTS ====================
 
   @Get('payments')

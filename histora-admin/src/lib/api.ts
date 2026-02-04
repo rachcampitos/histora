@@ -157,6 +157,19 @@ export const servicesApi = {
     });
     return response.data;
   },
+  // Orphaned services (nurse deleted or non-existent)
+  getOrphaned: async () => {
+    const response = await api.get('/admin/services/orphaned');
+    return response.data;
+  },
+  deleteOrphaned: async (ids: string[]) => {
+    const response = await api.delete('/admin/services/orphaned', { data: { ids } });
+    return response.data;
+  },
+  deleteAllOrphaned: async () => {
+    const response = await api.delete('/admin/services/orphaned/all');
+    return response.data;
+  },
 };
 
 // Patients endpoints

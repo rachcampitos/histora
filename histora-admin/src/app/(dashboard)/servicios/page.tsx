@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { servicesApi } from '@/lib/api';
@@ -46,6 +46,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import {
   Activity,
+  AlertTriangle,
   Calendar,
   CheckCircle2,
   Clock,
@@ -55,8 +56,10 @@ import {
   MoreHorizontal,
   Search,
   Stethoscope,
+  Trash2,
   XCircle,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Service type matching backend response
 interface ServiceItem {
@@ -159,17 +162,75 @@ const timeSlotLabels = {
   asap: 'Lo antes posible',
 };
 
+// Orphaned service type
+interface OrphanedServiceItem {
+  id: string;
+  status: ServiceRequestStatus;
+  service: { name: string; category: string; price: number };
+  patient: { firstName: string; lastName: string } | null;
+  nurseId: string;
+  nurseName: string;
+  location: { district: string; city: string };
+  createdAt: string;
+}
+
+interface OrphanedServicesResponse {
+  count: number;
+  data: OrphanedServiceItem[];
+}
+
 export default function ServiciosPage() {
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState('all');
   const [search, setSearch] = useState('');
   const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [selectedOrphaned, setSelectedOrphaned] = useState<string[]>([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Fetch services from API
   const { data: servicesResponse, isLoading } = useQuery<ServicesResponse>({
     queryKey: ['admin-services', search],
     queryFn: () => servicesApi.getAll({ search, limit: 100 }),
   });
+
+  // Fetch orphaned services
+  const { data: orphanedResponse, isLoading: isLoadingOrphaned } = useQuery<OrphanedServicesResponse>({
+    queryKey: ['admin-services-orphaned'],
+    queryFn: () => servicesApi.getOrphaned(),
+  });
+
+  // Delete orphaned services mutation
+  const deleteOrphanedMutation = useMutation({
+    mutationFn: (ids: string[]) => servicesApi.deleteOrphaned(ids),
+    onSuccess: (data) => {
+      toast.success(`${data.deletedCount} servicios huerfanos eliminados`);
+      queryClient.invalidateQueries({ queryKey: ['admin-services-orphaned'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      setSelectedOrphaned([]);
+      setShowDeleteConfirm(false);
+    },
+    onError: () => {
+      toast.error('Error al eliminar servicios huerfanos');
+    },
+  });
+
+  // Delete all orphaned services mutation
+  const deleteAllOrphanedMutation = useMutation({
+    mutationFn: () => servicesApi.deleteAllOrphaned(),
+    onSuccess: (data) => {
+      toast.success(`${data.deletedCount} servicios huerfanos eliminados`);
+      queryClient.invalidateQueries({ queryKey: ['admin-services-orphaned'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      setShowDeleteConfirm(false);
+    },
+    onError: () => {
+      toast.error('Error al eliminar servicios huerfanos');
+    },
+  });
+
+  const orphanedServices = orphanedResponse?.data || [];
+  const orphanedCount = orphanedResponse?.count || 0;
 
   // Extract services array from response, fallback to demo data
   const services = servicesResponse?.data || demoServices;
@@ -191,6 +252,21 @@ export default function ServiciosPage() {
     completed: services?.filter((s) => s.status === 'completed').length || 0,
     cancelled: services?.filter((s) => ['cancelled', 'rejected'].includes(s.status)).length || 0,
     gmv: services?.filter((s) => s.status === 'completed').reduce((sum, s) => sum + s.service.price, 0) || 0,
+    orphaned: orphanedCount,
+  };
+
+  const toggleOrphanedSelection = (id: string) => {
+    setSelectedOrphaned(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAllOrphaned = () => {
+    if (selectedOrphaned.length === orphanedServices.length) {
+      setSelectedOrphaned([]);
+    } else {
+      setSelectedOrphaned(orphanedServices.map(s => s.id));
+    }
   };
 
   return (
@@ -251,6 +327,20 @@ export default function ServiciosPage() {
             <div className="text-2xl font-bold">S/ {stats.gmv.toLocaleString()}</div>
           </CardContent>
         </Card>
+        {stats.orphaned > 0 && (
+          <Card className="border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-orange-700 dark:text-orange-300">
+                Huerfanos
+              </CardTitle>
+              <AlertTriangle className="h-4 w-4 text-orange-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{stats.orphaned}</div>
+              <p className="text-xs text-orange-600 dark:text-orange-400">Enfermera eliminada</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Filters and Table */}
@@ -281,129 +371,289 @@ export default function ServiciosPage() {
               <TabsTrigger value="active">En Curso ({stats.active})</TabsTrigger>
               <TabsTrigger value="completed">Completados ({stats.completed})</TabsTrigger>
               <TabsTrigger value="cancelled">Cancelados ({stats.cancelled})</TabsTrigger>
+              {stats.orphaned > 0 && (
+                <TabsTrigger value="orphaned" className="text-orange-600">
+                  Huerfanos ({stats.orphaned})
+                </TabsTrigger>
+              )}
             </TabsList>
 
-            <div className="mt-4 overflow-x-auto">
-              {isLoading ? (
-                <div className="space-y-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-16 w-full" />
-                  ))}
+            {/* Orphaned Services Tab */}
+            {tab === 'orphaned' ? (
+              <div className="mt-4">
+                {/* Warning Banner */}
+                <div className="mb-4 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-orange-500 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-orange-800 dark:text-orange-200">Servicios Huerfanos</h4>
+                      <p className="text-sm text-orange-700 dark:text-orange-300">
+                        Estos servicios fueron creados por enfermeras que ya han sido eliminadas del sistema.
+                        Puedes eliminarlos de forma segura para limpiar la base de datos.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Servicio</TableHead>
-                      <TableHead>Paciente</TableHead>
-                      <TableHead>Enfermera</TableHead>
-                      <TableHead>Ubicacion</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Precio</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredServices?.map((service) => (
-                      <TableRow key={service.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{service.service.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {serviceCategories[service.service.category as keyof typeof serviceCategories]}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={service.patient?.avatar} />
-                              <AvatarFallback className="text-xs">
-                                {service.patient?.firstName?.charAt(0)}
-                                {service.patient?.lastName?.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
+
+                {/* Actions */}
+                {orphanedServices.length > 0 && (
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedOrphaned.length === orphanedServices.length}
+                        onChange={toggleAllOrphaned}
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {selectedOrphaned.length > 0
+                          ? `${selectedOrphaned.length} seleccionados`
+                          : 'Seleccionar todos'}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      {selectedOrphaned.length > 0 && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setShowDeleteConfirm(true)}
+                          disabled={deleteOrphanedMutation.isPending}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Eliminar seleccionados ({selectedOrphaned.length})
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedOrphaned(orphanedServices.map(s => s.id));
+                          setShowDeleteConfirm(true);
+                        }}
+                        disabled={deleteAllOrphanedMutation.isPending}
+                        className="text-orange-600 border-orange-300 hover:bg-orange-50"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Eliminar todos ({orphanedCount})
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Orphaned Services Table */}
+                {isLoadingOrphaned ? (
+                  <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                      <Skeleton key={i} className="h-16 w-full" />
+                    ))}
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12"></TableHead>
+                        <TableHead>Servicio</TableHead>
+                        <TableHead>Paciente</TableHead>
+                        <TableHead>Enfermera (eliminada)</TableHead>
+                        <TableHead>Ubicacion</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Fecha</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {orphanedServices.map((service) => (
+                        <TableRow key={service.id} className="bg-orange-50/50 dark:bg-orange-950/20">
+                          <TableCell>
+                            <input
+                              type="checkbox"
+                              checked={selectedOrphaned.includes(service.id)}
+                              onChange={() => toggleOrphanedSelection(service.id)}
+                              className="h-4 w-4 rounded border-gray-300"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{service.service.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {serviceCategories[service.service.category as keyof typeof serviceCategories]}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
                             <span className="text-sm">
                               {service.patient?.firstName} {service.patient?.lastName}
                             </span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {service.nurse ? (
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="border-orange-300 text-orange-600">
+                                <XCircle className="mr-1 h-3 w-3" />
+                                Eliminada
+                              </Badge>
+                              <span className="text-xs text-muted-foreground truncate max-w-32">
+                                {service.nurseName}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm">{service.location.district}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={cn(serviceStatus[service.status]?.color)}>
+                              {serviceStatus[service.status]?.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm">
+                                {format(new Date(service.createdAt), 'dd MMM', { locale: es })}
+                              </span>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {orphanedServices.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={7} className="h-24 text-center">
+                            <div className="flex flex-col items-center gap-2">
+                              <CheckCircle2 className="h-8 w-8 text-green-500" />
+                              <p className="text-muted-foreground">No hay servicios huerfanos</p>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            ) : (
+              /* Regular Services Table */
+              <div className="mt-4 overflow-x-auto">
+                {isLoading ? (
+                  <div className="space-y-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="h-16 w-full" />
+                    ))}
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Servicio</TableHead>
+                        <TableHead>Paciente</TableHead>
+                        <TableHead>Enfermera</TableHead>
+                        <TableHead>Ubicacion</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Precio</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead className="text-right">Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredServices?.map((service) => (
+                        <TableRow key={service.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{service.service.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {serviceCategories[service.service.category as keyof typeof serviceCategories]}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell>
                             <div className="flex items-center gap-2">
                               <Avatar className="h-8 w-8">
-                                <AvatarImage src={service.nurse.avatar} />
-                                <AvatarFallback className="bg-gradient-to-br from-teal-500 to-blue-600 text-white text-xs">
-                                  {service.nurse.firstName?.charAt(0)}
-                                  {service.nurse.lastName?.charAt(0)}
+                                <AvatarImage src={service.patient?.avatar} />
+                                <AvatarFallback className="text-xs">
+                                  {service.patient?.firstName?.charAt(0)}
+                                  {service.patient?.lastName?.charAt(0)}
                                 </AvatarFallback>
                               </Avatar>
                               <span className="text-sm">
-                                {service.nurse.firstName} {service.nurse.lastName}
+                                {service.patient?.firstName} {service.patient?.lastName}
                               </span>
                             </div>
-                          ) : (
-                            <span className="text-muted-foreground">Sin asignar</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm">{service.location.district}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={cn(serviceStatus[service.status]?.color)}>
-                            {serviceStatus[service.status]?.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <span className="font-medium">S/ {service.service.price}</span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm">
-                              {format(new Date(service.createdAt), 'dd MMM', { locale: es })}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setSelectedService(service);
-                                  setShowDetailDialog(true);
-                                }}
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                Ver detalles
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {(!filteredServices || filteredServices.length === 0) && (
-                      <TableRow>
-                        <TableCell colSpan={8} className="h-24 text-center">
-                          No se encontraron servicios
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              )}
-            </div>
+                          </TableCell>
+                          <TableCell>
+                            {service.nurse ? (
+                              <div className="flex items-center gap-2">
+                                <Avatar className="h-8 w-8">
+                                  <AvatarImage src={service.nurse.avatar} />
+                                  <AvatarFallback className="bg-gradient-to-br from-teal-500 to-blue-600 text-white text-xs">
+                                    {service.nurse.firstName?.charAt(0)}
+                                    {service.nurse.lastName?.charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm">
+                                  {service.nurse.firstName} {service.nurse.lastName}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">Sin asignar</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm">{service.location.district}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={cn(serviceStatus[service.status]?.color)}>
+                              {serviceStatus[service.status]?.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-medium">S/ {service.service.price}</span>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm">
+                                {format(new Date(service.createdAt), 'dd MMM', { locale: es })}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedService(service);
+                                    setShowDetailDialog(true);
+                                  }}
+                                >
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Ver detalles
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {(!filteredServices || filteredServices.length === 0) && (
+                        <TableRow>
+                          <TableCell colSpan={8} className="h-24 text-center">
+                            No se encontraron servicios
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            )}
           </Tabs>
         </CardContent>
       </Card>
@@ -552,6 +802,57 @@ export default function ServiciosPage() {
               )}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              Confirmar eliminacion
+            </DialogTitle>
+            <DialogDescription>
+              Esta accion no se puede deshacer. Se eliminaran permanentemente{' '}
+              <strong>{selectedOrphaned.length}</strong> servicios huerfanos de la base de datos.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950">
+            <p className="text-sm text-orange-700 dark:text-orange-300">
+              Los servicios huerfanos son aquellos cuya enfermera fue eliminada del sistema.
+              Eliminarlos no afectara a los pacientes ni a otras estadisticas.
+            </p>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={deleteOrphanedMutation.isPending || deleteAllOrphanedMutation.isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (selectedOrphaned.length === orphanedServices.length) {
+                  deleteAllOrphanedMutation.mutate();
+                } else {
+                  deleteOrphanedMutation.mutate(selectedOrphaned);
+                }
+              }}
+              disabled={deleteOrphanedMutation.isPending || deleteAllOrphanedMutation.isPending}
+            >
+              {(deleteOrphanedMutation.isPending || deleteAllOrphanedMutation.isPending) ? (
+                <>Eliminando...</>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Eliminar {selectedOrphaned.length} servicios
+                </>
+              )}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

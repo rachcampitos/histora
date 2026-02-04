@@ -2344,6 +2344,152 @@ export class AdminService {
     };
   }
 
+  // ==================== ORPHANED SERVICES MANAGEMENT ====================
+
+  /**
+   * Get orphaned service requests (where nurse was deleted)
+   */
+  async getOrphanedServiceRequests() {
+    // Get all nurse IDs that are deleted
+    const deletedNurseIds = await this.nurseModel
+      .find({ isDeleted: true })
+      .select('_id')
+      .exec();
+
+    const deletedIds = deletedNurseIds.map(n => n._id);
+
+    // Find service requests where nurseId references a deleted nurse
+    const orphanedRequests = await this.serviceRequestModel
+      .find({
+        nurseId: { $in: deletedIds },
+        status: { $in: ['completed', 'cancelled', 'rejected'] }, // Only closed services
+      })
+      .populate('patientId', 'firstName lastName email')
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Also find requests where nurseId doesn't exist at all
+    const allRequestsWithNurse = await this.serviceRequestModel
+      .find({ nurseId: { $exists: true, $ne: null } })
+      .select('nurseId')
+      .exec();
+
+    const nurseIdsInRequests = [...new Set(allRequestsWithNurse.map(r => r.nurseId?.toString()))];
+
+    // Check which nurse IDs don't exist anymore
+    const existingNurses = await this.nurseModel
+      .find({ _id: { $in: nurseIdsInRequests } })
+      .select('_id')
+      .exec();
+
+    const existingNurseIds = new Set(existingNurses.map(n => n._id.toString()));
+    const nonExistentNurseIds = nurseIdsInRequests.filter(id => id && !existingNurseIds.has(id));
+
+    // Find requests with non-existent nurses
+    const requestsWithNonExistentNurse = await this.serviceRequestModel
+      .find({
+        nurseId: { $in: nonExistentNurseIds },
+      })
+      .populate('patientId', 'firstName lastName email')
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Combine both sets
+    const allOrphaned = [...orphanedRequests, ...requestsWithNonExistentNurse];
+
+    // Remove duplicates by ID
+    const uniqueOrphaned = allOrphaned.reduce((acc, curr) => {
+      const id = (curr as any)._id.toString();
+      if (!acc.find((item: any) => item._id.toString() === id)) {
+        acc.push(curr);
+      }
+      return acc;
+    }, [] as any[]);
+
+    return {
+      count: uniqueOrphaned.length,
+      data: uniqueOrphaned.map((sr) => {
+        const patient = sr.patientId as any;
+        return {
+          id: (sr as any)._id.toString(),
+          status: sr.status,
+          service: {
+            name: sr.service.name,
+            category: sr.service.category,
+            price: sr.service.price,
+          },
+          patient: patient ? {
+            id: patient._id.toString(),
+            firstName: patient.firstName,
+            lastName: patient.lastName,
+            email: patient.email,
+          } : null,
+          nurseId: sr.nurseId?.toString() || 'N/A',
+          location: {
+            district: sr.location?.district,
+            address: sr.location?.address,
+          },
+          createdAt: (sr as any).createdAt,
+          completedAt: sr.completedAt,
+          cancelledAt: sr.cancelledAt,
+        };
+      }),
+    };
+  }
+
+  /**
+   * Delete specific orphaned service requests
+   */
+  async deleteOrphanedServiceRequests(ids: string[]) {
+    if (!ids || ids.length === 0) {
+      throw new ConflictException('No se proporcionaron IDs para eliminar');
+    }
+
+    // Verify all IDs are orphaned (nurse is deleted or doesn't exist)
+    const requests = await this.serviceRequestModel.find({ _id: { $in: ids } });
+
+    for (const request of requests) {
+      if (request.nurseId) {
+        const nurse = await this.nurseModel.findById(request.nurseId);
+        if (nurse && !nurse.isDeleted) {
+          throw new ConflictException(`El servicio ${(request as any)._id} tiene una enfermera activa asociada`);
+        }
+      }
+
+      // Don't allow deleting active services
+      if (['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress'].includes(request.status)) {
+        throw new ConflictException(`No se puede eliminar el servicio ${(request as any)._id} porque está activo`);
+      }
+    }
+
+    // Delete the service requests
+    const result = await this.serviceRequestModel.deleteMany({ _id: { $in: ids } });
+
+    this.logger.log(`Admin deleted ${result.deletedCount} orphaned service requests`);
+
+    return {
+      deletedCount: result.deletedCount,
+      message: `${result.deletedCount} servicio(s) eliminado(s) exitosamente`,
+    };
+  }
+
+  /**
+   * Delete ALL orphaned service requests
+   */
+  async deleteAllOrphanedServiceRequests() {
+    const orphaned = await this.getOrphanedServiceRequests();
+
+    if (orphaned.count === 0) {
+      return {
+        deletedCount: 0,
+        message: 'No hay servicios huérfanos para eliminar',
+      };
+    }
+
+    const ids = orphaned.data.map((sr: any) => sr.id);
+    return this.deleteOrphanedServiceRequests(ids);
+  }
+
   /**
    * Admin refund payment
    */
