@@ -268,29 +268,7 @@ export class AdminController {
     return this.adminService.getServiceAnalytics();
   }
 
-  @Get('services/:id')
-  @ApiOperation({ summary: 'Obtener detalle de una solicitud de servicio' })
-  @ApiResponse({ status: 200, description: 'Detalle de la solicitud', type: ServiceRequestDetailDto })
-  @ApiResponse({ status: 404, description: 'Solicitud no encontrada' })
-  async getServiceRequest(@Param('id') id: string) {
-    return this.adminService.getServiceRequest(id);
-  }
-
-  @Patch('services/:id/action')
-  @ApiOperation({ summary: 'Ejecutar acción administrativa en servicio (cancelar, reembolsar)' })
-  @ApiResponse({ status: 200, description: 'Acción ejecutada' })
-  @ApiResponse({ status: 404, description: 'Solicitud no encontrada' })
-  @ApiResponse({ status: 409, description: 'Acción no permitida' })
-  async adminServiceAction(
-    @Param('id') id: string,
-    @Body() dto: AdminServiceActionDto,
-    @CurrentUser() user: any,
-  ) {
-    return this.adminService.adminServiceAction(id, dto, user?.id || user?._id);
-  }
-
-  // ==================== ORPHANED SERVICES MANAGEMENT ====================
-
+  // IMPORTANT: Orphaned routes MUST be before :id route to avoid "orphaned" being interpreted as an ID
   @Get('services/orphaned')
   @ApiOperation({ summary: 'Listar servicios huérfanos (enfermera eliminada o inexistente)' })
   @ApiResponse({ status: 200, description: 'Lista de servicios huérfanos con count y data' })
@@ -313,6 +291,27 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Todos los servicios huérfanos eliminados' })
   async deleteAllOrphanedServiceRequests() {
     return this.adminService.deleteAllOrphanedServiceRequests();
+  }
+
+  @Get('services/:id')
+  @ApiOperation({ summary: 'Obtener detalle de una solicitud de servicio' })
+  @ApiResponse({ status: 200, description: 'Detalle de la solicitud', type: ServiceRequestDetailDto })
+  @ApiResponse({ status: 404, description: 'Solicitud no encontrada' })
+  async getServiceRequest(@Param('id') id: string) {
+    return this.adminService.getServiceRequest(id);
+  }
+
+  @Patch('services/:id/action')
+  @ApiOperation({ summary: 'Ejecutar acción administrativa en servicio (cancelar, reembolsar)' })
+  @ApiResponse({ status: 200, description: 'Acción ejecutada' })
+  @ApiResponse({ status: 404, description: 'Solicitud no encontrada' })
+  @ApiResponse({ status: 409, description: 'Acción no permitida' })
+  async adminServiceAction(
+    @Param('id') id: string,
+    @Body() dto: AdminServiceActionDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.adminService.adminServiceAction(id, dto, user?.id || user?._id);
   }
 
   // ==================== PAYMENT MANAGEMENT ENDPOINTS ====================
