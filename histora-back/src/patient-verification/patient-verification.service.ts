@@ -1,4 +1,5 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PatientVerification, PatientVerificationDocument } from './schema/patient-verification.schema';
@@ -18,6 +19,22 @@ import {
 } from './dto/verification.dto';
 import { SmsProvider } from '../notifications/providers/sms.provider';
 
+/**
+ * Feature Flag: FEATURE_SMS_ENABLED
+ *
+ * Controla si se envían SMS reales para verificación de teléfono.
+ *
+ * Valores:
+ * - 'true': Envía SMS reales via el provider configurado (Gamanet, Twilio, etc.)
+ * - 'false' o no definido: Usa código de prueba fijo "123456"
+ *
+ * Para habilitar SMS en producción:
+ * 1. Contratar servicio de SMS (recomendado: Gamanet - https://gamanet.pe)
+ * 2. Configurar variables: SMS_PROVIDER, GAMANET_API_KEY, GAMANET_API_CARD
+ * 3. Agregar en Railway: FEATURE_SMS_ENABLED=true
+ *
+ * Código de prueba (cuando SMS está deshabilitado): 123456
+ */
 @Injectable()
 export class PatientVerificationService {
   private readonly logger = new Logger(PatientVerificationService.name);
@@ -25,11 +42,22 @@ export class PatientVerificationService {
   // In-memory store for verification codes (use Redis in production)
   private verificationCodes: Map<string, { code: string; expiresAt: Date }> = new Map();
 
+  // Test code used when SMS is disabled
+  private readonly TEST_VERIFICATION_CODE = '123456';
+
   constructor(
     @InjectModel(PatientVerification.name)
     private verificationModel: Model<PatientVerificationDocument>,
+    private configService: ConfigService,
     private smsProvider: SmsProvider,
   ) {}
+
+  /**
+   * Check if SMS feature is enabled
+   */
+  private isSmsEnabled(): boolean {
+    return this.configService.get<string>('FEATURE_SMS_ENABLED', 'false') === 'true';
+  }
 
   // ==================== Initialization ====================
 
@@ -52,13 +80,31 @@ export class PatientVerificationService {
 
   // ==================== Phone Verification ====================
 
-  async sendPhoneCode(patientId: string, dto: SendPhoneCodeDto): Promise<{ message: string }> {
-    // Generate 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+  async sendPhoneCode(patientId: string, dto: SendPhoneCodeDto): Promise<{ message: string; testMode?: boolean }> {
+    const smsEnabled = this.isSmsEnabled();
+
+    // Use test code when SMS is disabled, otherwise generate random code
+    const code = smsEnabled
+      ? Math.floor(100000 + Math.random() * 900000).toString()
+      : this.TEST_VERIFICATION_CODE;
 
     // Store code with 5-minute expiration
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
     this.verificationCodes.set(`${patientId}:${dto.phone}`, { code, expiresAt });
+
+    // If SMS is disabled, just log and return
+    if (!smsEnabled) {
+      this.logger.warn('='.repeat(60));
+      this.logger.warn('[SMS DISABLED] Feature flag FEATURE_SMS_ENABLED is not set to "true"');
+      this.logger.warn(`[SMS DISABLED] Use test code: ${this.TEST_VERIFICATION_CODE}`);
+      this.logger.warn(`[SMS DISABLED] Phone: ${dto.phone}`);
+      this.logger.warn('='.repeat(60));
+
+      return {
+        message: 'Código de verificación enviado (modo prueba)',
+        testMode: true,
+      };
+    }
 
     // Format phone number with country code for Peru
     const formattedPhone = dto.phone.startsWith('+') ? dto.phone : `+51${dto.phone}`;
@@ -81,9 +127,6 @@ export class PatientVerificationService {
       this.logger.error(`SMS sending failed: ${error.message}`);
       // Continue - code is still stored and can be verified
     }
-
-    // Also log for development (remove in production)
-    this.logger.debug(`[DEV] Verification code for ${dto.phone}: ${code}`);
 
     return { message: 'Código de verificación enviado' };
   }
