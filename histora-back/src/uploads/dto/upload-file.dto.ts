@@ -77,6 +77,22 @@ export class UploadSelfieDto {
   mimeType?: string;
 }
 
+export class UploadDniPhotoDto {
+  @ApiProperty({ description: 'Base64 encoded DNI photo data' })
+  @IsString()
+  @MaxLength(5 * 1024 * 1024) // ~5MB base64
+  imageData: string;
+
+  @ApiPropertyOptional({ description: 'Image MIME type (image/jpeg, image/png)' })
+  @IsOptional()
+  @IsString()
+  mimeType?: string;
+
+  @ApiProperty({ description: 'Side of the DNI (front or back)', enum: ['front', 'back'] })
+  @IsString()
+  side: 'front' | 'back';
+}
+
 export class DeleteFileDto {
   @ApiProperty({ description: 'Public ID of the file to delete' })
   @IsString()

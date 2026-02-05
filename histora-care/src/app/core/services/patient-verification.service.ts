@@ -40,6 +40,16 @@ export interface VerifyPhoneCodeDto {
   code: string;
 }
 
+export interface SendEmailCodeDto {
+  email: string;
+  userName?: string;
+}
+
+export interface VerifyEmailCodeDto {
+  email: string;
+  code: string;
+}
+
 export interface UploadDniDto {
   dniNumber: string;
   frontPhotoUrl: string;
@@ -115,6 +125,20 @@ export class PatientVerificationService {
   }
 
   /**
+   * Send email verification code
+   */
+  sendEmailCode(dto: SendEmailCodeDto): Observable<VerificationResponse> {
+    return this.api.post<VerificationResponse>(`${this.basePath}/email/send`, dto);
+  }
+
+  /**
+   * Verify email code
+   */
+  verifyEmailCode(dto: VerifyEmailCodeDto): Observable<VerificationResponse> {
+    return this.api.post<VerificationResponse>(`${this.basePath}/email/verify`, dto);
+  }
+
+  /**
    * Upload DNI photos
    */
   uploadDni(dto: UploadDniDto): Observable<VerificationResponse> {
@@ -146,7 +170,7 @@ export class PatientVerificationService {
    * Get the next required step based on current status
    */
   getNextRequiredStep(status: VerificationStatus): string | null {
-    if (!status.phoneVerified) return 'phone';
+    if (!status.phoneVerified) return 'email'; // Email verification (backend uses phoneVerified flag)
     if (!status.dniVerified) return 'dni';
     if (!status.selfieVerified) return 'selfie';
     if (status.emergencyContactsCount < 2) return 'emergency-contacts';

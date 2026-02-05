@@ -6,6 +6,8 @@ import { PatientVerification, PatientVerificationDocument } from './schema/patie
 import {
   SendPhoneCodeDto,
   VerifyPhoneCodeDto,
+  SendEmailCodeDto,
+  VerifyEmailCodeDto,
   UploadDniDto,
   UploadSelfieDto,
   VerifyPaymentMethodDto,
@@ -18,6 +20,7 @@ import {
   PatientProfileForNurseDto,
 } from './dto/verification.dto';
 import { SmsProvider } from '../notifications/providers/sms.provider';
+import { EmailProvider } from '../notifications/providers/email.provider';
 
 /**
  * Feature Flag: FEATURE_SMS_ENABLED
@@ -50,6 +53,7 @@ export class PatientVerificationService {
     private verificationModel: Model<PatientVerificationDocument>,
     private configService: ConfigService,
     private smsProvider: SmsProvider,
+    private emailProvider: EmailProvider,
   ) {}
 
   /**
@@ -151,6 +155,88 @@ export class PatientVerificationService {
     this.verificationCodes.delete(key);
 
     const verification = await this.getOrCreateVerification(patientId);
+    verification.phoneVerified = true;
+
+    return verification.save();
+  }
+
+  // ==================== Email Verification ====================
+
+  async sendEmailCode(patientId: string, dto: SendEmailCodeDto): Promise<{ message: string; testMode?: boolean }> {
+    const emailEnabled = this.configService.get<string>('EMAIL_PROVIDER', 'console') === 'sendgrid';
+
+    // Generate random 6-digit code or use test code
+    const code = emailEnabled
+      ? Math.floor(100000 + Math.random() * 900000).toString()
+      : this.TEST_VERIFICATION_CODE;
+
+    // Store code with 10-minute expiration (longer than SMS since email can be slower)
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    this.verificationCodes.set(`${patientId}:email:${dto.email}`, { code, expiresAt });
+
+    // If email is not configured, just log and return
+    if (!emailEnabled) {
+      this.logger.warn('='.repeat(60));
+      this.logger.warn('[EMAIL] Email provider not configured for SendGrid');
+      this.logger.warn(`[EMAIL] Use test code: ${this.TEST_VERIFICATION_CODE}`);
+      this.logger.warn(`[EMAIL] Email: ${dto.email}`);
+      this.logger.warn('='.repeat(60));
+
+      return {
+        message: 'Codigo de verificacion enviado (modo prueba)',
+        testMode: true,
+      };
+    }
+
+    // Send email with verification code
+    try {
+      const html = this.emailProvider.getVerificationCodeTemplate({
+        userName: dto.userName || 'Usuario',
+        code,
+        expiresIn: '10 minutos',
+      });
+
+      const result = await this.emailProvider.send({
+        to: dto.email,
+        subject: 'Tu codigo de verificacion - NurseLite',
+        html,
+      });
+
+      if (!result.success) {
+        this.logger.error(`Failed to send email to ${dto.email}: ${result.error}`);
+      } else {
+        this.logger.log(`Verification email sent to ${dto.email}`);
+      }
+    } catch (error) {
+      this.logger.error(`Email sending failed: ${error.message}`);
+      // Continue - code is still stored and can be verified
+    }
+
+    return { message: 'Codigo de verificacion enviado a tu correo' };
+  }
+
+  async verifyEmailCode(patientId: string, dto: VerifyEmailCodeDto): Promise<PatientVerification> {
+    const key = `${patientId}:email:${dto.email}`;
+    const stored = this.verificationCodes.get(key);
+
+    if (!stored) {
+      throw new BadRequestException('No hay codigo de verificacion pendiente');
+    }
+
+    if (new Date() > stored.expiresAt) {
+      this.verificationCodes.delete(key);
+      throw new BadRequestException('El codigo ha expirado');
+    }
+
+    if (stored.code !== dto.code) {
+      throw new BadRequestException('Codigo incorrecto');
+    }
+
+    this.verificationCodes.delete(key);
+
+    const verification = await this.getOrCreateVerification(patientId);
+    verification.emailVerified = true;
+    // Also mark phone as verified since we're using email as the primary verification method
     verification.phoneVerified = true;
 
     return verification.save();

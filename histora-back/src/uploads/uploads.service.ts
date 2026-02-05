@@ -271,6 +271,54 @@ export class UploadsService {
     };
   }
 
+  // Upload patient DNI photo for verification
+  async uploadPatientDniPhoto(
+    imageData: string,
+    mimeType: string,
+    patientId: string,
+    side: 'front' | 'back',
+    userId: string
+  ): Promise<{ url: string; publicId: string }> {
+    const base64Data = this.extractBase64Data(imageData);
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > this.maxImageSize) {
+      throw new BadRequestException('Image size exceeds 5MB limit');
+    }
+
+    const detectedMimeType = mimeType || this.detectMimeType(imageData);
+    if (!this.allowedImageTypes.includes(detectedMimeType)) {
+      throw new BadRequestException('Invalid image format. Allowed: JPEG, PNG, WebP');
+    }
+
+    const ext = detectedMimeType.split('/')[1];
+    const filename = `dni_${side}_${patientId}_${Date.now()}.${ext}`;
+    const folder = `histora/patients/${patientId}/verification`;
+
+    // Upload without heavy transformation to preserve document quality
+    const result = await this.cloudinaryProvider.uploadBase64(base64Data, filename, {
+      folder,
+      transformation: {
+        width: 1200,
+        height: 1200,
+        crop: 'fit',
+        quality: 'auto',
+        format: 'auto',
+      },
+    });
+
+    if (!result.success) {
+      throw new BadRequestException(`Upload failed: ${result.error}`);
+    }
+
+    this.logger.log(`DNI ${side} photo uploaded for patient ${patientId}`);
+
+    return {
+      url: result.secureUrl!,
+      publicId: result.publicId!,
+    };
+  }
+
   // Delete file
   async deleteFile(publicId: string): Promise<{ success: boolean }> {
     const result = await this.cloudinaryProvider.delete(publicId);

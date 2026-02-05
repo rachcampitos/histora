@@ -17,6 +17,7 @@ import { UsersService } from '../users/users.service';
 import {
   UploadProfilePhotoDto,
   UploadSelfieDto,
+  UploadDniPhotoDto,
   FileResponseDto,
 } from './dto/upload-file.dto';
 import { NursesService } from '../nurses/nurses.service';
@@ -59,6 +60,30 @@ export class UploadsController {
       success: true,
       url: result.url,
       thumbnailUrl: result.thumbnailUrl,
+      publicId: result.publicId,
+    };
+  }
+
+  // ============= PATIENT UPLOADS =============
+
+  @Post('dni-photo')
+  @Roles(UserRole.PATIENT)
+  @ApiOperation({ summary: 'Upload DNI photo for patient verification' })
+  async uploadDniPhoto(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: UploadDniPhotoDto,
+  ): Promise<FileResponseDto> {
+    const result = await this.uploadsService.uploadPatientDniPhoto(
+      dto.imageData,
+      dto.mimeType || 'image/jpeg',
+      user.userId,
+      dto.side,
+      user.userId
+    );
+
+    return {
+      success: true,
+      url: result.url,
       publicId: result.publicId,
     };
   }
