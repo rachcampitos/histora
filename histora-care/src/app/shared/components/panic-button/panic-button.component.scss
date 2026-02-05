@@ -166,14 +166,15 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      // Light mode: use danger color for visibility on light backgrounds
+      background: rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.2);
+      border: 1px solid rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.4);
       transition: all 0.15s ease;
 
       &.filled {
-        background: white;
-        border-color: white;
-        box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        background: var(--ion-color-danger, #ef4444);
+        border-color: var(--ion-color-danger, #ef4444);
+        box-shadow: 0 0 8px rgba(var(--ion-color-danger-rgb, 239, 68, 68), 0.6);
         animation: dot-fill 0.2s ease;
       }
     }
@@ -274,5 +275,17 @@
 :host-context(body.ion-palette-dark) {
   .help-text {
     color: var(--histora-text-secondary, #64748b);
+  }
+
+  // Tap indicators: white dots for visibility on dark backgrounds
+  .panic-button .tap-indicators .tap-dot {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+
+    &.filled {
+      background: white;
+      border-color: white;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
   }
 }
