@@ -343,6 +343,7 @@
 .status-progress {
   margin-bottom: 20px;
   overflow-x: auto;
+  padding-top: 8px; // Space for box-shadow on active step
   padding-bottom: 8px;
 
   &::-webkit-scrollbar {
@@ -747,13 +748,20 @@
       font-size: 20px;
       color: white;
       flex-shrink: 0;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
 
       &.yape {
-        background: linear-gradient(135deg, #9b4dca 0%, #6b2d9b 100%);
+        background: transparent;
       }
 
       &.plin {
-        background: linear-gradient(135deg, #00d4aa 0%, #00a88a 100%);
+        background: transparent;
       }
 
       &.cash-logo {

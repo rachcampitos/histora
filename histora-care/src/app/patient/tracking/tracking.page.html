@@ -250,7 +250,7 @@
         @switch (currentStatus()) {
         @case ('accepted') {
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span>{{ nurse()?.firstName || 'La enfermera' }} acepto tu solicitud. ¡Ya esta en camino!</span>
+        <span>{{ nurse()?.firstName || 'La enfermera' }} acepto tu solicitud. Se esta preparando para salir.</span>
         }
         @case ('on_the_way') {
         <ion-icon name="navigate"></ion-icon>
@@ -271,31 +271,33 @@
         }
       </div>
 
-      <!-- Contextual Tip - Proactive helpful message -->
-      <div class="contextual-tip" role="note">
-        @switch (currentStatus()) {
-        @case ('accepted') {
-        <ion-icon name="bulb-outline"></ion-icon>
-        <span>{{ nurse()?.firstName }} vio tu solicitud y la acepto. Esta preparandose para salir.</span>
-        }
-        @case ('on_the_way') {
-        <ion-icon name="bulb-outline"></ion-icon>
-        <span>Puedes ir preparando un espacio comodo y bien iluminado para la atencion.</span>
-        }
-        @case ('arrived') {
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <span>Por tu seguridad, confirma su identidad (foto y nombre) antes de permitir el ingreso.</span>
-        }
-        @case ('in_progress') {
-        <ion-icon name="bulb-outline"></ion-icon>
-        <span>Si tienes preguntas sobre el procedimiento, no dudes en preguntarle.</span>
-        }
-        @case ('completed') {
-        <ion-icon name="heart-outline"></ion-icon>
-        <span>Tu opinion nos ayuda a mejorar. ¡Gracias por confiar en NurseLite!</span>
-        }
-        }
-      </div>
+      <!-- Contextual Tip - Proactive helpful message (only show after nurse accepts) -->
+      @if (currentStatus() !== 'pending') {
+        <div class="contextual-tip" role="note">
+          @switch (currentStatus()) {
+          @case ('accepted') {
+          <ion-icon name="bulb-outline"></ion-icon>
+          <span>{{ nurse()?.firstName }} vio tu solicitud y la acepto. Esta preparandose para salir.</span>
+          }
+          @case ('on_the_way') {
+          <ion-icon name="bulb-outline"></ion-icon>
+          <span>Puedes ir preparando un espacio comodo y bien iluminado para la atencion.</span>
+          }
+          @case ('arrived') {
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Por tu seguridad, confirma su identidad (foto y nombre) antes de permitir el ingreso.</span>
+          }
+          @case ('in_progress') {
+          <ion-icon name="bulb-outline"></ion-icon>
+          <span>Si tienes preguntas sobre el procedimiento, no dudes en preguntarle.</span>
+          }
+          @case ('completed') {
+          <ion-icon name="heart-outline"></ion-icon>
+          <span>Tu opinion nos ayuda a mejorar. ¡Gracias por confiar en NurseLite!</span>
+          }
+          }
+        </div>
+      }
 
       <!-- Cancel Button (only if not started) -->
       @if (currentStatus() === 'accepted' || currentStatus() === 'on_the_way') {
@@ -323,7 +325,7 @@
           @if (nurse()?.yapeNumber) {
           <div class="payment-method" (click)="copyPaymentNumber(nurse()!.yapeNumber!, 'yape')">
             <div class="payment-logo yape">
-              <span>Y</span>
+              <img src="assets/img/logo-yape.png" alt="Yape" />
             </div>
             <div class="payment-info">
               <span class="payment-label">Yape</span>
@@ -338,7 +340,7 @@
           @if (nurse()?.plinNumber) {
           <div class="payment-method" (click)="copyPaymentNumber(nurse()!.plinNumber!, 'plin')">
             <div class="payment-logo plin">
-              <span>P</span>
+              <img src="assets/img/logo-plin.png" alt="Plin" />
             </div>
             <div class="payment-info">
               <span class="payment-label">Plin</span>

@@ -139,7 +139,7 @@
           <!-- Yape (disabled in beta) -->
           <ion-item class="payment-option disabled" [class.beta-disabled]="betaMode()">
             <div class="yape-icon disabled" slot="start">
-              <span>Y</span>
+              <img src="assets/img/logo-yape.png" alt="Yape" />
             </div>
             <ion-label>
               <h3>Yape</h3>
@@ -341,7 +341,11 @@
           <ion-icon name="calendar-check-outline"></ion-icon>
         </div>
         <h2>Solicitud confirmada</h2>
-        <p>Estamos buscando una enfermera disponible</p>
+        @if (serviceRequest()?.nurse) {
+          <p>Tu solicitud ha sido enviada a <strong>{{ serviceRequest()?.nurse?.firstName }}</strong></p>
+        } @else {
+          <p>Estamos buscando una enfermera disponible</p>
+        }
         <div class="cash-reminder">
           <ion-icon name="cash-outline"></ion-icon>
           <div class="reminder-content">
