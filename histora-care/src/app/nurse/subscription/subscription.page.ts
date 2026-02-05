@@ -57,50 +57,51 @@ export class SubscriptionPage implements OnInit {
     status: 'active'
   });
 
-  // Histora Care Yape number (replace with real number)
-  readonly yapeNumber = '999888777';
-  readonly yapeName = 'Histora Care SAC';
+  // Code Media Yape number
+  readonly yapeNumber = '923018997';
+  readonly yapeName = 'Code Media EIRL';
 
   // Plans configuration
   readonly plans: PlanInfo[] = [
     {
       id: 'free',
-      name: 'Plan Basico',
+      name: 'Basico',
       price: 0,
       features: [
-        'Perfil verificado por CEP',
-        'Hasta 5 solicitudes al mes',
-        'Notificaciones de solicitudes',
-        'Soporte por chat'
+        'Hasta 10 solicitudes al mes',
+        'Perfil verificado con CEP',
+        'Notificaciones en tiempo real',
+        'Visibilidad estandar en busquedas',
+        'Soporte por chat (48h)'
       ]
     },
     {
       id: 'pro',
-      name: 'Plan Pro',
-      price: 29,
+      name: 'Pro',
+      price: 39,
       popular: true,
       features: [
-        'Todo lo del Plan Basico',
         'Solicitudes ilimitadas',
-        'Prioridad en busquedas',
-        'Estadisticas de rendimiento',
-        'Soporte prioritario'
+        'Badge "Profesional Verificado"',
+        '2x mas visible en busquedas',
+        'Estadisticas avanzadas de rendimiento',
+        'Soporte prioritario (4h)'
       ],
-      highlight: 'Recuperas la inversion con solo 2 servicios adicionales al mes'
+      highlight: 'Se paga solo con 1 servicio al mes'
     },
     {
       id: 'premium',
-      name: 'Plan Premium',
-      price: 99,
+      name: 'Premium',
+      price: 79,
       features: [
-        'Todo lo del Plan Pro',
-        'Perfil destacado en busquedas',
-        'Insignia "Premium" visible',
-        'Acceso prioritario a pacientes recurrentes',
-        'Dashboard profesional completo',
-        'Soporte telefonico 24/7'
+        'Todo del Plan Pro',
+        'Badge "Elite" dorado',
+        '5x mas visible + Seccion Destacadas',
+        'Dashboard profesional con analytics',
+        'WhatsApp directo con soporte',
+        'Agenda integrada con calendario'
       ],
-      highlight: 'Si realizas 5 servicios al mes, ahorras hasta S/150 en tiempo'
+      highlight: 'Enfermeras Premium generan S/ 2,500-3,500/mes promedio'
     }
   ];
 
@@ -174,7 +175,7 @@ export class SubscriptionPage implements OnInit {
 
   getPaymentMessage(): string {
     const plan = this.selectedPlanInfo();
-    return `Suscripcion Plan ${plan?.name || ''} - Histora Care`;
+    return `Suscripcion Plan ${plan?.name || ''} - NurseLite`;
   }
 
   goToProofUpload() {
@@ -311,7 +312,7 @@ export class SubscriptionPage implements OnInit {
   }
 
   async contactSupport() {
-    window.open('https://wa.me/51999888777?text=Hola, tengo una consulta sobre mi suscripcion en Histora Care', '_system');
+    window.open('https://wa.me/51923018997?text=Hola, tengo una consulta sobre mi suscripcion en NurseLite', '_system');
   }
 
   async retrySubscription() {
