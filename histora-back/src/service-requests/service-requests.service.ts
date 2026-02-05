@@ -13,6 +13,7 @@ import { User } from '../users/schema/user.schema';
 import { CreateServiceRequestDto, RateServiceRequestDto } from './dto';
 import { NursesService } from '../nurses/nurses.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { TrackingGateway } from '../tracking/tracking.gateway';
 
 @Injectable()
 export class ServiceRequestsService {
@@ -27,6 +28,7 @@ export class ServiceRequestsService {
     private userModel: Model<User>,
     private nursesService: NursesService,
     private notificationsService: NotificationsService,
+    private trackingGateway: TrackingGateway,
   ) {}
 
   async create(
@@ -49,6 +51,9 @@ export class ServiceRequestsService {
     if (!service.isActive) {
       throw new BadRequestException('Service is not available');
     }
+
+    // Get patient info for notification
+    const patient = await this.userModel.findById(patientId).lean();
 
     const serviceRequest = new this.serviceRequestModel({
       patientId: new Types.ObjectId(patientId),
@@ -81,7 +86,33 @@ export class ServiceRequestsService {
       ],
     });
 
-    return serviceRequest.save();
+    const savedRequest = await serviceRequest.save();
+
+    // Notify nurse via WebSocket (real-time notification)
+    try {
+      this.trackingGateway.notifyNurseNewRequest(nurse.userId.toString(), {
+        requestId: (savedRequest._id as Types.ObjectId).toString(),
+        service: {
+          name: service.name,
+          category: service.category,
+          price: service.price,
+        },
+        location: {
+          address: createDto.location.address,
+          district: createDto.location.district,
+        },
+        requestedDate: new Date(createDto.requestedDate),
+        patient: patient ? {
+          firstName: patient.firstName,
+          lastName: patient.lastName,
+        } : undefined,
+      });
+    } catch (error) {
+      // Don't fail the request if notification fails
+      this.logger.error(`Failed to send WebSocket notification to nurse: ${error.message}`);
+    }
+
+    return savedRequest;
   }
 
   async findById(id: string): Promise<any> {

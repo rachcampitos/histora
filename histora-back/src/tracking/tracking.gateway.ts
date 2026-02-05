@@ -420,4 +420,38 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
   getOnlineNurses(): string[] {
     return Array.from(this.activeNurses.keys());
   }
+
+  /**
+   * Notify nurse about a new service request
+   * Broadcasts to the nurse's personal room
+   */
+  notifyNurseNewRequest(nurseUserId: string, requestData: {
+    requestId: string;
+    service: { name: string; category: string; price: number };
+    location: { address: string; district?: string };
+    requestedDate: Date;
+    patient?: { firstName?: string; lastName?: string };
+  }) {
+    this.logger.log(`Notifying nurse ${nurseUserId} about new request ${requestData.requestId}`);
+
+    // Broadcast to nurse's personal room
+    this.server.to(`user:${nurseUserId}`).emit('request:new', {
+      ...requestData,
+      timestamp: new Date(),
+    });
+  }
+
+  /**
+   * Notify patient about request status change
+   */
+  notifyPatientStatusChange(patientUserId: string, data: {
+    requestId: string;
+    status: string;
+    nurse?: { firstName?: string; lastName?: string };
+  }) {
+    this.server.to(`user:${patientUserId}`).emit('request:status', {
+      ...data,
+      updatedAt: new Date(),
+    });
+  }
 }

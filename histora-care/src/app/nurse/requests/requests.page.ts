@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, DestroyRef, ChangeDetectionStrategy, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -10,6 +10,7 @@ import {
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { GeolocationService, LocationCoordinates } from '../../core/services/geolocation.service';
 import { AuthService } from '../../core/services/auth.service';
+import { WebSocketService } from '../../core/services/websocket.service';
 import { ServiceRequest, ServiceRequestStatus } from '../../core/models';
 
 type TabType = 'pending' | 'active' | 'history';
@@ -29,6 +30,7 @@ export class RequestsPage implements OnInit, OnDestroy {
   private requestService = inject(ServiceRequestService);
   private geoService = inject(GeolocationService);
   private authService = inject(AuthService);
+  private wsService = inject(WebSocketService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private toastCtrl = inject(ToastController);
@@ -74,7 +76,18 @@ export class RequestsPage implements OnInit, OnDestroy {
     'completed'
   ];
 
-  ngOnInit() {
+  constructor() {
+    // Listen for new request notifications via WebSocket
+    effect(() => {
+      const newRequest = this.wsService.newRequest();
+      if (newRequest) {
+        this.handleNewRequestNotification(newRequest);
+        this.wsService.clearNewRequest();
+      }
+    });
+  }
+
+  async ngOnInit() {
     // Read query params for tab selection
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['tab']) {
@@ -85,12 +98,19 @@ export class RequestsPage implements OnInit, OnDestroy {
       }
     });
 
+    // Connect to WebSocket for real-time notifications
+    const token = await this.authService.getToken();
+    if (token) {
+      this.wsService.connect(token);
+    }
+
     this.initLocation();
     this.loadAllData();
   }
 
   ngOnDestroy() {
     this.geoService.stopWatching();
+    this.wsService.disconnect();
   }
 
   async initLocation() {
@@ -270,6 +290,8 @@ export class RequestsPage implements OnInit, OnDestroy {
           { ...updatedRequest, distance: (request as RequestWithDistance).distance },
           ...requests
         ]);
+        // Auto-switch to active tab so nurse can see and manage the accepted request
+        this.currentTab.set('active');
       },
       error: (err) => {
         loading.dismiss();
@@ -579,6 +601,44 @@ export class RequestsPage implements OnInit, OnDestroy {
       position: 'bottom'
     });
     await toast.present();
+  }
+
+  /**
+   * Handle new request notification from WebSocket
+   */
+  private async handleNewRequestNotification(notification: {
+    requestId: string;
+    service: { name: string; category: string; price: number };
+    location: { address: string; district?: string };
+    requestedDate: Date;
+    patient?: { firstName?: string; lastName?: string };
+  }) {
+    // Show toast notification
+    const patientName = notification.patient?.firstName
+      ? `${notification.patient.firstName} ${notification.patient.lastName || ''}`
+      : 'Un paciente';
+
+    const toast = await this.toastCtrl.create({
+      header: 'Nueva solicitud',
+      message: `${patientName} solicita ${notification.service.name}`,
+      duration: 5000,
+      position: 'top',
+      color: 'primary',
+      icon: 'notifications-outline',
+      buttons: [
+        {
+          text: 'Ver',
+          handler: () => {
+            // Switch to pending tab
+            this.currentTab.set('pending');
+          }
+        }
+      ]
+    });
+    await toast.present();
+
+    // Refresh pending requests
+    await this.loadPendingRequests();
   }
 
   goBack() {

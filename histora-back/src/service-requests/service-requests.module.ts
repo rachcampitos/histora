@@ -9,6 +9,7 @@ import {
 import { Nurse, NurseSchema } from '../nurses/schema/nurse.schema';
 import { NursesModule } from '../nurses/nurses.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { TrackingModule } from '../tracking/tracking.module';
 import { User, UserSchema } from '../users/schema/user.schema';
 
 @Module({
@@ -20,6 +21,7 @@ import { User, UserSchema } from '../users/schema/user.schema';
     ]),
     NursesModule,
     NotificationsModule,
+    TrackingModule,
   ],
   controllers: [ServiceRequestsController],
   providers: [ServiceRequestsService],

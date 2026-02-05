@@ -19,6 +19,15 @@ export interface RequestStatusUpdate {
   estimatedArrival?: Date;
 }
 
+export interface NewRequestNotification {
+  requestId: string;
+  service: { name: string; category: string; price: number };
+  location: { address: string; district?: string };
+  requestedDate: Date;
+  patient?: { firstName?: string; lastName?: string };
+  timestamp: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,12 +38,14 @@ export class WebSocketService {
   private _isConnected = signal(false);
   private _nurseLocation = signal<LocationUpdate | null>(null);
   private _statusUpdate = signal<RequestStatusUpdate | null>(null);
+  private _newRequest = signal<NewRequestNotification | null>(null);
   private _connectionError = signal<string | null>(null);
 
   // Public readonly signals
   isConnected = this._isConnected.asReadonly();
   nurseLocation = this._nurseLocation.asReadonly();
   statusUpdate = this._statusUpdate.asReadonly();
+  newRequest = this._newRequest.asReadonly();
   connectionError = this._connectionError.asReadonly();
 
   /**
@@ -125,6 +136,15 @@ export class WebSocketService {
         updatedAt: new Date()
       });
     });
+
+    // Listen for new request notifications (for nurses)
+    this.socket.on('request:new', (data: NewRequestNotification) => {
+      this._newRequest.set({
+        ...data,
+        requestedDate: new Date(data.requestedDate),
+        timestamp: new Date(data.timestamp)
+      });
+    });
   }
 
   /**
@@ -205,7 +225,15 @@ export class WebSocketService {
       this._isConnected.set(false);
       this._nurseLocation.set(null);
       this._statusUpdate.set(null);
+      this._newRequest.set(null);
     }
+  }
+
+  /**
+   * Clear new request notification (after it's been handled)
+   */
+  clearNewRequest(): void {
+    this._newRequest.set(null);
   }
 
   /**
