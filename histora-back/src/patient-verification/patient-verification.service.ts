@@ -434,7 +434,8 @@ export class PatientVerificationService {
   }
 
   async canRequestService(patientId: string): Promise<{ allowed: boolean; reason?: string }> {
-    const verification = await this.getVerification(patientId);
+    // Use getOrCreate to handle patients without verification record
+    const verification = await this.getOrCreateVerification(patientId);
 
     if (verification.status === 'suspended') {
       return { allowed: false, reason: 'Cuenta suspendida' };

@@ -120,8 +120,11 @@ ion-card-title {
 // Services List
 .services-list {
   ion-item {
-    --padding-start: 0;
-    --inner-padding-end: 0;
+    // Restaurar padding interno adecuado (UX fix)
+    --padding-start: 16px;
+    --inner-padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
     margin-bottom: 8px;
     border-radius: 12px;
     border: 2px solid var(--ion-color-light);
@@ -133,6 +136,9 @@ ion-card-title {
     }
 
     ion-label {
+      // Espacio entre label y precio
+      margin-inline-end: 12px;
+
       h3 {
         font-weight: 600;
         margin-bottom: 4px;
@@ -145,7 +151,8 @@ ion-card-title {
     }
 
     ion-radio {
-      margin-right: 12px;
+      // Espacio entre radio y label (propiedad logica)
+      margin-inline-end: 12px;
     }
   }
 }
@@ -176,26 +183,37 @@ ion-card-title {
 
 // Location Section
 .location-toggle {
-  margin-bottom: 16px;
+  // Espaciado superior e inferior (UX fix)
+  margin-top: 16px;
+  margin-bottom: 20px;
+  // Padding horizontal para alinear con el contenido del card
+  padding: 0 4px;
 
   ion-segment {
     --background: var(--ion-color-light);
     border-radius: 12px;
+    // Padding interno del segment
+    padding: 4px;
 
     ion-segment-button {
       --border-radius: 10px;
       --indicator-color: var(--ion-color-primary);
       --color-checked: white;
+      // Altura minima para touch targets (Material Design: 48dp)
       min-height: 48px;
+      --padding-start: 12px;
+      --padding-end: 12px;
 
       ion-icon {
-        font-size: 18px;
+        font-size: 20px;
         margin-bottom: 4px;
       }
 
       ion-label {
-        font-size: 12px;
+        font-size: 13px;
+        font-weight: 500;
         text-transform: none;
+        margin-top: 2px;
       }
     }
   }
