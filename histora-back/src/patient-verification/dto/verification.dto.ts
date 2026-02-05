@@ -24,6 +24,32 @@ export class VerifyPhoneCodeDto {
   code: string;
 }
 
+// ==================== Email Verification ====================
+
+export class SendEmailCodeDto {
+  @ApiProperty({ example: 'user@example.com', description: 'Email address' })
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiPropertyOptional({ example: 'Juan', description: 'User name for email template' })
+  @IsString()
+  @IsOptional()
+  userName?: string;
+}
+
+export class VerifyEmailCodeDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({ example: '123456', description: '6-digit verification code' })
+  @IsString()
+  @Length(6, 6)
+  code: string;
+}
+
 // ==================== DNI Verification ====================
 
 export class UploadDniDto {

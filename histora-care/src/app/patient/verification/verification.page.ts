@@ -6,7 +6,7 @@ import {
   VerificationStatus
 } from '../../core/services/patient-verification.service';
 
-export type VerificationStep = 'intro' | 'phone' | 'dni' | 'selfie' | 'emergency-contacts' | 'complete';
+export type VerificationStep = 'intro' | 'email' | 'dni' | 'selfie' | 'emergency-contacts' | 'complete';
 
 interface StepInfo {
   id: VerificationStep;
@@ -46,11 +46,11 @@ export class VerificationPage implements OnInit {
     const s = this.status();
     return [
       {
-        id: 'phone' as VerificationStep,
-        title: 'Telefono',
-        description: 'Verifica tu numero de celular',
-        icon: 'call-outline',
-        completed: s?.phoneVerified ?? false,
+        id: 'email' as VerificationStep,
+        title: 'Correo',
+        description: 'Verifica tu correo electronico',
+        icon: 'mail-outline',
+        completed: s?.phoneVerified ?? false, // Uses phoneVerified flag (backend marks it when email is verified)
       },
       {
         id: 'dni' as VerificationStep,
@@ -129,7 +129,7 @@ export class VerificationPage implements OnInit {
   }
 
   startVerification() {
-    this.currentStep.set('phone');
+    this.currentStep.set('email');
   }
 
   goToStep(step: VerificationStep) {
@@ -182,7 +182,7 @@ export class VerificationPage implements OnInit {
     }
 
     // Go back to intro or previous step
-    const stepOrder: VerificationStep[] = ['intro', 'phone', 'dni', 'selfie', 'emergency-contacts'];
+    const stepOrder: VerificationStep[] = ['intro', 'email', 'dni', 'selfie', 'emergency-contacts'];
     const currentIndex = stepOrder.indexOf(step);
 
     if (currentIndex > 0) {

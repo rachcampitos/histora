@@ -184,6 +184,85 @@ export class EmailProvider implements OnModuleInit {
     `;
   }
 
+  getVerificationCodeTemplate(data: { userName: string; code: string; expiresIn: string }): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Codigo de Verificacion - NurseLite</title>
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f0f9ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f0f9ff;">
+          <tr>
+            <td align="center" style="padding: 40px 20px;">
+              <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.12);">
+                <!-- Header -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%); padding: 40px; text-align: center; border-radius: 20px 20px 0 0;">
+                    <h1 style="color: white; margin: 0; font-size: 28px;">NurseLite</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 14px;">Enfermeria a domicilio</p>
+                  </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 48px 50px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 50%; display: inline-block; line-height: 80px; margin-bottom: 24px;">
+                      <span style="font-size: 36px;">✉️</span>
+                    </div>
+
+                    <h2 style="color: #0f172a; margin: 0 0 16px; font-size: 24px;">
+                      Verifica tu correo electronico
+                    </h2>
+
+                    <p style="color: #64748b; font-size: 16px; line-height: 1.7; margin: 0 0 32px;">
+                      Hola <strong>${data.userName}</strong>,<br>
+                      Usa el siguiente codigo para verificar tu cuenta:
+                    </p>
+
+                    <!-- Code Box -->
+                    <div style="background: #f8fafc; border: 2px dashed #0891b2; border-radius: 12px; padding: 24px; margin-bottom: 32px;">
+                      <p style="font-size: 40px; font-weight: 700; letter-spacing: 8px; color: #0891b2; margin: 0;">
+                        ${data.code}
+                      </p>
+                    </div>
+
+                    <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                      Este codigo expira en <strong>${data.expiresIn}</strong>
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Warning -->
+                <tr>
+                  <td style="padding: 0 50px 40px;">
+                    <div style="background: #fef3c7; border-radius: 12px; padding: 16px; text-align: center;">
+                      <p style="color: #92400e; font-size: 13px; margin: 0;">
+                        ⚠️ Si no solicitaste este codigo, ignora este correo.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="border-top: 1px solid #e2e8f0; padding: 24px; text-align: center;">
+                    <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                      © ${new Date().getFullYear()} NurseLite. Todos los derechos reservados.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+  }
+
   getPasswordResetTemplate(data: { userName: string; resetLink: string; expiresIn: string }): string {
     return `
       <!DOCTYPE html>

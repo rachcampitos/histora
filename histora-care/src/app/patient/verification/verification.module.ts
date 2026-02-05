@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { VerificationRoutingModule } from './verification-routing.module';
 import { VerificationPage } from './verification.page';
 import { PhoneStepComponent } from './components/phone-step/phone-step.component';
+import { EmailStepComponent } from './components/email-step/email-step.component';
 import { DniStepComponent } from './components/dni-step/dni-step.component';
 import { SelfieStepComponent } from './components/selfie-step/selfie-step.component';
 import { EmergencyContactStepComponent } from './components/emergency-contact-step/emergency-contact-step.component';
@@ -21,6 +22,7 @@ import { VerificationCompleteComponent } from './components/verification-complet
   declarations: [
     VerificationPage,
     PhoneStepComponent,
+    EmailStepComponent,
     DniStepComponent,
     SelfieStepComponent,
     EmergencyContactStepComponent,

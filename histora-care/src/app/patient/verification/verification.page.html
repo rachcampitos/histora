@@ -106,19 +106,19 @@
       </div>
     }
 
-    <!-- Phone Step -->
-    @if (currentStep() === 'phone') {
-      <app-phone-step
-        (completed)="onStepComplete('phone')"
+    <!-- Email Step -->
+    @if (currentStep() === 'email') {
+      <app-email-step
+        (completed)="onStepComplete('email')"
         (skip)="goToStep('dni')">
-      </app-phone-step>
+      </app-email-step>
     }
 
     <!-- DNI Step -->
     @if (currentStep() === 'dni') {
       <app-dni-step
         (completed)="onStepComplete('dni')"
-        (back)="goToStep('phone')">
+        (back)="goToStep('email')">
       </app-dni-step>
     }
 

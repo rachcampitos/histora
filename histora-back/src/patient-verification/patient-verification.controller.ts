@@ -4,6 +4,8 @@ import { PatientVerificationService } from './patient-verification.service';
 import {
   SendPhoneCodeDto,
   VerifyPhoneCodeDto,
+  SendEmailCodeDto,
+  VerifyEmailCodeDto,
   UploadDniDto,
   UploadSelfieDto,
   VerifyPaymentMethodDto,
@@ -62,6 +64,28 @@ export class PatientVerificationController {
     @Body() dto: VerifyPhoneCodeDto,
   ) {
     return this.verificationService.verifyPhoneCode(user.userId, dto);
+  }
+
+  @Post('email/send')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send email verification code' })
+  @ApiResponse({ status: 200, description: 'Code sent to email' })
+  async sendEmailCode(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() dto: SendEmailCodeDto,
+  ) {
+    return this.verificationService.sendEmailCode(user.userId, dto);
+  }
+
+  @Post('email/verify')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify email code' })
+  @ApiResponse({ status: 200, description: 'Email verified' })
+  async verifyEmailCode(
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() dto: VerifyEmailCodeDto,
+  ) {
+    return this.verificationService.verifyEmailCode(user.userId, dto);
   }
 
   @Post('dni')
