@@ -37,6 +37,6 @@ import { WebPushController } from './web-push.controller';
     WebPushProvider,
     WebPushService,
   ],
-  exports: [NotificationsService, NotificationQueueService, WebPushService],
+  exports: [NotificationsService, NotificationQueueService, WebPushService, SmsProvider],
 })
 export class NotificationsModule {}

@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PatientVerification, PatientVerificationDocument } from './schema/patient-verification.schema';
@@ -16,15 +16,19 @@ import {
   VerificationStatusDto,
   PatientProfileForNurseDto,
 } from './dto/verification.dto';
+import { SmsProvider } from '../notifications/providers/sms.provider';
 
 @Injectable()
 export class PatientVerificationService {
+  private readonly logger = new Logger(PatientVerificationService.name);
+
   // In-memory store for verification codes (use Redis in production)
   private verificationCodes: Map<string, { code: string; expiresAt: Date }> = new Map();
 
   constructor(
     @InjectModel(PatientVerification.name)
     private verificationModel: Model<PatientVerificationDocument>,
+    private smsProvider: SmsProvider,
   ) {}
 
   // ==================== Initialization ====================
@@ -56,9 +60,30 @@ export class PatientVerificationService {
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
     this.verificationCodes.set(`${patientId}:${dto.phone}`, { code, expiresAt });
 
-    // TODO: Integrate with Twilio to send SMS
-    // For now, log the code (remove in production)
-    console.log(`[DEV] Verification code for ${dto.phone}: ${code}`);
+    // Format phone number with country code for Peru
+    const formattedPhone = dto.phone.startsWith('+') ? dto.phone : `+51${dto.phone}`;
+
+    // Send SMS with verification code
+    try {
+      const message = this.smsProvider.getVerificationCodeMessage(code);
+      const result = await this.smsProvider.send({
+        to: formattedPhone,
+        message,
+      });
+
+      if (!result.success) {
+        this.logger.error(`Failed to send SMS to ${formattedPhone}: ${result.error}`);
+        // Don't throw - still allow verification via console log in dev
+      } else {
+        this.logger.log(`Verification SMS sent to ${formattedPhone}`);
+      }
+    } catch (error) {
+      this.logger.error(`SMS sending failed: ${error.message}`);
+      // Continue - code is still stored and can be verified
+    }
+
+    // Also log for development (remove in production)
+    this.logger.debug(`[DEV] Verification code for ${dto.phone}: ${code}`);
 
     return { message: 'Código de verificación enviado' };
   }
