@@ -23,8 +23,9 @@ import { CulqiProvider } from './providers/culqi.provider';
 import { ServiceRequest, ServiceRequestDocument } from '../service-requests/schema/service-request.schema';
 
 // Commission rates
-const COMMISSION_RATE = 0.15; // 15% platform commission
-const CULQI_RATE = 0.0399; // 3.99% + IGV for cards
+// Modelo de suscripcion: enfermera recibe 100% del pago, paga suscripcion mensual
+const COMMISSION_RATE = 0; // 0% platform commission - enfermera recibe 100%
+const CULQI_RATE = 0.0399; // 3.99% + IGV for cards (solo aplica si paga con tarjeta)
 const MIN_CULQI_FEE = 350; // S/. 3.50 minimum fee in cents
 
 @Injectable()
@@ -46,7 +47,8 @@ export class ServicePaymentsService {
   }
 
   // Calculate payment breakdown
-  private calculatePaymentBreakdown(servicePrice: number): {
+  // Modelo de suscripcion: enfermera recibe 100% del pago del servicio
+  private calculatePaymentBreakdown(servicePrice: number, method?: string): {
     amount: number;
     serviceFee: number;
     culqiFee: number;
@@ -55,13 +57,20 @@ export class ServicePaymentsService {
     // Service price is already in cents
     const amount = servicePrice;
 
-    // Calculate fees
-    const serviceFee = Math.round(amount * COMMISSION_RATE);
-    let culqiFee = Math.round(amount * CULQI_RATE * 1.18); // Include IGV
-    culqiFee = Math.max(culqiFee, MIN_CULQI_FEE);
+    // Sin comision de plataforma - modelo de suscripcion
+    const serviceFee = 0;
 
-    // Nurse earnings
-    const nurseEarnings = amount - serviceFee - culqiFee;
+    // Culqi fee solo aplica para pagos con tarjeta
+    // En modelo de suscripcion, este fee es absorbido por la plataforma
+    // o se agrega al monto del paciente (implementar en futuro)
+    let culqiFee = 0;
+    if (method === 'card') {
+      culqiFee = Math.round(amount * CULQI_RATE * 1.18); // Include IGV
+      culqiFee = Math.max(culqiFee, MIN_CULQI_FEE);
+    }
+
+    // Enfermera recibe 100% del monto del servicio
+    const nurseEarnings = amount;
 
     return {
       amount,
@@ -123,7 +132,7 @@ export class ServicePaymentsService {
 
       // Calculate amounts
       const servicePrice = Math.round(serviceRequest.service.price * 100); // Convert to cents
-      const breakdown = this.calculatePaymentBreakdown(servicePrice);
+      const breakdown = this.calculatePaymentBreakdown(servicePrice, dto.method);
 
       // Create payment record
       const payment = await this.paymentModel.create({

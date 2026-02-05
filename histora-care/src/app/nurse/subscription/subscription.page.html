@@ -23,8 +23,8 @@
     @if (currentStep() === 'plans') {
       <div class="plans-container">
         <div class="plans-header">
-          <h1>Crece profesionalmente con Histora Care</h1>
-          <p>Elige el plan que mejor se adapte a tu practica profesional</p>
+          <h1>Construye tu practica independiente</h1>
+          <p>Elige el plan que impulse tu crecimiento profesional</p>
         </div>
 
         <!-- Current Plan Badge -->
@@ -88,9 +88,9 @@
                 @if (currentPlan() === plan.id) {
                   <span>Plan actual</span>
                 } @else if (plan.id === 'free') {
-                  <span>Plan basico</span>
+                  <span>Plan inicial</span>
                 } @else {
-                  <span>Suscribirme</span>
+                  <span>Elegir plan</span>
                 }
               </ion-button>
             </div>
@@ -233,8 +233,8 @@
               <ion-spinner name="crescent" slot="start"></ion-spinner>
               <span>Enviando...</span>
             } @else {
-              <ion-icon name="send-outline" slot="start"></ion-icon>
-              <span>Enviar comprobante</span>
+              <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+              <span>Confirmar envio</span>
             }
           </ion-button>
           <ion-button expand="block" fill="outline" color="medium" (click)="goBackToPayment()" [disabled]="isUploading()">
@@ -256,7 +256,7 @@
           <ion-icon name="time-outline"></ion-icon>
         </div>
         <h1>Comprobante recibido</h1>
-        <p>Gracias por confiar en Histora Care. Estamos verificando tu pago.</p>
+        <p>Gracias por confiar en NurseLite. Estamos verificando tu pago.</p>
 
         <div class="status-card">
           <div class="status-item">
@@ -265,7 +265,7 @@
           </div>
           <div class="status-item">
             <span class="label">Monto:</span>
-            <span class="value">S/ {{ subscription().plan === 'pro' ? '29' : '99' }}.00</span>
+            <span class="value">S/ {{ subscription().plan === 'pro' ? '39' : '79' }}.00</span>
           </div>
           @if (subscription().paymentDate) {
             <div class="status-item">
@@ -320,7 +320,7 @@
 
         <div class="info-note">
           <ion-icon name="bulb-outline"></ion-icon>
-          <p><strong>Mientras tanto:</strong> Puedes seguir usando tu Plan Basico normalmente. Cuando activemos tu nuevo plan, los beneficios comenzaran de inmediato.</p>
+          <p><strong>Mientras tanto:</strong> Puedes seguir usando tu Plan Inicial normalmente. Cuando activemos tu nuevo plan, los beneficios comenzaran de inmediato.</p>
         </div>
 
         <div class="pending-actions">

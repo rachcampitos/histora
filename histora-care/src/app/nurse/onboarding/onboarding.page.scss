@@ -665,6 +665,15 @@ swiper-slide {
     }
   }
 
+  &.premium {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+
+    .plan-header .plan-name {
+      color: #f59e0b;
+    }
+  }
+
   .popular-badge {
     position: absolute;
     top: -10px;
@@ -908,6 +917,15 @@ swiper-slide {
 
       .plan-header .plan-name {
         color: #6bb5b3;
+      }
+    }
+
+    &.premium {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+
+      .plan-header .plan-name {
+        color: #fbbf24;
       }
     }
 
