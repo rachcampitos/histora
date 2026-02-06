@@ -1,9 +1,10 @@
 import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
+import { Router, CanActivateFn, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { PatientVerificationService } from '../services/patient-verification.service';
+import { VerificationContextService } from '../services/verification-context.service';
 import { VerificationRequiredModalComponent } from '../../shared/components/verification-required-modal/verification-required-modal.component';
 
 /**
@@ -11,9 +12,13 @@ import { VerificationRequiredModalComponent } from '../../shared/components/veri
  * If not verified, shows a modal prompting the user to verify.
  * Used on routes that require verified identity (request, checkout).
  */
-export const patientVerificationGuard: CanActivateFn = async () => {
+export const patientVerificationGuard: CanActivateFn = async (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
   const authService = inject(AuthService);
   const verificationService = inject(PatientVerificationService);
+  const verificationContext = inject(VerificationContextService);
   const modalCtrl = inject(ModalController);
   const router = inject(Router);
 
@@ -34,6 +39,13 @@ export const patientVerificationGuard: CanActivateFn = async () => {
     if (response.allowed) {
       return true;
     }
+
+    // Save context for returning after verification
+    const nurseId = route.paramMap.get('nurseId') || route.paramMap.get('id');
+    verificationContext.saveContext({
+      returnUrl: state.url,
+      nurseId: nurseId || undefined,
+    });
 
     // Show verification required modal
     const modal = await modalCtrl.create({

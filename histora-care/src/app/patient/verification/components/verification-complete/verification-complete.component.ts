@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { VerificationStatus } from '../../../../core/services/patient-verification.service';
+import { Component, EventEmitter, Output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { VerificationContextService } from '../../../../core/services/verification-context.service';
 
 @Component({
   selector: 'app-verification-complete',
@@ -9,32 +9,24 @@ import { VerificationStatus } from '../../../../core/services/patient-verificati
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VerificationCompleteComponent {
-  @Input() status: VerificationStatus | null = null;
   @Output() continue = new EventEmitter<void>();
+  @Output() viewProfile = new EventEmitter<void>();
 
-  get verificationLevel(): number {
-    return this.status?.verificationLevel ?? 1;
+  private contextService = inject(VerificationContextService);
+
+  get hasContext(): boolean {
+    return this.contextService.hasContext();
   }
 
-  get trustScore(): number {
-    return this.status?.trustScore ?? 50;
-  }
-
-  get badgeName(): string {
-    const level = this.verificationLevel;
-    if (level >= 2) return 'Verificado Premium';
-    if (level >= 1) return 'Verificado';
-    return 'Basico';
-  }
-
-  get badgeColor(): string {
-    const level = this.verificationLevel;
-    if (level >= 2) return 'gold';
-    if (level >= 1) return 'success';
-    return 'medium';
+  get ctaText(): string {
+    return this.contextService.getCTAText();
   }
 
   onContinue() {
     this.continue.emit();
+  }
+
+  goToProfile() {
+    this.viewProfile.emit();
   }
 }
