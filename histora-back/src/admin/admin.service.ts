@@ -14,6 +14,7 @@ import { ReniecUsage } from '../nurses/schema/reniec-usage.schema';
 import { ServiceRequest } from '../service-requests/schema/service-request.schema';
 import { PanicAlert, PanicAlertStatus, PanicAlertLevel } from '../safety/schema/panic-alert.schema';
 import { ServicePayment, ServicePaymentStatus } from '../service-payments/schema/service-payment.schema';
+import { PatientVerification } from '../patient-verification/schema/patient-verification.schema';
 import { CreateUserDto, UpdateUserDto, UserQueryDto } from './dto/admin-user.dto';
 import {
   NurseQueryDto,
@@ -45,6 +46,7 @@ export class AdminService {
     @InjectModel(ServiceRequest.name) private serviceRequestModel: Model<ServiceRequest>,
     @InjectModel(PanicAlert.name) private panicAlertModel: Model<PanicAlert>,
     @InjectModel(ServicePayment.name) private servicePaymentModel: Model<ServicePayment>,
+    @InjectModel(PatientVerification.name) private patientVerificationModel: Model<PatientVerification>,
     private readonly uploadsService: UploadsService,
   ) {}
 
@@ -1493,11 +1495,37 @@ export class AdminService {
       throw new ConflictException(`No se puede eliminar: tiene ${activeServices} servicio(s) activo(s)`);
     }
 
+    // Delete patient verification images from Cloudinary
+    const verification = await this.patientVerificationModel.findOne({ patientId: id });
+    if (verification) {
+      // Delete DNI photos
+      if (verification.dni?.frontPhotoUrl) {
+        await this.uploadsService.deleteUserAvatar(verification.dni.frontPhotoUrl).catch(() => {});
+      }
+      if (verification.dni?.backPhotoUrl) {
+        await this.uploadsService.deleteUserAvatar(verification.dni.backPhotoUrl).catch(() => {});
+      }
+      // Delete selfie photo
+      if (verification.selfie?.photoUrl) {
+        await this.uploadsService.deleteUserAvatar(verification.selfie.photoUrl).catch(() => {});
+      }
+
+      // Delete verification record
+      await this.patientVerificationModel.deleteOne({ patientId: id });
+      this.logger.log(`Deleted patient verification images for patient: ${id}`);
+    }
+
+    // Delete user avatar if exists
+    if (patient.avatar) {
+      await this.uploadsService.deleteUserAvatar(patient.avatar).catch(() => {});
+    }
+
     // Soft delete user
     await this.userModel.findByIdAndUpdate(id, {
       isDeleted: true,
       isActive: false,
       email: `deleted_${Date.now()}_${patient.email}`, // Free up email for reuse
+      avatar: null, // Clear avatar reference
     });
 
     this.logger.log(`Admin deleted patient: ${patient.email}`);

@@ -88,6 +88,28 @@ export class UploadsController {
     };
   }
 
+  @Post('selfie-photo')
+  @Roles(UserRole.PATIENT)
+  @ApiOperation({ summary: 'Upload selfie photo for patient verification' })
+  async uploadSelfiePhoto(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: UploadSelfieDto,
+  ): Promise<FileResponseDto> {
+    const result = await this.uploadsService.uploadPatientSelfie(
+      dto.imageData,
+      dto.mimeType || 'image/jpeg',
+      user.userId,
+      user.userId
+    );
+
+    return {
+      success: true,
+      url: result.url,
+      thumbnailUrl: result.thumbnailUrl,
+      publicId: result.publicId,
+    };
+  }
+
   // ============= NURSE UPLOADS =============
 
   @Post('nurse/selfie')

@@ -316,6 +316,21 @@ ion-button.loading {
   pointer-events: none;
 }
 
+/* Ensure solid buttons with gradient backgrounds have white text */
+ion-button:not([fill="outline"]):not([fill="clear"]) {
+  --color: white;
+}
+
+/* Primary button class for consistent styling */
+.primary-btn {
+  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+  --color: white;
+  --border-radius: 12px;
+  height: 52px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
 /* Error state for inputs */
 .input-error {
   --border-color: var(--ion-color-danger);
