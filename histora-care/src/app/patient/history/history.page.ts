@@ -168,11 +168,10 @@ export class HistoryPage implements OnInit {
         serviceRequestId: request._id,
         nurseName
       },
-      // Bottom sheet: 100% to test full height
-      breakpoints: [0, 1],
-      initialBreakpoint: 1,
-      handle: false, // Component has its own handle
-      cssClass: 'review-modal-compact'
+      // Modal flotante centrado - mejor para formularios
+      cssClass: 'review-modal-floating',
+      backdropDismiss: true,
+      showBackdrop: true
     });
 
     await modal.present();
