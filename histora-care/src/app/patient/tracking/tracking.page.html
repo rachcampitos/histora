@@ -349,7 +349,7 @@
         @switch (currentStatus()) {
         @case ('accepted') {
         <ion-icon name="checkmark-circle"></ion-icon>
-        <span>{{ nurse()?.firstName || 'La enfermera' }} acepto tu solicitud. Se esta preparando para salir.</span>
+        <span>{{ nurse()?.firstName || 'La enfermera' }} acepto tu solicitud con gusto.</span>
         }
         @case ('on_the_way') {
         <ion-icon name="navigate"></ion-icon>
@@ -375,8 +375,8 @@
       <div class="contextual-tip" role="note">
         @switch (currentStatus()) {
         @case ('accepted') {
-        <ion-icon name="bulb-outline"></ion-icon>
-        <span>{{ nurse()?.firstName }} vio tu solicitud y la acepto. Esta preparandose para salir.</span>
+        <ion-icon name="time-outline"></ion-icon>
+        <span>Estara lista pronto. Ten a la mano tu DNI y cualquier documento medico relevante.</span>
         }
         @case ('on_the_way') {
         <ion-icon name="bulb-outline"></ion-icon>

@@ -370,7 +370,8 @@ export class ServiceRequestsService {
       this.logger.error(`Failed to send acceptance notification: ${error.message}`);
     }
 
-    return savedRequest;
+    // Return populated request for frontend
+    return this.findById(id);
   }
 
   async reject(

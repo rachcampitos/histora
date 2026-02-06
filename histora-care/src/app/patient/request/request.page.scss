@@ -206,15 +206,14 @@ ion-card-title {
 
       ion-icon {
         font-size: 20px;
-        margin-bottom: 6px;
-        margin-inline-end: 6px; // Extra horizontal spacing
+        margin-top: 6px; // Espacio superior hacia el borde
       }
 
       ion-label {
         font-size: 13px;
         font-weight: 500;
         text-transform: none;
-        margin-top: 4px;
+        margin-bottom: 6px; // Espacio inferior hacia el borde
       }
     }
   }
