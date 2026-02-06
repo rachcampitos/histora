@@ -83,6 +83,7 @@
                 @for (service of availableServices(); track service._id) {
                   <ion-item
                     button
+                    detail="false"
                     [class.selected]="selectedServiceId() === service._id"
                     (click)="selectedServiceId.set(service._id || '')"
                   >
