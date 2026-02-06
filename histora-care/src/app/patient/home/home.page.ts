@@ -1,9 +1,10 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
+import { WebSocketService } from '../../core/services/websocket.service';
 import { ServiceRequest } from '../../core/models';
 
 @Component({
@@ -13,25 +14,47 @@ import { ServiceRequest } from '../../core/models';
   styleUrls: ['./home.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
   private authService = inject(AuthService);
   private serviceRequestService = inject(ServiceRequestService);
   private productTourService = inject(ProductTourService);
+  private wsService = inject(WebSocketService);
 
   user = this.authService.user;
   activeRequest = signal<ServiceRequest | null>(null);
   recentNurses = signal<{ nurseId: string; firstName: string; lastName: string; avatar?: string }[]>([]);
   isLoading = signal(false);
 
-  ngOnInit() {
+  constructor() {
+    // React to WebSocket status updates
+    effect(() => {
+      const statusUpdate = this.wsService.statusUpdate();
+      if (statusUpdate) {
+        // Refresh active request when status changes
+        this.loadActiveRequest();
+      }
+    });
+  }
+
+  async ngOnInit() {
     // Clear previous data before loading (in case user switched accounts)
     this.activeRequest.set(null);
     this.recentNurses.set([]);
 
+    // Connect to WebSocket for real-time updates
+    const token = await this.authService.getToken();
+    if (token) {
+      this.wsService.connect(token);
+    }
+
     this.loadActiveRequest();
     this.loadRecentNurses();
+  }
+
+  ngOnDestroy() {
+    // Don't disconnect WebSocket here - it's shared across the app
   }
 
   ionViewWillEnter() {
@@ -66,8 +89,9 @@ export class HomePage implements OnInit {
       const requests = await this.serviceRequestService.getMyRequests().toPromise();
 
       if (requests && requests.length > 0) {
-        // Find active requests (accepted, on_the_way, arrived, in_progress)
-        const activeStatuses = ['accepted', 'on_the_way', 'arrived', 'in_progress'];
+        // Find active requests (pending, accepted, on_the_way, arrived, in_progress)
+        // Include pending so user knows they have a request waiting for confirmation
+        const activeStatuses = ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress'];
         const activeRequest = requests.find(req => activeStatuses.includes(req.status));
         this.activeRequest.set(activeRequest || null);
       } else {

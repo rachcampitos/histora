@@ -787,6 +787,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    */
   private async showError(message: string) {
     const alert = await this.alertController.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Error',
       message,
       buttons: ['OK']
@@ -799,6 +800,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    */
   private async showInfo(message: string) {
     const alert = await this.alertController.create({
+      cssClass: 'histora-alert histora-alert-primary',
       header: 'Información',
       message,
       buttons: ['OK']

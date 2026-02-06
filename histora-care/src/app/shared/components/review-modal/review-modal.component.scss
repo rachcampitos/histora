@@ -23,9 +23,7 @@ ion-header {
   flex-direction: column;
   gap: 12px; // Reducido de 16px para mejor uso del espacio
   padding: 0;
-  padding-bottom: 8px; // Reducido de 16px
-  // Eliminado min-height fijo que causa problemas con keyboard
-  height: auto;
+  // Sin padding-bottom extra - el contenido termina con el textarea
 }
 
 // Nurse info section
@@ -112,7 +110,7 @@ ion-header {
 
 // Comment section
 .comment-section {
-  flex: 1; // Permitir que crezca/encoja segun espacio disponible
+  // No usar flex: 1, evita espacio extra debajo del textarea
 
   .comment-label {
     display: block;
@@ -178,7 +176,6 @@ ion-footer {
 :host-context(body.keyboard-visible) {
   .review-container {
     gap: 8px;
-    padding-bottom: 4px;
   }
 
   .rating-section {
@@ -339,7 +336,6 @@ ion-footer {
 @media (max-height: 700px) {
   .review-container {
     gap: 10px;
-    padding-bottom: 8px;
   }
 
   .nurse-info {
@@ -399,7 +395,6 @@ ion-footer {
 @media (max-height: 600px) {
   .review-container {
     gap: 8px;
-    padding-bottom: 4px;
   }
 
   .nurse-info {
