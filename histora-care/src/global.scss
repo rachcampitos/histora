@@ -1673,31 +1673,39 @@ body.dark ion-modal.verification-modal {
 }
 
 // ==========================================================================
-// Review Modal - Compact Bottom Sheet Style
+// Review Modal - Floating Centered Style
 // ==========================================================================
-ion-modal.review-modal-compact {
-  --border-radius: 20px 20px 0 0;
-  --background: var(--histora-card-bg, #ffffff);
+ion-modal.review-modal-floating {
+  --width: calc(100% - 32px);
   --height: auto;
-  --max-height: 100%;
+  --max-height: 90vh;
+  --max-width: 400px;
+  --border-radius: 20px;
+  --background: var(--histora-card-bg, #ffffff);
+  --box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
   &::part(content) {
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
 
-  // Ensure proper backdrop
   &::part(backdrop) {
     opacity: 0.5;
   }
+
+  // Responsive para pantallas pequeñas
+  @media (max-height: 700px) {
+    --max-height: 95vh;
+    --border-radius: 16px;
+  }
 }
 
-body.ion-palette-dark ion-modal.review-modal-compact,
-body.dark ion-modal.review-modal-compact {
+body.ion-palette-dark ion-modal.review-modal-floating,
+body.dark ion-modal.review-modal-floating {
   --background: var(--histora-card-bg-dark, #1e293b);
 
   &::part(content) {
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-    border-top: 1px solid var(--histora-border-dark, #334155);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--histora-border-dark, #334155);
   }
 }

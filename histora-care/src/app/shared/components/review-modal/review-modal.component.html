@@ -1,10 +1,12 @@
-<div class="review-sheet">
-  <!-- Handle bar for bottom sheet feel -->
-  <div class="sheet-handle"></div>
+<div class="review-modal">
+  <!-- Close button -->
+  <button class="close-btn" (click)="skip()" [disabled]="isSubmitting()">
+    <ion-icon name="close"></ion-icon>
+  </button>
 
-  <!-- Compact header with nurse name -->
-  <div class="sheet-header">
-    <h2 class="sheet-title">
+  <!-- Header with nurse name -->
+  <div class="modal-header">
+    <h2 class="modal-title">
       @if (nurseName) {
         Como fue tu servicio con {{ nurseName }}?
       } @else {
