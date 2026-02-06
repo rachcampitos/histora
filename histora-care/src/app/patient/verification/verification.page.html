@@ -141,8 +141,8 @@
     <!-- Complete Step -->
     @if (currentStep() === 'complete') {
       <app-verification-complete
-        [status]="status()"
-        (continue)="onVerificationComplete()">
+        (continue)="onVerificationComplete()"
+        (viewProfile)="onViewProfile()">
       </app-verification-complete>
     }
   }

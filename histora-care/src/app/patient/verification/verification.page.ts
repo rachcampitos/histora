@@ -5,6 +5,7 @@ import {
   PatientVerificationService,
   VerificationStatus
 } from '../../core/services/patient-verification.service';
+import { VerificationContextService } from '../../core/services/verification-context.service';
 
 export type VerificationStep = 'intro' | 'email' | 'dni' | 'selfie' | 'emergency-contacts' | 'complete';
 
@@ -28,6 +29,7 @@ export class VerificationPage implements OnInit {
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
   private verificationService = inject(PatientVerificationService);
+  private contextService = inject(VerificationContextService);
 
   // State signals
   currentStep = signal<VerificationStep>('intro');
@@ -165,7 +167,22 @@ export class VerificationPage implements OnInit {
   }
 
   onVerificationComplete() {
-    this.router.navigate(['/patient/tabs/home']);
+    // Check if there's a saved context to return to
+    const context = this.contextService.getContext();
+
+    if (context?.returnUrl) {
+      // Clear the context and navigate back to where the user was
+      this.contextService.clearContext();
+      this.router.navigateByUrl(context.returnUrl);
+    } else {
+      // No context, go to search (more useful than dashboard)
+      this.router.navigate(['/patient/tabs/search']);
+    }
+  }
+
+  onViewProfile() {
+    this.contextService.clearContext();
+    this.router.navigate(['/patient/tabs/profile']);
   }
 
   goBack() {
