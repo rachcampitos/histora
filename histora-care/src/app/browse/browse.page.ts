@@ -295,7 +295,7 @@ export class BrowsePage implements OnInit, AfterViewInit, OnDestroy {
     // Check if user is authenticated
     const isAuth = this.authService.isAuthenticated();
     if (isAuth) {
-      this.router.navigate(['/patient/search'], { queryParams: { nurseId } });
+      this.router.navigate(['/patient/search'], { queryParams: { nurseId, origin: 'browse' } });
     } else {
       await this.promptRegistration('ver el perfil completo');
     }

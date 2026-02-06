@@ -56,6 +56,10 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   showReviewModal = signal(false);
   copiedPayment = signal<'yape' | 'plin' | null>(null);
 
+  // Alternative nurses (shown when rejected)
+  alternativeNurses = signal<NurseInfo[]>([]);
+  isLoadingAlternatives = signal(false);
+
   // Development mode flag
   private isDevelopment = !environment.production;
   private hasRealNurseLocation = false;
@@ -312,6 +316,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
           });
         }
         this.isLoading.set(false);
+        // Load alternative nurses
+        this.loadAlternativeNurses(request);
         return;
       }
 
@@ -709,6 +715,64 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Load alternative nurses for rejected request
+   */
+  private async loadAlternativeNurses(request: ServiceRequest) {
+    if (!request.location?.coordinates) {
+      console.log('[TRACKING] No location available for alternatives');
+      return;
+    }
+
+    this.isLoadingAlternatives.set(true);
+
+    try {
+      const [lng, lat] = request.location.coordinates;
+      const category = request.service?.category;
+
+      // Fetch nearby nurses (excluding the one who rejected)
+      const response = await this.nurseApiService.searchNurses({
+        latitude: lat,
+        longitude: lng,
+        radius: 15, // 15km radius
+        category: category,
+        limit: 3 // Show top 3 alternatives
+      }).toPromise();
+
+      if (response?.nurses) {
+        // Filter out the nurse who rejected the request
+        const alternatives = response.nurses
+          .filter((n: { _id: string }) => n._id !== request.nurseId)
+          .slice(0, 3)
+          .map((n: { _id: string; user?: { firstName?: string; lastName?: string; avatar?: string; phone?: string }; averageRating?: number; totalReviews?: number }) => ({
+            id: n._id,
+            firstName: n.user?.firstName || '',
+            lastName: n.user?.lastName || '',
+            avatar: n.user?.avatar,
+            phone: n.user?.phone,
+            rating: n.averageRating || 0,
+            totalReviews: n.totalReviews || 0
+          }));
+
+        this.alternativeNurses.set(alternatives);
+      }
+    } catch (error) {
+      console.error('[TRACKING] Error loading alternatives:', error);
+      // Don't show error - alternatives are optional
+    } finally {
+      this.isLoadingAlternatives.set(false);
+    }
+  }
+
+  /**
+   * Request service from an alternative nurse
+   */
+  requestAlternativeNurse(nurseId: string) {
+    this.router.navigate(['/patient/request'], {
+      queryParams: { nurseId }
+    });
+  }
+
+  /**
    * Show error alert
    */
   private async showError(message: string) {
@@ -858,5 +922,19 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    */
   shouldShowReview(): boolean {
     return this.currentStatus() === 'completed' && !this.hasReviewed();
+  }
+
+  /**
+   * Get human-readable label for time slot
+   */
+  getTimeSlotLabel(slot: string | undefined): string {
+    if (!slot) return '';
+    const labels: Record<string, string> = {
+      morning: 'Mañana (8:00 - 12:00)',
+      afternoon: 'Tarde (12:00 - 18:00)',
+      evening: 'Noche (18:00 - 21:00)',
+      flexible: 'Horario flexible'
+    };
+    return labels[slot] || slot;
   }
 }

@@ -397,7 +397,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
     this.isProcessing.set(false);
     this.currentStep.set('confirmed');
 
-    // Navigate to tracking after brief delay
+    // Navigate to tracking after user can read confirmation
     setTimeout(() => {
       const request = this.serviceRequest();
       if (request) {
@@ -405,14 +405,14 @@ export class CheckoutPage implements OnInit, OnDestroy {
       } else {
         this.router.navigate(['/patient/tabs/home']);
       }
-    }, 3000);
+    }, 5000); // 5 seconds to read the confirmation message
   }
 
   private handlePaymentSuccess() {
     this.isProcessing.set(false);
     this.currentStep.set('success');
 
-    // Navigate to tracking after brief delay
+    // Navigate to tracking after user can read confirmation
     setTimeout(() => {
       const request = this.serviceRequest();
       if (request) {
@@ -420,7 +420,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
       } else {
         this.router.navigate(['/patient/tabs/home']);
       }
-    }, 2000);
+    }, 4000); // 4 seconds to read the success message
   }
 
   private handlePaymentError(message: string) {

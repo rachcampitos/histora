@@ -347,8 +347,8 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   viewNurseProfile(nurseId: string) {
-    // Navigate outside tabs to the nurse profile view
-    this.router.navigate(['/patient/search'], { queryParams: { nurseId } });
+    // Navigate outside tabs to the nurse profile view with origin tracking
+    this.router.navigate(['/patient/search'], { queryParams: { nurseId, origin: 'map' } });
   }
 
   requestService(nurseId: string) {
