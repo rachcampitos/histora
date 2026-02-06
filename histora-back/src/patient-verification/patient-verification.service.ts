@@ -340,13 +340,13 @@ export class PatientVerificationService {
   // ==================== Level Management ====================
 
   private async checkAndUpgradeLevel(verification: PatientVerificationDocument): Promise<void> {
-    // Requirements for Level 1
+    // Requirements for Level 1 (identity verification)
+    // Payment verification happens at checkout, not during identity verification
     const level1Requirements =
       verification.phoneVerified &&
       verification.dni?.frontPhotoUrl &&
       verification.dni?.backPhotoUrl &&
       verification.selfie?.verified &&
-      verification.paymentMethod?.verified &&
       verification.emergencyContacts?.length >= 2;
 
     if (level1Requirements && verification.verificationLevel < 1) {
@@ -521,6 +521,15 @@ export class PatientVerificationService {
   async getVerificationStatus(patientId: string): Promise<VerificationStatusDto> {
     const verification = await this.getVerification(patientId);
 
+    // Auto-upgrade if user meets level 1 requirements but is still at level 0
+    // This handles users who completed verification before the bug fix
+    if (verification.verificationLevel < 1) {
+      await this.checkAndUpgradeLevel(verification);
+      if (verification.isModified()) {
+        await verification.save();
+      }
+    }
+
     return {
       verificationLevel: verification.verificationLevel,
       status: verification.status,
@@ -593,6 +602,15 @@ export class PatientVerificationService {
 
     if (verification.status === 'suspended') {
       return { allowed: false, reason: 'Cuenta suspendida' };
+    }
+
+    // Auto-upgrade if user meets level 1 requirements but is still at level 0
+    // This handles users who completed verification before the bug fix
+    if (verification.verificationLevel < 1) {
+      await this.checkAndUpgradeLevel(verification);
+      if (verification.isModified()) {
+        await verification.save();
+      }
     }
 
     if (verification.verificationLevel < 1) {
