@@ -1,76 +1,59 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Califica el servicio</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cancel()" [disabled]="isSubmitting()">
-        <ion-icon name="close" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<div class="review-sheet">
+  <!-- Handle bar for bottom sheet feel -->
+  <div class="sheet-handle"></div>
 
-<ion-content class="ion-padding" [scrollY]="false">
-  <div class="review-container">
-    <!-- Nurse Info (optional) -->
-    @if (nurseName) {
-      <div class="nurse-info">
-        <p class="nurse-label">Tu experiencia con</p>
-        <h2 class="nurse-name">{{ nurseName }}</h2>
-      </div>
-    }
-
-    <!-- Star Rating -->
-    <div class="rating-section">
-      <p class="rating-instruction">Selecciona tu calificacion</p>
-      <div class="stars-container">
-        @for (star of stars; track star) {
-          <button
-            class="star-button"
-            [class.filled]="isStarFilled(star)"
-            (click)="onStarClick(star)"
-            (mouseenter)="onStarHover(star)"
-            (mouseleave)="onStarLeave()"
-            [attr.aria-label]="star + ' estrella' + (star > 1 ? 's' : '')"
-            type="button">
-            <ion-icon [name]="getStarIcon(star)"></ion-icon>
-          </button>
-        }
-      </div>
-      @if (rating() > 0) {
-        <p class="rating-label">{{ getRatingLabel() }}</p>
+  <!-- Compact header with nurse name -->
+  <div class="sheet-header">
+    <h2 class="sheet-title">
+      @if (nurseName) {
+        Como fue tu servicio con {{ nurseName }}?
+      } @else {
+        Como fue tu servicio?
       }
-    </div>
-
-    <!-- Comment Section -->
-    <div class="comment-section">
-      <ion-label class="comment-label">Cuentanos tu experiencia (opcional)</ion-label>
-      <ion-textarea
-        class="comment-textarea"
-        [value]="comment()"
-        (ionInput)="updateComment($event)"
-        placeholder="Escribe tu comentario aqui..."
-        [rows]="3"
-        [maxlength]="500"
-        [counter]="true"
-        [disabled]="isSubmitting()">
-      </ion-textarea>
-    </div>
+    </h2>
   </div>
-</ion-content>
 
-<ion-footer class="ion-padding">
-  <div class="footer-buttons">
-    <ion-button
-      fill="outline"
-      expand="block"
-      (click)="cancel()"
+  <!-- Star Rating - Compact -->
+  <div class="rating-row">
+    @for (star of stars; track star) {
+      <button
+        class="star-btn"
+        [class.active]="isStarFilled(star)"
+        (click)="onStarClick(star)"
+        [attr.aria-label]="star + ' estrella' + (star > 1 ? 's' : '')"
+        type="button">
+        <ion-icon [name]="getStarIcon(star)"></ion-icon>
+      </button>
+    }
+  </div>
+
+  @if (rating() > 0) {
+    <p class="rating-text">{{ getRatingLabel() }}</p>
+  }
+
+  <!-- Comment - Compact textarea -->
+  <div class="comment-row">
+    <ion-textarea
+      class="comment-input"
+      [value]="comment()"
+      (ionInput)="updateComment($event)"
+      placeholder="Cuenta tu experiencia (opcional)"
+      [rows]="2"
+      [maxlength]="200"
       [disabled]="isSubmitting()">
-      Cancelar
-    </ion-button>
+    </ion-textarea>
+    <span class="char-count">{{ comment().length }}/200</span>
+  </div>
+
+  <!-- Actions - Single row -->
+  <div class="actions-row">
+    <button class="skip-btn" (click)="skip()" [disabled]="isSubmitting()">
+      Omitir por ahora
+    </button>
     <ion-button
-      expand="block"
-      (click)="submit()"
-      [disabled]="!canSubmit()">
+      class="submit-btn"
+      [disabled]="!canSubmit()"
+      (click)="submit()">
       @if (isSubmitting()) {
         <ion-spinner name="crescent"></ion-spinner>
       } @else {
@@ -78,4 +61,4 @@
       }
     </ion-button>
   </div>
-</ion-footer>
+</div>
