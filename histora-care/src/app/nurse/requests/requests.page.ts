@@ -407,17 +407,24 @@ export class RequestsPage implements OnInit, OnDestroy {
         this.showToast(`Estado actualizado: ${this.getStatusLabel(newStatus)}`, 'success');
 
         if (newStatus === 'completed') {
-          // Move to history
+          // Move to history - preserve patient data
           this.activeRequests.update(requests =>
             requests.filter(r => r._id !== request._id)
           );
-          this.historyRequests.update(requests => [updatedRequest, ...requests]);
+          this.historyRequests.update(requests => [{
+            ...updatedRequest,
+            patient: updatedRequest.patient || request.patient
+          }, ...requests]);
         } else {
-          // Update in active list
+          // Update in active list - preserve patient data and distance
           this.activeRequests.update(requests =>
             requests.map(r =>
               r._id === request._id
-                ? { ...updatedRequest, distance: (r as RequestWithDistance).distance }
+                ? {
+                    ...updatedRequest,
+                    patient: updatedRequest.patient || request.patient,
+                    distance: (r as RequestWithDistance).distance
+                  }
                 : r
             )
           );
