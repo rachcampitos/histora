@@ -38,9 +38,10 @@ export const patientVerificationGuard: CanActivateFn = async () => {
     // Show verification required modal
     const modal = await modalCtrl.create({
       component: VerificationRequiredModalComponent,
-      breakpoints: [0, 0.85],
-      initialBreakpoint: 0.85,
-      cssClass: 'verification-modal'
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
+      cssClass: 'verification-modal',
+      handle: false
     });
 
     await modal.present();
