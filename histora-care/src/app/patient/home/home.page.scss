@@ -1,6 +1,133 @@
 @use '../../../theme/design-tokens' as tokens;
 
 // ============================================================
+// ACTIVE SERVICE BANNER - Prominent when service is in progress
+// ============================================================
+.active-service-banner {
+  position: relative;
+  margin: tokens.$spacing-3;
+  padding: tokens.$spacing-4;
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 50%, #15803d 100%);
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+  border-radius: tokens.$radius-xl;
+  box-shadow:
+    0 4px 20px rgba(21, 128, 61, 0.4),
+    0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+  cursor: pointer;
+  overflow: hidden;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .banner-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-3;
+    position: relative;
+    z-index: 1;
+
+    .banner-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: tokens.$radius-lg;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      ion-icon {
+        font-size: 26px;
+        color: #ffffff;
+      }
+    }
+
+    .banner-info {
+      flex: 1;
+      min-width: 0;
+
+      h3 {
+        margin: 0;
+        font-size: tokens.$font-size-lg;
+        font-weight: tokens.$font-weight-bold;
+        color: #ffffff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      p {
+        margin: 4px 0 0;
+        font-size: tokens.$font-size-sm;
+        color: rgba(255, 255, 255, 0.9);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .banner-arrow {
+    font-size: tokens.$font-size-2xl;
+    color: rgba(255, 255, 255, 0.8);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  ion-badge {
+    position: absolute;
+    top: tokens.$spacing-2;
+    right: tokens.$spacing-2;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: tokens.$radius-full;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: tokens.$font-weight-semibold;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+// Pending status variant - amber/orange instead of green
+.active-service-banner.pending {
+  background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #d97706 100%);
+  box-shadow:
+    0 4px 20px rgba(217, 119, 6, 0.4),
+    0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+}
+
+// ============================================================
 // HERO SECTION - Compact with integrated greeting + CTA
 // ============================================================
 .hero-section {
@@ -163,106 +290,6 @@
   }
 }
 
-// ============================================================
-// ACTIVE REQUEST SECTION - Compact, only shown when exists
-// ============================================================
-.active-request-section {
-  padding: 0 tokens.$spacing-4;
-  margin-bottom: tokens.$spacing-5;
-
-  .request-card-compact {
-    margin: 0;
-    border-radius: tokens.$radius-lg;
-    border-left: 4px solid tokens.$color-success;
-    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
-
-    ion-card-content {
-      padding: tokens.$spacing-4;
-      display: flex;
-      flex-direction: column;
-      gap: tokens.$spacing-3;
-    }
-
-    .request-compact-layout {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: tokens.$spacing-3;
-    }
-
-    .nurse-compact {
-      display: flex;
-      align-items: center;
-      gap: tokens.$spacing-3;
-      flex: 1;
-      min-width: 0;
-
-      .nurse-avatar-compact {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        object-fit: cover;
-
-        &.nurse-avatar-placeholder {
-          background: var(--ion-color-light);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          ion-icon {
-            font-size: 20px;
-            color: var(--ion-color-medium);
-          }
-        }
-      }
-
-      .nurse-info-compact {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        min-width: 0;
-
-        .nurse-name-compact {
-          font-size: 15px;
-          font-weight: tokens.$font-weight-semibold;
-          color: var(--text-primary);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .service-name-compact {
-          font-size: 13px;
-          color: var(--text-secondary);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-    }
-
-    .status-badge-compact {
-      flex-shrink: 0;
-      font-size: 12px;
-      padding: 4px 10px;
-    }
-
-    .action-link-compact {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: tokens.$spacing-1;
-      font-size: 14px;
-      font-weight: tokens.$font-weight-semibold;
-      color: tokens.$color-brand-secondary;
-
-      ion-icon {
-        font-size: 16px;
-      }
-    }
-  }
-}
 
 // ============================================================
 // QUICK ACCESS HUB - 3 column grid
@@ -466,37 +493,6 @@
 
       .badge-content .badge-subtitle {
         color: rgba(255, 255, 255, 0.7);
-      }
-    }
-  }
-
-  .active-request-section {
-    .request-card-compact {
-      --background: #{tokens.$surface-dark-secondary};
-      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
-
-      .nurse-compact {
-        .nurse-avatar-placeholder {
-          background: tokens.$surface-dark-tertiary;
-
-          ion-icon {
-            color: tokens.$text-dark-tertiary;
-          }
-        }
-
-        .nurse-info-compact {
-          .nurse-name-compact {
-            color: tokens.$text-dark-primary;
-          }
-
-          .service-name-compact {
-            color: tokens.$text-dark-secondary;
-          }
-        }
-      }
-
-      .action-link-compact {
-        color: var(--ion-color-primary-tint);
       }
     }
   }

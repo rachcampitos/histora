@@ -63,6 +63,21 @@ export class DashboardPage implements OnInit, OnDestroy {
     return active.some(r => r.status === 'on_the_way');
   });
 
+  /**
+   * Get the most important active in-progress request for the prominent banner
+   * Priority: in_progress > on_the_way > arrived
+   */
+  getActiveInProgressRequest(): ServiceRequest | null {
+    const active = this.activeRequests();
+    const priorityOrder = ['in_progress', 'on_the_way', 'arrived'];
+
+    for (const status of priorityOrder) {
+      const found = active.find(r => r.status === status);
+      if (found) return found;
+    }
+    return null;
+  }
+
   constructor() {
     // React to active request changes
     effect(() => {
@@ -502,8 +517,15 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   viewRequest(request: ServiceRequest) {
-    // Navigate to requests page with active tab selected
-    const tab = ['accepted', 'on_the_way', 'arrived', 'in_progress'].includes(request.status)
+    // Navigate to active-service page for in-progress services
+    const activeStatuses = ['on_the_way', 'arrived', 'in_progress'];
+    if (activeStatuses.includes(request.status)) {
+      this.router.navigate(['/nurse/active-service', request._id]);
+      return;
+    }
+
+    // Navigate to requests page for other statuses
+    const tab = request.status === 'accepted'
       ? 'active'
       : request.status === 'pending'
         ? 'pending'

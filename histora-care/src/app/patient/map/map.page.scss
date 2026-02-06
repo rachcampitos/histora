@@ -261,11 +261,12 @@ $primary-gradient: var(--histora-gradient);
       ion-icon {
         font-size: tokens.$font-size-lg;
       }
+    }
 
-      // Primary button with solid background needs white text
-      &[color="primary"]:not([fill="outline"]):not([fill="clear"]) {
-        --color: white;
-      }
+    // Primary button with solid background needs white text
+    ion-button[color="primary"] {
+      --color: #ffffff !important;
+      color: #ffffff !important;
     }
   }
 }

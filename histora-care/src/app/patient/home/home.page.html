@@ -11,6 +11,41 @@
     </ion-toolbar>
   </ion-header>
 
+  <!-- Active Service Banner - Prominent when service is active -->
+  @if (activeRequest()) {
+    <div class="active-service-banner"
+         [class.pending]="activeRequest()!.status === 'pending'"
+         (click)="viewActiveRequest()">
+      @if (activeRequest()!.status !== 'pending') {
+        <div class="banner-pulse"></div>
+      }
+      <div class="banner-content">
+        <div class="banner-icon">
+          <ion-icon [name]="activeRequest()!.status === 'pending' ? 'time' :
+                           activeRequest()!.status === 'accepted' ? 'checkmark-circle' :
+                           activeRequest()!.status === 'on_the_way' ? 'navigate' :
+                           activeRequest()!.status === 'arrived' ? 'location' : 'medical'"></ion-icon>
+        </div>
+        <div class="banner-info">
+          @if (activeRequest()!.status === 'pending') {
+            <h3>Solicitud Pendiente</h3>
+            <p>Esperando confirmacion - {{ activeRequest()!.service.name }}</p>
+          } @else {
+            <h3>Servicio en Curso</h3>
+            <p>
+              {{ activeRequest()!.nurse?.firstName || 'Enfermera' }} -
+              {{ activeRequest()!.service.name }}
+            </p>
+          }
+        </div>
+        <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>
+      </div>
+      <ion-badge [color]="getStatusColor(activeRequest()!.status)">
+        {{ getStatusLabel(activeRequest()!.status) }}
+      </ion-badge>
+    </div>
+  }
+
   <!-- Hero Section - Compact -->
   <section class="hero-section" role="banner" id="tour-main-action">
     <div class="hero-content">
@@ -65,58 +100,6 @@
       </div>
     </div>
   </section>
-
-  <!-- Active Request Section - Only if exists -->
-  @if (activeRequest()) {
-    <section class="active-request-section" aria-labelledby="active-request-title">
-      <h3 id="active-request-title" class="visually-hidden">Solicitud en progreso</h3>
-
-      <ion-card
-        class="request-card-compact"
-        button
-        (click)="viewActiveRequest()"
-        role="button"
-        aria-label="Ver seguimiento de solicitud activa">
-        <ion-card-content>
-          <div class="request-compact-layout">
-            <!-- Avatar + Info -->
-            <div class="nurse-compact">
-              @if (activeRequest()!.nurse?.avatar) {
-                <img
-                  [src]="activeRequest()!.nurse!.avatar"
-                  class="nurse-avatar-compact"
-                  [alt]="(activeRequest()!.nurse?.firstName || 'Enfermera') + ' ' + (activeRequest()!.nurse?.lastName || '')"
-                  loading="lazy" />
-              } @else {
-                <div class="nurse-avatar-compact nurse-avatar-placeholder">
-                  <ion-icon name="person" aria-hidden="true"></ion-icon>
-                </div>
-              }
-
-              <div class="nurse-info-compact">
-                <span class="nurse-name-compact">
-                  {{ activeRequest()!.nurse?.firstName || 'Enfermera' }}
-                  {{ activeRequest()!.nurse?.lastName || '' }}
-                </span>
-                <span class="service-name-compact">{{ activeRequest()!.service.name }}</span>
-              </div>
-            </div>
-
-            <!-- Status Badge -->
-            <ion-badge [color]="getStatusColor(activeRequest()!.status)" class="status-badge-compact">
-              {{ getStatusLabel(activeRequest()!.status) }}
-            </ion-badge>
-          </div>
-
-          <!-- Action Link -->
-          <div class="action-link-compact">
-            <span>Ver seguimiento</span>
-            <ion-icon name="chevron-forward" aria-hidden="true"></ion-icon>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    </section>
-  }
 
   <!-- Quick Access Hub -->
   <nav id="tour-quick-actions" class="quick-access-hub" aria-label="Acciones rápidas">
