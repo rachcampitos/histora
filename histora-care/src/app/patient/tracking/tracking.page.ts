@@ -7,7 +7,7 @@ import { ReviewModalComponent, ReviewSubmitData } from '../../shared/components/
 import { environment } from '../../../environments/environment';
 import { firstValueFrom, interval, Subscription } from 'rxjs';
 
-type TrackingStatus = 'accepted' | 'on_the_way' | 'arrived' | 'in_progress' | 'completed';
+type TrackingStatus = 'pending' | 'accepted' | 'on_the_way' | 'arrived' | 'in_progress' | 'completed';
 
 interface NurseInfo {
   id: string;
@@ -730,27 +730,26 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       const category = request.service?.category;
 
       // Fetch nearby nurses (excluding the one who rejected)
-      const response = await this.nurseApiService.searchNurses({
+      const results = await this.nurseApiService.searchNearby({
         latitude: lat,
         longitude: lng,
-        radius: 15, // 15km radius
-        category: category,
-        limit: 3 // Show top 3 alternatives
+        radiusKm: 15,
+        ...(category && { category: category as 'injection' | 'wound_care' | 'catheter' | 'vital_signs' | 'iv_therapy' | 'blood_draw' | 'medication' | 'elderly_care' | 'post_surgery' | 'other' })
       }).toPromise();
 
-      if (response?.nurses) {
-        // Filter out the nurse who rejected the request
-        const alternatives = response.nurses
-          .filter((n: { _id: string }) => n._id !== request.nurseId)
+      if (results && results.length > 0) {
+        // Filter out the nurse who rejected and take top 3
+        const alternatives = results
+          .filter(r => r.nurse._id !== request.nurseId)
           .slice(0, 3)
-          .map((n: { _id: string; user?: { firstName?: string; lastName?: string; avatar?: string; phone?: string }; averageRating?: number; totalReviews?: number }) => ({
-            id: n._id,
-            firstName: n.user?.firstName || '',
-            lastName: n.user?.lastName || '',
-            avatar: n.user?.avatar,
-            phone: n.user?.phone,
-            rating: n.averageRating || 0,
-            totalReviews: n.totalReviews || 0
+          .map(r => ({
+            id: r.nurse._id || '',
+            firstName: r.nurse.user?.firstName || '',
+            lastName: r.nurse.user?.lastName || '',
+            avatar: r.nurse.user?.avatar,
+            phone: r.nurse.user?.phone,
+            rating: r.nurse.averageRating || 0,
+            totalReviews: r.nurse.totalReviews || 0
           }));
 
         this.alternativeNurses.set(alternatives);
