@@ -263,6 +263,7 @@
 .step-actions {
   margin-top: auto;
   padding-top: 24px;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
   display: flex;
   flex-direction: column;
   gap: 8px;

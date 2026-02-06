@@ -271,6 +271,57 @@ export class UploadsService {
     };
   }
 
+  // Upload patient selfie for verification
+  async uploadPatientSelfie(
+    imageData: string,
+    mimeType: string,
+    patientId: string,
+    userId: string
+  ): Promise<{ url: string; thumbnailUrl: string; publicId: string }> {
+    const base64Data = this.extractBase64Data(imageData);
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > this.maxImageSize) {
+      throw new BadRequestException('Image size exceeds 5MB limit');
+    }
+
+    const detectedMimeType = mimeType || this.detectMimeType(imageData);
+    if (!this.allowedImageTypes.includes(detectedMimeType)) {
+      throw new BadRequestException('Invalid image format. Allowed: JPEG, PNG, WebP');
+    }
+
+    const ext = detectedMimeType.split('/')[1];
+    const filename = `selfie_${patientId}_${Date.now()}.${ext}`;
+    const folder = `histora/patients/${patientId}/verification`;
+
+    // Upload with face detection for better cropping
+    const result = await this.cloudinaryProvider.uploadBase64(base64Data, filename, {
+      folder,
+      transformation: {
+        width: 600,
+        height: 600,
+        crop: 'fill',
+        gravity: 'face',
+        quality: 'auto',
+        format: 'auto',
+      },
+    });
+
+    if (!result.success) {
+      throw new BadRequestException(`Upload failed: ${result.error}`);
+    }
+
+    const thumbnailUrl = this.cloudinaryProvider.getThumbnailUrl(result.publicId!, 150);
+
+    this.logger.log(`Selfie uploaded for patient ${patientId}`);
+
+    return {
+      url: result.secureUrl!,
+      thumbnailUrl,
+      publicId: result.publicId!,
+    };
+  }
+
   // Upload patient DNI photo for verification
   async uploadPatientDniPhoto(
     imageData: string,

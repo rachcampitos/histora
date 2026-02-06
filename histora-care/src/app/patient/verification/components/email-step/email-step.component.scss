@@ -189,6 +189,7 @@
 .step-actions {
   margin-top: auto;
   padding-top: 24px;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
 
   .primary-btn {
     --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);

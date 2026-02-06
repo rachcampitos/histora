@@ -12,6 +12,7 @@ import { ReniecUsage, ReniecUsageSchema } from '../nurses/schema/reniec-usage.sc
 import { ServiceRequest, ServiceRequestSchema } from '../service-requests/schema/service-request.schema';
 import { PanicAlert, PanicAlertSchema } from '../safety/schema/panic-alert.schema';
 import { ServicePayment, ServicePaymentSchema } from '../service-payments/schema/service-payment.schema';
+import { PatientVerification, PatientVerificationSchema } from '../patient-verification/schema/patient-verification.schema';
 import { UploadsModule } from '../uploads/uploads.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { UploadsModule } from '../uploads/uploads.module';
       { name: ServiceRequest.name, schema: ServiceRequestSchema },
       { name: PanicAlert.name, schema: PanicAlertSchema },
       { name: ServicePayment.name, schema: ServicePaymentSchema },
+      { name: PatientVerification.name, schema: PatientVerificationSchema },
     ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
