@@ -1,4 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { ApiService } from './api.service';
+import { firstValueFrom } from 'rxjs';
 
 export interface NurseOnboardingState {
   completedAt: string | null;
@@ -12,7 +14,13 @@ export interface NurseOnboardingState {
   };
 }
 
-const STORAGE_KEY = 'nurselite_nurse_onboarding';
+interface OnboardingStatusResponse {
+  onboardingCompleted: boolean;
+  onboardingCompletedAt?: string;
+  onboardingVersion?: string;
+}
+
+const ONBOARDING_VERSION = '1.0.0';
 const DEFAULT_STATE: NurseOnboardingState = {
   completedAt: null,
   currentStep: 0,
@@ -29,6 +37,7 @@ const DEFAULT_STATE: NurseOnboardingState = {
   providedIn: 'root',
 })
 export class NurseOnboardingService {
+  private api = inject(ApiService);
   private state = signal<NurseOnboardingState>(DEFAULT_STATE);
   private initialized = false;
 
@@ -48,25 +57,43 @@ export class NurseOnboardingService {
     if (this.initialized) return;
 
     try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState) {
-        const parsed = JSON.parse(savedState);
-        this.state.set({ ...DEFAULT_STATE, ...parsed });
+      // Load onboarding status from backend
+      const response = await firstValueFrom(
+        this.api.get<OnboardingStatusResponse>('/users/me/onboarding')
+      );
+
+      if (response?.onboardingCompleted) {
+        this.state.set({
+          ...DEFAULT_STATE,
+          completedAt: response.onboardingCompletedAt || new Date().toISOString(),
+        });
       }
     } catch (e) {
-      console.error('Error loading nurse onboarding state:', e);
+      console.error('Error loading nurse onboarding state from API:', e);
+      // On error, assume not completed (will show onboarding)
     }
 
     this.initialized = true;
   }
 
   async completeOnboarding(): Promise<void> {
-    const newState: NurseOnboardingState = {
-      ...this.state(),
-      completedAt: new Date().toISOString(),
-    };
-    this.state.set(newState);
-    this.saveState(newState);
+    try {
+      // Save to backend
+      await firstValueFrom(
+        this.api.patch<{ success: boolean }>('/users/me/onboarding/complete', {
+          version: ONBOARDING_VERSION,
+        })
+      );
+
+      const newState: NurseOnboardingState = {
+        ...this.state(),
+        completedAt: new Date().toISOString(),
+      };
+      this.state.set(newState);
+    } catch (e) {
+      console.error('Error saving onboarding completion to API:', e);
+      throw e;
+    }
   }
 
   async setCurrentStep(step: number): Promise<void> {
@@ -75,7 +102,7 @@ export class NurseOnboardingService {
       currentStep: step,
     };
     this.state.set(newState);
-    this.saveState(newState);
+    // Note: currentStep is not persisted to backend, only locally during session
   }
 
   async markSkippedSetup(): Promise<void> {
@@ -84,7 +111,7 @@ export class NurseOnboardingService {
       skippedSetup: true,
     };
     this.state.set(newState);
-    this.saveState(newState);
+    // Note: skippedSetup is not persisted to backend
   }
 
   async updateChecklistItem(
@@ -99,24 +126,17 @@ export class NurseOnboardingService {
       },
     };
     this.state.set(newState);
-    this.saveState(newState);
+    // Note: checklist items are not persisted to backend
   }
 
   async resetOnboarding(): Promise<void> {
     this.state.set(DEFAULT_STATE);
-    localStorage.removeItem(STORAGE_KEY);
     this.initialized = false;
+    // Note: This only resets local state, backend state remains
+    // To reset backend state, a new endpoint would be needed
   }
 
   getState(): NurseOnboardingState {
     return this.state();
-  }
-
-  private saveState(state: NurseOnboardingState): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      console.error('Error saving nurse onboarding state:', e);
-    }
   }
 }
