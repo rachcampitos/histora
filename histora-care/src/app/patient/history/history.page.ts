@@ -429,3 +429,4 @@ export class HistoryPage implements OnInit {
     this.router.navigate(['/patient/tabs/map']);
   }
 }
+
