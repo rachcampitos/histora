@@ -49,6 +49,40 @@ export class UsersController {
   }
 
   // ============================================================
+  // PRODUCT TOUR ENDPOINTS (available to all authenticated users)
+  // ============================================================
+
+  @Get('me/tours')
+  @ApiOperation({ summary: 'Get completed product tours' })
+  @ApiResponse({ status: 200, description: 'List of completed tour types' })
+  async getMyCompletedTours(@Request() req: { user: { userId: string } }) {
+    const completedTours = await this.usersService.getCompletedTours(req.user.userId);
+    return { completedTours };
+  }
+
+  @Patch('me/tours/:tourType/complete')
+  @ApiOperation({ summary: 'Mark a tour as completed' })
+  @ApiResponse({ status: 200, description: 'Tour marked as completed' })
+  async markTourCompleted(
+    @Request() req: { user: { userId: string } },
+    @Param('tourType') tourType: string,
+  ) {
+    const completedTours = await this.usersService.markTourCompleted(req.user.userId, tourType);
+    return { success: true, completedTours };
+  }
+
+  @Delete('me/tours')
+  @ApiOperation({ summary: 'Reset all or specific tours' })
+  @ApiResponse({ status: 200, description: 'Tours reset successfully' })
+  async resetMyTours(
+    @Request() req: { user: { userId: string } },
+    @Body() body: { tourTypes?: string[] },
+  ) {
+    const completedTours = await this.usersService.resetTours(req.user.userId, body.tourTypes);
+    return { success: true, completedTours };
+  }
+
+  // ============================================================
   // ADMIN ENDPOINTS (require PLATFORM_ADMIN role)
   // ============================================================
 

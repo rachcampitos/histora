@@ -305,4 +305,43 @@ export class UsersService {
       version: user?.onboardingVersion,
     };
   }
+
+  // ============================================================
+  // PRODUCT TOUR METHODS
+  // ============================================================
+
+  async getCompletedTours(userId: string): Promise<string[]> {
+    const user = await this.userModel
+      .findById(userId)
+      .select('completedTours')
+      .exec();
+
+    return user?.completedTours || [];
+  }
+
+  async markTourCompleted(userId: string, tourType: string): Promise<string[]> {
+    const user = await this.userModel
+      .findByIdAndUpdate(
+        userId,
+        { $addToSet: { completedTours: tourType } },
+        { new: true },
+      )
+      .select('completedTours')
+      .exec();
+
+    return user?.completedTours || [];
+  }
+
+  async resetTours(userId: string, tourTypes?: string[]): Promise<string[]> {
+    const updateQuery = tourTypes
+      ? { $pull: { completedTours: { $in: tourTypes } } }
+      : { $set: { completedTours: [] } };
+
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, updateQuery, { new: true })
+      .select('completedTours')
+      .exec();
+
+    return user?.completedTours || [];
+  }
 }

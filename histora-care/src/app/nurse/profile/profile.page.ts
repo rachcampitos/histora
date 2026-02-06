@@ -242,9 +242,10 @@ export class ProfilePage implements OnInit {
 
         // Only start tour after a delay and if elements are ready
         // This prevents the tour from blocking navigation
-        setTimeout(() => {
+        setTimeout(async () => {
           // Check if still on this page before starting tour
           if (!this.isLoading()) {
+            await this.productTour.init();
             this.productTour.startTour('nurse_profile');
           }
         }, 1500);

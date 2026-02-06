@@ -1,8 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Preferences } from '@capacitor/preferences';
 import { driver, DriveStep, Config, Driver } from 'driver.js';
 import { AuthService } from './auth.service';
+import { ApiService } from './api.service';
+import { firstValueFrom } from 'rxjs';
 
 export type TourType =
   | 'patient_home'
@@ -33,14 +34,22 @@ interface TourConfig {
  * - Can be replayed from settings
  * - Chained tours for comprehensive onboarding
  */
+interface ToursResponse {
+  completedTours: string[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ProductTourService {
-  private readonly STORAGE_KEY_PREFIX = 'nurselite-tour-completed-';
   private readonly PENDING_TOUR_KEY = 'nurselite-pending-tour';
   private authService = inject(AuthService);
   private router = inject(Router);
+  private api = inject(ApiService);
+
+  // Local cache of completed tours (loaded from API)
+  private completedToursCache = signal<Set<string>>(new Set());
+  private initialized = false;
 
   // Map tour types to expected route patterns
   private readonly TOUR_ROUTE_MAP: Record<TourType, string> = {
@@ -68,45 +77,69 @@ export class ProductTourService {
   private isFirstLoad = true;
 
   /**
-   * Get user-specific storage key for a tour
-   * This ensures each user has their own tour completion state
+   * Initialize the service by loading completed tours from the API
    */
-  private getStorageKey(tourType: TourType): string {
-    const userId = this.authService.user()?.id;
-    if (userId) {
-      return `${this.STORAGE_KEY_PREFIX}${userId}-${tourType}`;
+  async init(): Promise<void> {
+    if (this.initialized) return;
+
+    try {
+      const response = await firstValueFrom(
+        this.api.get<ToursResponse>('/users/me/tours')
+      );
+
+      if (response?.completedTours) {
+        this.completedToursCache.set(new Set(response.completedTours));
+      }
+    } catch (e) {
+      console.error('Error loading completed tours from API:', e);
+      // On error, assume no tours completed (will show tours)
     }
-    // Fallback for cases where user is not yet loaded (shouldn't happen in practice)
-    return `${this.STORAGE_KEY_PREFIX}${tourType}`;
+
+    this.initialized = true;
   }
 
   /**
    * Check if a specific tour has been completed
    */
   async isTourCompleted(tourType: TourType): Promise<boolean> {
-    const { value } = await Preferences.get({
-      key: this.getStorageKey(tourType),
-    });
-    return value === 'true';
+    // Ensure initialized
+    if (!this.initialized) {
+      await this.init();
+    }
+    return this.completedToursCache().has(tourType);
   }
 
   /**
    * Mark a tour as completed
    */
   async markTourCompleted(tourType: TourType): Promise<void> {
-    await Preferences.set({
-      key: this.getStorageKey(tourType),
-      value: 'true',
-    });
+    try {
+      // Update backend
+      await firstValueFrom(
+        this.api.patch<{ success: boolean; completedTours: string[] }>(
+          `/users/me/tours/${tourType}/complete`,
+          {}
+        )
+      );
+
+      // Update local cache
+      const newCache = new Set(this.completedToursCache());
+      newCache.add(tourType);
+      this.completedToursCache.set(newCache);
+    } catch (e) {
+      console.error('Error marking tour as completed:', e);
+      // Still update local cache even if API fails
+      const newCache = new Set(this.completedToursCache());
+      newCache.add(tourType);
+      this.completedToursCache.set(newCache);
+    }
   }
 
   /**
    * Reset a tour to be shown again
    */
   async resetTour(tourType: TourType): Promise<void> {
-    await Preferences.remove({
-      key: this.getStorageKey(tourType),
-    });
+    await this.resetTours([tourType]);
   }
 
   /**
@@ -119,54 +152,70 @@ export class ProductTourService {
       admin: ['admin_verifications'],
     };
 
-    for (const type of tourTypes[role] || []) {
-      await Preferences.remove({
-        key: this.getStorageKey(type),
-      });
-    }
+    await this.resetTours(tourTypes[role] || []);
   }
 
   /**
    * Reset all tours (for current user)
    */
   async resetAllTours(): Promise<void> {
-    const tourTypes: TourType[] = [
-      'patient_home',
-      'patient_map',
-      'patient_settings',
-      'nurse_dashboard',
-      'nurse_profile',
-      'nurse_requests',
-      'nurse_services',
-      'nurse_earnings',
-      'admin_verifications',
-    ];
-    for (const type of tourTypes) {
-      await Preferences.remove({
-        key: this.getStorageKey(type),
-      });
+    await this.resetTours();
+  }
+
+  /**
+   * Reset specific tours or all tours
+   */
+  private async resetTours(tourTypes?: TourType[]): Promise<void> {
+    try {
+      const response = await firstValueFrom(
+        this.api.delete<{ success: boolean; completedTours: string[] }>(
+          '/users/me/tours',
+          { body: { tourTypes } }
+        )
+      );
+
+      // Update local cache with remaining completed tours
+      if (response?.completedTours) {
+        this.completedToursCache.set(new Set(response.completedTours));
+      } else {
+        // If no tourTypes specified, all were reset
+        if (!tourTypes) {
+          this.completedToursCache.set(new Set());
+        } else {
+          // Remove specified tours from cache
+          const newCache = new Set(this.completedToursCache());
+          tourTypes.forEach(t => newCache.delete(t));
+          this.completedToursCache.set(newCache);
+        }
+      }
+    } catch (e) {
+      console.error('Error resetting tours:', e);
+      // Update local cache anyway
+      if (!tourTypes) {
+        this.completedToursCache.set(new Set());
+      } else {
+        const newCache = new Set(this.completedToursCache());
+        tourTypes.forEach(t => newCache.delete(t));
+        this.completedToursCache.set(newCache);
+      }
     }
   }
 
   /**
    * Set a pending tour to be shown on next page visit
+   * Uses sessionStorage since this is session-specific
    */
   async setPendingTour(tourType: TourType): Promise<void> {
-    await Preferences.set({
-      key: this.PENDING_TOUR_KEY,
-      value: tourType,
-    });
+    sessionStorage.setItem(this.PENDING_TOUR_KEY, tourType);
   }
 
   /**
    * Get and clear pending tour
    */
   async getPendingTour(): Promise<TourType | null> {
-    const { value } = await Preferences.get({
-      key: this.PENDING_TOUR_KEY,
-    });
+    const value = sessionStorage.getItem(this.PENDING_TOUR_KEY);
     if (value) {
-      await Preferences.remove({ key: this.PENDING_TOUR_KEY });
+      sessionStorage.removeItem(this.PENDING_TOUR_KEY);
       return value as TourType;
     }
     return null;
