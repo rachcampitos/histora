@@ -138,7 +138,7 @@ export class HomePage implements OnInit {
   }
 
   selectRecentNurse(nurse: { nurseId: string; firstName: string; lastName: string; avatar?: string }) {
-    this.router.navigate(['/patient/search'], { queryParams: { nurseId: nurse.nurseId } });
+    this.router.navigate(['/patient/search'], { queryParams: { nurseId: nurse.nurseId, origin: 'home' } });
   }
 
   getStatusLabel(status: string): string {

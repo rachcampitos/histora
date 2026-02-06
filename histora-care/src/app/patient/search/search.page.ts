@@ -25,10 +25,15 @@ export class SearchPage implements OnInit {
   isLoadingReviews = signal(false);
   error = signal<string | null>(null);
   showAllReviews = signal(false);
+  private origin = signal<string | null>(null);
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       const nurseId = params['nurseId'];
+      const origin = params['origin'];
+      if (origin) {
+        this.origin.set(origin);
+      }
       if (nurseId) {
         this.loadNurseProfile(nurseId);
       } else {
@@ -114,7 +119,19 @@ export class SearchPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/patient/tabs/home']);
+    const originValue = this.origin();
+    switch (originValue) {
+      case 'map':
+        this.router.navigate(['/patient/tabs/map']);
+        break;
+      case 'browse':
+        this.router.navigate(['/browse']);
+        break;
+      case 'home':
+      default:
+        this.router.navigate(['/patient/tabs/home']);
+        break;
+    }
   }
 
   requestService() {

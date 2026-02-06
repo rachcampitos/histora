@@ -19,6 +19,156 @@
   }
 }
 
+// Waiting for Confirmation Container
+.waiting-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  text-align: center;
+  height: 100%;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(74, 157, 154, 0.08) 0%, transparent 40%);
+
+  .waiting-animation {
+    margin-bottom: 24px;
+
+    ion-spinner {
+      width: 60px;
+      height: 60px;
+      --color: var(--ion-color-primary);
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ion-text-color);
+  }
+
+  .waiting-subtitle {
+    margin: 0 0 24px;
+    font-size: 15px;
+    color: var(--ion-color-medium);
+  }
+
+  .waiting-nurse-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 320px;
+
+    .waiting-nurse-avatar {
+      width: 48px;
+      height: 48px;
+
+      ion-icon {
+        font-size: 48px;
+        color: var(--ion-color-medium);
+      }
+    }
+
+    .waiting-nurse-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+
+      .nurse-name {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--ion-text-color);
+      }
+
+      .nurse-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        color: var(--ion-color-medium);
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .waiting-service-card {
+    padding: 16px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 320px;
+
+    .service-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      color: var(--ion-text-color);
+      font-size: 14px;
+
+      ion-icon {
+        font-size: 20px;
+        color: var(--ion-color-primary);
+        flex-shrink: 0;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
+  .waiting-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(var(--ion-color-primary-rgb), 0.08);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 320px;
+    text-align: left;
+
+    ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    span {
+      font-size: 13px;
+      color: var(--ion-color-medium-shade);
+      line-height: 1.4;
+    }
+  }
+
+  .waiting-actions {
+    width: 100%;
+    max-width: 320px;
+
+    ion-button {
+      --border-radius: 12px;
+      --color: var(--ion-color-danger);
+      --border-color: var(--ion-color-danger);
+      font-weight: 500;
+    }
+  }
+}
+
 // Error Container
 .error-container {
   display: flex;
@@ -146,6 +296,113 @@
     }
   }
 
+  // Loading alternatives
+  .alternatives-loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+
+    span {
+      font-size: 14px;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  // Alternative nurses section
+  .alternatives-section {
+    width: 100%;
+    max-width: 340px;
+    margin-bottom: 24px;
+
+    h4 {
+      margin: 0 0 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .alternatives-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .alternative-nurse-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      .alt-nurse-avatar {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 44px;
+          color: var(--ion-color-medium);
+        }
+      }
+
+      .alt-nurse-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+
+        .alt-nurse-name {
+          font-weight: 600;
+          font-size: 15px;
+          color: #1e293b;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .alt-nurse-rating {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 13px;
+          color: #64748b;
+
+          ion-icon {
+            font-size: 14px;
+          }
+
+          .rating-count {
+            color: #94a3b8;
+          }
+        }
+
+        .alt-nurse-new {
+          font-size: 12px;
+          color: var(--ion-color-primary);
+          font-weight: 500;
+        }
+      }
+
+      .alt-nurse-arrow {
+        font-size: 20px;
+        color: var(--ion-color-medium);
+        flex-shrink: 0;
+      }
+    }
+  }
+
   .next-steps {
     width: 100%;
     max-width: 340px;
@@ -233,6 +490,41 @@
 
       ul li {
         color: #cbd5e1;
+      }
+    }
+
+    .alternatives-loading {
+      span {
+        color: #94a3b8;
+      }
+    }
+
+    .alternatives-section {
+      h4 {
+        color: #f1f5f9;
+      }
+
+      .alternative-nurse-card {
+        background: #1e293b;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+        .alt-nurse-info {
+          .alt-nurse-name {
+            color: #f1f5f9;
+          }
+
+          .alt-nurse-rating {
+            color: #94a3b8;
+
+            .rating-count {
+              color: #64748b;
+            }
+          }
+        }
+
+        .alt-nurse-arrow {
+          color: #64748b;
+        }
       }
     }
   }
@@ -967,6 +1259,49 @@
 
     p {
       color: #94a3b8;
+    }
+  }
+
+  // Waiting Container
+  .waiting-container {
+    background: linear-gradient(180deg, rgba(74, 157, 154, 0.12) 0%, transparent 40%);
+
+    h3 {
+      color: #f1f5f9;
+    }
+
+    .waiting-subtitle {
+      color: #94a3b8;
+    }
+
+    .waiting-nurse-card,
+    .waiting-service-card {
+      background: #1e293b;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+
+      .nurse-name {
+        color: #f1f5f9;
+      }
+
+      .nurse-rating {
+        color: #94a3b8;
+      }
+
+      .service-row {
+        color: #e2e8f0;
+
+        &:not(:last-child) {
+          border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+      }
+    }
+
+    .waiting-info {
+      background: rgba(107, 181, 179, 0.15);
+
+      span {
+        color: #94a3b8;
+      }
     }
   }
 

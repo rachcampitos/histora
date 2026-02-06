@@ -52,13 +52,50 @@
       }
     </div>
 
-    <!-- Next Steps -->
+    <!-- Alternative Nurses Section -->
+    @if (isLoadingAlternatives()) {
+    <div class="alternatives-loading">
+      <ion-spinner name="dots" color="primary"></ion-spinner>
+      <span>Buscando enfermeras disponibles...</span>
+    </div>
+    } @else if (alternativeNurses().length > 0) {
+    <div class="alternatives-section">
+      <h4>Enfermeras disponibles cerca de ti</h4>
+      <div class="alternatives-list">
+        @for (altNurse of alternativeNurses(); track altNurse.id) {
+        <div class="alternative-nurse-card" (click)="requestAlternativeNurse(altNurse.id)">
+          <ion-avatar class="alt-nurse-avatar">
+            @if (altNurse.avatar) {
+            <img [src]="altNurse.avatar" alt="Enfermera">
+            } @else {
+            <ion-icon name="person-circle"></ion-icon>
+            }
+          </ion-avatar>
+          <div class="alt-nurse-info">
+            <span class="alt-nurse-name">{{ altNurse.firstName }} {{ altNurse.lastName }}</span>
+            @if (altNurse.rating > 0) {
+            <span class="alt-nurse-rating">
+              <ion-icon name="star" color="warning"></ion-icon>
+              {{ altNurse.rating.toFixed(1) }}
+              <span class="rating-count">({{ altNurse.totalReviews }})</span>
+            </span>
+            } @else {
+            <span class="alt-nurse-new">Nueva en NurseLite</span>
+            }
+          </div>
+          <ion-icon name="chevron-forward" class="alt-nurse-arrow"></ion-icon>
+        </div>
+        }
+      </div>
+    </div>
+    } @else {
+    <!-- No alternatives - show generic next steps -->
     <div class="next-steps">
       <h4>¿Que puedes hacer ahora?</h4>
       <ul>
         <li>
           <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          <span>Solicitar el mismo servicio con otra enfermera disponible</span>
+          <span>Buscar otra enfermera disponible en el mapa</span>
         </li>
         <li>
           <ion-icon name="checkmark-circle" color="success"></ion-icon>
@@ -66,12 +103,13 @@
         </li>
       </ul>
     </div>
+    }
 
     <!-- Actions -->
     <div class="status-actions">
       <ion-button expand="block" (click)="searchAnotherNurse()">
         <ion-icon name="search-outline" slot="start"></ion-icon>
-        Buscar otra enfermera
+        Buscar en el mapa
       </ion-button>
       <ion-button expand="block" fill="outline" routerLink="/patient/history">
         <ion-icon name="list-outline" slot="start"></ion-icon>
@@ -117,7 +155,68 @@
   </div>
   }
 
-  @if (!isLoading() && !loadError()) {
+  <!-- Waiting for Confirmation State (pending) -->
+  @if (!isLoading() && !loadError() && currentStatus() === 'pending') {
+  <div class="waiting-container">
+    <div class="waiting-animation">
+      <ion-spinner name="dots" color="primary"></ion-spinner>
+    </div>
+    <h3>Esperando confirmacion</h3>
+    <p class="waiting-subtitle">Tu solicitud ha sido enviada a {{ nurse()?.firstName }}</p>
+
+    <!-- Nurse Mini Card -->
+    <div class="waiting-nurse-card">
+      <ion-avatar class="waiting-nurse-avatar">
+        @if (nurse()?.avatar) {
+        <img [src]="nurse()?.avatar" alt="Enfermera">
+        } @else {
+        <ion-icon name="person-circle"></ion-icon>
+        }
+      </ion-avatar>
+      <div class="waiting-nurse-info">
+        <span class="nurse-name">{{ nurse()?.firstName }} {{ nurse()?.lastName }}</span>
+        @if (nurse()?.rating && nurse()!.rating > 0) {
+        <span class="nurse-rating">
+          <ion-icon name="star" color="warning"></ion-icon>
+          {{ nurse()?.rating?.toFixed(1) }}
+        </span>
+        }
+      </div>
+    </div>
+
+    <!-- Service Summary -->
+    <div class="waiting-service-card">
+      <div class="service-row">
+        <ion-icon name="medkit-outline"></ion-icon>
+        <span>{{ request()?.service?.name }}</span>
+      </div>
+      <div class="service-row">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>{{ request()?.requestedDate | date:'EEEE, d MMMM':'':'es' }}</span>
+      </div>
+      <div class="service-row">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ getTimeSlotLabel(request()?.requestedTimeSlot) }}</span>
+      </div>
+    </div>
+
+    <!-- Info Message -->
+    <div class="waiting-info">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>Recibirás una notificación cuando la enfermera confirme tu solicitud.</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="waiting-actions">
+      <ion-button expand="block" fill="outline" (click)="cancelRequest()">
+        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+        Cancelar solicitud
+      </ion-button>
+    </div>
+  </div>
+  }
+
+  @if (!isLoading() && !loadError() && currentStatus() !== 'pending') {
   <!-- Map Container -->
   <div id="tracking-map" class="map-container"></div>
 
@@ -271,7 +370,8 @@
         }
       </div>
 
-      <!-- Contextual Tip - Proactive helpful message -->
+      <!-- Contextual Tip - Proactive helpful message (only show after nurse accepts) -->
+      @if (currentStatus() !== 'pending') {
       <div class="contextual-tip" role="note">
         @switch (currentStatus()) {
         @case ('accepted') {
@@ -296,6 +396,7 @@
         }
         }
       </div>
+      }
 
       <!-- Cancel Button (only if not started) -->
       @if (currentStatus() === 'accepted' || currentStatus() === 'on_the_way') {

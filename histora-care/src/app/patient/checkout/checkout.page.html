@@ -329,8 +329,11 @@
           <ion-icon name="checkmark-circle"></ion-icon>
         </div>
         <h2>Pago exitoso</h2>
-        <p>Tu servicio ha sido confirmado y pagado</p>
-        <p class="redirect-text">Redirigiendo al seguimiento...</p>
+        <p>Tu solicitud ha sido enviada</p>
+        @if (serviceRequest()?.nurse) {
+          <p class="waiting-text">Esperando confirmacion de <strong>{{ serviceRequest()?.nurse?.firstName }}</strong></p>
+        }
+        <p class="redirect-text">Redirigiendo en unos segundos...</p>
       </div>
     }
 
@@ -338,11 +341,12 @@
     @if (currentStep() === 'confirmed') {
       <div class="status-container">
         <div class="status-icon confirmed">
-          <ion-icon name="calendar-check-outline"></ion-icon>
+          <ion-icon name="send-outline"></ion-icon>
         </div>
-        <h2>Solicitud confirmada</h2>
+        <h2>Solicitud enviada</h2>
         @if (serviceRequest()?.nurse) {
           <p>Tu solicitud ha sido enviada a <strong>{{ serviceRequest()?.nurse?.firstName }}</strong></p>
+          <p class="waiting-text">Esperando confirmacion de la enfermera...</p>
         } @else {
           <p>Estamos buscando una enfermera disponible</p>
         }
@@ -353,7 +357,7 @@
             <span class="reminder-text">Pagaras {{ formattedTotal() }} en efectivo al finalizar el servicio</span>
           </div>
         </div>
-        <p class="redirect-text">Redirigiendo al seguimiento...</p>
+        <p class="redirect-text">Redirigiendo en unos segundos...</p>
       </div>
     }
 

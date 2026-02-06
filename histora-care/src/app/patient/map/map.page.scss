@@ -50,21 +50,15 @@ $primary-gradient: var(--histora-gradient);
   }
 }
 
-// Map Controls
+// Map Controls - Positioned below search overlay
 .map-controls {
   position: absolute;
   right: tokens.$spacing-3;
-  bottom: calc(var(--ion-safe-area-bottom, 0) + 230px); // Default position above bottom-list
-  z-index: 1001; // Above nurse-card z-index
+  top: calc(var(--ion-safe-area-top, 0) + 72px); // Below search overlay
+  z-index: 999; // Below search overlay z-index
   display: flex;
   flex-direction: column;
   gap: tokens.$spacing-2;
-  transition: bottom tokens.$duration-slow tokens.$easing-standard;
-
-  // When nurse card is open, move controls higher
-  &.card-open {
-    bottom: calc(var(--ion-safe-area-bottom, 0) + 380px); // Move above the nurse card
-  }
 
   .control-btn {
     --background: white;
@@ -266,6 +260,11 @@ $primary-gradient: var(--histora-gradient);
 
       ion-icon {
         font-size: tokens.$font-size-lg;
+      }
+
+      // Primary button with solid background needs white text
+      &[color="primary"]:not([fill="outline"]):not([fill="clear"]) {
+        --color: white;
       }
     }
   }

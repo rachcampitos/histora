@@ -542,9 +542,20 @@
     margin: 0 0 8px 0;
   }
 
+  .waiting-text {
+    font-size: 14px;
+    color: var(--ion-color-primary);
+    margin-top: 8px;
+
+    strong {
+      font-weight: 600;
+    }
+  }
+
   .redirect-text {
     font-size: 13px;
     color: var(--ion-color-medium-shade);
+    margin-top: 16px;
   }
 
   .retry-button {
