@@ -1,10 +1,11 @@
 import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { Subscription, interval, fromEvent, merge } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { SessionInfo } from '../models';
+import { SessionWarningModalComponent } from '../../shared/components/session-warning-modal/session-warning-modal.component';
 
 const SESSION_KEY = 'session_info';
 const LAST_ACTIVITY_KEY = 'last_activity';
@@ -15,12 +16,12 @@ const LAST_ACTIVITY_KEY = 'last_activity';
 export class SessionGuardService implements OnDestroy {
   private storage = inject(StorageService);
   private router = inject(Router);
-  private alertController = inject(AlertController);
+  private modalController = inject(ModalController);
 
   // Monitoring state
   private monitoringSubscription: Subscription | null = null;
   private activitySubscription: Subscription | null = null;
-  private warningAlert: HTMLIonAlertElement | null = null;
+  private warningModal: HTMLIonModalElement | null = null;
 
   // Session state
   private sessionInfo = signal<SessionInfo | null>(null);
@@ -98,9 +99,9 @@ export class SessionGuardService implements OnDestroy {
       this.activitySubscription = null;
     }
 
-    if (this.warningAlert) {
-      this.warningAlert.dismiss();
-      this.warningAlert = null;
+    if (this.warningModal) {
+      this.warningModal.dismiss();
+      this.warningModal = null;
     }
   }
 
@@ -203,7 +204,7 @@ export class SessionGuardService implements OnDestroy {
    * Show expiration warning modal
    */
   private async showExpirationWarning(timeRemaining: number): Promise<void> {
-    if (this.warningShown() || this.warningAlert) {
+    if (this.warningShown() || this.warningModal) {
       return;
     }
 
@@ -212,39 +213,39 @@ export class SessionGuardService implements OnDestroy {
 
     console.log(`[SESSION] Showing expiration warning - ${minutes} minutes remaining`);
 
-    this.warningAlert = await this.alertController.create({
-      header: 'Tu sesion esta por expirar',
-      message: `Tu sesion se cerrara en ${minutes} minuto${minutes !== 1 ? 's' : ''} por seguridad. ¿Deseas mantenerla activa?`,
+    this.warningModal = await this.modalController.create({
+      component: SessionWarningModalComponent,
+      componentProps: {
+        minutesRemaining: minutes
+      },
+      breakpoints: [0, 0.55],
+      initialBreakpoint: 0.55,
       backdropDismiss: false,
-      buttons: [
-        {
-          text: 'Cerrar sesion',
-          role: 'cancel',
-          handler: () => {
-            this.handleSessionExpired('user_logout');
-          }
-        },
-        {
-          text: 'Mantener sesion',
-          handler: async () => {
-            // Record activity to extend session
-            await this.recordActivity();
-            // Try to refresh token
-            await this.tryRefreshToken();
-            this.warningShown.set(false);
-            this.warningAlert = null;
-          }
-        }
-      ]
+      handle: true,
+      cssClass: 'session-warning-modal'
     });
 
-    await this.warningAlert.present();
+    await this.warningModal.present();
+
+    const { role } = await this.warningModal.onWillDismiss();
+
+    if (role === 'keep') {
+      // Record activity to extend session
+      await this.recordActivity();
+      // Try to refresh token
+      await this.tryRefreshToken();
+      this.warningShown.set(false);
+      this.warningModal = null;
+    } else if (role === 'logout') {
+      this.warningModal = null;
+      await this.handleSessionExpired('user_logout');
+    }
 
     // Auto-dismiss after time remaining and trigger expiration
     setTimeout(async () => {
-      if (this.warningAlert) {
-        await this.warningAlert.dismiss();
-        this.warningAlert = null;
+      if (this.warningModal) {
+        await this.warningModal.dismiss();
+        this.warningModal = null;
         await this.handleSessionExpired('timeout');
       }
     }, timeRemaining);

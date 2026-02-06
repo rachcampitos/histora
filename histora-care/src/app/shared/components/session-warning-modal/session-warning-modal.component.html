@@ -1,0 +1,35 @@
+<ion-content class="ion-padding">
+  <div class="modal-content">
+    <div class="modal-header">
+      <ion-button fill="clear" class="close-btn" (click)="logout()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="modal-body">
+      <div class="warning-icon">
+        <ion-icon name="time-outline"></ion-icon>
+      </div>
+
+      <h2>Tu sesion esta por expirar</h2>
+
+      <p class="description">
+        Por tu seguridad, tu sesion se cerrara en <strong>{{ minutesRemaining }} {{ minuteText }}</strong> debido a inactividad.
+      </p>
+
+      <div class="info-badge">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Esta medida protege tu informacion personal y datos de salud.</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <ion-button expand="block" (click)="keepSession()" class="keep-btn">
+        Mantener sesion activa
+      </ion-button>
+      <ion-button expand="block" fill="clear" (click)="logout()" class="logout-btn">
+        Cerrar sesion
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
