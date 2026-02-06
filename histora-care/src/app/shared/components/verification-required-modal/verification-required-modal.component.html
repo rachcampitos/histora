@@ -11,35 +11,49 @@
         <ion-icon name="shield-checkmark-outline"></ion-icon>
       </div>
 
-      <h2>Verificacion requerida</h2>
+      <h2>Protegemos a todos en cada visita</h2>
 
       <p class="description">
-        Para la seguridad de nuestras enfermeras y la tuya, necesitas verificar tu identidad antes de solicitar servicios.
+        Para que tanto tu como la enfermera se sientan seguros, verificamos la identidad de todos en NurseLite.
       </p>
 
       <div class="benefits">
         <div class="benefit-item">
-          <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          <span>Proceso rapido (5 minutos)</span>
+          <ion-icon name="time-outline" color="primary"></ion-icon>
+          <div class="benefit-text">
+            <span class="benefit-title">Menos de 5 minutos</span>
+            <span class="benefit-subtitle">Completa ahora y solicita de inmediato</span>
+          </div>
         </div>
         <div class="benefit-item">
-          <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          <span>Tus datos estan protegidos</span>
+          <ion-icon name="lock-closed-outline" color="primary"></ion-icon>
+          <div class="benefit-text">
+            <span class="benefit-title">Datos 100% protegidos</span>
+            <span class="benefit-subtitle">Cumplimos Ley 29733 de proteccion de datos</span>
+          </div>
         </div>
         <div class="benefit-item">
-          <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          <span>Solo se hace una vez</span>
+          <ion-icon name="checkmark-done-outline" color="success"></ion-icon>
+          <div class="benefit-text">
+            <span class="benefit-title">Solo una vez</span>
+            <span class="benefit-subtitle">Luego solicitas servicios cuando quieras</span>
+          </div>
         </div>
+      </div>
+
+      <div class="trust-badge">
+        <ion-icon name="ribbon-outline"></ion-icon>
+        <span>Todas nuestras enfermeras estan verificadas por el Colegio de Enfermeros del Peru</span>
       </div>
     </div>
 
     <div class="modal-footer">
       <ion-button expand="block" (click)="goToVerification()" class="verify-btn">
-        Verificar ahora
+        Verificar mi identidad
         <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
       </ion-button>
-      <ion-button expand="block" fill="clear" (click)="dismiss()" class="later-btn">
-        Hacerlo despues
+      <ion-button expand="block" fill="clear" (click)="dismiss()" class="back-btn">
+        Volver al inicio
       </ion-button>
     </div>
   </div>
