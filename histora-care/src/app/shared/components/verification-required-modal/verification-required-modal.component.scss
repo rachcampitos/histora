@@ -91,6 +91,7 @@ h2 {
 
 .modal-footer {
   padding-top: 20px;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 .verify-btn {
