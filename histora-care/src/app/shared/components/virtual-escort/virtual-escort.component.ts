@@ -67,7 +67,7 @@ export class VirtualEscortComponent implements OnInit {
 
     const alert = await this.alertCtrl.create({
       header: 'Agregar Contacto de Emergencia',
-      cssClass: 'virtual-escort-alert',
+      cssClass: 'histora-alert histora-alert-primary',
       inputs: [
         {
           name: 'name',
@@ -165,6 +165,7 @@ export class VirtualEscortComponent implements OnInit {
 
   async removeContact(share: ActiveShare) {
     const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Revocar Acceso',
       message: `¿Dejar de compartir tu ubicacion con ${share.name}?`,
       buttons: [
@@ -174,7 +175,6 @@ export class VirtualEscortComponent implements OnInit {
         },
         {
           text: 'Si, revocar',
-          cssClass: 'danger-button',
           handler: () => {
             this.revokeAccess(share);
           }
