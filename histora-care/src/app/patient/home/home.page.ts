@@ -45,6 +45,8 @@ export class HomePage implements OnInit {
     // Use a longer delay (1 second) to ensure UI is fully rendered
     // This is especially important on first app load after registration
     setTimeout(async () => {
+      // Initialize tour service (loads completed tours from backend)
+      await this.productTourService.init();
       // First check if there's a pending tour (from replay)
       await this.productTourService.checkAndStartPendingTour();
       // Then try to start the regular tour if not already completed

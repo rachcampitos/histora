@@ -112,6 +112,10 @@ export class User {
 
   @Prop()
   onboardingVersion?: string;
+
+  // Product tours completed (persisted to survive cache clear)
+  @Prop({ type: [String], default: [] })
+  completedTours: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

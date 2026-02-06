@@ -108,6 +108,8 @@ export class DashboardPage implements OnInit, OnDestroy {
         return;
       }
 
+      // Initialize tour service (loads completed tours from backend)
+      await this.productTour.init();
       // First check if there's a pending tour (from replay)
       await this.productTour.checkAndStartPendingTour();
       // Then try to start the regular tour if not already completed
