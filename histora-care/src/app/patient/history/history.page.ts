@@ -185,36 +185,70 @@ export class HistoryPage implements OnInit {
 
   /**
    * Submit review to the API
+   * Makes two independent API calls and handles partial failures gracefully
    */
   private async submitReview(request: ServiceRequest, reviewData: ReviewSubmitData) {
-    try {
-      // Submit to nurse reviews API
-      if (request.nurseId) {
+    let nurseReviewSuccess = false;
+    let serviceRateSuccess = false;
+    let nurseReviewError: any = null;
+    let serviceRateError: any = null;
+
+    // 1. Submit to nurse reviews API (if nurseId exists)
+    if (request.nurseId) {
+      try {
         await this.nurseApiService.submitReview(request.nurseId, {
           rating: reviewData.rating,
           comment: reviewData.comment,
           serviceRequestId: request._id
         }).toPromise();
+        nurseReviewSuccess = true;
+      } catch (err: any) {
+        nurseReviewError = err;
+        // 409 = already reviewed - this is OK, not a real error
+        if (err?.status === 409) {
+          nurseReviewSuccess = true;
+          console.log('Nurse review already exists, continuing...');
+        } else {
+          console.error('Error submitting nurse review:', err);
+        }
       }
+    } else {
+      // No nurseId, skip this step
+      nurseReviewSuccess = true;
+    }
 
-      // Also update the service request rating
+    // 2. Update the service request rating
+    try {
       await this.serviceRequestService.rate(
         request._id,
         reviewData.rating,
         reviewData.comment || undefined
       ).toPromise();
+      serviceRateSuccess = true;
+    } catch (err: any) {
+      serviceRateError = err;
+      // 400 with "Already rated" - this is OK
+      if (err?.status === 400 && err?.error?.message?.includes('rated')) {
+        serviceRateSuccess = true;
+        console.log('Service already rated, continuing...');
+      } else {
+        console.error('Error rating service request:', err);
+      }
+    }
 
-      // Update local state
+    // Evaluate results
+    if (nurseReviewSuccess || serviceRateSuccess) {
+      // At least one succeeded - update local state and show success
       const updated = this.allRequests().map(r =>
         r._id === request._id
           ? { ...r, rating: reviewData.rating, review: reviewData.comment || undefined, reviewedAt: new Date() }
           : r
       );
       this.allRequests.set(updated);
-
       await this.showToast('Gracias por tu calificacion', 'success');
-    } catch (err) {
-      console.error('Error submitting review:', err);
+    } else {
+      // Both failed with real errors
+      console.error('Both review submissions failed:', { nurseReviewError, serviceRateError });
       await this.showToast('No se pudo enviar tu calificacion. Intenta de nuevo.', 'danger');
     }
   }
