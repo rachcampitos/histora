@@ -6,6 +6,7 @@ import {
   Inject,
   forwardRef,
   Optional,
+  Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -22,6 +23,8 @@ import { AdminNotificationsGateway } from '../admin/admin-notifications.gateway'
 
 @Injectable()
 export class NursesService {
+  private readonly logger = new Logger(NursesService.name);
+
   constructor(
     @InjectModel(Nurse.name) private nurseModel: Model<Nurse>,
     @InjectModel(NurseReview.name) private nurseReviewModel: Model<NurseReviewDocument>,
@@ -294,14 +297,35 @@ export class NursesService {
     // Filter by time if availableNow is requested
     let filteredNurses = nurses;
     if (availableNow) {
+      this.logger.debug(`[searchNearby] Current Peru time: ${currentTimeStr}, Day: ${currentDay} (0=Sun,6=Sat)`);
+      this.logger.debug(`[searchNearby] Nurses from DB (after isAvailable + day filter): ${nurses.length}`);
+
       filteredNurses = nurses.filter((n) => {
         // If no schedule defined, consider available (toggle is already checked)
         if (!n.availableFrom || !n.availableTo) {
+          this.logger.debug(`[searchNearby] Nurse ${n.user?.firstName}: No schedule defined, included`);
           return true;
         }
-        // Check if current time is within availability window
-        return currentTimeStr >= n.availableFrom && currentTimeStr <= n.availableTo;
+
+        // Check if schedule crosses midnight (e.g., 08:00 to 01:00)
+        const crossesMidnight = n.availableTo < n.availableFrom;
+
+        let isInSchedule: boolean;
+        if (crossesMidnight) {
+          // For overnight schedules: available if current time >= start OR <= end
+          // Example: 08:00 to 01:00 - available from 08:00 to 23:59 OR 00:00 to 01:00
+          isInSchedule = currentTimeStr >= n.availableFrom || currentTimeStr <= n.availableTo;
+        } else {
+          // For same-day schedules: available if current time >= start AND <= end
+          // Example: 08:00 to 18:00
+          isInSchedule = currentTimeStr >= n.availableFrom && currentTimeStr <= n.availableTo;
+        }
+
+        this.logger.debug(`[searchNearby] Nurse ${n.user?.firstName}: schedule ${n.availableFrom}-${n.availableTo}, crossesMidnight=${crossesMidnight}, included=${isInSchedule}`);
+        return isInSchedule;
       });
+
+      this.logger.debug(`[searchNearby] After time filter: ${filteredNurses.length} nurses`);
     }
 
     return filteredNurses.map((n) => ({
