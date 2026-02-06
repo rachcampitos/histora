@@ -839,6 +839,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
   /**
    * Submit review from modal data
+   * Makes two independent API calls and handles partial failures gracefully
    */
   private async submitReviewFromModal(reviewData: ReviewSubmitData) {
     const nurseId = this.nurse()?.id || this.request()?.nurseId;
@@ -847,21 +848,47 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    let nurseReviewSuccess = false;
+    let serviceRateSuccess = false;
+
+    // 1. Submit to nurse reviews API
     try {
-      // Submit to nurse reviews API
       await firstValueFrom(this.nurseApiService.submitReview(nurseId, {
         rating: reviewData.rating,
         comment: reviewData.comment,
         serviceRequestId: this.requestId()
       }));
+      nurseReviewSuccess = true;
+    } catch (err: any) {
+      // 409 = already reviewed - this is OK
+      if (err?.status === 409) {
+        nurseReviewSuccess = true;
+        console.log('Nurse review already exists, continuing...');
+      } else {
+        console.error('Error submitting nurse review:', err);
+      }
+    }
 
-      // Also update the service request rating
+    // 2. Update the service request rating
+    try {
       await firstValueFrom(this.requestService.rate(
         this.requestId(),
         reviewData.rating,
         reviewData.comment || undefined
       ));
+      serviceRateSuccess = true;
+    } catch (err: any) {
+      // 400 with "Already rated" - this is OK
+      if (err?.status === 400 && err?.error?.message?.includes('rated')) {
+        serviceRateSuccess = true;
+        console.log('Service already rated, continuing...');
+      } else {
+        console.error('Error rating service request:', err);
+      }
+    }
 
+    // Evaluate results
+    if (nurseReviewSuccess || serviceRateSuccess) {
       this.hasReviewed.set(true);
 
       // Show success toast
@@ -881,14 +908,14 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         ]
       });
       await toast.present();
-    } catch (error) {
-      console.error('Error submitting review:', error);
+    } else {
       this.showError('No se pudo enviar tu calificación. Por favor, intenta de nuevo.');
     }
   }
 
   /**
    * Submit review to API
+   * Makes two independent API calls and handles partial failures gracefully
    */
   async submitReview(rating: number, comment: string) {
     const nurseId = this.nurse()?.id;
@@ -897,13 +924,47 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    let nurseReviewSuccess = false;
+    let serviceRateSuccess = false;
+
+    // 1. Submit to nurse reviews API
     try {
       await firstValueFrom(this.nurseApiService.submitReview(nurseId, {
         rating,
         comment,
         serviceRequestId: this.requestId()
       }));
+      nurseReviewSuccess = true;
+    } catch (err: any) {
+      // 409 = already reviewed - this is OK
+      if (err?.status === 409) {
+        nurseReviewSuccess = true;
+        console.log('Nurse review already exists, continuing...');
+      } else {
+        console.error('Error submitting nurse review:', err);
+      }
+    }
 
+    // 2. Update the service request rating
+    try {
+      await firstValueFrom(this.requestService.rate(
+        this.requestId(),
+        rating,
+        comment || undefined
+      ));
+      serviceRateSuccess = true;
+    } catch (err: any) {
+      // 400 with "Already rated" - this is OK
+      if (err?.status === 400 && err?.error?.message?.includes('rated')) {
+        serviceRateSuccess = true;
+        console.log('Service already rated, continuing...');
+      } else {
+        console.error('Error rating service request:', err);
+      }
+    }
+
+    // Evaluate results
+    if (nurseReviewSuccess || serviceRateSuccess) {
       this.hasReviewed.set(true);
 
       const successAlert = await this.alertController.create({
@@ -923,8 +984,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         ]
       });
       await successAlert.present();
-    } catch (error) {
-      console.error('Error submitting review:', error);
+    } else {
       this.showError('No se pudo enviar tu calificación. Por favor, intenta de nuevo.');
     }
   }
