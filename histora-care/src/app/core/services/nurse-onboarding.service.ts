@@ -21,6 +21,7 @@ interface OnboardingStatusResponse {
 }
 
 const ONBOARDING_VERSION = '1.0.0';
+const STORAGE_KEY = 'nurselite-nurse-onboarding';
 const DEFAULT_STATE: NurseOnboardingState = {
   completedAt: null,
   currentStep: 0,
@@ -40,6 +41,39 @@ export class NurseOnboardingService {
   private api = inject(ApiService);
   private state = signal<NurseOnboardingState>(DEFAULT_STATE);
   private initialized = false;
+
+  constructor() {
+    // Load from localStorage immediately to prevent flash of onboarding
+    this.loadFromLocalStorage();
+  }
+
+  /**
+   * Load cached state from localStorage (instant, no network)
+   */
+  private loadFromLocalStorage(): void {
+    try {
+      const cached = localStorage.getItem(STORAGE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached) as NurseOnboardingState;
+        if (parsed.completedAt) {
+          this.state.set(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn('Error loading nurse onboarding from localStorage:', e);
+    }
+  }
+
+  /**
+   * Save state to localStorage as backup
+   */
+  private saveToLocalStorage(state: NurseOnboardingState): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('Error saving nurse onboarding to localStorage:', e);
+    }
+  }
 
   // Computed values
   isCompleted = computed(() => !!this.state().completedAt);
@@ -63,14 +97,18 @@ export class NurseOnboardingService {
       );
 
       if (response?.onboardingCompleted) {
-        this.state.set({
+        const newState = {
           ...DEFAULT_STATE,
           completedAt: response.onboardingCompletedAt || new Date().toISOString(),
-        });
+        };
+        this.state.set(newState);
+        // Save to localStorage as backup for future page loads
+        this.saveToLocalStorage(newState);
       }
     } catch (e) {
       console.error('Error loading nurse onboarding state from API:', e);
-      // On error, assume not completed (will show onboarding)
+      // On API error, keep the localStorage cached state (already loaded in constructor)
+      // This prevents onboarding from reappearing on network issues
     }
 
     this.initialized = true;
@@ -90,6 +128,8 @@ export class NurseOnboardingService {
         completedAt: new Date().toISOString(),
       };
       this.state.set(newState);
+      // Save to localStorage as backup
+      this.saveToLocalStorage(newState);
     } catch (e) {
       console.error('Error saving onboarding completion to API:', e);
       throw e;
@@ -132,6 +172,12 @@ export class NurseOnboardingService {
   async resetOnboarding(): Promise<void> {
     this.state.set(DEFAULT_STATE);
     this.initialized = false;
+    // Clear localStorage cache
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      console.warn('Error clearing nurse onboarding from localStorage:', e);
+    }
     // Note: This only resets local state, backend state remains
     // To reset backend state, a new endpoint would be needed
   }

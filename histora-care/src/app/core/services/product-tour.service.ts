@@ -38,6 +38,8 @@ interface ToursResponse {
   completedTours: string[];
 }
 
+const TOURS_STORAGE_KEY = 'nurselite-completed-tours';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -50,6 +52,39 @@ export class ProductTourService {
   // Local cache of completed tours (loaded from API)
   private completedToursCache = signal<Set<string>>(new Set());
   private initialized = false;
+
+  constructor() {
+    // Load from localStorage immediately to prevent flash of tours
+    this.loadFromLocalStorage();
+  }
+
+  /**
+   * Load cached completed tours from localStorage (instant, no network)
+   */
+  private loadFromLocalStorage(): void {
+    try {
+      const cached = localStorage.getItem(TOURS_STORAGE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached) as string[];
+        if (Array.isArray(parsed)) {
+          this.completedToursCache.set(new Set(parsed));
+        }
+      }
+    } catch (e) {
+      console.warn('Error loading completed tours from localStorage:', e);
+    }
+  }
+
+  /**
+   * Save completed tours to localStorage as backup
+   */
+  private saveToLocalStorage(tours: Set<string>): void {
+    try {
+      localStorage.setItem(TOURS_STORAGE_KEY, JSON.stringify(Array.from(tours)));
+    } catch (e) {
+      console.warn('Error saving completed tours to localStorage:', e);
+    }
+  }
 
   // Map tour types to expected route patterns
   private readonly TOUR_ROUTE_MAP: Record<TourType, string> = {
@@ -88,11 +123,15 @@ export class ProductTourService {
       );
 
       if (response?.completedTours) {
-        this.completedToursCache.set(new Set(response.completedTours));
+        const tours = new Set(response.completedTours);
+        this.completedToursCache.set(tours);
+        // Save to localStorage as backup for future page loads
+        this.saveToLocalStorage(tours);
       }
     } catch (e) {
       console.error('Error loading completed tours from API:', e);
-      // On error, assume no tours completed (will show tours)
+      // On API error, keep the localStorage cached state (already loaded in constructor)
+      // This prevents tours from reappearing on network issues
     }
 
     this.initialized = true;
@@ -113,6 +152,13 @@ export class ProductTourService {
    * Mark a tour as completed
    */
   async markTourCompleted(tourType: TourType): Promise<void> {
+    // Update local cache first (instant feedback)
+    const newCache = new Set(this.completedToursCache());
+    newCache.add(tourType);
+    this.completedToursCache.set(newCache);
+    // Save to localStorage as backup
+    this.saveToLocalStorage(newCache);
+
     try {
       // Update backend
       await firstValueFrom(
@@ -121,17 +167,9 @@ export class ProductTourService {
           {}
         )
       );
-
-      // Update local cache
-      const newCache = new Set(this.completedToursCache());
-      newCache.add(tourType);
-      this.completedToursCache.set(newCache);
     } catch (e) {
-      console.error('Error marking tour as completed:', e);
-      // Still update local cache even if API fails
-      const newCache = new Set(this.completedToursCache());
-      newCache.add(tourType);
-      this.completedToursCache.set(newCache);
+      console.error('Error marking tour as completed in API:', e);
+      // Local cache and localStorage already updated, so tour won't reappear
     }
   }
 
@@ -166,6 +204,18 @@ export class ProductTourService {
    * Reset specific tours or all tours
    */
   private async resetTours(tourTypes?: TourType[]): Promise<void> {
+    // Update local cache first
+    let newCache: Set<string>;
+    if (!tourTypes) {
+      newCache = new Set();
+    } else {
+      newCache = new Set(this.completedToursCache());
+      tourTypes.forEach(t => newCache.delete(t));
+    }
+    this.completedToursCache.set(newCache);
+    // Update localStorage
+    this.saveToLocalStorage(newCache);
+
     try {
       const response = await firstValueFrom(
         this.api.delete<{ success: boolean; completedTours: string[] }>(
@@ -174,30 +224,15 @@ export class ProductTourService {
         )
       );
 
-      // Update local cache with remaining completed tours
+      // If backend returns different state, sync with it
       if (response?.completedTours) {
-        this.completedToursCache.set(new Set(response.completedTours));
-      } else {
-        // If no tourTypes specified, all were reset
-        if (!tourTypes) {
-          this.completedToursCache.set(new Set());
-        } else {
-          // Remove specified tours from cache
-          const newCache = new Set(this.completedToursCache());
-          tourTypes.forEach(t => newCache.delete(t));
-          this.completedToursCache.set(newCache);
-        }
+        const backendCache = new Set(response.completedTours);
+        this.completedToursCache.set(backendCache);
+        this.saveToLocalStorage(backendCache);
       }
     } catch (e) {
-      console.error('Error resetting tours:', e);
-      // Update local cache anyway
-      if (!tourTypes) {
-        this.completedToursCache.set(new Set());
-      } else {
-        const newCache = new Set(this.completedToursCache());
-        tourTypes.forEach(t => newCache.delete(t));
-        this.completedToursCache.set(newCache);
-      }
+      console.error('Error resetting tours in API:', e);
+      // Local cache and localStorage already updated
     }
   }
 
