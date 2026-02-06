@@ -1671,3 +1671,33 @@ body.dark ion-modal.verification-modal {
     --background: #1e293b;
   }
 }
+
+// ==========================================================================
+// Review Modal - Compact Bottom Sheet Style
+// ==========================================================================
+ion-modal.review-modal-compact {
+  --border-radius: 20px 20px 0 0;
+  --background: var(--histora-card-bg, #ffffff);
+  --height: auto;
+  --max-height: 50%;
+
+  &::part(content) {
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  // Ensure proper backdrop
+  &::part(backdrop) {
+    opacity: 0.5;
+  }
+}
+
+body.ion-palette-dark ion-modal.review-modal-compact,
+body.dark ion-modal.review-modal-compact {
+  --background: var(--histora-card-bg-dark, #1e293b);
+
+  &::part(content) {
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    border-top: 1px solid var(--histora-border-dark, #334155);
+  }
+}

@@ -1,206 +1,159 @@
+// Review Modal - Compact Bottom Sheet Design
+// Based on UX recommendations: ~340px height, no scroll required
+
 // Variables
-$primary-color: #1e3a5f;
 $star-color: #fbbf24;
-$star-empty-color: #d1d5db;
-$text-dark: #1a1a1a;
-$text-muted: #71717a;
+$star-empty: #d1d5db;
+$primary: var(--ion-color-primary, #3b82f6);
+$text-primary: var(--histora-text-primary, #1e293b);
+$text-muted: var(--histora-text-muted, #64748b);
+$surface: var(--histora-surface, #f8fafc);
+$border: var(--histora-border, #e2e8f0);
 
-// Header styling
-ion-header {
-  ion-toolbar {
-    --background: transparent;
-
-    ion-title {
-      font-size: 18px;
-      font-weight: 600;
-    }
-  }
-}
-
-// Main container
-.review-container {
+// Main container - compact bottom sheet
+.review-sheet {
   display: flex;
   flex-direction: column;
-  gap: 12px; // Reducido de 16px para mejor uso del espacio
-  padding: 0;
-  // Sin padding-bottom extra - el contenido termina con el textarea
+  padding: 12px 20px 20px;
+  background: var(--histora-card-bg, #ffffff);
+  min-height: auto; // Let content define height, no forced minimum
 }
 
-// Nurse info section
-.nurse-info {
+// Handle bar for bottom sheet feel
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: $border;
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+// Header - compact
+.sheet-header {
   text-align: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--ion-color-light);
+  margin-bottom: 16px;
 
-  .nurse-label {
-    margin: 0 0 2px;
-    font-size: 13px;
-    color: $text-muted;
-  }
-
-  .nurse-name {
+  .sheet-title {
     margin: 0;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
-    color: $text-dark;
+    color: $text-primary;
+    line-height: 1.3;
   }
 }
 
-// Rating section
-.rating-section {
+// Star rating row - horizontal, centered
+.rating-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  ion-icon {
+    font-size: 32px;
+    color: $star-empty;
+    transition: color 0.15s ease;
+  }
+
+  &.active ion-icon {
+    color: $star-color;
+  }
+}
+
+// Rating text feedback
+.rating-text {
   text-align: center;
-
-  .rating-instruction {
-    margin: 0 0 10px;
-    font-size: 15px;
-    color: $text-dark;
-    font-weight: 500;
-  }
-
-  .stars-container {
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-  }
-
-  .star-button {
-    background: transparent;
-    border: none;
-    padding: 6px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    border-radius: 50%;
-
-    &:active {
-      transform: scale(0.9);
-    }
-
-    &:focus {
-      outline: none;
-    }
-
-    &:focus-visible {
-      box-shadow: 0 0 0 2px $primary-color;
-    }
-
-    ion-icon {
-      font-size: 36px;
-      color: $star-empty-color;
-      transition: color 0.2s ease, transform 0.2s ease;
-    }
-
-    &.filled ion-icon {
-      color: $star-color;
-      transform: scale(1.1);
-    }
-
-    &:hover ion-icon {
-      transform: scale(1.15);
-    }
-  }
-
-  .rating-label {
-    margin: 10px 0 0;
-    font-size: 15px;
-    font-weight: 600;
-    color: $primary-color;
-    animation: fadeIn 0.3s ease;
-  }
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary;
+  animation: fadeIn 0.2s ease;
 }
 
-// Comment section
-.comment-section {
-  // No usar flex: 1, evita espacio extra debajo del textarea
+// Comment section - compact
+.comment-row {
+  position: relative;
+  margin-bottom: 16px;
 
-  .comment-label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: $text-dark;
-  }
-
-  .comment-textarea {
-    --background: var(--histora-surface, #f8fafc);
+  .comment-input {
+    --background: #{$surface};
     --border-radius: 10px;
     --padding-start: 12px;
     --padding-end: 12px;
     --padding-top: 10px;
-    --padding-bottom: 10px;
-    border: 1px solid var(--ion-color-light);
+    --padding-bottom: 24px; // Space for char count
+    border: 1px solid $border;
     border-radius: 10px;
     font-size: 14px;
-    min-height: 72px; // Reducido de 80px
-    max-height: 120px; // Limitar altura maxima
+    min-height: 64px;
+    max-height: 80px;
 
     &:focus-within {
-      border-color: $primary-color;
-      box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+      border-color: $primary;
     }
+  }
+
+  .char-count {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 11px;
+    color: $text-muted;
   }
 }
 
-// Footer buttons
-ion-footer {
-  background: var(--ion-background-color);
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-  // Reducir padding del footer
-  padding: 12px 16px;
+// Actions row - skip link + submit button
+.actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
 
-  .footer-buttons {
-    display: flex;
-    gap: 10px;
-    margin: 0; // Eliminar margin adicional
+.skip-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 0;
+  font-size: 14px;
+  color: $text-muted;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
-    ion-button {
-      flex: 1;
-      --border-radius: 10px;
-      font-weight: 600;
-      height: 44px;
-      font-size: 15px;
-      margin: 0; // Asegurar no margin adicional
+  &:hover {
+    color: $text-primary;
+  }
 
-      &[fill="outline"] {
-        --border-width: 2px;
-      }
-
-      ion-spinner {
-        width: 18px;
-        height: 18px;
-      }
-    }
+  &:disabled {
+    opacity: 0.5;
   }
 }
 
-// Ajustes cuando el teclado esta visible
-:host-context(body.keyboard-visible) {
-  .review-container {
-    gap: 8px;
-  }
+.submit-btn {
+  --border-radius: 10px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  height: 44px;
+  font-weight: 600;
+  font-size: 15px;
+  margin: 0;
+  min-width: 100px;
 
-  .rating-section {
-    .stars-container {
-      gap: 2px;
-    }
-
-    .star-button {
-      padding: 4px;
-
-      ion-icon {
-        font-size: 32px;
-      }
-    }
-
-    .rating-label {
-      margin: 6px 0 0;
-      font-size: 14px;
-    }
-  }
-
-  .comment-section {
-    .comment-textarea {
-      min-height: 60px;
-    }
+  ion-spinner {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -208,7 +161,7 @@ ion-footer {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
@@ -217,219 +170,78 @@ ion-footer {
 }
 
 // Dark mode support
-:host-context(body.ion-palette-dark),
-:host-context(body.dark) {
-  .nurse-info {
-    border-bottom-color: #334155;
-
-    .nurse-label {
-      color: #71717a;
-    }
-
-    .nurse-name {
-      color: #f1f5f9;
-    }
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .review-sheet {
+    background: var(--histora-card-bg-dark, #1e293b);
   }
 
-  .rating-section {
-    .rating-instruction {
-      color: #f1f5f9;
-    }
-
-    .star-button {
-      ion-icon {
-        color: #475569;
-      }
-
-      &.filled ion-icon {
-        color: $star-color;
-      }
-    }
-
-    .rating-label {
-      color: #6bb5b3;
-    }
+  .sheet-handle {
+    background: var(--histora-border-dark, #334155);
   }
 
-  .comment-section {
-    .comment-label {
-      color: #f1f5f9;
-    }
+  .sheet-title {
+    color: var(--histora-text-primary-dark, #f1f5f9);
+  }
 
-    .comment-textarea {
-      --background: #1e293b;
-      border-color: #334155;
+  .star-btn ion-icon {
+    color: #475569;
+  }
+
+  .star-btn.active ion-icon {
+    color: $star-color;
+  }
+
+  .rating-text {
+    color: #6bb5b3;
+  }
+
+  .comment-row {
+    .comment-input {
+      --background: var(--histora-surface-dark, #0f172a);
+      border-color: var(--histora-border-dark, #334155);
 
       &:focus-within {
         border-color: #6bb5b3;
-        box-shadow: 0 0 0 2px rgba(107, 181, 179, 0.2);
-      }
-    }
-  }
-
-  ion-footer {
-    background: var(--ion-background-color);
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
-  }
-}
-
-// Responsive adjustments for smaller screens
-@media (max-width: 400px) {
-  .review-container {
-    gap: 12px;
-  }
-
-  .nurse-info {
-    padding-bottom: 8px;
-
-    .nurse-label {
-      font-size: 12px;
-    }
-
-    .nurse-name {
-      font-size: 16px;
-    }
-  }
-
-  .rating-section {
-    .rating-instruction {
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    .star-button {
-      padding: 4px;
-
-      ion-icon {
-        font-size: 32px;
       }
     }
 
-    .rating-label {
-      margin-top: 8px;
-      font-size: 14px;
+    .char-count {
+      color: #64748b;
     }
   }
 
-  .comment-section {
-    .comment-label {
-      font-size: 13px;
-    }
+  .skip-btn {
+    color: #64748b;
 
-    .comment-textarea {
-      font-size: 13px;
-      min-height: 70px;
-    }
-  }
-
-  ion-footer .footer-buttons {
-    gap: 8px;
-
-    ion-button {
-      height: 42px;
-      font-size: 14px;
+    &:hover {
+      color: #94a3b8;
     }
   }
 }
 
-// Responsive adjustments for short screens (avoid scroll in modal)
-@media (max-height: 700px) {
-  .review-container {
-    gap: 10px;
+// Responsive - extra small screens
+@media (max-width: 360px) {
+  .review-sheet {
+    padding: 10px 16px 16px;
   }
 
-  .nurse-info {
-    padding-bottom: 8px;
-
-    .nurse-label {
-      font-size: 12px;
-    }
-
-    .nurse-name {
-      font-size: 16px;
-    }
+  .sheet-title {
+    font-size: 16px;
   }
 
-  .rating-section {
-    .rating-instruction {
-      margin-bottom: 6px;
-      font-size: 14px;
-    }
-
-    .star-button {
-      padding: 3px;
-
-      ion-icon {
-        font-size: 30px;
-      }
-    }
-
-    .rating-label {
-      margin-top: 6px;
-      font-size: 13px;
-    }
+  .star-btn ion-icon {
+    font-size: 28px;
   }
 
-  .comment-section {
-    .comment-label {
-      margin-bottom: 4px;
-      font-size: 13px;
-    }
-
-    .comment-textarea {
-      min-height: 60px;
-      --padding-top: 8px;
-      --padding-bottom: 8px;
-    }
+  .rating-row {
+    gap: 6px;
   }
 
-  ion-footer .footer-buttons {
-    ion-button {
-      height: 40px;
-      font-size: 14px;
-    }
-  }
-}
-
-// Extra small height (iPhone SE, older devices)
-@media (max-height: 600px) {
-  .review-container {
-    gap: 8px;
-  }
-
-  .nurse-info {
-    padding-bottom: 6px;
-  }
-
-  .rating-section {
-    .rating-instruction {
-      margin-bottom: 4px;
-      font-size: 13px;
-    }
-
-    .star-button {
-      padding: 2px;
-
-      ion-icon {
-        font-size: 26px;
-      }
-    }
-
-    .rating-label {
-      margin-top: 4px;
-      font-size: 12px;
-    }
-  }
-
-  .comment-section {
-    .comment-textarea {
-      min-height: 50px;
-    }
-  }
-
-  ion-footer .footer-buttons {
-    ion-button {
-      height: 38px;
-    }
+  .submit-btn {
+    --padding-start: 20px;
+    --padding-end: 20px;
+    height: 40px;
+    font-size: 14px;
   }
 }

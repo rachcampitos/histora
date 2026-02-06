@@ -822,10 +822,11 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         serviceRequestId: this.requestId(),
         nurseName
       },
-      breakpoints: [0, 0.75, 1],
-      initialBreakpoint: 0.75,
-      handle: true,
-      cssClass: 'review-modal'
+      // Compact bottom sheet: 50% height (~340px), no full expansion needed
+      breakpoints: [0, 0.5],
+      initialBreakpoint: 0.5,
+      handle: false, // Component has its own handle
+      cssClass: 'review-modal-compact'
     });
 
     await modal.present();

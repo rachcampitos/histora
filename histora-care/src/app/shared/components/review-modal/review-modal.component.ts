@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { IonTextareaCustomEvent, TextareaInputEventDetail } from '@ionic/core';
@@ -9,12 +9,22 @@ export interface ReviewSubmitData {
   comment: string;
 }
 
+/**
+ * Review Modal Component - Compact Bottom Sheet Design
+ *
+ * Features:
+ * - Compact layout (~280px height) - no scroll needed
+ * - 32px stars with 8px gap
+ * - 200 char limit on comments
+ * - "Omitir por ahora" secondary action
+ * - Dark mode support
+ */
 @Component({
   selector: 'app-review-modal',
   templateUrl: './review-modal.component.html',
   styleUrls: ['./review-modal.component.scss'],
   standalone: true,
-  imports: [FormsModule, IonicModule],
+  imports: [CommonModule, FormsModule, IonicModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewModalComponent {
@@ -25,7 +35,6 @@ export class ReviewModalComponent {
 
   rating = signal<number>(0);
   comment = signal<string>('');
-  hoverRating = signal<number>(0);
   isSubmitting = signal<boolean>(false);
 
   stars = [1, 2, 3, 4, 5];
@@ -39,22 +48,12 @@ export class ReviewModalComponent {
     this.rating.set(star);
   }
 
-  onStarHover(star: number): void {
-    this.hoverRating.set(star);
-  }
-
-  onStarLeave(): void {
-    this.hoverRating.set(0);
-  }
-
   getStarIcon(star: number): string {
-    const currentRating = this.hoverRating() || this.rating();
-    return star <= currentRating ? 'star' : 'star-outline';
+    return star <= this.rating() ? 'star' : 'star-outline';
   }
 
   isStarFilled(star: number): boolean {
-    const currentRating = this.hoverRating() || this.rating();
-    return star <= currentRating;
+    return star <= this.rating();
   }
 
   updateComment(event: IonTextareaCustomEvent<TextareaInputEventDetail>): void {
@@ -65,10 +64,23 @@ export class ReviewModalComponent {
     return this.rating() > 0 && !this.isSubmitting();
   }
 
-  async cancel(): Promise<void> {
-    await this.modalCtrl.dismiss(null, 'cancel');
+  /**
+   * Skip review - dismiss without submitting
+   */
+  async skip(): Promise<void> {
+    await this.modalCtrl.dismiss(null, 'skip');
   }
 
+  /**
+   * Cancel review (alias for skip, for backwards compatibility)
+   */
+  async cancel(): Promise<void> {
+    await this.skip();
+  }
+
+  /**
+   * Submit review
+   */
   async submit(): Promise<void> {
     if (!this.canSubmit()) {
       const toast = await this.toastCtrl.create({
