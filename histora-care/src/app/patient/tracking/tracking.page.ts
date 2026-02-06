@@ -822,9 +822,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         serviceRequestId: this.requestId(),
         nurseName
       },
-      // Compact bottom sheet: 65% height to show all content
-      breakpoints: [0, 0.65],
-      initialBreakpoint: 0.65,
+      // Bottom sheet: 100% to test full height
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
       handle: false, // Component has its own handle
       cssClass: 'review-modal-compact'
     });

@@ -168,9 +168,9 @@ export class HistoryPage implements OnInit {
         serviceRequestId: request._id,
         nurseName
       },
-      // Compact bottom sheet: 65% height to show all content
-      breakpoints: [0, 0.65],
-      initialBreakpoint: 0.65,
+      // Bottom sheet: 100% to test full height
+      breakpoints: [0, 1],
+      initialBreakpoint: 1,
       handle: false, // Component has its own handle
       cssClass: 'review-modal-compact'
     });
