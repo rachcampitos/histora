@@ -383,16 +383,15 @@ export class HistoryPage implements OnInit {
       i < (request.rating || 0) ? '★' : '☆'
     ).join('');
 
+    const commentText = request.review
+      ? `"${request.review}"`
+      : 'Sin comentario adicional';
+
     const alert = await this.alertController.create({
       cssClass: 'histora-alert review-view-alert',
       header: 'Tu Reseña',
-      message: `
-        <div class="review-display">
-          <div class="review-stars">${stars}</div>
-          <div class="review-rating">${request.rating} de 5 estrellas</div>
-          ${request.review ? `<div class="review-comment">"${request.review}"</div>` : '<div class="review-no-comment">Sin comentario adicional</div>'}
-        </div>
-      `,
+      subHeader: `${stars}  ${request.rating}/5`,
+      message: commentText,
       buttons: [
         {
           text: 'Cerrar',
