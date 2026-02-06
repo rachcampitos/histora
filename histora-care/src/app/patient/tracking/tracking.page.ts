@@ -189,8 +189,16 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   private handleStatusChange(newStatus: TrackingStatus) {
     const currentStatus = this.currentStatus();
     if (currentStatus !== newStatus) {
+      const wasWaitingForConfirmation = currentStatus === 'pending';
       this.previousStatus.set(currentStatus);
       this.currentStatus.set(newStatus);
+
+      // If status changed from pending, the map container now exists
+      // Initialize map after a delay to allow DOM to update
+      if (wasWaitingForConfirmation && newStatus !== 'pending' && !this.mapInitialized) {
+        setTimeout(() => this.initMap(), 500);
+      }
+
       // Auto-scroll to the active step
       setTimeout(() => this.scrollToActiveStep(newStatus), 100);
     }
@@ -352,8 +360,10 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
       this.isLoading.set(false);
 
-      // Initialize map after data is loaded
-      setTimeout(() => this.initMap(), 300);
+      // Initialize map after data is loaded (only if not pending)
+      if (this.currentStatus() !== 'pending') {
+        setTimeout(() => this.initMap(), 300);
+      }
     } catch (error) {
       console.error('Error loading request:', error);
       this.loadError.set('No se pudo cargar la información del servicio. Por favor, intenta de nuevo.');
@@ -648,6 +658,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    */
   async cancelRequest() {
     const alert = await this.alertController.create({
+      cssClass: 'histora-alert histora-alert-danger',
       header: 'Cancelar servicio',
       message: '¿Estás seguro de que deseas cancelar este servicio?',
       inputs: [

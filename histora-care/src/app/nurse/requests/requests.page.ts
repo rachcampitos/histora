@@ -286,8 +286,13 @@ export class RequestsPage implements OnInit, OnDestroy {
         this.pendingRequests.update(requests =>
           requests.filter(r => r._id !== request._id)
         );
+        // Preserve patient data from original request if not in updated
         this.activeRequests.update(requests => [
-          { ...updatedRequest, distance: (request as RequestWithDistance).distance },
+          {
+            ...updatedRequest,
+            patient: updatedRequest.patient || request.patient,
+            distance: (request as RequestWithDistance).distance
+          },
           ...requests
         ]);
         // Auto-switch to active tab so nurse can see and manage the accepted request
