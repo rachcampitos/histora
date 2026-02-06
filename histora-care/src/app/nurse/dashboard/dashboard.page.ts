@@ -92,6 +92,72 @@ export class DashboardPage implements OnInit, OnDestroy {
         this.currentActiveRequest.set(null);
       }
     });
+
+    // React to new request notifications (real-time)
+    effect(() => {
+      const newRequest = this.wsService.newRequest();
+      if (newRequest) {
+        // Show toast notification
+        this.showNewRequestNotification(newRequest);
+        // Refresh pending requests list
+        this.refreshPendingRequests();
+        // Clear the notification after handling
+        this.wsService.clearNewRequest();
+      }
+    });
+
+    // React to status updates (for active requests)
+    effect(() => {
+      const statusUpdate = this.wsService.statusUpdate();
+      if (statusUpdate) {
+        // Refresh active requests when status changes
+        const nurseId = this.nurse()?._id;
+        if (nurseId) {
+          this.loadRequests(nurseId);
+        }
+      }
+    });
+  }
+
+  /**
+   * Show notification for new nearby request
+   */
+  private async showNewRequestNotification(request: { service: { name: string }; location: { district?: string } }) {
+    const toast = await this.toastCtrl.create({
+      message: `Nueva solicitud: ${request.service.name} en ${request.location.district || 'tu zona'}`,
+      duration: 5000,
+      position: 'top',
+      color: 'primary',
+      buttons: [
+        {
+          text: 'Ver',
+          handler: () => {
+            this.goToRequests();
+          }
+        }
+      ]
+    });
+    await toast.present();
+  }
+
+  /**
+   * Refresh only pending requests (for real-time updates)
+   */
+  private async refreshPendingRequests() {
+    try {
+      const position = await this.geoService.getCurrentPosition();
+      if (position) {
+        this.requestService
+          .getPendingNearby(position.latitude, position.longitude, 10)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (requests) => this.pendingRequests.set(requests.slice(0, 5)),
+            error: (err) => console.error('Error refreshing pending:', err),
+          });
+      }
+    } catch (error) {
+      console.error('Error getting position for refresh:', error);
+    }
   }
 
   async ngOnInit() {

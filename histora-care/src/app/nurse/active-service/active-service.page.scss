@@ -1,3 +1,17 @@
+// Toolbar styling for light mode visibility
+ion-header ion-toolbar {
+  --background: var(--histora-card-bg, #ffffff);
+  --color: var(--histora-text-primary, #1e293b);
+
+  ion-button {
+    --color: var(--histora-text-primary, #1e293b);
+  }
+
+  ion-title {
+    color: var(--histora-text-primary, #1e293b);
+  }
+}
+
 .active-service-content {
   --background: var(--histora-bg, #f8fafc);
 }
