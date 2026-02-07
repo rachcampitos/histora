@@ -241,6 +241,8 @@ $border: var(--histora-border, #e2e8f0);
   .comment-row {
     .comment-input {
       --background: var(--histora-surface-dark, #0f172a);
+      --color: var(--histora-text-primary-dark, #f1f5f9);
+      color: var(--histora-text-primary-dark, #f1f5f9);
       border-color: var(--histora-border-dark, #334155);
 
       &:focus-within {
@@ -260,6 +262,10 @@ $border: var(--histora-border, #e2e8f0);
     &:hover {
       color: #94a3b8;
     }
+  }
+
+  .submit-btn {
+    --color: #ffffff;
   }
 }
 

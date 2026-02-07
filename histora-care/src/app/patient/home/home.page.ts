@@ -149,7 +149,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   goToMyNurses() {
-    this.showComingSoon('Mis Enfermeras');
+    this.showComingSoon('Equipo de Confianza');
   }
 
   goToSettings() {
