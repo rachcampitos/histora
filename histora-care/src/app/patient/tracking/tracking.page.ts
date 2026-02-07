@@ -4,6 +4,7 @@ import { AlertController, ModalController, Platform, ToastController } from '@io
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService } from '../../core/services';
 import { ServiceRequest } from '../../core/models';
 import { ReviewModalComponent, ReviewSubmitData } from '../../shared/components/review-modal';
+import { ChatModalComponent } from '../../shared/components/chat-modal';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom, interval, Subscription } from 'rxjs';
 
@@ -648,9 +649,27 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   /**
    * Open chat with nurse
    */
-  openChat() {
-    // TODO: Implement in-app chat
-    this.showInfo('Chat próximamente disponible');
+  async openChat() {
+    const nurseInfo = this.nurse();
+    if (!nurseInfo) {
+      this.showInfo('No se pudo cargar la información de la enfermera');
+      return;
+    }
+
+    const modal = await this.modalController.create({
+      component: ChatModalComponent,
+      componentProps: {
+        serviceRequestId: this.requestId(),
+        otherUserName: `${nurseInfo.firstName} ${nurseInfo.lastName}`,
+        otherUserAvatar: nurseInfo.avatar,
+        otherUserRole: 'nurse'
+      },
+      cssClass: 'chat-modal-fullscreen',
+      presentingElement: await this.modalController.getTop(),
+      canDismiss: true
+    });
+
+    await modal.present();
   }
 
   /**

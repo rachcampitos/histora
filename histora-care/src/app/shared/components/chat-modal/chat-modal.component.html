@@ -1,0 +1,188 @@
+<div class="chat-container">
+  <!-- Header -->
+  <div class="chat-header">
+    <button class="back-btn" (click)="dismiss()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+
+    <div class="chat-header__avatar">
+      @if (otherUserAvatar) {
+        <img [src]="otherUserAvatar" [alt]="otherUserName" />
+      } @else {
+        <div class="avatar-placeholder">
+          {{ otherUserName.charAt(0).toUpperCase() }}
+        </div>
+      }
+      <span class="online-indicator"></span>
+    </div>
+
+    <div class="chat-header__info">
+      <h3 class="chat-header__name">{{ otherUserName }}</h3>
+      <p class="chat-header__status">
+        @if (isTyping()) {
+          <span class="typing-status">Escribiendo...</span>
+        } @else if (isConnected()) {
+          <ion-icon name="ellipse" color="success"></ion-icon>
+          En linea
+        } @else {
+          <ion-icon name="ellipse" color="medium"></ion-icon>
+          Desconectado
+        }
+      </p>
+    </div>
+
+    <button class="menu-btn" (click)="dismiss()">
+      <ion-icon name="close"></ion-icon>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="chat-loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Conectando al chat...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="chat-error">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <p>{{ error() }}</p>
+      <ion-button fill="outline" size="small" (click)="retry()">
+        <ion-icon slot="start" name="refresh"></ion-icon>
+        Reintentar
+      </ion-button>
+    </div>
+  }
+
+  <!-- Messages Container -->
+  @if (!isLoading() && !error()) {
+    <div class="chat-messages" #messagesContainer>
+      @if (messages().length === 0) {
+        <div class="chat-empty">
+          <div class="chat-empty__icon">
+            <ion-icon name="chatbubbles-outline"></ion-icon>
+          </div>
+          <h4>Inicia la conversacion</h4>
+          <p>Envia un mensaje para comunicarte con {{ otherUserRole === 'nurse' ? 'tu enfermera' : 'el paciente' }}</p>
+        </div>
+      } @else {
+        @for (message of messages(); track trackByMessageId($index, message)) {
+          <!-- Date Divider -->
+          @if (shouldShowDateDivider($index)) {
+            <div class="date-divider">
+              <span>{{ formatDateDivider(message.createdAt) }}</span>
+            </div>
+          }
+
+          <!-- Message Bubble -->
+          <div
+            class="message-bubble"
+            [class.message-bubble--sent]="isMyMessage(message)"
+            [class.message-bubble--received]="!isMyMessage(message)">
+
+            @if (!isMyMessage(message)) {
+              <div class="message-bubble__avatar">
+                @if (otherUserAvatar) {
+                  <img [src]="otherUserAvatar" [alt]="otherUserName" />
+                } @else {
+                  <div class="avatar-mini">{{ otherUserName.charAt(0) }}</div>
+                }
+              </div>
+            }
+
+            <div class="message-bubble__content">
+              @if (message.type === 'text') {
+                <p class="message-bubble__text">{{ message.content }}</p>
+              } @else if (message.type === 'image' && message.attachment) {
+                <img
+                  class="message-bubble__image"
+                  [src]="message.attachment.url"
+                  alt="Imagen" />
+              } @else if (message.type === 'location' && message.location) {
+                <div class="message-bubble__location">
+                  <ion-icon name="location"></ion-icon>
+                  <span>{{ message.location.address || 'Ubicacion compartida' }}</span>
+                </div>
+              } @else if (message.type === 'system') {
+                <p class="message-bubble__system">{{ message.content }}</p>
+              }
+
+              <div class="message-bubble__meta">
+                <span class="message-bubble__timestamp">{{ formatTime(message.createdAt) }}</span>
+                @if (isMyMessage(message)) {
+                  <span class="message-bubble__status" [class.read]="isMessageRead(message)">
+                    <ion-icon [name]="getMessageStatusIcon(message)"></ion-icon>
+                    @if (message.status === 'read') {
+                      <ion-icon name="checkmark-outline" class="second-check"></ion-icon>
+                    }
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Typing Indicator -->
+        @if (isTyping()) {
+          <div class="typing-indicator">
+            <div class="typing-indicator__avatar">
+              @if (otherUserAvatar) {
+                <img [src]="otherUserAvatar" [alt]="otherUserName" />
+              } @else {
+                <div class="avatar-mini">{{ otherUserName.charAt(0) }}</div>
+              }
+            </div>
+            <div class="typing-indicator__bubble">
+              <div class="typing-indicator__dots">
+                <span class="typing-indicator__dot"></span>
+                <span class="typing-indicator__dot"></span>
+                <span class="typing-indicator__dot"></span>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Quick Replies -->
+    @if (messages().length === 0) {
+      <div class="quick-replies">
+        @for (reply of quickReplies; track reply.text) {
+          <button class="quick-reply" (click)="sendQuickReply(reply)">
+            <ion-icon [name]="reply.icon"></ion-icon>
+            <span>{{ reply.text }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Input Area -->
+    <div class="chat-input">
+      <textarea
+        #messageInput
+        class="chat-input__textarea"
+        [ngModel]="messageText()"
+        (ngModelChange)="messageText.set($event)"
+        (input)="onInputChange()"
+        (blur)="onInputBlur()"
+        (keydown.enter)="$event.preventDefault(); sendMessage()"
+        placeholder="Escribe un mensaje..."
+        rows="1"
+        [disabled]="isSending()">
+      </textarea>
+
+      <ion-button
+        class="chat-input__send-btn"
+        [disabled]="!messageText().trim() || isSending()"
+        (click)="sendMessage()">
+        @if (isSending()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <ion-icon name="send"></ion-icon>
+        }
+      </ion-button>
+    </div>
+  }
+</div>
