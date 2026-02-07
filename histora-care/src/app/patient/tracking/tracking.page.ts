@@ -684,6 +684,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private async loadChatUnread(requestId: string) {
+    // Ensure chat WebSocket is connected
+    await this.chatService.connect();
+
     try {
       const room = await this.chatService.getRoomByServiceRequest(requestId);
       if (room) {
@@ -701,6 +704,19 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.chatNotificationSub?.unsubscribe();
     this.chatNotificationSub = this.chatService.onRoomNotification().subscribe(data => {
       if (data.roomId === this.chatRoomId) {
+        this.chatUnreadCount.update(c => c + 1);
+      }
+    });
+
+    // Also listen for new-message events (covers case when room was just created)
+    this.chatService.onNewMessage().subscribe(msg => {
+      const userId = this.authService.user()?.id;
+      if (msg.senderId !== userId) {
+        if (!this.chatRoomId) {
+          this.chatService.getRoomByServiceRequest(requestId).then(room => {
+            if (room) this.chatRoomId = room._id;
+          });
+        }
         this.chatUnreadCount.update(c => c + 1);
       }
     });

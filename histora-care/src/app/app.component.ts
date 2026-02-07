@@ -54,14 +54,45 @@ export class AppComponent implements OnInit, OnDestroy {
     this.chatService.fetchUnreadCount();
 
     this.notificationSub = this.chatService.onRoomNotification().subscribe(async (data) => {
+      // Play notification sound
+      this.playNotificationSound();
+
       const toast = await this.toastController.create({
         message: `${data.senderName}: ${data.preview}`,
         duration: 4000,
         position: 'top',
         color: 'primary',
+        icon: 'chatbubble-ellipses',
+        buttons: [{ icon: 'close', role: 'cancel' }],
       });
       await toast.present();
     });
+  }
+
+  private playNotificationSound() {
+    try {
+      const ctx = new AudioContext();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+
+      // Short pleasant two-tone notification
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(830, ctx.currentTime);
+      oscillator.frequency.setValueAtTime(1000, ctx.currentTime + 0.08);
+
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.2);
+
+      oscillator.onended = () => ctx.close();
+    } catch {
+      // Audio not available, skip silently
+    }
   }
 
   /**

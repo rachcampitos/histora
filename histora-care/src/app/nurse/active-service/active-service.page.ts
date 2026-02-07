@@ -383,6 +383,9 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   }
 
   private async loadChatUnread(requestId: string) {
+    // Ensure chat WebSocket is connected
+    await this.chatService.connect();
+
     try {
       const room = await this.chatService.getRoomByServiceRequest(requestId);
       if (room) {
@@ -401,6 +404,22 @@ export class ActiveServicePage implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         if (data.roomId === this.chatRoomId) {
+          this.chatUnreadCount.update(c => c + 1);
+        }
+      });
+
+    // Also listen for new-message events (covers case when room was just created)
+    this.chatService.onNewMessage()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(msg => {
+        const userId = this.authService.user()?.id;
+        if (msg.senderId !== userId) {
+          // If we don't have a roomId yet, try to get it
+          if (!this.chatRoomId) {
+            this.chatService.getRoomByServiceRequest(requestId).then(room => {
+              if (room) this.chatRoomId = room._id;
+            });
+          }
           this.chatUnreadCount.update(c => c + 1);
         }
       });
