@@ -23,6 +23,7 @@ import { UserRole } from '../users/schema/user.schema';
 import { NursesService } from './nurses.service';
 import { CepValidationService } from './cep-validation.service';
 import { ReniecValidationService } from './reniec-validation.service';
+import { TrackingGateway } from '../tracking/tracking.gateway';
 import {
   CreateNurseDto,
   UpdateNurseDto,
@@ -41,6 +42,7 @@ export class NursesController {
     private readonly nursesService: NursesService,
     private readonly cepValidationService: CepValidationService,
     private readonly reniecValidationService: ReniecValidationService,
+    private readonly trackingGateway: TrackingGateway,
   ) {}
 
   // Public endpoint: Get featured professionals for landing page
@@ -154,7 +156,16 @@ export class NursesController {
     @Request() req: { user: { userId: string } },
     @Body() updateNurseDto: UpdateNurseDto,
   ) {
-    return this.nursesService.update(req.user.userId, updateNurseDto);
+    const result = await this.nursesService.update(req.user.userId, updateNurseDto);
+
+    // Notify map viewers if availability-related fields changed
+    const availabilityFields = ['availableDays', 'availableFrom', 'availableTo', 'isAvailable'];
+    const hasAvailabilityChange = availabilityFields.some(field => field in updateNurseDto);
+    if (hasAvailabilityChange) {
+      this.trackingGateway.broadcastNurseAvailabilityChanged(req.user.userId);
+    }
+
+    return result;
   }
 
   // Protected: Update my location
@@ -182,7 +193,9 @@ export class NursesController {
     @Request() req: { user: { userId: string } },
     @Body() dto: UpdateNurseAvailabilityDto,
   ) {
-    return this.nursesService.setAvailability(req.user.userId, dto.isAvailable);
+    const result = await this.nursesService.setAvailability(req.user.userId, dto.isAvailable);
+    this.trackingGateway.broadcastNurseAvailabilityChanged(req.user.userId);
+    return result;
   }
 
   // Protected: Add a service

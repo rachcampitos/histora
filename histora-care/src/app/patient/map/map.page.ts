@@ -5,6 +5,8 @@ import { GeolocationService } from '../../core/services/geolocation.service';
 import { MapboxService } from '../../core/services/mapbox.service';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { WebSocketService } from '../../core/services/websocket.service';
+import { AuthService } from '../../core/services/auth.service';
 import { NurseSearchResult } from '../../core/models';
 import { NurseListModalComponent } from '../../shared/components/nurse-list-modal/nurse-list-modal.component';
 
@@ -24,6 +26,8 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   private nurseService = inject(NurseApiService);
   private mapboxService = inject(MapboxService);
   private themeService = inject(ThemeService);
+  private webSocketService = inject(WebSocketService);
+  private authService = inject(AuthService);
 
   private mapInitialized = false;
   private isClosing = false; // Flag to prevent infinite close loops
@@ -34,6 +38,14 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       const isDark = this.themeService.isDarkMode();
       if (this.mapInitialized) {
         this.mapboxService.setStyle(isDark ? 'dark' : 'streets');
+      }
+    });
+
+    // React to nurse availability changes - refresh map search
+    effect(() => {
+      const changed = this.webSocketService.nurseAvailabilityChanged();
+      if (changed && this.mapInitialized) {
+        this.searchNearbyNurses();
       }
     });
   }
@@ -76,7 +88,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Called every time the view enters (including when returning from other tabs)
    */
-  ionViewDidEnter() {
+  async ionViewDidEnter() {
     // Check if map container exists but map is not initialized
     const mapContainer = document.getElementById('map');
     if (mapContainer && !this.mapInitialized) {
@@ -93,6 +105,19 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
         }, 100);
       }
     }
+
+    // Connect to WebSocket and join map room for real-time updates
+    if (!this.webSocketService.connected) {
+      const token = await this.authService.getToken();
+      if (token) {
+        this.webSocketService.connect(token);
+      }
+    }
+    this.webSocketService.joinMapRoom();
+  }
+
+  ionViewDidLeave() {
+    this.webSocketService.leaveMapRoom();
   }
 
   ngOnDestroy() {

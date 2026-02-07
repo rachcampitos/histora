@@ -101,6 +101,7 @@ export class ChatService {
   // Subjects for events
   private newMessage$ = new Subject<ChatMessage>();
   private messageRead$ = new Subject<{ roomId: string; messageIds: string[]; readBy: string }>();
+  private roomNotification$ = new Subject<{ roomId: string; type: string; preview: string; senderName: string }>();
 
   // Get observable for new messages
   onNewMessage(): Observable<ChatMessage> {
@@ -109,6 +110,10 @@ export class ChatService {
 
   onMessageRead(): Observable<{ roomId: string; messageIds: string[]; readBy: string }> {
     return this.messageRead$.asObservable();
+  }
+
+  onRoomNotification(): Observable<{ roomId: string; type: string; preview: string; senderName: string }> {
+    return this.roomNotification$.asObservable();
   }
 
   /**
@@ -200,9 +205,12 @@ export class ChatService {
       this.messageRead$.next(data);
     });
 
-    this.socket.on('room-notification', (data: { roomId: string; type: string; preview: string }) => {
-      // Handle room notifications (e.g., update unread badge)
+    this.socket.on('room-notification', (data: { roomId: string; type: string; preview: string; senderName: string }) => {
+      // Skip if user is currently viewing this room (they get new-message instead)
+      if (this.currentRoomId === data.roomId) return;
+
       this._unreadCount.update(count => count + 1);
+      this.roomNotification$.next(data);
     });
   }
 

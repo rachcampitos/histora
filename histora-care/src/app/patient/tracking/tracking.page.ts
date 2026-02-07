@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService } from '../../core/services';
+import { ChatService } from '../../core/services/chat.service';
 import { ServiceRequest } from '../../core/models';
 import { ReviewModalComponent, ReviewSubmitData } from '../../shared/components/review-modal';
 import { ChatModalComponent } from '../../shared/components/chat-modal';
@@ -56,6 +57,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   hasReviewed = signal(false);
   showReviewModal = signal(false);
   copiedPayment = signal<'yape' | 'plin' | null>(null);
+  chatUnreadCount = signal(0);
+  private chatRoomId: string | null = null;
 
   // Alternative nurses (shown when rejected)
   alternativeNurses = signal<NurseInfo[]>([]);
@@ -65,6 +68,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   private isDevelopment = !environment.production;
   private hasRealNurseLocation = false;
   private pollingSubscription?: Subscription;
+  private chatNotificationSub?: Subscription;
   private simulationInterval?: ReturnType<typeof setInterval>;
   private previousStatus = signal<TrackingStatus | null>(null);
 
@@ -102,7 +106,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private nurseApiService: NurseApiService,
     private modalController: ModalController,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private chatService: ChatService
   ) {
     // React to WebSocket location updates
     effect(() => {
@@ -169,6 +174,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.stopPolling();
     this.stopSimulation();
+    this.chatNotificationSub?.unsubscribe();
     this.wsService.leaveTrackingRoom(this.requestId());
     this.wsService.disconnect();
     this.mapboxService.destroy();
@@ -360,6 +366,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       }
 
       this.isLoading.set(false);
+
+      // Load chat unread count
+      this.loadChatUnread(this.requestId());
 
       // Initialize map after data is loaded (only if not pending)
       if (this.currentStatus() !== 'pending') {
@@ -670,6 +679,31 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     await modal.present();
+    await modal.onWillDismiss();
+    this.chatUnreadCount.set(0);
+  }
+
+  private async loadChatUnread(requestId: string) {
+    try {
+      const room = await this.chatService.getRoomByServiceRequest(requestId);
+      if (room) {
+        this.chatRoomId = room._id;
+        const userId = this.authService.user()?.id;
+        if (userId && room.unreadCount) {
+          this.chatUnreadCount.set(room.unreadCount[userId] || 0);
+        }
+      }
+    } catch (err) {
+      // Non-critical, ignore
+    }
+
+    // Subscribe to room notifications for new messages
+    this.chatNotificationSub?.unsubscribe();
+    this.chatNotificationSub = this.chatService.onRoomNotification().subscribe(data => {
+      if (data.roomId === this.chatRoomId) {
+        this.chatUnreadCount.update(c => c + 1);
+      }
+    });
   }
 
   /**
