@@ -47,9 +47,14 @@
             <h3>{{ patientName() }}</h3>
             <p class="service-type">{{ serviceType() }}</p>
           </div>
-          <ion-button fill="clear" (click)="callPatient()">
-            <ion-icon slot="icon-only" name="call" color="primary"></ion-icon>
-          </ion-button>
+          <div class="patient-actions">
+            <ion-button fill="clear" (click)="callPatient()" aria-label="Llamar al paciente">
+              <ion-icon slot="icon-only" name="call" color="success"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" (click)="openChat()" aria-label="Chat con el paciente" class="chat-btn">
+              <ion-icon slot="icon-only" name="chatbubble" color="primary"></ion-icon>
+            </ion-button>
+          </div>
         </div>
 
         <div class="address-section">

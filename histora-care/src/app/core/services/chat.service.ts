@@ -310,15 +310,11 @@ export class ChatService {
    * Get or create chat room for a service request
    */
   async getOrCreateServiceRoom(serviceRequestId: string): Promise<ChatRoom> {
-    const existingRoom = await this.getRoomByServiceRequest(serviceRequestId);
-    if (existingRoom) {
-      this._currentRoom.set(existingRoom);
-      return existingRoom;
-    }
-
-    // Room will be created automatically when first message is sent
-    // For now, just return null and let the backend handle it
-    throw new Error('No chat room exists for this service');
+    const room = await firstValueFrom(
+      this.api.post<ChatRoom>(`/chat/service/${serviceRequestId}/room`, {})
+    );
+    this._currentRoom.set(room);
+    return room;
   }
 
   /**

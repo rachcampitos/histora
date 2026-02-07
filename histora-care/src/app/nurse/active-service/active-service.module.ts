@@ -10,6 +10,7 @@ import { ActiveServicePage } from './active-service.page';
 import { PanicButtonComponent } from '../../shared/components/panic-button/panic-button.component';
 import { VirtualEscortComponent } from '../../shared/components/virtual-escort/virtual-escort.component';
 import { CheckInReminderComponent } from '../../shared/components/check-in-reminder/check-in-reminder.component';
+import { ChatModalComponent } from '../../shared/components/chat-modal/chat-modal.component';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { CheckInReminderComponent } from '../../shared/components/check-in-remin
     ActiveServicePageRoutingModule,
     PanicButtonComponent,
     VirtualEscortComponent,
-    CheckInReminderComponent
+    CheckInReminderComponent,
+    ChatModalComponent
   ],
   declarations: [ActiveServicePage]
 })

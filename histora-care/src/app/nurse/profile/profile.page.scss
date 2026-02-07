@@ -1024,6 +1024,20 @@ ion-modal {
   --background: #{tokens.$surface-dark-primary};
   background: tokens.$surface-dark-primary;
 
+  ion-header ion-toolbar {
+    --background: #{tokens.$surface-dark-primary};
+    --color: #{tokens.$text-dark-primary};
+    --border-color: #{tokens.$color-neutral-700};
+
+    ion-title {
+      color: tokens.$text-dark-primary;
+    }
+
+    ion-button {
+      --color: #{tokens.$text-dark-primary};
+    }
+  }
+
   .profile-content {
     --background: #{tokens.$surface-dark-primary};
     background: tokens.$surface-dark-primary;
