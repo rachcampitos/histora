@@ -93,12 +93,15 @@ $border: var(--histora-border, #e2e8f0);
 
   ion-icon {
     font-size: 36px;
-    color: $star-empty;
-    transition: color 0.15s ease;
+    color: $star-empty !important;
+    --color: #{$star-empty};
+    transition: color 0.15s ease, transform 0.15s ease;
   }
 
   &.active ion-icon {
-    color: $star-color;
+    color: $star-color !important;
+    --color: #{$star-color};
+    transform: scale(1.1);
   }
 }
 
@@ -222,11 +225,13 @@ $border: var(--histora-border, #e2e8f0);
   }
 
   .star-btn ion-icon {
-    color: #475569;
+    color: #475569 !important;
+    --color: #475569;
   }
 
   .star-btn.active ion-icon {
-    color: $star-color;
+    color: $star-color !important;
+    --color: #{$star-color};
   }
 
   .rating-text {

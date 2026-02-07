@@ -8,6 +8,7 @@ import { TrackingPageRoutingModule } from './tracking-routing.module';
 
 import { TrackingPage } from './tracking.page';
 import { ReviewModalComponent } from '../../shared/components/review-modal';
+import { ChatModalComponent } from '../../shared/components/chat-modal';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { ReviewModalComponent } from '../../shared/components/review-modal';
     FormsModule,
     IonicModule,
     TrackingPageRoutingModule,
-    ReviewModalComponent
+    ReviewModalComponent,
+    ChatModalComponent
   ],
   declarations: [TrackingPage]
 })

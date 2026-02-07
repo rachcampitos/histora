@@ -300,9 +300,13 @@
           <ion-button fill="clear" class="action-btn" (click)="callNurse()" aria-label="Llamar a la enfermera">
             <ion-icon name="call" slot="icon-only" color="success"></ion-icon>
           </ion-button>
-          <ion-button fill="clear" class="action-btn" (click)="openChat()" aria-label="Abrir chat con la enfermera">
-            <ion-icon name="chatbubble" slot="icon-only" color="primary"></ion-icon>
-          </ion-button>
+          <div class="chat-btn-wrapper">
+            <ion-button fill="clear" class="action-btn chat-btn" (click)="openChat()" aria-label="Abrir chat con la enfermera">
+              <div class="chat-pulse"></div>
+              <ion-icon name="chatbubble" slot="icon-only" color="primary"></ion-icon>
+            </ion-button>
+            <div class="chat-tooltip">Comunicate con tu enfermera</div>
+          </div>
         </div>
       </div>
 
