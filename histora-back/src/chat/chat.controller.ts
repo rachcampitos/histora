@@ -151,4 +151,14 @@ export class ChatController {
   ) {
     return this.chatService.getRoomByServiceRequest(serviceRequestId);
   }
+
+  @Post('service/:serviceRequestId/room')
+  @ApiOperation({ summary: 'Get or create chat room for a service request' })
+  @ApiResponse({ status: 201, description: 'Chat room created or returned' })
+  async getOrCreateServiceRoom(
+    @CurrentUser() user: CurrentUserPayload,
+    @Param('serviceRequestId') serviceRequestId: string,
+  ) {
+    return this.chatService.getOrCreateRoomForService(serviceRequestId, user.userId);
+  }
 }

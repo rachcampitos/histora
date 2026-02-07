@@ -3,6 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ChatMessage, ChatMessageDocument, MessageType, MessageStatus } from './schema/chat-message.schema';
 import { ChatRoom, ChatRoomDocument, RoomType, RoomStatus } from './schema/chat-room.schema';
+import { ServiceRequest, ServiceRequestDocument } from '../service-requests/schema/service-request.schema';
+import { User } from '../users/schema/user.schema';
+import { Nurse } from '../nurses/schema/nurse.schema';
 
 export interface CreateRoomDto {
   type: RoomType;
@@ -44,6 +47,12 @@ export class ChatService {
     private roomModel: Model<ChatRoomDocument>,
     @InjectModel(ChatMessage.name)
     private messageModel: Model<ChatMessageDocument>,
+    @InjectModel(ServiceRequest.name)
+    private serviceRequestModel: Model<ServiceRequestDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<any>,
+    @InjectModel(Nurse.name)
+    private nurseModel: Model<any>,
   ) {}
 
   // ==================== Room Management ====================
@@ -95,6 +104,59 @@ export class ChatService {
     }
 
     return room;
+  }
+
+  /**
+   * Get or create chat room for a service request, looking up participant info automatically.
+   */
+  async getOrCreateRoomForService(serviceRequestId: string, userId: string): Promise<ChatRoom> {
+    // Check for existing room first
+    const existing = await this.getRoomByServiceRequest(serviceRequestId);
+    if (existing) {
+      return existing;
+    }
+
+    // Look up the service request
+    const request = await this.serviceRequestModel.findById(serviceRequestId);
+    if (!request) {
+      throw new NotFoundException('Service request not found');
+    }
+
+    // Verify the user is a participant (patient or nurse)
+    const isPatient = request.patientId.toString() === userId;
+    const nurse = await this.nurseModel.findOne({ _id: request.nurseId });
+    const isNurse = nurse && nurse.userId.toString() === userId;
+
+    if (!isPatient && !isNurse) {
+      throw new ForbiddenException('You are not a participant in this service');
+    }
+
+    // Look up patient user info
+    const patientUser = await this.userModel.findById(request.patientId);
+    if (!patientUser) {
+      throw new NotFoundException('Patient user not found');
+    }
+
+    if (!nurse) {
+      throw new NotFoundException('Nurse not found');
+    }
+
+    // Look up nurse user info for avatar
+    const nurseUser = await this.userModel.findById(nurse.userId);
+
+    return this.getOrCreateServiceRoom(
+      serviceRequestId,
+      {
+        userId: request.patientId.toString(),
+        name: `${patientUser.firstName} ${patientUser.lastName}`,
+        avatar: patientUser.avatar,
+      },
+      {
+        userId: nurse.userId.toString(),
+        name: `${nurseUser?.firstName || ''} ${nurseUser?.lastName || ''}`.trim(),
+        avatar: nurseUser?.avatar,
+      },
+    );
   }
 
   async getUserRooms(userId: string, status?: RoomStatus): Promise<ChatRoom[]> {

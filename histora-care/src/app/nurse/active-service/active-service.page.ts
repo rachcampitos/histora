@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
+import { ChatModalComponent } from '../../shared/components/chat-modal/chat-modal.component';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { GeolocationService } from '../../core/services/geolocation.service';
@@ -28,6 +29,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private virtualEscortService = inject(VirtualEscortService);
   private alertCtrl = inject(AlertController);
+  private modalCtrl = inject(ModalController);
   private toastCtrl = inject(ToastController);
   private destroyRef = inject(DestroyRef);
 
@@ -349,6 +351,26 @@ export class ActiveServicePage implements OnInit, OnDestroy {
     }
 
     window.open(`tel:${req.patient.phone}`, '_self');
+  }
+
+  async openChat() {
+    const req = this.request();
+    if (!req) return;
+
+    const patientName = this.patientName();
+
+    const modal = await this.modalCtrl.create({
+      component: ChatModalComponent,
+      componentProps: {
+        serviceRequestId: req._id,
+        otherUserName: patientName,
+        otherUserRole: 'patient'
+      },
+      cssClass: 'chat-modal-fullscreen',
+      canDismiss: true
+    });
+
+    await modal.present();
   }
 
   goBack() {

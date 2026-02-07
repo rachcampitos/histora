@@ -98,12 +98,11 @@ export class ChatModalComponent implements OnInit, OnDestroy, AfterViewChecked {
       // Connect to WebSocket
       await this.chatService.connect();
 
-      // Get or check for existing room
-      const room = await this.chatService.getRoomByServiceRequest(this.serviceRequestId);
+      // Get or create chat room for this service
+      const room = await this.chatService.getOrCreateServiceRoom(this.serviceRequestId);
 
       if (room) {
         // Load messages and join room
-        await this.chatService.getRoom(room._id);
         await this.chatService.getMessages(room._id);
         await this.chatService.joinRoom(room._id);
 

@@ -154,8 +154,15 @@ ion-header ion-toolbar {
       }
     }
 
-    ion-button {
-      margin: 0;
+    .patient-actions {
+      display: flex;
+      gap: 4px;
+
+      ion-button {
+        margin: 0;
+        --padding-start: 8px;
+        --padding-end: 8px;
+      }
     }
   }
 
@@ -230,6 +237,19 @@ ion-header ion-toolbar {
 // Dark Mode
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
+  ion-header ion-toolbar {
+    --background: var(--histora-bg-dark, #0f172a);
+    --color: var(--histora-text-primary-dark, #f1f5f9);
+
+    ion-button {
+      --color: var(--histora-text-primary-dark, #f1f5f9);
+    }
+
+    ion-title {
+      color: var(--histora-text-primary-dark, #f1f5f9);
+    }
+  }
+
   .active-service-content {
     --background: var(--histora-bg-dark, #0f172a);
   }
