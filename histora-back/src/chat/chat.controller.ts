@@ -5,10 +5,12 @@ import { RoomStatus } from './schema/chat-room.schema';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { IsString, IsOptional, IsNumber, IsArray, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
 
 class GetMessagesQueryDto {
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   limit?: number;
 
   @IsOptional()
