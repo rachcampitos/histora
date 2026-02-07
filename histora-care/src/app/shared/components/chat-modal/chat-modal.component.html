@@ -116,9 +116,6 @@
                 @if (isMyMessage(message)) {
                   <span class="message-bubble__status" [class.read]="isMessageRead(message)">
                     <ion-icon [name]="getMessageStatusIcon(message)"></ion-icon>
-                    @if (message.status === 'read') {
-                      <ion-icon name="checkmark-outline" class="second-check"></ion-icon>
-                    }
                   </span>
                 }
               </div>

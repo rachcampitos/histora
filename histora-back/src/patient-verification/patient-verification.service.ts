@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PatientVerification, PatientVerificationDocument } from './schema/patient-verification.schema';
+import { VerificationCode, VerificationCodeDocument } from './schema/verification-code.schema';
 import {
   SendPhoneCodeDto,
   VerifyPhoneCodeDto,
@@ -42,15 +43,14 @@ import { EmailProvider } from '../notifications/providers/email.provider';
 export class PatientVerificationService {
   private readonly logger = new Logger(PatientVerificationService.name);
 
-  // In-memory store for verification codes (use Redis in production)
-  private verificationCodes: Map<string, { code: string; expiresAt: Date }> = new Map();
-
   // Test code used when SMS is disabled
   private readonly TEST_VERIFICATION_CODE = '123456';
 
   constructor(
     @InjectModel(PatientVerification.name)
     private verificationModel: Model<PatientVerificationDocument>,
+    @InjectModel(VerificationCode.name)
+    private codeModel: Model<VerificationCodeDocument>,
     private configService: ConfigService,
     private smsProvider: SmsProvider,
     private emailProvider: EmailProvider,
@@ -94,7 +94,11 @@ export class PatientVerificationService {
 
     // Store code with 5-minute expiration
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-    this.verificationCodes.set(`${patientId}:${dto.phone}`, { code, expiresAt });
+    await this.codeModel.findOneAndUpdate(
+      { key: `${patientId}:${dto.phone}` },
+      { code, expiresAt, attempts: 0 },
+      { upsert: true },
+    );
 
     // If SMS is disabled, just log and return
     if (!smsEnabled) {
@@ -137,14 +141,14 @@ export class PatientVerificationService {
 
   async verifyPhoneCode(patientId: string, dto: VerifyPhoneCodeDto): Promise<PatientVerification> {
     const key = `${patientId}:${dto.phone}`;
-    const stored = this.verificationCodes.get(key);
+    const stored = await this.codeModel.findOne({ key });
 
     if (!stored) {
       throw new BadRequestException('No hay código de verificación pendiente');
     }
 
     if (new Date() > stored.expiresAt) {
-      this.verificationCodes.delete(key);
+      await this.codeModel.deleteOne({ key });
       throw new BadRequestException('El código ha expirado');
     }
 
@@ -152,7 +156,7 @@ export class PatientVerificationService {
       throw new BadRequestException('Código incorrecto');
     }
 
-    this.verificationCodes.delete(key);
+    await this.codeModel.deleteOne({ key });
 
     const verification = await this.getOrCreateVerification(patientId);
     verification.phoneVerified = true;
@@ -172,7 +176,11 @@ export class PatientVerificationService {
 
     // Store code with 10-minute expiration (longer than SMS since email can be slower)
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-    this.verificationCodes.set(`${patientId}:email:${dto.email}`, { code, expiresAt });
+    await this.codeModel.findOneAndUpdate(
+      { key: `${patientId}:email:${dto.email}` },
+      { code, expiresAt, attempts: 0 },
+      { upsert: true },
+    );
 
     // If email is not configured, just log and return
     if (!emailEnabled) {
@@ -217,14 +225,14 @@ export class PatientVerificationService {
 
   async verifyEmailCode(patientId: string, dto: VerifyEmailCodeDto): Promise<PatientVerification> {
     const key = `${patientId}:email:${dto.email}`;
-    const stored = this.verificationCodes.get(key);
+    const stored = await this.codeModel.findOne({ key });
 
     if (!stored) {
       throw new BadRequestException('No hay codigo de verificacion pendiente');
     }
 
     if (new Date() > stored.expiresAt) {
-      this.verificationCodes.delete(key);
+      await this.codeModel.deleteOne({ key });
       throw new BadRequestException('El codigo ha expirado');
     }
 
@@ -232,7 +240,7 @@ export class PatientVerificationService {
       throw new BadRequestException('Codigo incorrecto');
     }
 
-    this.verificationCodes.delete(key);
+    await this.codeModel.deleteOne({ key });
 
     const verification = await this.getOrCreateVerification(patientId);
     verification.emailVerified = true;

@@ -15,6 +15,7 @@ import { ReniecValidationService } from './reniec-validation.service';
 import { UploadsModule } from '../uploads/uploads.module';
 import { AdminModule } from '../admin/admin.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { TrackingModule } from '../tracking/tracking.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     UploadsModule,
     forwardRef(() => AdminModule),
     NotificationsModule,
+    forwardRef(() => TrackingModule),
   ],
   controllers: [NursesController, NurseVerificationController],
   providers: [NursesService, NurseVerificationService, CepValidationService, CepRevalidationScheduler, ReniecValidationService],

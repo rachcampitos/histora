@@ -304,6 +304,9 @@
             <ion-button fill="clear" class="action-btn chat-btn" (click)="openChat()" aria-label="Abrir chat con la enfermera">
               <div class="chat-pulse"></div>
               <ion-icon name="chatbubble" slot="icon-only" color="primary"></ion-icon>
+              @if (chatUnreadCount() > 0) {
+                <ion-badge color="danger" class="chat-badge">{{ chatUnreadCount() }}</ion-badge>
+              }
             </ion-button>
             <div class="chat-tooltip">Comunicate con tu enfermera</div>
           </div>

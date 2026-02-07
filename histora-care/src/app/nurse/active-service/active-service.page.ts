@@ -8,6 +8,7 @@ import { NurseApiService } from '../../core/services/nurse.service';
 import { GeolocationService } from '../../core/services/geolocation.service';
 import { WebSocketService } from '../../core/services/websocket.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ChatService } from '../../core/services/chat.service';
 import { VirtualEscortService, ActiveShare } from '../../core/services/virtual-escort.service';
 import { ServiceRequest, Nurse } from '../../core/models';
 import { environment } from '../../../environments/environment';
@@ -27,6 +28,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   private geoService = inject(GeolocationService);
   private wsService = inject(WebSocketService);
   private authService = inject(AuthService);
+  private chatService = inject(ChatService);
   private virtualEscortService = inject(VirtualEscortService);
   private alertCtrl = inject(AlertController);
   private modalCtrl = inject(ModalController);
@@ -39,6 +41,8 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   isLoading = signal(true);
   elapsedTime = signal('00:00:00');
   activeShares = signal<ActiveShare[]>([]);
+  chatUnreadCount = signal(0);
+  private chatRoomId: string | null = null;
 
   // Location broadcasting
   private locationBroadcastInterval: ReturnType<typeof setInterval> | null = null;
@@ -118,6 +122,9 @@ export class ActiveServicePage implements OnInit, OnDestroy {
         next: (request) => {
           this.request.set(request);
           this.isLoading.set(false);
+
+          // Load chat unread count
+          this.loadChatUnread(request._id);
 
           // Start timer if service is in progress
           if (['in_progress', 'arrived', 'on_the_way'].includes(request.status)) {
@@ -371,6 +378,32 @@ export class ActiveServicePage implements OnInit, OnDestroy {
     });
 
     await modal.present();
+    await modal.onWillDismiss();
+    this.chatUnreadCount.set(0);
+  }
+
+  private async loadChatUnread(requestId: string) {
+    try {
+      const room = await this.chatService.getRoomByServiceRequest(requestId);
+      if (room) {
+        this.chatRoomId = room._id;
+        const userId = this.authService.user()?.id;
+        if (userId && room.unreadCount) {
+          this.chatUnreadCount.set(room.unreadCount[userId] || 0);
+        }
+      }
+    } catch (err) {
+      // Non-critical, ignore
+    }
+
+    // Subscribe to room notifications for new messages
+    this.chatService.onRoomNotification()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        if (data.roomId === this.chatRoomId) {
+          this.chatUnreadCount.update(c => c + 1);
+        }
+      });
   }
 
   goBack() {

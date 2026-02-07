@@ -239,7 +239,7 @@ $border-color: #e2e8f0;
     }
 
     .message-bubble__status.read ion-icon {
-      color: white;
+      color: #10DC60;
     }
   }
 
@@ -335,10 +335,6 @@ $border-color: #e2e8f0;
     ion-icon {
       font-size: 14px;
       transition: color 0.2s ease;
-    }
-
-    .second-check {
-      margin-left: -6px;
     }
 
     &.read ion-icon {

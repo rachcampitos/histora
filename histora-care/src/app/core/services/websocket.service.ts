@@ -40,6 +40,7 @@ export class WebSocketService {
   private _statusUpdate = signal<RequestStatusUpdate | null>(null);
   private _newRequest = signal<NewRequestNotification | null>(null);
   private _connectionError = signal<string | null>(null);
+  private _nurseAvailabilityChanged = signal<Date | null>(null);
 
   // Public readonly signals
   isConnected = this._isConnected.asReadonly();
@@ -47,6 +48,7 @@ export class WebSocketService {
   statusUpdate = this._statusUpdate.asReadonly();
   newRequest = this._newRequest.asReadonly();
   connectionError = this._connectionError.asReadonly();
+  nurseAvailabilityChanged = this._nurseAvailabilityChanged.asReadonly();
 
   /**
    * Connect to WebSocket server for real-time tracking
@@ -137,6 +139,11 @@ export class WebSocketService {
       });
     });
 
+    // Listen for nurse availability changes (for patients on map)
+    this.socket.on('nurse:availability:changed', (data: { nurseUserId: string; timestamp: string }) => {
+      this._nurseAvailabilityChanged.set(new Date(data.timestamp));
+    });
+
     // Listen for new request notifications (for nurses)
     this.socket.on('request:new', (data: NewRequestNotification) => {
       this._newRequest.set({
@@ -216,6 +223,24 @@ export class WebSocketService {
   }
 
   /**
+   * Join the map viewers room to receive nurse availability updates
+   */
+  joinMapRoom(): void {
+    if (this.socket?.connected) {
+      this.socket.emit('map:join');
+    }
+  }
+
+  /**
+   * Leave the map viewers room
+   */
+  leaveMapRoom(): void {
+    if (this.socket?.connected) {
+      this.socket.emit('map:leave');
+    }
+  }
+
+  /**
    * Disconnect from WebSocket server
    */
   disconnect(): void {
@@ -226,6 +251,7 @@ export class WebSocketService {
       this._nurseLocation.set(null);
       this._statusUpdate.set(null);
       this._newRequest.set(null);
+      this._nurseAvailabilityChanged.set(null);
     }
   }
 

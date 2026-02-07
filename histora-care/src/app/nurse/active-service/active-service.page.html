@@ -53,6 +53,9 @@
             </ion-button>
             <ion-button fill="clear" (click)="openChat()" aria-label="Chat con el paciente" class="chat-btn">
               <ion-icon slot="icon-only" name="chatbubble" color="primary"></ion-icon>
+              @if (chatUnreadCount() > 0) {
+                <ion-badge color="danger" class="chat-badge">{{ chatUnreadCount() }}</ion-badge>
+              }
             </ion-button>
           </div>
         </div>

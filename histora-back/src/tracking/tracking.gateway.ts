@@ -406,6 +406,30 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
   }
 
+  @SubscribeMessage('map:join')
+  handleJoinMapRoom(@ConnectedSocket() client: AuthenticatedSocket) {
+    client.join('map:viewers');
+    this.logger.log(`User ${client.userId} joined map:viewers room`);
+    return { success: true };
+  }
+
+  @SubscribeMessage('map:leave')
+  handleLeaveMapRoom(@ConnectedSocket() client: AuthenticatedSocket) {
+    client.leave('map:viewers');
+    this.logger.log(`User ${client.userId} left map:viewers room`);
+    return { success: true };
+  }
+
+  /**
+   * Broadcast to all patients viewing the map that a nurse's availability changed
+   */
+  broadcastNurseAvailabilityChanged(nurseUserId: string) {
+    this.server.to('map:viewers').emit('nurse:availability:changed', {
+      nurseUserId,
+      timestamp: new Date(),
+    });
+  }
+
   // Utility method for external services to broadcast
   async broadcastToRequest(requestId: string, event: string, data: any) {
     this.server.to(`tracking:${requestId}`).emit(event, data);
