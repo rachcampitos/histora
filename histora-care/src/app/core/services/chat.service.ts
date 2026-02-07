@@ -125,14 +125,18 @@ export class ChatService {
       return;
     }
 
-    const wsUrl = environment.apiUrl.replace('/api', '');
+    // Use wsUrl from environment for WebSocket connection
+    const wsUrl = environment.wsUrl || environment.apiUrl.replace('/api', '');
+
+    console.log('[ChatService] Connecting to WebSocket:', wsUrl);
 
     this.socket = io(`${wsUrl}/chat`, {
       auth: { token },
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'], // Allow polling fallback
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      timeout: 10000,
     });
 
     this.setupSocketListeners();
