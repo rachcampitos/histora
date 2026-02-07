@@ -176,6 +176,12 @@ export class DashboardPage implements OnInit, OnDestroy {
     // Refresh nurse profile to get latest verification status
     this.refreshNurseProfile();
 
+    // Refresh active requests to show latest service status
+    const nurseId = this.nurse()?._id;
+    if (nurseId) {
+      this.loadRequests(nurseId);
+    }
+
     // Start verification polling if not yet approved
     this.startVerificationPolling();
 
