@@ -13,7 +13,9 @@
           {{ otherUserName.charAt(0).toUpperCase() }}
         </div>
       }
-      <span class="online-indicator"></span>
+      @if (isConnected()) {
+        <span class="online-indicator"></span>
+      }
     </div>
 
     <div class="chat-header__info">

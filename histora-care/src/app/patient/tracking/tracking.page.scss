@@ -728,6 +728,7 @@
   background: #fafafa;
   border-radius: 16px;
   padding: 16px;
+  overflow: visible; // Allow pulse animation to extend beyond
 }
 
 .nurse-info {
@@ -735,6 +736,7 @@
   align-items: center;
   gap: 16px;
   margin-bottom: 16px;
+  overflow: visible; // Allow pulse animation to extend beyond
 
   .nurse-avatar {
     width: 56px;
@@ -791,6 +793,7 @@
   .nurse-actions {
     display: flex;
     gap: 4px;
+    overflow: visible; // Allow pulse to extend beyond
 
     .action-btn {
       --padding-start: 8px;
@@ -809,10 +812,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      overflow: visible;
 
       .chat-btn {
         position: relative;
         overflow: visible;
+        z-index: 1;
+
+        &::part(native) {
+          overflow: visible;
+        }
+
+        ion-icon {
+          position: relative;
+          z-index: 2;
+        }
 
         .chat-pulse {
           position: absolute;
@@ -822,10 +836,10 @@
           width: 44px;
           height: 44px;
           border-radius: 50%;
-          background: rgba(var(--ion-color-primary-rgb), 0.3);
+          background: rgba(var(--ion-color-primary-rgb), 0.4);
           animation: chat-pulse 2s infinite ease-out;
           pointer-events: none;
-          z-index: -1;
+          z-index: 0;
         }
       }
 
