@@ -283,6 +283,11 @@ ion-toolbar {
         font-size: tokens.$font-size-lg;
       }
     }
+
+    ion-button[color="primary"] {
+      --color: #ffffff !important;
+      color: #ffffff !important;
+    }
   }
 }
 

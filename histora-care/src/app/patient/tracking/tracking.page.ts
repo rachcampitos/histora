@@ -903,6 +903,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
     if (role === 'submit' && data) {
       await this.submitReviewFromModal(data);
+    } else if (role === 'skip') {
+      // Service is completed, navigate to home even if skipped
+      this.router.navigate(['/patient/tabs/home']);
     }
   }
 
@@ -960,23 +963,17 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     if (nurseReviewSuccess || serviceRateSuccess) {
       this.hasReviewed.set(true);
 
-      // Show success toast
+      // Show success toast and navigate to home
       const toast = await this.toastController.create({
         message: '¡Gracias por tu calificación!',
-        duration: 3000,
+        duration: 2500,
         position: 'bottom',
         color: 'success',
         icon: 'star',
-        buttons: [
-          {
-            text: 'Ver historial',
-            handler: () => {
-              this.router.navigate(['/patient/history']);
-            }
-          }
-        ]
       });
       await toast.present();
+      await toast.onDidDismiss();
+      this.router.navigate(['/patient/tabs/home']);
     } else {
       this.showError('No se pudo enviar tu calificación. Por favor, intenta de nuevo.');
     }
