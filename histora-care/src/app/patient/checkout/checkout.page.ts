@@ -87,6 +87,16 @@ export class CheckoutPage implements OnInit, OnDestroy {
     return this.paymentService.formatAmount(summary.total);
   });
 
+  paymentReminderText = computed(() => {
+    const method = this.selectedMethod();
+    const total = this.formattedTotal();
+    switch (method) {
+      case 'yape': return `Pagaras ${total} via Yape a la enfermera`;
+      case 'plin': return `Pagaras ${total} via Plin a la enfermera`;
+      default: return `Pagaras ${total} en efectivo al finalizar el servicio`;
+    }
+  });
+
   // Yape phone number
   yapeNumber = signal('');
 
@@ -190,11 +200,12 @@ export class CheckoutPage implements OnInit, OnDestroy {
 
     if (method === 'card') {
       this.currentStep.set('card');
-    } else if (method === 'yape') {
+    } else if (method === 'yape' && !this.betaMode()) {
+      // Culqi Yape flow (when Culqi is active)
       this.currentStep.set('yape');
-    } else if (method === 'cash') {
-      // Cash doesn't need extra info
-      this.confirmCashPayment();
+    } else {
+      // cash, yape (P2P), plin (P2P) - direct payment to nurse
+      this.confirmDirectPayment(method);
     }
   }
 
@@ -339,11 +350,18 @@ export class CheckoutPage implements OnInit, OnDestroy {
     }
   }
 
-  private async confirmCashPayment() {
+  private async confirmDirectPayment(method: PaymentMethod) {
+    const labels: Record<string, string> = { cash: 'Efectivo', yape: 'Yape', plin: 'Plin' };
+    const messages: Record<string, string> = {
+      cash: 'Pagara al finalizar el servicio. La enfermera confirmara el pago en persona.',
+      yape: 'Realizara el pago via Yape directamente a la enfermera.',
+      plin: 'Realizara el pago via Plin directamente a la enfermera.',
+    };
+
     const alert = await this.alertCtrl.create({
       cssClass: 'histora-alert histora-alert-primary',
-      header: 'Pago en Efectivo',
-      message: 'Pagara al finalizar el servicio. La enfermera confirmara el pago en persona.',
+      header: `Pago con ${labels[method] || 'Efectivo'}`,
+      message: messages[method] || messages['cash'],
       buttons: [
         {
           text: 'Cancelar',

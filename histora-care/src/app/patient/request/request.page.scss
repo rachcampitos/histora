@@ -291,15 +291,17 @@ ion-card-title {
   border-radius: 12px;
   --padding-start: 16px;
   --inner-padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
   margin-bottom: 16px;
 
   ion-label {
     font-weight: 500;
-    margin-bottom: 8px;
+    margin-bottom: 0 !important;
   }
 
   ion-datetime-button {
-    margin-top: 8px;
+    margin-top: 4px;
   }
 }
 

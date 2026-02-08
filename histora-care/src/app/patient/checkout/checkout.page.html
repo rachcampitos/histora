@@ -136,17 +136,33 @@
             }
           </ion-item>
 
-          <!-- Yape (disabled in beta) -->
-          <ion-item class="payment-option disabled" [class.beta-disabled]="betaMode()">
-            <div class="yape-icon disabled" slot="start">
+          <!-- Yape P2P -->
+          <ion-item button (click)="selectMethod('yape')" class="payment-option">
+            <div class="yape-icon" slot="start">
               <img src="assets/img/logo-yape.png" alt="Yape" />
             </div>
             <ion-label>
               <h3>Yape</h3>
-              <p>Paga con tu billetera digital</p>
+              <p>Paga directamente a la enfermera</p>
             </ion-label>
             @if (betaMode()) {
-              <ion-badge color="medium" slot="end">Proximamente</ion-badge>
+              <ion-badge color="success" slot="end">Disponible</ion-badge>
+            } @else {
+              <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+            }
+          </ion-item>
+
+          <!-- Plin P2P -->
+          <ion-item button (click)="selectMethod('plin')" class="payment-option">
+            <div class="plin-icon" slot="start">
+              <img src="assets/img/logo-plin.png" alt="Plin" />
+            </div>
+            <ion-label>
+              <h3>Plin</h3>
+              <p>Paga directamente a la enfermera</p>
+            </ion-label>
+            @if (betaMode()) {
+              <ion-badge color="success" slot="end">Disponible</ion-badge>
             } @else {
               <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
             }
@@ -157,7 +173,7 @@
         @if (betaMode()) {
           <div class="beta-info">
             <ion-icon name="information-circle-outline"></ion-icon>
-            <p>Durante el lanzamiento beta, solo aceptamos pagos en efectivo. Los pagos con tarjeta y Yape estaran disponibles muy pronto.</p>
+            <p>Los pagos con tarjeta seran habilitados proximamente. Puedes pagar en efectivo, Yape o Plin directamente a la enfermera.</p>
           </div>
         }
       </div>
@@ -337,11 +353,11 @@
       </div>
     }
 
-    <!-- Step: Confirmed (for cash payments) -->
+    <!-- Step: Confirmed (for cash/P2P payments) -->
     @if (currentStep() === 'confirmed') {
       <div class="status-container">
         <div class="status-icon confirmed">
-          <ion-icon name="send-outline"></ion-icon>
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
         </div>
         <h2>Solicitud enviada</h2>
         @if (serviceRequest()?.nurse) {
@@ -351,10 +367,20 @@
           <p>Estamos buscando una enfermera disponible</p>
         }
         <div class="cash-reminder">
-          <ion-icon name="cash-outline"></ion-icon>
+          @if (selectedMethod() === 'yape') {
+            <div class="reminder-logo yape">
+              <img src="assets/img/logo-yape.png" alt="Yape" />
+            </div>
+          } @else if (selectedMethod() === 'plin') {
+            <div class="reminder-logo plin">
+              <img src="assets/img/logo-plin.png" alt="Plin" />
+            </div>
+          } @else {
+            <ion-icon name="cash-outline"></ion-icon>
+          }
           <div class="reminder-content">
             <span class="reminder-title">Recuerda</span>
-            <span class="reminder-text">Pagaras {{ formattedTotal() }} en efectivo al finalizar el servicio</span>
+            <span class="reminder-text">{{ paymentReminderText() }}</span>
           </div>
         </div>
         <p class="redirect-text">Redirigiendo en unos segundos...</p>

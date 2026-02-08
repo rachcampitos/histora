@@ -194,6 +194,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.trackingSheet) {
       try { await this.trackingSheet.dismiss(); } catch {}
     }
+    // Extra safety: remove from DOM overlay
+    this.removeOrphanedSheet();
   }
 
   ngOnDestroy() {
@@ -207,12 +209,18 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.mapboxService.destroy();
 
     // Safety: remove any orphaned tracking sheet modal from DOM overlay
+    this.removeOrphanedSheet();
+  }
+
+  /**
+   * Remove orphaned tracking sheet modals from DOM overlay
+   */
+  private removeOrphanedSheet() {
     try {
-      const modal = document.querySelector('ion-modal.tracking-sheet-modal');
-      if (modal) {
-        (modal as any).dismiss?.();
+      document.querySelectorAll('ion-modal.tracking-sheet-modal').forEach(modal => {
+        try { (modal as any).dismiss?.(); } catch {}
         modal.remove();
-      }
+      });
     } catch {}
   }
 
@@ -894,10 +902,17 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    * Close the tracking sheet and navigate away
    */
   private async navigateAway(url: string[]) {
-    this.forceCloseSheet.set(true);
+    // 1. Dismiss the sheet programmatically first
     if (this.trackingSheet) {
       try { await this.trackingSheet.dismiss(); } catch {}
     }
+    // 2. Prevent re-opening via reactive binding
+    this.forceCloseSheet.set(true);
+    // 3. Small delay for Ionic to finish dismiss animation
+    await new Promise(resolve => setTimeout(resolve, 50));
+    // 4. Remove any orphaned modal from DOM
+    this.removeOrphanedSheet();
+    // 5. Navigate
     this.router.navigate(url);
   }
 

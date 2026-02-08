@@ -4,7 +4,7 @@
  */
 
 // Payment method types
-export type PaymentMethod = 'card' | 'yape' | 'cash';
+export type PaymentMethod = 'card' | 'yape' | 'cash' | 'plin';
 
 // Payment status
 export type PaymentStatusType =
