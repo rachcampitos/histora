@@ -62,6 +62,16 @@ export class ActiveServicePage implements OnInit, OnDestroy {
     return `${req.patient.firstName || ''} ${req.patient.lastName || ''}`.trim() || 'Paciente';
   });
 
+  patientInitials = computed(() => {
+    const patient = this.request()?.patient;
+    if (patient) {
+      const first = patient.firstName?.charAt(0) || '';
+      const last = patient.lastName?.charAt(0) || '';
+      if (first || last) return (first + last).toUpperCase();
+    }
+    return 'P';
+  });
+
   patientAddress = computed(() => {
     const req = this.request();
     return req?.location?.address || 'Direccion no disponible';

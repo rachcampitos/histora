@@ -41,7 +41,11 @@
       <ion-card-content>
         <div class="patient-header">
           <div class="patient-avatar">
-            <ion-icon name="person"></ion-icon>
+            @if (request()?.patient?.avatar) {
+              <img [src]="request()?.patient?.avatar" alt="Paciente" class="patient-avatar-img">
+            } @else {
+              <span class="patient-initials">{{ patientInitials() }}</span>
+            }
           </div>
           <div class="patient-info">
             <h3>{{ patientName() }}</h3>
