@@ -781,6 +781,24 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Check if the progress line at index i is completed
+   * Line i connects step[i] to step[i+1]
+   * Completed when we've reached or passed step[i+1]
+   */
+  isLineCompleted(lineIndex: number): boolean {
+    return lineIndex < this.getCurrentStepIndex();
+  }
+
+  /**
+   * Check if the progress line at index i is actively animating
+   * Active when we're AT step[i] (line to next step shows shimmer)
+   */
+  isLineActive(lineIndex: number): boolean {
+    const currentIndex = this.getCurrentStepIndex();
+    return lineIndex === currentIndex && currentIndex < this.statusSteps.length - 1;
+  }
+
+  /**
    * Navigate back
    */
   goBack() {

@@ -683,7 +683,7 @@
   &.active {
     .step-dot {
       background: var(--ion-color-primary);
-      box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.2);
+      animation: pulse-dot 2s ease-in-out infinite;
 
       ion-icon {
         color: white;
@@ -711,16 +711,51 @@
   }
 }
 
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(var(--ion-color-primary-rgb), 0.1); }
+}
+
 .progress-line {
   flex: 1;
-  height: 2px;
+  height: 3px;
   background: #e0e0e0;
   margin: 15px 4px 0;
-  min-width: 20px;
-  transition: background 0.3s ease;
+  min-width: 24px;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
 
-  &.completed {
+  .progress-line-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &.completed .progress-line-fill {
+    width: 100%;
     background: #16a34a;
+  }
+
+  &.active .progress-line-fill {
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--ion-color-primary) 0%,
+      var(--ion-color-primary-tint) 50%,
+      var(--ion-color-primary) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
   }
 }
 
@@ -1479,7 +1514,7 @@
     &.active {
       .step-dot {
         background: var(--ion-color-primary);
-        box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.3);
+        animation: pulse-dot 2s ease-in-out infinite;
 
         ion-icon {
           color: white;
@@ -1510,8 +1545,18 @@
   .progress-line {
     background: #334155;
 
-    &.completed {
+    &.completed .progress-line-fill {
       background: #16a34a;
+    }
+
+    &.active .progress-line-fill {
+      background: linear-gradient(
+        90deg,
+        var(--ion-color-primary) 0%,
+        var(--ion-color-primary-tint) 50%,
+        var(--ion-color-primary) 100%
+      );
+      background-size: 200% 100%;
     }
   }
 
