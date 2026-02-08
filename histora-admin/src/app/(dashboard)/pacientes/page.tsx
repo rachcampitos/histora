@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { patientsApi } from '@/lib/api';
@@ -40,6 +40,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 import {
   Calendar,
   Eye,
@@ -48,6 +49,7 @@ import {
   Phone,
   Search,
   ShoppingBag,
+  Trash2,
   TrendingUp,
   UserCircle,
   Users,
@@ -169,6 +171,7 @@ interface PatientsResponse {
 }
 
 export default function PacientesPage() {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [selectedPatient, setSelectedPatient] = useState<typeof demoPatients[0] | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
@@ -177,6 +180,18 @@ export default function PacientesPage() {
   const { data: patientsResponse, isLoading } = useQuery<PatientsResponse>({
     queryKey: ['patients', search],
     queryFn: () => patientsApi.getAll({ search }),
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (patientId: string) => patientsApi.delete(patientId),
+    onSuccess: () => {
+      toast.success('Paciente eliminado correctamente');
+      queryClient.invalidateQueries({ queryKey: ['patients'] });
+    },
+    onError: () => {
+      toast.error('Error al eliminar paciente');
+    },
   });
 
   // Extract patients array from response, fallback to demo data
@@ -374,6 +389,18 @@ export default function PacientesPage() {
                           >
                             <Eye className="mr-2 h-4 w-4" />
                             Ver detalles
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => {
+                              if (confirm(`¿Eliminar a ${patient.firstName} ${patient.lastName}? Esta accion eliminara todos sus datos incluyendo imagenes.`)) {
+                                deleteMutation.mutate(patient.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

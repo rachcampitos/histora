@@ -101,7 +101,7 @@ export class ChatService {
   // Subjects for events
   private newMessage$ = new Subject<ChatMessage>();
   private messageRead$ = new Subject<{ roomId: string; messageIds: string[]; readBy: string }>();
-  private roomNotification$ = new Subject<{ roomId: string; type: string; preview: string; senderName: string }>();
+  private roomNotification$ = new Subject<{ roomId: string; type: string; preview: string; senderName: string; senderAvatar?: string }>();
 
   // Get observable for new messages
   onNewMessage(): Observable<ChatMessage> {
@@ -112,7 +112,7 @@ export class ChatService {
     return this.messageRead$.asObservable();
   }
 
-  onRoomNotification(): Observable<{ roomId: string; type: string; preview: string; senderName: string }> {
+  onRoomNotification(): Observable<{ roomId: string; type: string; preview: string; senderName: string; senderAvatar?: string }> {
     return this.roomNotification$.asObservable();
   }
 
@@ -205,7 +205,20 @@ export class ChatService {
       this.messageRead$.next(data);
     });
 
-    this.socket.on('room-notification', (data: { roomId: string; type: string; preview: string; senderName: string }) => {
+    // Handle all-read event (when other user opens chat and reads all messages)
+    this.socket.on('all-read', (data: { roomId: string; readBy: string }) => {
+      if (data.roomId === this.currentRoomId) {
+        this._messages.update(msgs =>
+          msgs.map(msg =>
+            msg.senderId !== data.readBy && msg.status !== 'read'
+              ? { ...msg, status: 'read' as const, readBy: [...(msg.readBy || []), data.readBy] }
+              : msg
+          )
+        );
+      }
+    });
+
+    this.socket.on('room-notification', (data: { roomId: string; type: string; preview: string; senderName: string; senderAvatar?: string }) => {
       // Skip if user is currently viewing this room (they get new-message instead)
       if (this.currentRoomId === data.roomId) return;
 

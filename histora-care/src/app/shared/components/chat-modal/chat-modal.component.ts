@@ -62,13 +62,24 @@ export class ChatModalComponent implements OnInit, OnDestroy, AfterViewChecked {
   isConnected = this.chatService.isConnected;
   currentUserId = computed(() => this.authService.user()?.id);
 
-  // Quick replies
-  quickReplies: QuickReply[] = [
-    { text: 'Ya llegue', icon: 'location' },
-    { text: 'Voy en camino', icon: 'car' },
-    { text: 'Dame 5 minutos', icon: 'time' },
-    { text: 'Gracias', icon: 'heart' }
-  ];
+  // Quick replies - context-aware based on user role
+  quickReplies = computed<QuickReply[]>(() => {
+    const isNurse = this.authService.isNurse();
+    if (isNurse) {
+      return [
+        { text: 'Ya llegue', icon: 'location' },
+        { text: 'Voy en camino', icon: 'car' },
+        { text: 'Dame 5 minutos', icon: 'time' },
+        { text: 'Gracias', icon: 'heart' }
+      ];
+    }
+    return [
+      { text: 'Hola, buen dia', icon: 'hand-left' },
+      { text: 'Donde estas?', icon: 'location' },
+      { text: 'Ok, te espero', icon: 'time' },
+      { text: 'Gracias', icon: 'heart' }
+    ];
+  });
 
   async ngOnInit() {
     await this.initializeChat();

@@ -1749,3 +1749,53 @@ body.dark ion-modal.chat-modal-fullscreen {
     }
   }
 }
+
+// ==========================================================================
+// Chat Notification Toast - WhatsApp style
+// ==========================================================================
+ion-toast.chat-notification-toast {
+  --background: #ffffff;
+  --color: #1e293b;
+  --border-radius: 14px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --start: 8px;
+  --end: 8px;
+
+  &::part(header) {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e293b;
+  }
+
+  &::part(message) {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  &::part(icon) {
+    color: var(--ion-color-primary);
+    font-size: 24px;
+  }
+
+  &::part(button) {
+    color: #94a3b8;
+  }
+}
+
+body.ion-palette-dark ion-toast.chat-notification-toast,
+body.dark ion-toast.chat-notification-toast {
+  --background: #1e293b;
+  --color: #f1f5f9;
+
+  &::part(header) {
+    color: #f1f5f9;
+  }
+
+  &::part(message) {
+    color: #94a3b8;
+  }
+
+  &::part(button) {
+    color: #64748b;
+  }
+}
