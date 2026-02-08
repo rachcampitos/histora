@@ -60,7 +60,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface AdminUser {
-  _id: string;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -81,7 +81,7 @@ const roleConfig = {
 // Demo data
 const demoUsers: AdminUser[] = [
   {
-    _id: '1',
+    id: '1',
     firstName: 'Raul',
     lastName: 'Campos',
     email: 'raul@historahealth.com',
@@ -92,7 +92,7 @@ const demoUsers: AdminUser[] = [
     createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    _id: '2',
+    id: '2',
     firstName: 'Carlos',
     lastName: 'Martinez',
     email: 'carlos@historahealth.com',
@@ -103,7 +103,7 @@ const demoUsers: AdminUser[] = [
     createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    _id: '3',
+    id: '3',
     firstName: 'Ana',
     lastName: 'Garcia',
     email: 'ana@historahealth.com',
@@ -113,7 +113,7 @@ const demoUsers: AdminUser[] = [
     createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
   },
   {
-    _id: '4',
+    id: '4',
     firstName: 'Luis',
     lastName: 'Torres',
     email: 'luis@historahealth.com',
@@ -220,7 +220,7 @@ export default function UsuariosPage() {
     e.preventDefault();
     if (editingUser) {
       const { password, ...data } = formData;
-      updateMutation.mutate({ id: editingUser._id, data });
+      updateMutation.mutate({ id: editingUser.id, data });
     } else {
       createMutation.mutate(formData);
     }
@@ -449,7 +449,7 @@ export default function UsuariosPage() {
               </TableHeader>
               <TableBody>
                 {filteredUsers.map((user: AdminUser) => (
-                  <TableRow key={user._id}>
+                  <TableRow key={user.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
@@ -500,13 +500,13 @@ export default function UsuariosPage() {
                             Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => resetPasswordMutation.mutate(user._id)}
+                            onClick={() => resetPasswordMutation.mutate(user.id)}
                           >
                             <Key className="mr-2 h-4 w-4" />
                             Reset contrasena
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => toggleStatusMutation.mutate(user._id)}
+                            onClick={() => toggleStatusMutation.mutate(user.id)}
                           >
                             {user.isActive ? (
                               <>
@@ -525,7 +525,7 @@ export default function UsuariosPage() {
                             className="text-destructive focus:text-destructive"
                             onClick={() => {
                               if (confirm('¿Eliminar este usuario?')) {
-                                deleteMutation.mutate(user._id);
+                                deleteMutation.mutate(user.id);
                               }
                             }}
                           >
