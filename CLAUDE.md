@@ -138,13 +138,41 @@ cd histora-back && npm run start:dev
 
 # App Movil
 cd histora-care && npm run build
-cd histora-care && npm run test
+cd histora-care && ng test --no-watch          # Tests (Vitest)
+cd histora-care && ng test --no-watch --coverage  # Tests + coverage
 cd histora-care && ionic serve
 
 # Landing Page
 cd nurselite-landing && npm run dev
 cd nurselite-landing && npm run build
 ```
+
+## Testing (histora-care)
+
+- **Framework:** Vitest 4.x via `@angular/build:unit-test`
+- **Coverage:** v8 (81.99% statements, 83.25% lines)
+- **Suites:** 33 | **Tests:** 768 | **Duracion:** ~13.5s
+
+### Estructura de testing
+```
+histora-care/
+├── src/testing/
+│   ├── setup.ts           # Mocks globales (Capacitor, mapbox, socket.io, etc)
+│   ├── mock-services.ts   # ~37 factory functions para mock services
+│   ├── mock-capacitor.ts  # Mocks individuales Capacitor
+│   ├── test-helpers.ts    # configureServiceTestBed, configureComponentTestBed
+│   ├── stencil-mock.ts    # Mock @stencil/core
+│   └── index.ts           # Barrel export
+├── vitest.config.ts             # jsdom environment + setup files
+└── vitest-setup-external.ts     # Mocks @ionic/core, @stencil/core
+```
+
+### Patrones importantes
+- Cada spec importa `import '../../../testing/setup';` al inicio
+- **NO usar** `vi.restoreAllMocks()` (destruye mocks globales de setup.ts)
+- Guards funcionales: `TestBed.runInInjectionContext(() => guard({}, {}))`
+- Interceptor async: usar `await flush()` despues de `.subscribe()`
+- StorageService: solo tests conductuales (v8 coverage cambia bundling)
 
 ## Variables de Entorno
 
@@ -204,4 +232,4 @@ npx cap open android   # Abrir Android Studio
 6. **NO agregar Co-Authored-By de Claude** - Los commits no deben incluir coautoria de Claude
 
 ---
-Ultima actualizacion: 2026-01-30
+Ultima actualizacion: 2026-02-08

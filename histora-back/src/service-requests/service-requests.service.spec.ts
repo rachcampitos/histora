@@ -7,6 +7,7 @@ import { Nurse } from '../nurses/schema/nurse.schema';
 import { User } from '../users/schema/user.schema';
 import { NursesService } from '../nurses/nurses.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { TrackingGateway } from '../tracking/tracking.gateway';
 import { Types } from 'mongoose';
 
 describe('ServiceRequestsService', () => {
@@ -79,7 +80,9 @@ describe('ServiceRequestsService', () => {
   };
 
   const mockUserModel = {
-    findById: jest.fn(),
+    findById: jest.fn().mockReturnValue({
+      lean: jest.fn().mockResolvedValue({ _id: mockPatientId, firstName: 'Juan', lastName: 'Perez' }),
+    }),
   };
 
   const mockNursesService = {
@@ -91,6 +94,10 @@ describe('ServiceRequestsService', () => {
     notifyNurseNewRequest: jest.fn().mockResolvedValue(undefined),
     notifyPatientRequestAccepted: jest.fn().mockResolvedValue(undefined),
     notifyPatientRequestRejected: jest.fn().mockResolvedValue(undefined),
+  };
+
+  const mockTrackingGateway = {
+    notifyNurseNewRequest: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -125,6 +132,10 @@ describe('ServiceRequestsService', () => {
         {
           provide: NotificationsService,
           useValue: mockNotificationsService,
+        },
+        {
+          provide: TrackingGateway,
+          useValue: mockTrackingGateway,
         },
       ],
     }).compile();
