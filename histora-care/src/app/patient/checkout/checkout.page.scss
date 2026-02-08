@@ -244,13 +244,20 @@
 // Beta mode disabled payment options
 .payment-option {
   &.beta-disabled {
-    opacity: 0.6;
+    opacity: 0.45;
     pointer-events: none;
+    --background: #f1f5f9;
+    position: relative;
 
     ion-label {
       h3, p {
         color: var(--ion-color-medium);
+        text-decoration: line-through;
       }
+    }
+
+    ion-icon[slot="start"] {
+      opacity: 0.4;
     }
   }
 
@@ -657,9 +664,12 @@
     }
 
     &.beta-disabled {
+      --background: #1e293b;
+
       ion-label {
         h3, p {
           color: var(--ion-color-step-500);
+          text-decoration: line-through;
         }
       }
     }

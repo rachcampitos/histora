@@ -54,7 +54,6 @@ export class PaymentService {
 
     // In simulation mode, skip loading Culqi
     if (SIMULATION_MODE) {
-      console.log('[SIMULATION] Payment simulation mode enabled - Culqi not loaded');
       this.culqiLoaded.set(true);
       return;
     }
@@ -101,7 +100,6 @@ export class PaymentService {
       script.src = CULQI_JS_URL;
       script.async = true;
       script.onload = () => {
-        console.log('CulqiJS loaded successfully');
         resolve();
       };
       script.onerror = () => reject(new Error('Failed to load CulqiJS'));
@@ -119,7 +117,6 @@ export class PaymentService {
       installments: false,
       paymentMethods: { card: true, yape: true, pagoefectivo: false }
     });
-    console.log('Culqi configured successfully');
   }
 
   /**
@@ -131,7 +128,6 @@ export class PaymentService {
     if (SIMULATION_MODE) {
       return new Promise((resolve) => {
         setTimeout(() => {
-          console.log('[SIMULATION] Mock card token created');
           resolve({
             id: `tkn_test_${Date.now()}`,
             type: 'card',
@@ -230,15 +226,16 @@ export class PaymentService {
   }
 
   /**
-   * Process cash payment
+   * Process direct payment (cash, yape P2P, plin P2P)
    */
-  processCashPayment(
+  processDirectPayment(
     serviceRequestId: string,
+    method: 'cash' | 'yape' | 'plin',
     customerInfo: { email: string; name: string; phone?: string }
   ): Observable<PaymentResponse> {
     const request: CreatePaymentRequest = {
       serviceRequestId,
-      method: 'cash',
+      method,
       customerEmail: customerInfo.email,
       customerName: customerInfo.name,
       customerPhone: customerInfo.phone
@@ -253,7 +250,6 @@ export class PaymentService {
   private createPayment(request: CreatePaymentRequest): Observable<PaymentResponse> {
     // Simulation mode - return mock successful payment
     if (SIMULATION_MODE) {
-      console.log('[SIMULATION] Processing payment:', request.method);
       const mockPayment: Payment = {
         _id: `pay_sim_${Date.now()}`,
         serviceRequestId: request.serviceRequestId,
@@ -275,17 +271,14 @@ export class PaymentService {
       };
 
       return of({ success: true, payment: mockPayment }).pipe(
-        delay(1500), // Simulate processing time
-        tap(() => console.log('[SIMULATION] Payment completed:', mockPayment.reference))
+        delay(1500) // Simulate processing time
       );
     }
 
     // Real API call
     return this.api.post<PaymentResponse>('/service-payments/create', request).pipe(
       tap((response) => {
-        if (response.success) {
-          console.log('Payment created:', response.payment?.reference);
-        } else {
+        if (!response.success) {
           console.error('Payment failed:', response.error);
         }
       }),

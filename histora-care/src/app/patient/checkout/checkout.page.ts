@@ -205,7 +205,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
       this.currentStep.set('yape');
     } else {
       // cash, yape (P2P), plin (P2P) - direct payment to nurse
-      this.confirmDirectPayment(method);
+      this.confirmDirectPayment(method as 'cash' | 'yape' | 'plin');
     }
   }
 
@@ -350,7 +350,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
     }
   }
 
-  private async confirmDirectPayment(method: PaymentMethod) {
+  private async confirmDirectPayment(method: 'cash' | 'yape' | 'plin') {
     const labels: Record<string, string> = { cash: 'Efectivo', yape: 'Yape', plin: 'Plin' };
     const messages: Record<string, string> = {
       cash: 'Pagara al finalizar el servicio. La enfermera confirmara el pago en persona.',
@@ -369,14 +369,14 @@ export class CheckoutPage implements OnInit, OnDestroy {
         },
         {
           text: 'Confirmar',
-          handler: () => this.processCashPayment()
+          handler: () => this.processDirectPayment(method)
         }
       ]
     });
     await alert.present();
   }
 
-  private async processCashPayment() {
+  private async processDirectPayment(method: 'cash' | 'yape' | 'plin' = 'cash') {
     this.isProcessing.set(true);
     this.currentStep.set('processing');
     this.paymentFlow.set('cash');
@@ -395,8 +395,9 @@ export class CheckoutPage implements OnInit, OnDestroy {
     };
 
     try {
-      const response = await this.paymentService.processCashPayment(
+      const response = await this.paymentService.processDirectPayment(
         request._id,
+        method,
         customerInfo
       ).toPromise();
 
