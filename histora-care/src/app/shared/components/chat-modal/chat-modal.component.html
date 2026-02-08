@@ -145,18 +145,6 @@
       }
     </div>
 
-    <!-- Quick Replies -->
-    @if (messages().length === 0) {
-      <div class="quick-replies">
-        @for (reply of quickReplies(); track reply.text) {
-          <button class="quick-reply" (click)="sendQuickReply(reply)">
-            <ion-icon [name]="reply.icon"></ion-icon>
-            <span>{{ reply.text }}</span>
-          </button>
-        }
-      </div>
-    }
-
     <!-- Input Area -->
     <div class="chat-input">
       <textarea
@@ -182,6 +170,16 @@
           <ion-icon name="send"></ion-icon>
         }
       </ion-button>
+    </div>
+
+    <!-- Quick Replies - always visible -->
+    <div class="quick-replies">
+      @for (reply of quickReplies(); track reply.text) {
+        <button class="quick-reply" (click)="sendQuickReply(reply)">
+          <ion-icon [name]="reply.icon"></ion-icon>
+          <span>{{ reply.text }}</span>
+        </button>
+      }
     </div>
   }
 </div>

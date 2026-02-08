@@ -1,8 +1,9 @@
-import { Component, Input, Output, EventEmitter, signal, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, computed, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { IonTextareaCustomEvent, TextareaInputEventDetail } from '@ionic/core';
+import { HapticsService } from '../../../core/services';
 
 export interface ReviewSubmitData {
   rating: number;
@@ -40,13 +41,33 @@ export class ReviewModalComponent {
 
   stars = [1, 2, 3, 4, 5];
 
+  commentSuggestions = computed(() => {
+    const r = this.rating();
+    if (r <= 0) return [];
+    if (r <= 2) return ['Llego tarde', 'Poca empatia', 'Mala comunicacion'];
+    if (r === 3) return ['Puntualidad', 'Comunicacion', 'Profesionalismo'];
+    return ['Muy puntual', 'Excelente trato', 'Muy profesional', 'La recomiendo'];
+  });
+
   constructor(
     private modalCtrl: ModalController,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private haptics: HapticsService
   ) {}
 
   onStarClick(star: number): void {
     this.rating.set(star);
+    this.haptics.selectionChanged();
+  }
+
+  addSuggestion(text: string): void {
+    const current = this.comment().trim();
+    if (current) {
+      this.comment.set(current + ', ' + text);
+    } else {
+      this.comment.set(text);
+    }
+    this.haptics.light();
   }
 
   getStarIcon(star: number): string {
@@ -101,6 +122,9 @@ export class ReviewModalComponent {
       rating: this.rating(),
       comment: this.comment().trim()
     };
+
+    // Haptic feedback on successful submit
+    this.haptics.success();
 
     // Emit for parent component if needed
     this.reviewSubmit.emit(reviewData);

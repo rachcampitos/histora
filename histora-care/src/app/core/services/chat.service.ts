@@ -168,10 +168,12 @@ export class ChatService {
     });
 
     this.socket.on('new-message', (data: { roomId: string; message: ChatMessage }) => {
+      // Ensure readBy is initialized (server may not include it)
+      const message = { ...data.message, readBy: data.message.readBy || [] };
       if (data.roomId === this.currentRoomId) {
-        this._messages.update(msgs => [...msgs, data.message]);
+        this._messages.update(msgs => [...msgs, message]);
       }
-      this.newMessage$.next(data.message);
+      this.newMessage$.next(message);
 
       // Update unread count if message is from another user
       const currentUserId = this.authService.user()?.id;
@@ -197,7 +199,7 @@ export class ChatService {
         this._messages.update(msgs =>
           msgs.map(msg =>
             data.messageIds.includes(msg._id)
-              ? { ...msg, status: 'read' as const, readBy: [...msg.readBy, data.readBy] }
+              ? { ...msg, status: 'read' as const, readBy: [...(msg.readBy || []), data.readBy] }
               : msg
           )
         );

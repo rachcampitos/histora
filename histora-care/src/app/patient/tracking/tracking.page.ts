@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
-import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService } from '../../core/services';
+import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService, HapticsService } from '../../core/services';
 import { ChatService } from '../../core/services/chat.service';
 import { ServiceRequest } from '../../core/models';
 import { ReviewModalComponent, ReviewSubmitData } from '../../shared/components/review-modal';
@@ -70,7 +70,11 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   private pollingSubscription?: Subscription;
   private chatNotificationSub?: Subscription;
   private simulationInterval?: ReturnType<typeof setInterval>;
+  private etaRefreshInterval?: ReturnType<typeof setInterval>;
   private previousStatus = signal<TrackingStatus | null>(null);
+
+  // QW6: Breakpoint adaptativo
+  currentBreakpoint = signal(0.35);
 
   // Computed values
   formattedDistance = computed(() => this.mapboxService.formatDistance(this.distance()));
@@ -118,7 +122,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     private nurseApiService: NurseApiService,
     private modalController: ModalController,
     public themeService: ThemeService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private haptics: HapticsService
   ) {
     // React to WebSocket location updates
     effect(() => {
@@ -192,6 +197,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.forceCloseSheet.set(true);
     this.stopPolling();
     this.stopSimulation();
+    this.stopEtaRefresh();
     this.chatNotificationSub?.unsubscribe();
     this.wsService.leaveTrackingRoom(this.requestId());
     this.wsService.disconnect();
@@ -218,6 +224,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       this.previousStatus.set(currentStatus);
       this.currentStatus.set(newStatus);
 
+      // QW1: Haptic feedback on status change
+      this.haptics.medium();
+
       // If status changed from pending, the map container now exists
       // Initialize map after a delay to allow DOM to update
       if (wasWaitingForConfirmation && newStatus !== 'pending' && !this.mapInitialized) {
@@ -229,6 +238,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
       // Auto-expand bottom sheet on key status changes
       this.adjustSheetBreakpoint(newStatus);
+
+      // QW5: Start/stop ETA auto-refresh
+      this.manageEtaRefresh(newStatus);
     }
   }
 
@@ -310,6 +322,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    * Show completion message and review modal
    */
   private async showCompletionAndReview() {
+    // QW1: Haptic feedback on completion
+    this.haptics.success();
+
     // Show completion toast first
     const toast = await this.toastController.create({
       message: '¡Servicio completado! ✓',
@@ -762,6 +777,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    * Cancel request
    */
   async cancelRequest() {
+    // QW1: Haptic feedback on cancel action
+    this.haptics.warning();
+
     const alert = await this.alertController.create({
       cssClass: 'histora-alert histora-alert-danger',
       header: 'Cancelar servicio',
@@ -832,6 +850,32 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   isLineActive(lineIndex: number): boolean {
     const currentIndex = this.getCurrentStepIndex();
     return lineIndex === currentIndex && currentIndex < this.statusSteps.length - 1;
+  }
+
+  /**
+   * QW5: Manage ETA auto-refresh interval
+   */
+  private manageEtaRefresh(status: TrackingStatus) {
+    this.stopEtaRefresh();
+    if (status === 'on_the_way') {
+      this.etaRefreshInterval = setInterval(() => {
+        this.updateRoute();
+      }, 30000);
+    }
+  }
+
+  private stopEtaRefresh() {
+    if (this.etaRefreshInterval) {
+      clearInterval(this.etaRefreshInterval);
+      this.etaRefreshInterval = undefined;
+    }
+  }
+
+  /**
+   * QW6: Handle breakpoint change from bottom sheet
+   */
+  onBreakpointChange(event: CustomEvent) {
+    this.currentBreakpoint.set(event.detail.breakpoint);
   }
 
   /**

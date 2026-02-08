@@ -804,6 +804,12 @@
   50% { box-shadow: 0 0 0 8px rgba(var(--ion-color-primary-rgb), 0.1); }
 }
 
+// QW3: Status dot pulse animation
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
 .progress-line {
   flex: 1;
   height: 3px;
@@ -857,14 +863,43 @@
   margin-bottom: 16px;
   overflow: visible; // Allow pulse animation to extend beyond
 
-  .nurse-avatar {
-    width: 56px;
-    height: 56px;
+  // QW3: Avatar wrapper with status dot
+  .avatar-wrapper {
+    position: relative;
     flex-shrink: 0;
 
-    .avatar-placeholder {
-      font-size: 56px;
-      color: #ccc;
+    .nurse-avatar {
+      width: 56px;
+      height: 56px;
+
+      .avatar-placeholder {
+        font-size: 56px;
+        color: #ccc;
+      }
+    }
+
+    .status-dot {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid white;
+      background: #94a3b8;
+      z-index: 2;
+
+      &.status-accepted { background: #3b82f6; }
+      &.status-on_the_way {
+        background: #f59e0b;
+        animation: status-pulse 2s ease-in-out infinite;
+      }
+      &.status-arrived {
+        background: #16a34a;
+        animation: status-pulse 2s ease-in-out infinite;
+      }
+      &.status-in_progress { background: #6bb5b3; }
+      &.status-completed { background: #16a34a; }
     }
   }
 
@@ -872,10 +907,27 @@
     flex: 1;
 
     h3 {
-      margin: 0 0 4px;
+      margin: 0 0 2px;
       font-size: 16px;
       font-weight: 600;
       color: #333;
+
+      // QW2: Verified badge
+      .verified-badge {
+        font-size: 16px;
+        color: #f59e0b;
+        vertical-align: middle;
+        margin-left: 4px;
+      }
+    }
+
+    // QW2: Verified text
+    .verified-text {
+      display: block;
+      font-size: 11px;
+      color: #16a34a;
+      font-weight: 500;
+      margin-bottom: 2px;
     }
 
     .nurse-meta {
@@ -1650,10 +1702,14 @@
   .nurse-card { background: #0f172a; }
 
   .nurse-info {
-    .nurse-avatar .avatar-placeholder { color: #475569; }
+    .avatar-wrapper {
+      .nurse-avatar .avatar-placeholder { color: #475569; }
+      .status-dot { border-color: #1e293b; }
+    }
 
     .nurse-details {
       h3 { color: #f1f5f9; }
+      .verified-text { color: #34d399; }
 
       .nurse-meta {
         .rating { color: #f1f5f9; }

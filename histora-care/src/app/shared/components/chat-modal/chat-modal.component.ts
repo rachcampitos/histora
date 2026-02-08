@@ -113,6 +113,18 @@ export class ChatModalComponent implements OnInit, OnDestroy, AfterViewChecked {
       const room = await this.chatService.getOrCreateServiceRoom(this.serviceRequestId);
 
       if (room) {
+        // Resolve other user's name and avatar from room participants if not provided
+        const currentUserId = this.currentUserId();
+        const otherParticipant = room.participants.find(p => p.userId !== currentUserId);
+        if (otherParticipant) {
+          if (!this.otherUserName || this.otherUserName === 'Paciente' || this.otherUserName === 'Enfermera') {
+            this.otherUserName = otherParticipant.name || this.otherUserName;
+          }
+          if (!this.otherUserAvatar && otherParticipant.avatar) {
+            this.otherUserAvatar = otherParticipant.avatar;
+          }
+        }
+
         // Load messages and join room
         await this.chatService.getMessages(room._id);
         await this.chatService.joinRoom(room._id);
