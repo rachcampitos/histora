@@ -244,265 +244,341 @@
     <span class="eta-label">llegada</span>
   </div>
   }
-
-  <!-- Bottom Sheet -->
-  <div class="bottom-sheet">
-    <!-- Status Progress -->
-    <div class="status-progress" #statusProgressContainer>
-      <div class="progress-track">
-        @for (step of statusSteps; track step.key; let i = $index) {
-        <div class="progress-step"
-             [id]="'step-' + step.key"
-             [class.completed]="isStepCompleted(step.key)"
-             [class.active]="isStepActive(step.key)">
-          <div class="step-dot">
-            @if (isStepCompleted(step.key)) {
-            <ion-icon name="checkmark"></ion-icon>
-            } @else {
-            <ion-icon [name]="step.icon"></ion-icon>
-            }
-          </div>
-          <span class="step-label">{{ step.label }}</span>
-        </div>
-        @if (i < statusSteps.length - 1) {
-        <div class="progress-line"
-             [class.completed]="isLineCompleted(i)"
-             [class.active]="isLineActive(i)">
-          <div class="progress-line-fill"></div>
-        </div>
-        }
-        }
-      </div>
-    </div>
-
-    <!-- Nurse Info Card -->
-    <div class="nurse-card">
-      <div class="nurse-info">
-        <ion-avatar class="nurse-avatar">
-          @if (nurse()?.avatar) {
-          <img [src]="nurse()?.avatar" alt="Enfermera">
-          } @else {
-          <ion-icon name="person-circle" class="avatar-placeholder"></ion-icon>
-          }
-        </ion-avatar>
-        <div class="nurse-details">
-          <h3>{{ nurse()?.firstName }} {{ nurse()?.lastName }}</h3>
-          <div class="nurse-meta">
-            @if (nurse()?.rating && nurse()!.rating > 0) {
-            <span class="rating">
-              <ion-icon name="star" color="warning"></ion-icon>
-              {{ nurse()?.rating?.toFixed(1) }}
-            </span>
-            <span class="reviews">({{ nurse()?.totalReviews || 0 }} reseñas)</span>
-            } @else {
-            <span class="new-nurse">Enfermera verificada</span>
-            }
-          </div>
-        </div>
-        <div class="nurse-actions" role="group" aria-label="Acciones de contacto">
-          <ion-button fill="clear" class="action-btn" (click)="callNurse()" aria-label="Llamar a la enfermera">
-            <ion-icon name="call" slot="icon-only" color="success"></ion-icon>
-          </ion-button>
-          <div class="chat-btn-wrapper">
-            <ion-button fill="clear" class="action-btn chat-btn" (click)="openChat()" aria-label="Abrir chat con la enfermera">
-              <div class="chat-pulse"></div>
-              <ion-icon name="chatbubble" slot="icon-only" color="primary"></ion-icon>
-              @if (chatUnreadCount() > 0) {
-                <ion-badge color="danger" class="chat-badge">{{ chatUnreadCount() }}</ion-badge>
-              }
-            </ion-button>
-            <div class="chat-tooltip">Comunicate con tu enfermera</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Service Info -->
-      <div class="service-info">
-        <div class="service-name">
-          <ion-icon name="medkit-outline" color="primary"></ion-icon>
-          <span>{{ request()?.service?.name }}</span>
-        </div>
-        <div class="service-price">
-          S/ {{ request()?.service?.price }}
-        </div>
-      </div>
-
-      <!-- Route Info -->
-      <div class="route-info">
-        <div class="info-item">
-          <ion-icon name="navigate-outline"></ion-icon>
-          <div class="info-content">
-            <span class="info-value">{{ formattedDistance() }}</span>
-            <span class="info-label">distancia</span>
-          </div>
-        </div>
-        <div class="info-divider"></div>
-        <div class="info-item">
-          <ion-icon name="time-outline"></ion-icon>
-          <div class="info-content">
-            <span class="info-value">{{ formattedDuration() }}</span>
-            <span class="info-label">tiempo est.</span>
-          </div>
-        </div>
-        <div class="info-divider"></div>
-        <div class="info-item">
-          <ion-icon name="location-outline"></ion-icon>
-          <div class="info-content">
-            <span class="info-value address">{{ request()?.location?.district }}</span>
-            <span class="info-label">destino</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Status Message - Empathetic microcopy with nurse name -->
-      <div class="status-message" [ngClass]="'status-' + currentStatus()" role="status" aria-live="polite">
-        @switch (currentStatus()) {
-        @case ('accepted') {
-        <ion-icon name="checkmark-circle"></ion-icon>
-        <span>{{ nurse()?.firstName || 'La enfermera' }} acepto tu solicitud con gusto.</span>
-        }
-        @case ('on_the_way') {
-        <ion-icon name="navigate"></ion-icon>
-        <span>{{ nurse()?.firstName || 'La enfermera' }} esta en camino. Tranquilo(a), ya casi llega.</span>
-        }
-        @case ('arrived') {
-        <ion-icon name="location"></ion-icon>
-        <span>¡{{ nurse()?.firstName || 'La enfermera' }} llego! Revisa que sea ella antes de abrir.</span>
-        }
-        @case ('in_progress') {
-        <ion-icon name="medical"></ion-icon>
-        <span>{{ nurse()?.firstName || 'La enfermera' }} te esta atendiendo. Estas en buenas manos.</span>
-        }
-        @case ('completed') {
-        <ion-icon name="checkmark-done"></ion-icon>
-        <span>¡Listo! Esperamos que {{ nurse()?.firstName || 'la enfermera' }} haya cumplido tus expectativas.</span>
-        }
-        }
-      </div>
-
-      <!-- Contextual Tip - Proactive helpful message (only show after nurse accepts) -->
-      @if (currentStatus() !== 'pending') {
-      <div class="contextual-tip" role="note">
-        @switch (currentStatus()) {
-        @case ('accepted') {
-        <ion-icon name="time-outline"></ion-icon>
-        <span>Estara lista pronto. Ten a la mano tu DNI y cualquier documento medico relevante.</span>
-        }
-        @case ('on_the_way') {
-        <ion-icon name="bulb-outline"></ion-icon>
-        <span>Puedes ir preparando un espacio comodo y bien iluminado para la atencion.</span>
-        }
-        @case ('arrived') {
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <span>Por tu seguridad, confirma su identidad (foto y nombre) antes de permitir el ingreso.</span>
-        }
-        @case ('in_progress') {
-        <ion-icon name="bulb-outline"></ion-icon>
-        <span>Si tienes preguntas sobre el procedimiento, no dudes en preguntarle.</span>
-        }
-        @case ('completed') {
-        <ion-icon name="heart-outline"></ion-icon>
-        <span>Tu opinion nos ayuda a mejorar. ¡Gracias por confiar en NurseLite!</span>
-        }
-        }
-      </div>
-      }
-
-      <!-- Cancel Button (only if not started) -->
-      @if (currentStatus() === 'accepted' || currentStatus() === 'on_the_way') {
-      <div class="cancel-section">
-        <ion-button fill="clear" color="danger" expand="block" (click)="cancelRequest()">
-          <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-          Cancelar servicio
-        </ion-button>
-      </div>
-      }
-
-      <!-- Payment Section (P2P) -->
-      @if (currentStatus() === 'completed' && hasPaymentMethods()) {
-      <div class="payment-section">
-        <div class="payment-header">
-          <ion-icon name="wallet-outline"></ion-icon>
-          <div class="payment-title">
-            <h4>Pagar a la enfermera</h4>
-            <p>Selecciona un metodo de pago</p>
-          </div>
-        </div>
-
-        <div class="payment-methods">
-          <!-- Yape -->
-          @if (nurse()?.yapeNumber) {
-          <div class="payment-method" (click)="copyPaymentNumber(nurse()!.yapeNumber!, 'yape')">
-            <div class="payment-logo yape">
-              <img src="assets/img/logo-yape.png" alt="Yape" />
-            </div>
-            <div class="payment-info">
-              <span class="payment-label">Yape</span>
-              <span class="payment-number">{{ nurse()?.yapeNumber }}</span>
-            </div>
-            <ion-icon [name]="copiedPayment() === 'yape' ? 'checkmark-circle' : 'copy-outline'"
-                      [color]="copiedPayment() === 'yape' ? 'success' : 'medium'"></ion-icon>
-          </div>
-          }
-
-          <!-- Plin -->
-          @if (nurse()?.plinNumber) {
-          <div class="payment-method" (click)="copyPaymentNumber(nurse()!.plinNumber!, 'plin')">
-            <div class="payment-logo plin">
-              <img src="assets/img/logo-plin.png" alt="Plin" />
-            </div>
-            <div class="payment-info">
-              <span class="payment-label">Plin</span>
-              <span class="payment-number">{{ nurse()?.plinNumber }}</span>
-            </div>
-            <ion-icon [name]="copiedPayment() === 'plin' ? 'checkmark-circle' : 'copy-outline'"
-                      [color]="copiedPayment() === 'plin' ? 'success' : 'medium'"></ion-icon>
-          </div>
-          }
-
-          <!-- Cash -->
-          @if (nurse()?.acceptsCash) {
-          <div class="payment-method cash">
-            <div class="payment-logo cash-logo">
-              <ion-icon name="cash-outline"></ion-icon>
-            </div>
-            <div class="payment-info">
-              <span class="payment-label">Efectivo</span>
-              <span class="payment-hint">Paga directamente a la enfermera</span>
-            </div>
-            <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          </div>
-          }
-        </div>
-
-        <div class="payment-amount">
-          <span class="amount-label">Monto a pagar:</span>
-          <span class="amount-value">S/ {{ request()?.service?.price }}</span>
-        </div>
-      </div>
-      }
-
-      <!-- Completed Actions -->
-      @if (currentStatus() === 'completed') {
-      <div class="completed-actions">
-        @if (shouldShowReview()) {
-        <ion-button expand="block" color="primary" (click)="openReviewModal()">
-          <ion-icon name="star-outline" slot="start"></ion-icon>
-          Calificar servicio
-        </ion-button>
-        } @else if (hasReviewed()) {
-        <div class="review-submitted">
-          <ion-icon name="checkmark-circle" color="success"></ion-icon>
-          <span>Gracias por tu calificación</span>
-        </div>
-        }
-        <ion-button expand="block" fill="outline" routerLink="/patient/history">
-          <ion-icon name="list-outline" slot="start"></ion-icon>
-          Ver historial
-        </ion-button>
-      </div>
-      }
-    </div>
-  </div>
   }
+
+  <!-- Bottom Sheet Modal -->
+  <ion-modal
+    #trackingSheet
+    [isOpen]="showBottomSheet()"
+    [initialBreakpoint]="initialBreakpoint"
+    [breakpoints]="sheetBreakpoints"
+    [backdropDismiss]="false"
+    [showBackdrop]="false"
+    [canDismiss]="false"
+    [handle]="true"
+    cssClass="tracking-sheet-modal">
+    <ng-template>
+      <ion-content class="sheet-content" [scrollY]="true">
+        <!-- Compact Header (visible at ~15%) -->
+        <div class="sheet-compact-header">
+          <ion-avatar class="compact-avatar">
+            @if (nurse()?.avatar) {
+            <img [src]="nurse()?.avatar" alt="Enfermera">
+            } @else {
+            <ion-icon name="person-circle" class="avatar-placeholder"></ion-icon>
+            }
+          </ion-avatar>
+          <span class="compact-name">{{ nurse()?.firstName }} {{ nurse()?.lastName }}</span>
+          <ion-badge [color]="currentStatus() === 'completed' ? 'success' : 'primary'" class="compact-badge">
+            @switch (currentStatus()) {
+            @case ('accepted') { Aceptado }
+            @case ('on_the_way') { En camino }
+            @case ('arrived') { Llego }
+            @case ('in_progress') { En servicio }
+            @case ('completed') { Completado }
+            }
+          </ion-badge>
+        </div>
+
+        <!-- Status Progress -->
+        <div class="status-progress" #statusProgressContainer>
+          <div class="progress-track">
+            @for (step of statusSteps; track step.key; let i = $index) {
+            <div class="progress-step"
+                 [id]="'step-' + step.key"
+                 [class.completed]="isStepCompleted(step.key)"
+                 [class.active]="isStepActive(step.key)">
+              <div class="step-dot">
+                @if (isStepCompleted(step.key)) {
+                <ion-icon name="checkmark"></ion-icon>
+                } @else {
+                <ion-icon [name]="step.icon"></ion-icon>
+                }
+              </div>
+              <span class="step-label">{{ step.label }}</span>
+            </div>
+            @if (i < statusSteps.length - 1) {
+            <div class="progress-line"
+                 [class.completed]="isLineCompleted(i)"
+                 [class.active]="isLineActive(i)">
+              <div class="progress-line-fill"></div>
+            </div>
+            }
+            }
+          </div>
+        </div>
+
+        <!-- Nurse Info Card -->
+        <div class="nurse-card">
+          <div class="nurse-info">
+            <ion-avatar class="nurse-avatar">
+              @if (nurse()?.avatar) {
+              <img [src]="nurse()?.avatar" alt="Enfermera">
+              } @else {
+              <ion-icon name="person-circle" class="avatar-placeholder"></ion-icon>
+              }
+            </ion-avatar>
+            <div class="nurse-details">
+              <h3>{{ nurse()?.firstName }} {{ nurse()?.lastName }}</h3>
+              <div class="nurse-meta">
+                @if (nurse()?.rating && nurse()!.rating > 0) {
+                <span class="rating">
+                  <ion-icon name="star" color="warning"></ion-icon>
+                  {{ nurse()?.rating?.toFixed(1) }}
+                </span>
+                <span class="reviews">({{ nurse()?.totalReviews || 0 }} reseñas)</span>
+                } @else {
+                <span class="new-nurse">Enfermera verificada</span>
+                }
+              </div>
+            </div>
+            <div class="nurse-actions" role="group" aria-label="Acciones de contacto">
+              <ion-button fill="clear" class="action-btn" (click)="callNurse()" aria-label="Llamar a la enfermera">
+                <ion-icon name="call" slot="icon-only" color="success"></ion-icon>
+              </ion-button>
+              <div class="chat-btn-wrapper">
+                <ion-button fill="clear" class="action-btn chat-btn" (click)="openChat()" aria-label="Abrir chat con la enfermera">
+                  <div class="chat-pulse"></div>
+                  <ion-icon name="chatbubble" slot="icon-only" color="primary"></ion-icon>
+                  @if (chatUnreadCount() > 0) {
+                    <ion-badge color="danger" class="chat-badge">{{ chatUnreadCount() }}</ion-badge>
+                  }
+                </ion-button>
+                <div class="chat-tooltip">Comunicate con tu enfermera</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Codes Section -->
+          @if (request()?.patientCode) {
+          <div class="security-codes-section">
+            <!-- Patient's own code -->
+            <div class="security-code-block">
+              <div class="code-header">
+                <ion-icon name="shield-checkmark-outline" color="primary"></ion-icon>
+                <div>
+                  <span class="code-title">Tu codigo de seguridad</span>
+                  <span class="code-subtitle">Comparte este codigo con la enfermera al llegar</span>
+                </div>
+              </div>
+              <div class="code-digits">
+                @for (digit of request()!.patientCode!.split(''); track $index) {
+                  <span class="code-digit patient">{{ digit }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Nurse code (visible when arrived) -->
+            @if (currentStatus() === 'arrived' || currentStatus() === 'in_progress' || currentStatus() === 'completed') {
+            <div class="security-code-block nurse-code-block">
+              <div class="code-header">
+                <ion-icon name="key-outline" color="secondary"></ion-icon>
+                <div>
+                  <span class="code-title">Codigo de la enfermera</span>
+                  <span class="code-subtitle">Pidele su codigo para verificar su identidad</span>
+                </div>
+              </div>
+              <div class="code-digits">
+                @for (digit of request()!.nurseCode!.split(''); track $index) {
+                  <span class="code-digit nurse">{{ digit }}</span>
+                }
+              </div>
+            </div>
+            }
+
+            <!-- Verified indicator -->
+            @if (request()?.codeVerifiedAt) {
+            <div class="code-verified-indicator">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              <span>Identidad verificada</span>
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Service Info -->
+          <div class="service-info">
+            <div class="service-name">
+              <ion-icon name="medkit-outline" color="primary"></ion-icon>
+              <span>{{ request()?.service?.name }}</span>
+            </div>
+            <div class="service-price">
+              S/ {{ request()?.service?.price }}
+            </div>
+          </div>
+
+          <!-- Route Info -->
+          <div class="route-info">
+            <div class="info-item">
+              <ion-icon name="navigate-outline"></ion-icon>
+              <div class="info-content">
+                <span class="info-value">{{ formattedDistance() }}</span>
+                <span class="info-label">distancia</span>
+              </div>
+            </div>
+            <div class="info-divider"></div>
+            <div class="info-item">
+              <ion-icon name="time-outline"></ion-icon>
+              <div class="info-content">
+                <span class="info-value">{{ formattedDuration() }}</span>
+                <span class="info-label">tiempo est.</span>
+              </div>
+            </div>
+            <div class="info-divider"></div>
+            <div class="info-item">
+              <ion-icon name="location-outline"></ion-icon>
+              <div class="info-content">
+                <span class="info-value address">{{ request()?.location?.district }}</span>
+                <span class="info-label">destino</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Message -->
+          <div class="status-message" [ngClass]="'status-' + currentStatus()" role="status" aria-live="polite">
+            @switch (currentStatus()) {
+            @case ('accepted') {
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <span>{{ nurse()?.firstName || 'La enfermera' }} acepto tu solicitud con gusto.</span>
+            }
+            @case ('on_the_way') {
+            <ion-icon name="navigate"></ion-icon>
+            <span>{{ nurse()?.firstName || 'La enfermera' }} esta en camino. Tranquilo(a), ya casi llega.</span>
+            }
+            @case ('arrived') {
+            <ion-icon name="location"></ion-icon>
+            <span>¡{{ nurse()?.firstName || 'La enfermera' }} llego! Intercambia los codigos de seguridad.</span>
+            }
+            @case ('in_progress') {
+            <ion-icon name="medical"></ion-icon>
+            <span>{{ nurse()?.firstName || 'La enfermera' }} te esta atendiendo. Estas en buenas manos.</span>
+            }
+            @case ('completed') {
+            <ion-icon name="checkmark-done"></ion-icon>
+            <span>¡Listo! Esperamos que {{ nurse()?.firstName || 'la enfermera' }} haya cumplido tus expectativas.</span>
+            }
+            }
+          </div>
+
+          <!-- Contextual Tip -->
+          <div class="contextual-tip" role="note">
+            @switch (currentStatus()) {
+            @case ('accepted') {
+            <ion-icon name="time-outline"></ion-icon>
+            <span>Estara lista pronto. Ten a la mano tu DNI y tu codigo de seguridad.</span>
+            }
+            @case ('on_the_way') {
+            <ion-icon name="bulb-outline"></ion-icon>
+            <span>Puedes ir preparando un espacio comodo y bien iluminado para la atencion.</span>
+            }
+            @case ('arrived') {
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            <span>Dale tu codigo a la enfermera y pidele el suyo. Esto confirma la identidad de ambos.</span>
+            }
+            @case ('in_progress') {
+            <ion-icon name="bulb-outline"></ion-icon>
+            <span>Si tienes preguntas sobre el procedimiento, no dudes en preguntarle.</span>
+            }
+            @case ('completed') {
+            <ion-icon name="heart-outline"></ion-icon>
+            <span>Tu opinion nos ayuda a mejorar. ¡Gracias por confiar en NurseLite!</span>
+            }
+            }
+          </div>
+
+          <!-- Cancel Button (only if not started) -->
+          @if (currentStatus() === 'accepted' || currentStatus() === 'on_the_way') {
+          <div class="cancel-section">
+            <ion-button fill="clear" color="danger" expand="block" (click)="cancelRequest()">
+              <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+              Cancelar servicio
+            </ion-button>
+          </div>
+          }
+
+          <!-- Payment Section (P2P) -->
+          @if (currentStatus() === 'completed' && hasPaymentMethods()) {
+          <div class="payment-section">
+            <div class="payment-header">
+              <ion-icon name="wallet-outline"></ion-icon>
+              <div class="payment-title">
+                <h4>Pagar a la enfermera</h4>
+                <p>Selecciona un metodo de pago</p>
+              </div>
+            </div>
+
+            <div class="payment-methods">
+              @if (nurse()?.yapeNumber) {
+              <div class="payment-method" (click)="copyPaymentNumber(nurse()!.yapeNumber!, 'yape')">
+                <div class="payment-logo yape">
+                  <img src="assets/img/logo-yape.png" alt="Yape" />
+                </div>
+                <div class="payment-info">
+                  <span class="payment-label">Yape</span>
+                  <span class="payment-number">{{ nurse()?.yapeNumber }}</span>
+                </div>
+                <ion-icon [name]="copiedPayment() === 'yape' ? 'checkmark-circle' : 'copy-outline'"
+                          [color]="copiedPayment() === 'yape' ? 'success' : 'medium'"></ion-icon>
+              </div>
+              }
+
+              @if (nurse()?.plinNumber) {
+              <div class="payment-method" (click)="copyPaymentNumber(nurse()!.plinNumber!, 'plin')">
+                <div class="payment-logo plin">
+                  <img src="assets/img/logo-plin.png" alt="Plin" />
+                </div>
+                <div class="payment-info">
+                  <span class="payment-label">Plin</span>
+                  <span class="payment-number">{{ nurse()?.plinNumber }}</span>
+                </div>
+                <ion-icon [name]="copiedPayment() === 'plin' ? 'checkmark-circle' : 'copy-outline'"
+                          [color]="copiedPayment() === 'plin' ? 'success' : 'medium'"></ion-icon>
+              </div>
+              }
+
+              @if (nurse()?.acceptsCash) {
+              <div class="payment-method cash">
+                <div class="payment-logo cash-logo">
+                  <ion-icon name="cash-outline"></ion-icon>
+                </div>
+                <div class="payment-info">
+                  <span class="payment-label">Efectivo</span>
+                  <span class="payment-hint">Paga directamente a la enfermera</span>
+                </div>
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              </div>
+              }
+            </div>
+
+            <div class="payment-amount">
+              <span class="amount-label">Monto a pagar:</span>
+              <span class="amount-value">S/ {{ request()?.service?.price }}</span>
+            </div>
+          </div>
+          }
+
+          <!-- Completed Actions -->
+          @if (currentStatus() === 'completed') {
+          <div class="completed-actions">
+            @if (shouldShowReview()) {
+            <ion-button expand="block" color="primary" (click)="openReviewModal()">
+              <ion-icon name="star-outline" slot="start"></ion-icon>
+              Calificar servicio
+            </ion-button>
+            } @else if (hasReviewed()) {
+            <div class="review-submitted">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              <span>Gracias por tu calificación</span>
+            </div>
+            }
+            <ion-button expand="block" fill="outline" routerLink="/patient/history">
+              <ion-icon name="list-outline" slot="start"></ion-icon>
+              Ver historial
+            </ion-button>
+          </div>
+          }
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

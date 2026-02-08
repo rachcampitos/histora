@@ -159,6 +159,16 @@ export class ServiceRequest extends Document {
   @Prop()
   cancellationReason?: string;
 
+  // Security codes (generated on accept)
+  @Prop()
+  patientCode?: string;
+
+  @Prop()
+  nurseCode?: string;
+
+  @Prop()
+  codeVerifiedAt?: Date;
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;

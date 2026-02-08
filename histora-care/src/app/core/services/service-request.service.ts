@@ -66,6 +66,11 @@ export class ServiceRequestService {
     return this.api.patch<ServiceRequest>(`/service-requests/${id}/cancel`, { reason });
   }
 
+  // Nurse: Verify security code
+  verifySecurityCode(id: string, code: string): Observable<ServiceRequest> {
+    return this.api.patch<ServiceRequest>(`/service-requests/${id}/verify-code`, { code });
+  }
+
   // Patient: Rate and review
   rate(id: string, rating: number, review?: string): Observable<ServiceRequest> {
     return this.api.patch<ServiceRequest>(`/service-requests/${id}/rate`, { rating, review });

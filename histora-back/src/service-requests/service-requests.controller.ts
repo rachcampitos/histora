@@ -26,6 +26,7 @@ import {
   CancelServiceRequestDto,
   RejectServiceRequestDto,
   RateServiceRequestDto,
+  VerifySecurityCodeDto,
 } from './dto';
 
 @ApiTags('Service Requests')
@@ -113,6 +114,20 @@ export class ServiceRequestsController {
     @Request() req: { user: { userId: string } },
   ) {
     return this.serviceRequestsService.accept(id, req.user.userId);
+  }
+
+  // Nurse: Verify security code
+  @Patch(':id/verify-code')
+  @Roles(UserRole.NURSE)
+  @UseGuards(RolesGuard)
+  @ApiOperation({ summary: 'Verify patient security code (Nurse)' })
+  @ApiResponse({ status: 200, description: 'Code verified successfully' })
+  async verifySecurityCode(
+    @Param('id') id: string,
+    @Request() req: { user: { userId: string } },
+    @Body() dto: VerifySecurityCodeDto,
+  ) {
+    return this.serviceRequestsService.verifySecurityCode(id, req.user.userId, dto.code);
   }
 
   // Nurse: Reject a request

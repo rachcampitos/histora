@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsNumber, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNumber, Min, Max, Length } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateServiceRequestStatusDto {
@@ -57,4 +57,11 @@ export class RateServiceRequestDto {
   @IsOptional()
   @IsString()
   review?: string;
+}
+
+export class VerifySecurityCodeDto {
+  @ApiProperty({ example: '1234', description: 'Codigo de seguridad de 4 digitos del paciente' })
+  @IsString()
+  @Length(4, 4)
+  code: string;
 }

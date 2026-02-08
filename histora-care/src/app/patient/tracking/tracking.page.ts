@@ -90,6 +90,15 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   ];
 
   @ViewChild('statusProgressContainer') statusProgressContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('trackingSheet', { static: false }) trackingSheet: any; // IonModal
+
+  // Bottom sheet config
+  showBottomSheet = computed(() => {
+    return !this.isLoading() && !this.loadError() && !this.isRejected()
+      && !this.isCancelled() && this.currentStatus() !== 'pending';
+  });
+  sheetBreakpoints = [0.15, 0.35, 0.75, 1];
+  initialBreakpoint = 0.35;
 
   private mapInitialized = false;
 
@@ -208,7 +217,25 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
 
       // Auto-scroll to the active step
       setTimeout(() => this.scrollToActiveStep(newStatus), 100);
+
+      // Auto-expand bottom sheet on key status changes
+      this.adjustSheetBreakpoint(newStatus);
     }
+  }
+
+  private adjustSheetBreakpoint(status: TrackingStatus) {
+    setTimeout(() => {
+      if (!this.trackingSheet) return;
+      try {
+        if (status === 'arrived' || status === 'completed') {
+          this.trackingSheet.setCurrentBreakpoint(0.75);
+        } else if (status === 'in_progress') {
+          this.trackingSheet.setCurrentBreakpoint(0.35);
+        }
+      } catch (e) {
+        // Sheet may not be ready yet
+      }
+    }, 300);
   }
 
   /**

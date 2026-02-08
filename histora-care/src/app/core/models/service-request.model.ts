@@ -59,6 +59,11 @@ export interface ServiceRequest {
   review?: string;
   reviewedAt?: Date;
 
+  // Security codes
+  patientCode?: string;
+  nurseCode?: string;
+  codeVerifiedAt?: Date;
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;

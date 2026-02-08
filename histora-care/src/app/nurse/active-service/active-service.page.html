@@ -74,6 +74,68 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Security Code Section -->
+    @if (request()?.nurseCode) {
+      <ion-card class="security-card">
+        <ion-card-content>
+          <!-- Nurse's own code (show to patient) -->
+          <div class="security-header">
+            <ion-icon name="shield-checkmark-outline" color="primary"></ion-icon>
+            <div>
+              <h4>Tu codigo de seguridad</h4>
+              <p>Comparte este codigo con el paciente</p>
+            </div>
+          </div>
+          <div class="code-display">
+            @for (digit of request()!.nurseCode!.split(''); track $index) {
+              <span class="code-digit">{{ digit }}</span>
+            }
+          </div>
+
+          <!-- Code verification input (arrived + not yet verified) -->
+          @if (request()?.status === 'arrived' && !codeVerified()) {
+            <div class="code-verification">
+              <div class="verification-header">
+                <ion-icon name="key-outline" color="warning"></ion-icon>
+                <div>
+                  <h4>Codigo del paciente</h4>
+                  <p>Pide el codigo al paciente e ingresalo aqui</p>
+                </div>
+              </div>
+              <div class="code-inputs">
+                @for (digit of codeDigits(); track $index) {
+                  <input
+                    type="tel"
+                    maxlength="1"
+                    inputmode="numeric"
+                    [value]="digit"
+                    (input)="onCodeInput($event, $index)"
+                    (keydown)="onCodeKeydown($event, $index)"
+                    [disabled]="isVerifyingCode()"
+                    class="code-input"
+                    autocomplete="off" />
+                }
+              </div>
+              @if (isVerifyingCode()) {
+                <div class="verifying-spinner">
+                  <ion-spinner name="dots" color="primary"></ion-spinner>
+                  <span>Verificando...</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Verified badge -->
+          @if (codeVerified()) {
+            <div class="verified-badge">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              <span>Identidad verificada</span>
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+
     <!-- Virtual Escort Component -->
     <div class="escort-section">
       <app-virtual-escort
@@ -89,7 +151,11 @@
           expand="block"
           [color]="nextAction.color"
           class="main-action-btn"
+          [disabled]="nextAction.disabled"
           (click)="nextAction.action()">
+          @if (nextAction.icon) {
+            <ion-icon [name]="nextAction.icon" slot="start"></ion-icon>
+          }
           {{ nextAction.label }}
         </ion-button>
       }
