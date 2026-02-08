@@ -58,11 +58,12 @@ export class AppComponent implements OnInit, OnDestroy {
       this.playNotificationSound();
 
       const toast = await this.toastController.create({
-        message: `${data.senderName}: ${data.preview}`,
+        header: data.senderName,
+        message: data.preview,
         duration: 4000,
         position: 'top',
-        color: 'primary',
-        icon: 'chatbubble-ellipses',
+        cssClass: 'chat-notification-toast',
+        icon: data.senderAvatar ? undefined : 'chatbubble-ellipses',
         buttons: [{ icon: 'close', role: 'cancel' }],
       });
       await toast.present();

@@ -186,6 +186,10 @@ export const patientsApi = {
     const response = await api.get(`/admin/patients/${id}`);
     return response.data;
   },
+  delete: async (id: string) => {
+    const response = await api.delete(`/admin/patients/${id}`);
+    return response.data;
+  },
 };
 
 // Finance/Payments endpoints

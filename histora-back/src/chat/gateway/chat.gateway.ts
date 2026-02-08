@@ -157,15 +157,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       // Also notify users not in the room via their personal channel
       const room = await this.chatService.getRoom(data.roomId, client.userId!);
+      const senderParticipant = room.participants.find(
+        pp => pp.userId.toString() === client.userId,
+      );
       room.participants.forEach(p => {
         if (p.userId.toString() !== client.userId && p.isActive) {
           this.server.to(`user:${p.userId}`).emit('room-notification', {
             roomId: data.roomId,
             type: 'new_message',
             preview: data.message.content?.substring(0, 50) || 'Nueva mensaje',
-            senderName: room.participants.find(
-              pp => pp.userId.toString() === client.userId,
-            )?.name,
+            senderName: senderParticipant?.name,
+            senderAvatar: senderParticipant?.avatar,
           });
         }
       });

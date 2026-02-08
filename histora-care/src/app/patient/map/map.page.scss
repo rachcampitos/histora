@@ -263,10 +263,14 @@ $primary-gradient: var(--histora-gradient);
       }
     }
 
-    // Primary button with solid background needs white text
+    // Primary button with solid background needs white text and icon
     ion-button[color="primary"] {
       --color: #ffffff !important;
       color: #ffffff !important;
+
+      ion-icon {
+        color: #ffffff !important;
+      }
     }
   }
 }

@@ -202,10 +202,12 @@ $border: var(--histora-border, #e2e8f0);
 }
 
 // Dark mode support
-:host-context(body.dark),
-:host-context(body.ion-palette-dark) {
+// NOTE: Uses body selectors because this component has ViewEncapsulation.None
+// (:host-context does not work without Shadow DOM)
+body.dark,
+body.ion-palette-dark {
   .review-modal {
-    background: var(--histora-card-bg-dark, #1e293b);
+    background: #1e293b;
   }
 
   .close-btn {
@@ -221,7 +223,7 @@ $border: var(--histora-border, #e2e8f0);
   }
 
   .modal-title {
-    color: var(--histora-text-primary-dark, #f1f5f9);
+    color: #f1f5f9;
   }
 
   .star-btn ion-icon {
@@ -240,10 +242,10 @@ $border: var(--histora-border, #e2e8f0);
 
   .comment-row {
     .comment-input {
-      --background: var(--histora-surface-dark, #0f172a);
-      --color: var(--histora-text-primary-dark, #f1f5f9);
-      color: var(--histora-text-primary-dark, #f1f5f9);
-      border-color: var(--histora-border-dark, #334155);
+      --background: #0f172a;
+      --color: #f1f5f9;
+      color: #f1f5f9;
+      border-color: #334155;
 
       &:focus-within {
         border-color: #6bb5b3;
