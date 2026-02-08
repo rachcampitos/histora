@@ -133,8 +133,6 @@ export class ChatService {
     // Use wsUrl from environment for WebSocket connection
     const wsUrl = environment.wsUrl || environment.apiUrl.replace('/api', '');
 
-    console.log('[ChatService] Connecting to WebSocket:', wsUrl);
-
     this.socket = io(`${wsUrl}/chat`, {
       auth: { token },
       transports: ['websocket', 'polling'], // Allow polling fallback
@@ -154,17 +152,14 @@ export class ChatService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Chat connected');
       this._isConnected.set(true);
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Chat disconnected');
       this._isConnected.set(false);
     });
 
-    this.socket.on('connected', (data: { userId: string }) => {
-      console.log('Chat authenticated as:', data.userId);
+    this.socket.on('connected', (_data: { userId: string }) => {
     });
 
     this.socket.on('new-message', (data: { roomId: string; message: ChatMessage }) => {
@@ -234,6 +229,7 @@ export class ChatService {
    */
   disconnect(): void {
     if (this.socket) {
+      this.socket.removeAllListeners();
       this.socket.disconnect();
       this.socket = null;
     }

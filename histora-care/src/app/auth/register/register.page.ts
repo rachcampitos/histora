@@ -152,8 +152,6 @@ export class RegisterPage implements OnInit, OnDestroy {
       exhaustMap(async () => {
         const { firstName, lastName, email, phone, password, acceptTerms } = this.registerForm.value;
 
-        console.log('[REGISTER] Starting patient registration...');
-
         loadingRef = await this.loadingCtrl.create({
           message: 'Creando cuenta...',
           spinner: 'crescent'
@@ -163,7 +161,6 @@ export class RegisterPage implements OnInit, OnDestroy {
         return { firstName, lastName, email, phone, password, termsAccepted: acceptTerms };
       }),
       exhaustMap((data) => {
-        console.log('[REGISTER] Calling API with data:', { ...data, password: '***' });
         return this.authService.registerPatient(data).pipe(
           take(1),
           takeUntil(this.destroy$)
@@ -171,7 +168,6 @@ export class RegisterPage implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: async (response) => {
-        console.log('[REGISTER] Registration successful, user:', response?.user?.email);
         await loadingRef?.dismiss();
         loadingRef = null;
 
@@ -184,7 +180,6 @@ export class RegisterPage implements OnInit, OnDestroy {
         });
         await toast.present();
 
-        console.log('[REGISTER] Navigating to /patient/tabs/home...');
         this.router.navigate(['/patient/tabs/home']);
       },
       error: async (error) => {
@@ -309,12 +304,6 @@ export class RegisterPage implements OnInit, OnDestroy {
   private async showError(error: any) {
     let message = 'Error al crear la cuenta';
     const errorMessage = error.error?.message || error.message || '';
-
-    console.log('[REGISTER] showError called with:', {
-      status: error?.status,
-      errorMessage,
-      fullError: error
-    });
 
     if (error.status === 409) {
       // Check specific 409 error types

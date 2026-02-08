@@ -45,13 +45,11 @@ export class WebPushService {
   private async init() {
     // Only run on web platform
     if (Capacitor.isNativePlatform()) {
-      console.log('[WebPush] Running on native platform, skipping web push setup');
       return;
     }
 
     // Check browser support
     if (!this.checkSupport()) {
-      console.log('[WebPush] Web Push not supported in this browser');
       return;
     }
 
@@ -87,7 +85,6 @@ export class WebPushService {
 
       if (config?.publicKey) {
         this._vapidPublicKey.set(config.publicKey);
-        console.log('[WebPush] VAPID key loaded successfully');
       } else {
         console.warn('[WebPush] No VAPID key available from server');
       }
@@ -106,7 +103,6 @@ export class WebPushService {
 
       if (subscription) {
         this._isSubscribed.set(true);
-        console.log('[WebPush] Existing subscription found');
       }
     } catch (error) {
       console.error('[WebPush] Error checking subscription:', error);
@@ -119,12 +115,10 @@ export class WebPushService {
    */
   async subscribe(): Promise<boolean> {
     if (!this._isSupported()) {
-      console.log('[WebPush] Web Push not supported');
       return false;
     }
 
     if (!this._vapidPublicKey()) {
-      console.log('[WebPush] VAPID key not available');
       await this.loadVapidKey();
       if (!this._vapidPublicKey()) {
         return false;
@@ -137,7 +131,6 @@ export class WebPushService {
       this._permissionState.set(permission);
 
       if (permission !== 'granted') {
-        console.log('[WebPush] Permission denied');
         return false;
       }
 
@@ -151,8 +144,6 @@ export class WebPushService {
         applicationServerKey: applicationServerKey as BufferSource,
       });
 
-      console.log('[WebPush] Subscription created:', subscription.endpoint);
-
       // Send subscription to backend
       const success = await this.sendSubscriptionToServer(subscription);
 
@@ -162,7 +153,6 @@ export class WebPushService {
           endpoint: subscription.endpoint,
           subscribedAt: new Date().toISOString(),
         });
-        console.log('[WebPush] Successfully subscribed to push notifications');
         return true;
       }
 
@@ -198,7 +188,6 @@ export class WebPushService {
         this._isSubscribed.set(false);
         await this.storage.remove(STORAGE_KEYS.WEB_PUSH_SUBSCRIPTION);
 
-        console.log('[WebPush] Successfully unsubscribed');
         return true;
       }
 
@@ -244,7 +233,6 @@ export class WebPushService {
    */
   async sendTestNotification(): Promise<boolean> {
     if (!this._isSubscribed()) {
-      console.log('[WebPush] Not subscribed');
       return false;
     }
 
@@ -253,7 +241,6 @@ export class WebPushService {
         this.api.post<{ success: boolean; sent: number }>('/notifications/web-push/test', {})
       );
 
-      console.log('[WebPush] Test notification result:', result);
       return result?.success ?? false;
     } catch (error) {
       console.error('[WebPush] Test notification failed:', error);
@@ -320,7 +307,6 @@ export class WebPushService {
         break;
 
       case 'TEST':
-        console.log('[WebPush] Test notification clicked');
         break;
 
       default:

@@ -62,7 +62,7 @@ export class CheckInService {
   ): void {
     // Only activate for longer services
     if (estimatedDurationMinutes < this.MIN_SERVICE_DURATION_MINUTES) {
-      console.log('[CheckIn] Service too short, skipping check-in monitoring');
+      // Service too short, skip check-in monitoring
       return;
     }
 
@@ -247,7 +247,7 @@ export class CheckInService {
   private async requestNotificationPermission(): Promise<void> {
     try {
       const permission = await LocalNotifications.requestPermissions();
-      console.log('[CheckIn] Notification permission:', permission);
+      // Permission obtained
     } catch (error) {
       console.error('[CheckIn] Error requesting notification permission:', error);
     }
@@ -258,14 +258,14 @@ export class CheckInService {
    */
   private notifyMissedCheckIn(serviceRequestId: string): void {
     // This is handled by the backend's cron job, but we can increment locally
-    console.log('[CheckIn] Missed check-in for service:', serviceRequestId);
+    // Missed check-in tracked locally
   }
 
   /**
    * Trigger automatic alert after too many missed check-ins
    */
   private triggerAutomaticAlert(serviceRequestId: string): void {
-    console.log('[CheckIn] Triggering automatic alert for service:', serviceRequestId);
+    // Triggering automatic alert
 
     // This would typically trigger a panic alert or notify emergency contacts
     // For now, we'll just log it - the actual implementation depends on the safety module

@@ -46,7 +46,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   private chatRoomId: string | null = null;
 
   // Security code state
-  codeDigits = signal<string[]>(['', '', '', '']);
+  codeDigits = signal<string[]>(['', '', '', '', '', '']);
   isVerifyingCode = signal(false);
   codeVerified = computed(() => !!this.request()?.codeVerifiedAt);
 
@@ -450,15 +450,15 @@ export class ActiveServicePage implements OnInit, OnDestroy {
     digits[index] = value.slice(-1);
     this.codeDigits.set(digits);
 
-    if (value && index < 3) {
+    if (value && index < 5) {
       // Auto-focus next input
       const nextInput = input.parentElement?.querySelector(`input:nth-child(${index + 2})`) as HTMLInputElement;
       nextInput?.focus();
     }
 
-    // Auto-submit when all 4 digits entered
+    // Auto-submit when all 6 digits entered
     const fullCode = digits.join('');
-    if (fullCode.length === 4 && digits.every(d => d !== '')) {
+    if (fullCode.length === 6 && digits.every(d => d !== '')) {
       this.verifySecurityCode(fullCode);
     }
   }
@@ -491,7 +491,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
       const msg = err?.error?.message || 'Codigo incorrecto';
       this.showToast(msg, 'danger');
       // Clear input
-      this.codeDigits.set(['', '', '', '']);
+      this.codeDigits.set(['', '', '', '', '', '']);
       // Re-focus first input
       setTimeout(() => {
         const firstInput = document.querySelector('.code-inputs input') as HTMLInputElement;

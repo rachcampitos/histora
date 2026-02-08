@@ -232,10 +232,8 @@ export class VerificationPage implements OnInit, OnDestroy {
   // ============= Status Polling (auto-refresh when admin approves) =============
 
   private startStatusPolling() {
-    console.log('[VERIFICATION POLL] Starting status polling (every 15 seconds)');
     // Poll every 15 seconds to check if status changed (faster for better UX)
     this.statusPollingInterval = setInterval(() => {
-      console.log('[VERIFICATION POLL] Polling tick...');
       this.checkVerificationStatus();
     }, 15000);
   }
@@ -252,16 +250,11 @@ export class VerificationPage implements OnInit, OnDestroy {
     if (!nurse) return;
 
     try {
-      console.log('[VERIFICATION POLL] Checking status for nurse:', nurse._id);
-
       // Fetch both verification and nurse profile to ensure we get the latest status
       const [verification, updatedNurse] = await Promise.all([
         this.nurseApi.getVerificationStatus(nurse._id).toPromise(),
         this.nurseApi.getMyProfile().toPromise()
       ]);
-
-      console.log('[VERIFICATION POLL] API Response - Verification status:', verification?.status);
-      console.log('[VERIFICATION POLL] API Response - Nurse verificationStatus:', updatedNurse?.verificationStatus);
 
       // Update nurse profile
       if (updatedNurse) {
@@ -270,38 +263,29 @@ export class VerificationPage implements OnInit, OnDestroy {
 
       if (verification) {
         const previousStatus = this.verification()?.status;
-        console.log('[VERIFICATION POLL] Previous status:', previousStatus, '-> New status:', verification.status);
 
         this.verification.set(verification);
 
-        // Log computed values after signal update
-        console.log('[VERIFICATION POLL] After signal update - verificationStatus():', this.verificationStatus());
-        console.log('[VERIFICATION POLL] After signal update - allChecklistCompleted():', this.allChecklistCompleted());
-
         // If status changed to approved, show success and stop polling
         if (verification.status === 'approved' && previousStatus !== 'approved') {
-          console.log('[VERIFICATION POLL] Status changed to APPROVED! Showing success...');
           this.stopStatusPolling();
           this.stopWaitingTimer();
           this.showApprovalSuccess();
         }
         // Also check nurse profile as backup
         else if (verification.status !== 'approved' && updatedNurse?.verificationStatus === 'approved') {
-          console.log('[VERIFICATION POLL] Nurse profile shows APPROVED but verification doc does not. Using nurse profile status.');
           this.stopStatusPolling();
           this.stopWaitingTimer();
           this.showApprovalSuccess();
         }
         // If status changed to rejected, stop polling
         else if (verification.status === 'rejected' && previousStatus !== 'rejected') {
-          console.log('[VERIFICATION POLL] Status changed to REJECTED!');
           this.stopStatusPolling();
           this.stopWaitingTimer();
           this.showRejectionAlert(verification.rejectionReason);
         }
       } else if (updatedNurse?.verificationStatus === 'approved') {
         // Fallback: check nurse profile status if verification document not found
-        console.log('[VERIFICATION POLL] Fallback: Nurse profile shows APPROVED');
         this.stopStatusPolling();
         this.stopWaitingTimer();
         this.showApprovalSuccess();
@@ -313,10 +297,6 @@ export class VerificationPage implements OnInit, OnDestroy {
   }
 
   private async showApprovalSuccess() {
-    console.log('[VERIFICATION] showApprovalSuccess called');
-    console.log('[VERIFICATION] Current verificationStatus:', this.verificationStatus());
-    console.log('[VERIFICATION] allChecklistCompleted:', this.allChecklistCompleted());
-
     // Mark celebration as shown to prevent duplicate modal in dashboard
     const nurse = this.nurse();
     if (nurse) {
@@ -326,18 +306,12 @@ export class VerificationPage implements OnInit, OnDestroy {
 
     // First, show the transition state (checklist items completing)
     this.showApprovalTransition.set(true);
-    console.log('[VERIFICATION] showApprovalTransition set to TRUE');
-    console.log('[VERIFICATION] allChecklistCompleted after transition:', this.allChecklistCompleted());
 
     // Wait 2 seconds for user to see the checklist complete
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Hide transition and show approved card
     this.showApprovalTransition.set(false);
-    console.log('[VERIFICATION] showApprovalTransition set to FALSE');
-    console.log('[VERIFICATION] Final verificationStatus:', this.verificationStatus());
-    console.log('[VERIFICATION] Final isApproved:', this.isApproved());
-    console.log('[VERIFICATION] Final isUnderReview:', this.isUnderReview());
 
     // Show success alert
     const alert = await this.alertCtrl.create({
@@ -484,11 +458,9 @@ export class VerificationPage implements OnInit, OnDestroy {
 
   async loadData() {
     this.isLoading.set(true);
-    console.log('[VERIFICATION] loadData() starting...');
     try {
       // Load nurse profile first
       const nurse = await this.nurseApi.getMyProfile().toPromise();
-      console.log('[VERIFICATION] Nurse profile loaded:', nurse?.verificationStatus);
 
       if (nurse) {
         this.nurse.set(nurse);
@@ -502,16 +474,9 @@ export class VerificationPage implements OnInit, OnDestroy {
         // Load verification status if exists
         try {
           const verification = await this.nurseApi.getVerificationStatus(nurse._id).toPromise();
-          console.log('[VERIFICATION] Verification status loaded:', verification?.status);
 
           if (verification) {
             this.verification.set(verification);
-
-            console.log('[VERIFICATION] After setting signals:');
-            console.log('[VERIFICATION] - verificationStatus():', this.verificationStatus());
-            console.log('[VERIFICATION] - isApproved():', this.isApproved());
-            console.log('[VERIFICATION] - isUnderReview():', this.isUnderReview());
-            console.log('[VERIFICATION] - allChecklistCompleted():', this.allChecklistCompleted());
 
             // Pre-fill form if data exists
             if (verification.dniNumber) {
@@ -526,18 +491,12 @@ export class VerificationPage implements OnInit, OnDestroy {
             }
             // Start waiting timer and status polling if under review
             if (verification.status === 'under_review') {
-              console.log('[VERIFICATION] Status is under_review, starting polling...');
               this.startWaitingTimer();
               this.startStatusPolling();
-            } else {
-              console.log('[VERIFICATION] Status is', verification.status, '- NOT starting polling');
             }
-          } else {
-            console.log('[VERIFICATION] No verification document found');
           }
         } catch (err) {
           // No verification exists yet, that's fine
-          console.log('[VERIFICATION] Error or no verification:', err);
         }
       }
     } catch (error) {
@@ -545,7 +504,6 @@ export class VerificationPage implements OnInit, OnDestroy {
       this.toast.error('Error al cargar datos');
     } finally {
       this.isLoading.set(false);
-      console.log('[VERIFICATION] loadData() completed');
     }
   }
 

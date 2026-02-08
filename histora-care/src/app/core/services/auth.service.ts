@@ -80,10 +80,8 @@ export class AuthService {
   }
 
   registerPatient(data: RegisterPatientRequest): Observable<AuthResponse> {
-    console.log('[AUTH] registerPatient called');
     return this.api.post<AuthResponse>('/auth/register/patient', data).pipe(
       switchMap(response => {
-        console.log('[AUTH] API response received, handling auth response...');
         return from(this.handleAuthResponse(response));
       })
     );
@@ -133,31 +131,22 @@ export class AuthService {
   }
 
   private async handleAuthResponse(response: AuthResponse): Promise<AuthResponse> {
-    console.log('[AUTH] handleAuthResponse - storing tokens...');
-
     try {
       await this.storage.set(TOKEN_KEY, response.access_token);
       await this.storage.set(REFRESH_TOKEN_KEY, response.refresh_token);
       await this.storage.set(USER_KEY, response.user);
       this.userSignal.set(response.user);
-      console.log('[AUTH] Tokens and user stored successfully');
 
       // Initialize session monitoring with session info from server
       if (response.session) {
-        console.log('[AUTH] Initializing session monitoring...');
         this.sessionGuard.setRefreshTokenCallback(() => this.refreshToken());
         await this.sessionGuard.initializeSession(response.session);
-        console.log('[AUTH] Session monitoring initialized');
       }
 
       // Subscribe to web push notifications (only on web platform)
       if (!Capacitor.isNativePlatform()) {
-        console.log('[AUTH] Subscribing to web push notifications...');
         this.webPushService.subscribe().then(subscribed => {
           if (subscribed) {
-            console.log('[AUTH] Web push subscription successful');
-          } else {
-            console.log('[AUTH] Web push subscription skipped or denied');
           }
         }).catch(err => {
           console.warn('[AUTH] Web push subscription failed:', err);

@@ -260,12 +260,12 @@ ion-header ion-toolbar {
   .code-display {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 16px;
 
     .code-digit {
-      width: 48px;
-      height: 56px;
+      width: 40px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -287,12 +287,12 @@ ion-header ion-toolbar {
   .code-inputs {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 12px;
 
     .code-input {
-      width: 48px;
-      height: 56px;
+      width: 40px;
+      height: 48px;
       text-align: center;
       font-size: 24px;
       font-weight: 700;
