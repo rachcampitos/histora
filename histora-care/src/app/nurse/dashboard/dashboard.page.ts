@@ -64,12 +64,12 @@ export class DashboardPage implements OnInit, OnDestroy {
   });
 
   /**
-   * Get the most important active in-progress request for the prominent banner
-   * Priority: in_progress > on_the_way > arrived
+   * Get the most important active request for the prominent banner
+   * Priority: in_progress > on_the_way > arrived > accepted
    */
   getActiveInProgressRequest(): ServiceRequest | null {
     const active = this.activeRequests();
-    const priorityOrder = ['in_progress', 'on_the_way', 'arrived'];
+    const priorityOrder = ['in_progress', 'on_the_way', 'arrived', 'accepted'];
 
     for (const status of priorityOrder) {
       const found = active.find(r => r.status === status);
@@ -110,11 +110,13 @@ export class DashboardPage implements OnInit, OnDestroy {
     effect(() => {
       const statusUpdate = this.wsService.statusUpdate();
       if (statusUpdate) {
-        // Refresh active requests when status changes
-        const nurseId = this.nurse()?._id;
-        if (nurseId) {
-          this.loadRequests(nurseId);
-        }
+        // Small delay to allow backend to persist the status change before querying
+        setTimeout(() => {
+          const nurseId = this.nurse()?._id;
+          if (nurseId) {
+            this.loadRequests(nurseId);
+          }
+        }, 500);
       }
     });
   }
@@ -589,19 +591,17 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   viewRequest(request: ServiceRequest) {
-    // Navigate to active-service page for in-progress services
-    const activeStatuses = ['on_the_way', 'arrived', 'in_progress'];
+    // Navigate to active-service page for active services (including accepted)
+    const activeStatuses = ['accepted', 'on_the_way', 'arrived', 'in_progress'];
     if (activeStatuses.includes(request.status)) {
       this.router.navigate(['/nurse/active-service', request._id]);
       return;
     }
 
     // Navigate to requests page for other statuses
-    const tab = request.status === 'accepted'
-      ? 'active'
-      : request.status === 'pending'
-        ? 'pending'
-        : 'history';
+    const tab = request.status === 'pending'
+      ? 'pending'
+      : 'history';
     this.router.navigate(['/nurse/requests'], { queryParams: { tab, requestId: request._id } });
   }
 

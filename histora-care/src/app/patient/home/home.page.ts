@@ -32,8 +32,8 @@ export class HomePage implements OnInit, OnDestroy {
     effect(() => {
       const statusUpdate = this.wsService.statusUpdate();
       if (statusUpdate) {
-        // Refresh active request when status changes
-        this.loadActiveRequest();
+        // Small delay to allow backend to persist the status change before querying
+        setTimeout(() => this.loadActiveRequest(), 500);
       }
     });
   }

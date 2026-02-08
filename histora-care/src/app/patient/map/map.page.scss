@@ -268,7 +268,8 @@ $primary-gradient: var(--histora-gradient);
       --color: #ffffff !important;
       color: #ffffff !important;
 
-      ion-icon {
+      ion-icon,
+      span {
         color: #ffffff !important;
       }
     }
