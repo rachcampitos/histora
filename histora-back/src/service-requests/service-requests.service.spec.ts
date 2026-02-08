@@ -92,8 +92,12 @@ describe('ServiceRequestsService', () => {
   const mockNotificationsService = {
     sendServiceRequestNotification: jest.fn().mockResolvedValue(undefined),
     notifyNurseNewRequest: jest.fn().mockResolvedValue(undefined),
-    notifyPatientRequestAccepted: jest.fn().mockResolvedValue(undefined),
-    notifyPatientRequestRejected: jest.fn().mockResolvedValue(undefined),
+    notifyPatientServiceAccepted: jest.fn().mockResolvedValue(undefined),
+    notifyPatientServiceRejected: jest.fn().mockResolvedValue(undefined),
+    notifyPatientNurseOnTheWay: jest.fn().mockResolvedValue(undefined),
+    notifyPatientNurseArrived: jest.fn().mockResolvedValue(undefined),
+    notifyPatientServiceCompleted: jest.fn().mockResolvedValue(undefined),
+    notifyNurseNewReview: jest.fn().mockResolvedValue(undefined),
   };
 
   const mockTrackingGateway = {
@@ -357,6 +361,7 @@ describe('ServiceRequestsService', () => {
         ...mockServiceRequest,
         status: 'completed',
         patientId: { toString: () => mockPatientId },
+        nurseId: new Types.ObjectId(mockNurseId),
         rating: undefined,
         save: jest.fn().mockResolvedValue({
           ...mockServiceRequest,
@@ -366,6 +371,12 @@ describe('ServiceRequestsService', () => {
       };
 
       mockServiceRequestModel.findById.mockResolvedValue(completedRequest);
+      mockNurseModel.findById.mockReturnValue({
+        populate: jest.fn().mockResolvedValue({
+          ...mockNurse,
+          userId: { _id: new Types.ObjectId() },
+        }),
+      });
 
       const result = await service.rate(
         mockRequestId,
@@ -375,6 +386,7 @@ describe('ServiceRequestsService', () => {
       );
 
       expect(completedRequest.save).toHaveBeenCalled();
+      expect(mockNotificationsService.notifyNurseNewReview).toHaveBeenCalled();
     });
 
     it('should throw BadRequestException if request is not completed', async () => {
