@@ -357,6 +357,26 @@ export const verificationsApi = {
   },
 };
 
+// Patient Verifications endpoints
+export const patientVerificationsApi = {
+  getAll: async (params?: { status?: string; page?: number; limit?: number }) => {
+    const response = await api.get('/patient-verification/admin/patients', { params });
+    return response.data;
+  },
+  getStats: async () => {
+    const response = await api.get('/patient-verification/admin/patients/stats');
+    return response.data;
+  },
+  approveIdentity: async (patientId: string, notes?: string) => {
+    const response = await api.patch(`/patient-verification/admin/patients/${patientId}/approve-identity`, { notes });
+    return response.data;
+  },
+  suspend: async (patientId: string, reason: string) => {
+    const response = await api.patch(`/patient-verification/patient/${patientId}/suspend`, { reason });
+    return response.data;
+  },
+};
+
 // Admin Users endpoints
 export const usersApi = {
   getAll: async (params?: { role?: string; status?: string; search?: string }) => {

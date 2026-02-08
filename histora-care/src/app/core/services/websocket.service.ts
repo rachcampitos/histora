@@ -139,6 +139,21 @@ export class WebSocketService {
       });
     });
 
+    // Listen for request cancellation (for nurses)
+    this.socket.on('request:cancelled', (data: {
+      requestId: string;
+      serviceName: string;
+      patientName: string;
+      reason?: string;
+      timestamp: string;
+    }) => {
+      this._statusUpdate.set({
+        requestId: data.requestId,
+        status: 'cancelled',
+        updatedAt: new Date(data.timestamp),
+      });
+    });
+
     // Listen for nurse availability changes (for patients on map)
     this.socket.on('nurse:availability:changed', (data: { nurseUserId: string; timestamp: string }) => {
       this._nurseAvailabilityChanged.set(new Date(data.timestamp));

@@ -535,6 +535,28 @@ export class NotificationsService {
     });
   }
 
+  // Notify nurse when patient cancels a service request
+  async notifyNurseServiceCancelled(request: {
+    requestId: string;
+    nurseUserId: string;
+    patientName: string;
+    serviceName: string;
+    reason?: string;
+  }): Promise<void> {
+    const reasonText = request.reason
+      ? ` Motivo: ${request.reason}`
+      : '';
+
+    await this.send({
+      userId: request.nurseUserId,
+      type: NotificationType.SERVICE_REQUEST_CANCELLED,
+      title: 'Solicitud Cancelada',
+      message: `${request.patientName} ha cancelado la solicitud de ${request.serviceName}.${reasonText}`,
+      data: { requestId: request.requestId, reason: request.reason },
+      channels: [NotificationChannel.IN_APP, NotificationChannel.PUSH],
+    });
+  }
+
   // Notify nurse when patient leaves a review
   async notifyNurseNewReview(review: {
     requestId: string;

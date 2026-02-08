@@ -85,6 +85,21 @@ export class RequestsPage implements OnInit, OnDestroy {
         this.wsService.clearNewRequest();
       }
     });
+
+    // Listen for status updates (cancellations, etc.)
+    effect(() => {
+      const statusUpdate = this.wsService.statusUpdate();
+      if (statusUpdate) {
+        if (statusUpdate.status === 'cancelled') {
+          this.handleCancelledRequest(statusUpdate.requestId);
+        }
+        // Refresh active and history lists
+        setTimeout(() => {
+          this.loadActiveRequests();
+          this.loadHistoryRequests();
+        }, 500);
+      }
+    });
   }
 
   async ngOnInit() {
@@ -611,6 +626,26 @@ export class RequestsPage implements OnInit, OnDestroy {
       duration: 2000,
       color,
       position: 'bottom'
+    });
+    await toast.present();
+  }
+
+  /**
+   * Handle cancelled request from WebSocket
+   */
+  private async handleCancelledRequest(requestId: string) {
+    // Remove from active list immediately
+    this.activeRequests.update(requests =>
+      requests.filter(r => r._id !== requestId)
+    );
+
+    const toast = await this.toastCtrl.create({
+      header: 'Solicitud cancelada',
+      message: 'Un paciente ha cancelado su solicitud',
+      duration: 4000,
+      position: 'top',
+      color: 'warning',
+      icon: 'close-circle-outline',
     });
     await toast.present();
   }

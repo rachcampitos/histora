@@ -8,3 +8,7 @@ cliniva/
 
 # Claude Code - mantener solo local
 .claude/
+CLAUDE.md
+
+# Archivos sensibles
+*.pdf

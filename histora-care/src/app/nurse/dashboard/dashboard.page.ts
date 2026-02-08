@@ -110,6 +110,9 @@ export class DashboardPage implements OnInit, OnDestroy {
     effect(() => {
       const statusUpdate = this.wsService.statusUpdate();
       if (statusUpdate) {
+        if (statusUpdate.status === 'cancelled') {
+          this.showToast('Un paciente ha cancelado su solicitud', 'warning');
+        }
         // Small delay to allow backend to persist the status change before querying
         setTimeout(() => {
           const nurseId = this.nurse()?._id;

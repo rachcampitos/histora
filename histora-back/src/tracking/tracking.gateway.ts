@@ -482,6 +482,22 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   /**
+   * Notify nurse that a patient cancelled a service request
+   */
+  notifyNurseServiceCancelled(nurseUserId: string, data: {
+    requestId: string;
+    serviceName: string;
+    patientName: string;
+    reason?: string;
+  }) {
+    this.logger.log(`Notifying nurse ${nurseUserId} about cancelled request ${data.requestId}`);
+    this.server.to(`user:${nurseUserId}`).emit('request:cancelled', {
+      ...data,
+      timestamp: new Date(),
+    });
+  }
+
+  /**
    * Notify patient about request status change
    */
   notifyPatientStatusChange(patientUserId: string, data: {

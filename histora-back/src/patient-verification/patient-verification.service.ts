@@ -661,4 +661,112 @@ export class PatientVerificationService {
   async findByPatientId(patientId: string): Promise<PatientVerification | null> {
     return this.verificationModel.findOne({ patientId: new Types.ObjectId(patientId) });
   }
+
+  // ==================== Admin: Patient Verifications ====================
+
+  async getPatientVerificationsPending(params: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ data: any[]; pagination: { total: number; page: number; limit: number; totalPages: number } }> {
+    const { status = 'pending', page = 1, limit = 20 } = params;
+
+    const query: Record<string, unknown> = {};
+    if (status !== 'all') {
+      query.status = status;
+    }
+    // Only include verifications where patients have uploaded identity documents
+    query['dni.frontPhotoUrl'] = { $exists: true };
+
+    const [verifications, total] = await Promise.all([
+      this.verificationModel
+        .find(query)
+        .populate('patientId', 'firstName lastName email phone avatar')
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      this.verificationModel.countDocuments(query),
+    ]);
+
+    const data = verifications.map((v: any) => {
+      const patient = v.patientId;
+      return {
+        _id: v._id,
+        patientId: patient?._id?.toString() || v.patientId,
+        patient: patient
+          ? {
+              firstName: patient.firstName,
+              lastName: patient.lastName,
+              email: patient.email,
+              phone: patient.phone,
+              avatar: patient.avatar,
+            }
+          : null,
+        status: v.status,
+        verificationLevel: v.verificationLevel,
+        trustScore: v.trustScore,
+        phoneVerified: v.phoneVerified,
+        emailVerified: v.emailVerified,
+        dni: v.dni
+          ? {
+              number: v.dni.number,
+              frontPhotoUrl: v.dni.frontPhotoUrl,
+              backPhotoUrl: v.dni.backPhotoUrl,
+              verifiedWithReniec: v.dni.verifiedWithReniec,
+            }
+          : null,
+        selfie: v.selfie
+          ? {
+              photoUrl: v.selfie.photoUrl,
+              verified: v.selfie.verified,
+              biometricMatchScore: v.selfie.biometricMatchScore,
+            }
+          : null,
+        emergencyContactsCount: v.emergencyContacts?.length || 0,
+        flagsCount: { yellow: v.yellowFlagsCount, red: v.redFlagsCount },
+        createdAt: v.createdAt,
+        updatedAt: v.updatedAt,
+      };
+    });
+
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getPatientVerificationStats(): Promise<{
+    pending: number;
+    level1: number;
+    level2: number;
+    suspended: number;
+  }> {
+    const [pending, level1, level2, suspended] = await Promise.all([
+      this.verificationModel.countDocuments({ status: 'pending', 'dni.frontPhotoUrl': { $exists: true } }),
+      this.verificationModel.countDocuments({ status: 'level1' }),
+      this.verificationModel.countDocuments({ status: 'level2' }),
+      this.verificationModel.countDocuments({ status: 'suspended' }),
+    ]);
+    return { pending, level1, level2, suspended };
+  }
+
+  async approvePatientIdentity(patientId: string, adminId: string, notes?: string): Promise<PatientVerification> {
+    const verification = await this.getVerification(patientId);
+
+    if (verification.verificationLevel >= 1) {
+      throw new BadRequestException('La identidad ya fue verificada');
+    }
+
+    verification.verificationLevel = 1;
+    verification.status = 'level1';
+    verification.verifiedAt = new Date();
+
+    return verification.save();
+  }
 }

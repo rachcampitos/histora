@@ -164,12 +164,23 @@ ion-header {
       align-items: center;
       gap: 6px;
       margin-bottom: 6px;
+      flex-wrap: wrap;
 
-      ion-chip {
-        height: 24px;
+      .specialty-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 28px;
+        padding: 0 10px;
+        border-radius: 14px;
         font-size: 12px;
-        margin: 0;
-        --background: var(--ion-color-light);
+        font-weight: 500;
+        white-space: nowrap;
+
+        ion-icon {
+          font-size: 14px;
+          flex-shrink: 0;
+        }
       }
 
       .more-count {
@@ -290,11 +301,6 @@ ion-header {
       }
 
       .nurse-specialties {
-        ion-chip {
-          --background: #334155;
-          --color: #e2e8f0;
-        }
-
         .more-count {
           color: #94a3b8;
         }

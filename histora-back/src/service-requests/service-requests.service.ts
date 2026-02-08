@@ -533,7 +533,49 @@ export class ServiceRequestsService {
       note: reason,
     });
 
-    return request.save();
+    const savedRequest = await request.save();
+
+    // Notify assigned nurse about cancellation
+    if (request.nurseId) {
+      try {
+        const nurse = await this.nurseModel
+          .findById(request.nurseId)
+          .populate('userId', '_id');
+        const patient = await this.userModel.findById(userId).lean();
+
+        if (nurse) {
+          const nurseUserId = (
+            nurse.userId as unknown as { _id: Types.ObjectId }
+          )._id.toString();
+          const patientName = patient
+            ? `${patient.firstName} ${patient.lastName}`
+            : 'El paciente';
+
+          // Push/in-app notification
+          await this.notificationsService.notifyNurseServiceCancelled({
+            requestId: id,
+            nurseUserId,
+            patientName,
+            serviceName: request.service.name,
+            reason,
+          });
+
+          // Real-time WebSocket event
+          this.trackingGateway.notifyNurseServiceCancelled(nurseUserId, {
+            requestId: id,
+            serviceName: request.service.name,
+            patientName,
+            reason,
+          });
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to send cancellation notification: ${error.message}`,
+        );
+      }
+    }
+
+    return savedRequest;
   }
 
   async rate(

@@ -89,21 +89,21 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
    * Called every time the view enters (including when returning from other tabs)
    */
   async ionViewDidEnter() {
-    // Check if map container exists but map is not initialized
     const mapContainer = document.getElementById('map');
+    const currentMap = this.mapboxService.getMap();
+
+    // If the map was destroyed externally (e.g. tracking page), reset flag
+    if (!currentMap && this.mapInitialized) {
+      this.mapInitialized = false;
+    }
+
     if (mapContainer && !this.mapInitialized) {
       setTimeout(() => {
         this.initMap();
         this.getUserLocation();
       }, 100);
-    } else if (this.mapInitialized) {
-      // Map is initialized, just trigger a resize to fix any rendering issues
-      const map = this.mapboxService.getMap();
-      if (map) {
-        setTimeout(() => {
-          map.resize();
-        }, 100);
-      }
+    } else if (currentMap) {
+      setTimeout(() => currentMap.resize(), 100);
     }
 
     // Connect to WebSocket and join map room for real-time updates

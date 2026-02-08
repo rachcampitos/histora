@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { verificationsApi } from '@/lib/api';
+import { verificationsApi, patientVerificationsApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -145,8 +145,56 @@ const documentLabels: Record<string, string> = {
   selfie_with_dni: 'Selfie con DNI',
 };
 
+// Patient verification types
+interface PatientVerification {
+  _id: string;
+  patientId: string;
+  patient: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    avatar?: string;
+  } | null;
+  status: 'pending' | 'level1' | 'level2' | 'suspended';
+  verificationLevel: number;
+  trustScore: number;
+  phoneVerified: boolean;
+  emailVerified: boolean;
+  dni: {
+    number: string;
+    frontPhotoUrl: string;
+    backPhotoUrl?: string;
+    verifiedWithReniec: boolean;
+  } | null;
+  selfie: {
+    photoUrl: string;
+    verified: boolean;
+    biometricMatchScore: number;
+  } | null;
+  emergencyContactsCount: number;
+  flagsCount: { yellow: number; red: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PatientVerificationStats {
+  pending: number;
+  level1: number;
+  level2: number;
+  suspended: number;
+}
+
+const patientStatusConfig = {
+  pending: { label: 'Pendiente', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', icon: Clock },
+  level1: { label: 'Nivel 1', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', icon: CheckCircle2 },
+  level2: { label: 'Nivel 2', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', icon: ShieldCheck },
+  suspended: { label: 'Suspendido', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200', icon: XCircle },
+};
+
 export default function VerificacionesPage() {
   const queryClient = useQueryClient();
+  const [section, setSection] = useState<'nurses' | 'patients'>('nurses');
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState('pending');
   const [selectedVerification, setSelectedVerification] = useState<Verification | null>(null);
@@ -193,6 +241,75 @@ export default function VerificacionesPage() {
       queryClient.invalidateQueries({ queryKey: ['verification-stats'] });
       toast.success('Verificacion marcada en revision');
     },
+  });
+
+  // Patient verification state
+  const [patientTab, setPatientTab] = useState('pending');
+  const [patientSearch, setPatientSearch] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState<PatientVerification | null>(null);
+  const [selectedPatientPhoto, setSelectedPatientPhoto] = useState<string | null>(null);
+
+  // Fetch patient verifications
+  const { data: patientVerificationsResponse, isLoading: isLoadingPatients } = useQuery({
+    queryKey: ['patient-verifications', patientTab],
+    queryFn: () => patientVerificationsApi.getAll({ status: patientTab }),
+    enabled: section === 'patients',
+  });
+
+  const patientVerifications: PatientVerification[] = patientVerificationsResponse?.data || [];
+
+  // Fetch patient stats
+  const { data: patientStats } = useQuery<PatientVerificationStats>({
+    queryKey: ['patient-verification-stats'],
+    queryFn: () => patientVerificationsApi.getStats(),
+    enabled: section === 'patients',
+  });
+
+  // Approve patient identity mutation
+  const approvePatientMutation = useMutation({
+    mutationFn: ({ patientId, notes }: { patientId: string; notes?: string }) =>
+      patientVerificationsApi.approveIdentity(patientId, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['patient-verifications'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-verification-stats'] });
+      toast.success('Identidad del paciente aprobada');
+      setSelectedPatient(null);
+    },
+    onError: () => {
+      toast.error('Error al aprobar identidad');
+    },
+  });
+
+  // Suspend patient mutation
+  const suspendPatientMutation = useMutation({
+    mutationFn: ({ patientId, reason }: { patientId: string; reason: string }) =>
+      patientVerificationsApi.suspend(patientId, reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['patient-verifications'] });
+      queryClient.invalidateQueries({ queryKey: ['patient-verification-stats'] });
+      toast.success('Paciente suspendido');
+      setSelectedPatient(null);
+    },
+    onError: () => {
+      toast.error('Error al suspender paciente');
+    },
+  });
+
+  const filteredPatientVerifications = patientVerifications.filter((v) => {
+    if (patientSearch) {
+      const searchLower = patientSearch.toLowerCase();
+      const firstName = v.patient?.firstName || '';
+      const lastName = v.patient?.lastName || '';
+      const email = v.patient?.email || '';
+      const dniNumber = v.dni?.number || '';
+      return (
+        firstName.toLowerCase().includes(searchLower) ||
+        lastName.toLowerCase().includes(searchLower) ||
+        email.toLowerCase().includes(searchLower) ||
+        dniNumber.includes(patientSearch)
+      );
+    }
+    return true;
   });
 
   const closeDialog = () => {
@@ -264,11 +381,435 @@ export default function VerificacionesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Verificaciones CEP</h1>
+        <h1 className="text-3xl font-bold">Verificaciones</h1>
         <p className="text-muted-foreground">
-          Gestiona las verificaciones de enfermeras con el Colegio de Enfermeros del Peru
+          Gestiona las verificaciones de enfermeras y pacientes
         </p>
       </div>
+
+      {/* Section Selector */}
+      <Tabs value={section} onValueChange={(v) => setSection(v as 'nurses' | 'patients')}>
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="nurses" className="gap-2">
+            <ShieldCheck className="h-4 w-4" />
+            Enfermeras (CEP)
+          </TabsTrigger>
+          <TabsTrigger value="patients" className="gap-2">
+            <User className="h-4 w-4" />
+            Pacientes
+            {patientStats?.pending ? (
+              <Badge variant="secondary" className="ml-1">{patientStats.pending}</Badge>
+            ) : null}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="patients" className="mt-6 space-y-6">
+          {/* Patient Stats */}
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Pendientes</CardTitle>
+                <Clock className="h-4 w-4 text-yellow-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{patientStats?.pending || 0}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Nivel 1</CardTitle>
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{patientStats?.level1 || 0}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Nivel 2</CardTitle>
+                <ShieldCheck className="h-4 w-4 text-blue-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{patientStats?.level2 || 0}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Suspendidos</CardTitle>
+                <XCircle className="h-4 w-4 text-red-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{patientStats?.suspended || 0}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Patient Search */}
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por nombre, email o DNI..."
+              value={patientSearch}
+              onChange={(e) => setPatientSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          {/* Patient Tabs */}
+          <Tabs value={patientTab} onValueChange={setPatientTab}>
+            <TabsList>
+              <TabsTrigger value="pending" className="gap-2">
+                <Clock className="h-4 w-4" />
+                Pendientes
+                {patientStats?.pending ? (
+                  <Badge variant="secondary" className="ml-1">{patientStats.pending}</Badge>
+                ) : null}
+              </TabsTrigger>
+              <TabsTrigger value="level1" className="gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                Nivel 1
+              </TabsTrigger>
+              <TabsTrigger value="suspended" className="gap-2">
+                <XCircle className="h-4 w-4" />
+                Suspendidos
+              </TabsTrigger>
+              <TabsTrigger value="all" className="gap-2">
+                Todos
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value={patientTab} className="mt-4">
+              <Card>
+                <CardContent className="p-0">
+                  {isLoadingPatients ? (
+                    <div className="p-4 space-y-4">
+                      {[...Array(3)].map((_, i) => (
+                        <Skeleton key={i} className="h-16 w-full" />
+                      ))}
+                    </div>
+                  ) : filteredPatientVerifications.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <User className="h-12 w-12 text-muted-foreground/50" />
+                      <h3 className="mt-4 text-lg font-semibold">Sin verificaciones</h3>
+                      <p className="text-muted-foreground">
+                        No hay verificaciones de pacientes en este estado
+                      </p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Paciente</TableHead>
+                          <TableHead>DNI</TableHead>
+                          <TableHead>Estado</TableHead>
+                          <TableHead>Trust Score</TableHead>
+                          <TableHead>Verificaciones</TableHead>
+                          <TableHead>Flags</TableHead>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredPatientVerifications.map((pv) => {
+                          const statusCfg = patientStatusConfig[pv.status] || patientStatusConfig.pending;
+                          return (
+                            <TableRow key={pv._id}>
+                              <TableCell>
+                                <div className="flex items-center gap-3">
+                                  <Avatar className="h-10 w-10">
+                                    <AvatarImage src={pv.patient?.avatar} />
+                                    <AvatarFallback>
+                                      {getInitials(pv.patient?.firstName, pv.patient?.lastName)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div>
+                                    <p className="font-medium">
+                                      {pv.patient?.firstName} {pv.patient?.lastName}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {pv.patient?.email}
+                                    </p>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell className="font-mono">{pv.dni?.number || '-'}</TableCell>
+                              <TableCell>
+                                <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
+                              </TableCell>
+                              <TableCell>
+                                <span className={`font-semibold ${
+                                  pv.trustScore >= 70 ? 'text-green-600' :
+                                  pv.trustScore >= 40 ? 'text-yellow-600' : 'text-red-600'
+                                }`}>
+                                  {pv.trustScore}
+                                </span>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-1">
+                                  {pv.phoneVerified && <Badge variant="outline" className="text-xs">Tel</Badge>}
+                                  {pv.emailVerified && <Badge variant="outline" className="text-xs">Email</Badge>}
+                                  {pv.dni && <Badge variant="outline" className="text-xs">DNI</Badge>}
+                                  {pv.selfie?.verified && <Badge variant="outline" className="text-xs">Selfie</Badge>}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                {(pv.flagsCount.yellow > 0 || pv.flagsCount.red > 0) ? (
+                                  <div className="flex gap-1">
+                                    {pv.flagsCount.yellow > 0 && (
+                                      <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                        {pv.flagsCount.yellow}
+                                      </Badge>
+                                    )}
+                                    {pv.flagsCount.red > 0 && (
+                                      <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                        {pv.flagsCount.red}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span className="text-muted-foreground">-</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-muted-foreground">
+                                {formatDistanceToNow(new Date(pv.createdAt), { addSuffix: true, locale: es })}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setSelectedPatient(pv)}
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                  {pv.status === 'pending' && (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                      onClick={() => approvePatientMutation.mutate({ patientId: pv.patientId })}
+                                      disabled={approvePatientMutation.isPending}
+                                    >
+                                      <CheckCircle2 className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          {/* Patient Detail Dialog */}
+          <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Verificacion de Paciente</DialogTitle>
+                <DialogDescription>
+                  Revisa los documentos de identidad del paciente
+                </DialogDescription>
+              </DialogHeader>
+
+              {selectedPatient && (
+                <div className="space-y-6">
+                  {/* Patient Info */}
+                  <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={selectedPatient.patient?.avatar} />
+                      <AvatarFallback className="text-lg">
+                        {getInitials(selectedPatient.patient?.firstName, selectedPatient.patient?.lastName)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg">
+                        {selectedPatient.patient?.firstName} {selectedPatient.patient?.lastName}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                        {selectedPatient.patient?.email && (
+                          <span className="flex items-center gap-1">
+                            <Mail className="h-3 w-3" />
+                            {selectedPatient.patient.email}
+                          </span>
+                        )}
+                        {selectedPatient.patient?.phone && (
+                          <span className="flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {selectedPatient.patient.phone}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Badge className={patientStatusConfig[selectedPatient.status]?.color || ''}>
+                      {patientStatusConfig[selectedPatient.status]?.label || selectedPatient.status}
+                    </Badge>
+                  </div>
+
+                  {/* Info Cards */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Numero DNI</p>
+                      <p className="font-semibold font-mono">{selectedPatient.dni?.number || '-'}</p>
+                    </div>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Trust Score</p>
+                      <p className={`font-semibold text-lg ${
+                        selectedPatient.trustScore >= 70 ? 'text-green-600' :
+                        selectedPatient.trustScore >= 40 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>{selectedPatient.trustScore}/100</p>
+                    </div>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Nivel</p>
+                      <p className="font-semibold">{selectedPatient.verificationLevel}</p>
+                    </div>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Contactos emergencia</p>
+                      <p className="font-semibold">{selectedPatient.emergencyContactsCount}</p>
+                    </div>
+                  </div>
+
+                  {/* Photo Comparison */}
+                  <div className="bg-muted/30 p-4 rounded-lg">
+                    <h4 className="flex items-center gap-2 font-semibold mb-4">
+                      <Camera className="h-5 w-5 text-primary" />
+                      Documentos de Identidad
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* DNI Front */}
+                      <div className="bg-background p-4 rounded-lg text-center border flex flex-col">
+                        <p className="text-sm font-medium mb-3">DNI (Frente)</p>
+                        <div className="flex-1 flex items-center justify-center">
+                          {selectedPatient.dni?.frontPhotoUrl ? (
+                            <button onClick={() => setSelectedPatientPhoto(selectedPatient.dni!.frontPhotoUrl)}>
+                              <img
+                                src={selectedPatient.dni.frontPhotoUrl}
+                                alt="DNI Frente"
+                                className="max-h-40 rounded-lg shadow cursor-pointer hover:opacity-80 transition"
+                              />
+                            </button>
+                          ) : (
+                            <div className="w-28 h-20 bg-muted rounded flex items-center justify-center">
+                              <FileText className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {/* DNI Back */}
+                      <div className="bg-background p-4 rounded-lg text-center border flex flex-col">
+                        <p className="text-sm font-medium mb-3">DNI (Dorso)</p>
+                        <div className="flex-1 flex items-center justify-center">
+                          {selectedPatient.dni?.backPhotoUrl ? (
+                            <button onClick={() => setSelectedPatientPhoto(selectedPatient.dni!.backPhotoUrl!)}>
+                              <img
+                                src={selectedPatient.dni.backPhotoUrl}
+                                alt="DNI Dorso"
+                                className="max-h-40 rounded-lg shadow cursor-pointer hover:opacity-80 transition"
+                              />
+                            </button>
+                          ) : (
+                            <div className="w-28 h-20 bg-muted rounded flex items-center justify-center">
+                              <FileText className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {/* Selfie */}
+                      <div className="bg-background p-4 rounded-lg text-center border flex flex-col">
+                        <p className="text-sm font-medium mb-3">Selfie</p>
+                        <div className="flex-1 flex items-center justify-center">
+                          {selectedPatient.selfie?.photoUrl ? (
+                            <button onClick={() => setSelectedPatientPhoto(selectedPatient.selfie!.photoUrl)}>
+                              <img
+                                src={selectedPatient.selfie.photoUrl}
+                                alt="Selfie"
+                                className="max-h-40 rounded-lg shadow cursor-pointer hover:opacity-80 transition"
+                              />
+                            </button>
+                          ) : (
+                            <div className="w-28 h-20 bg-muted rounded flex items-center justify-center">
+                              <Camera className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <DialogFooter>
+                {selectedPatient?.status === 'pending' && (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (selectedPatient) {
+                          const reason = prompt('Motivo de suspension:');
+                          if (reason) {
+                            suspendPatientMutation.mutate({ patientId: selectedPatient.patientId, reason });
+                          }
+                        }
+                      }}
+                    >
+                      <XCircle className="mr-2 h-4 w-4" />
+                      Suspender
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (selectedPatient) {
+                          approvePatientMutation.mutate({ patientId: selectedPatient.patientId });
+                        }
+                      }}
+                      disabled={approvePatientMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {approvePatientMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      <CheckCircle2 className="mr-2 h-4 w-4" />
+                      Aprobar Identidad
+                    </Button>
+                  </>
+                )}
+                {selectedPatient?.status !== 'pending' && (
+                  <Button variant="outline" onClick={() => setSelectedPatient(null)}>
+                    Cerrar
+                  </Button>
+                )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Patient Photo Viewer */}
+          <Dialog open={!!selectedPatientPhoto} onOpenChange={() => setSelectedPatientPhoto(null)}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Documento</DialogTitle>
+              </DialogHeader>
+              {selectedPatientPhoto && (
+                <div className="flex flex-col items-center gap-4">
+                  <img
+                    src={selectedPatientPhoto}
+                    alt="Documento"
+                    className="max-w-full max-h-[60vh] rounded-lg shadow-lg object-contain"
+                  />
+                  <Button asChild variant="outline">
+                    <a href={selectedPatientPhoto} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Abrir en nueva pestana
+                    </a>
+                  </Button>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+
+        <TabsContent value="nurses" className="mt-6 space-y-6">
+      </Tabs>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -918,6 +1459,8 @@ export default function VerificacionesPage() {
           )}
         </DialogContent>
       </Dialog>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

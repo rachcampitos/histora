@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PatientVerificationService } from './patient-verification.service';
 import {
@@ -147,6 +147,45 @@ export class PatientVerificationController {
   }
 
   // ==================== Admin Actions ====================
+
+  @Get('admin/patients')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'List patient verifications with identity docs (admin)' })
+  @ApiResponse({ status: 200, description: 'List of patient verifications' })
+  async getPatientVerifications(
+    @Query('status') status?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.verificationService.getPatientVerificationsPending({
+      status: status || 'pending',
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 20,
+    });
+  }
+
+  @Get('admin/patients/stats')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Get patient verification stats (admin)' })
+  @ApiResponse({ status: 200, description: 'Stats by status' })
+  async getPatientVerificationStats() {
+    return this.verificationService.getPatientVerificationStats();
+  }
+
+  @Patch('admin/patients/:patientId/approve-identity')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.PLATFORM_ADMIN)
+  @ApiOperation({ summary: 'Approve patient identity verification (admin)' })
+  @ApiResponse({ status: 200, description: 'Identity approved' })
+  async approvePatientIdentity(
+    @Param('patientId') patientId: string,
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() body: { notes?: string },
+  ) {
+    return this.verificationService.approvePatientIdentity(patientId, user.userId, body?.notes);
+  }
 
   @Post('patient/:patientId/flag')
   @UseGuards(RolesGuard)
