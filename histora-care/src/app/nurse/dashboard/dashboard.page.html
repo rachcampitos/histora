@@ -122,11 +122,12 @@
       <div class="banner-pulse"></div>
       <div class="banner-content">
         <div class="banner-icon">
-          <ion-icon [name]="activeRequest.status === 'on_the_way' ? 'navigate' :
+          <ion-icon [name]="activeRequest.status === 'accepted' ? 'checkmark-circle' :
+                           activeRequest.status === 'on_the_way' ? 'navigate' :
                            activeRequest.status === 'arrived' ? 'location' : 'medical'"></ion-icon>
         </div>
         <div class="banner-info">
-          <h3>Servicio en Curso</h3>
+          <h3>{{ activeRequest.status === 'accepted' ? 'Servicio Aceptado' : 'Servicio en Curso' }}</h3>
           <p>{{ activeRequest.patient?.firstName }} {{ activeRequest.patient?.lastName }} - {{ activeRequest.service.name }}</p>
         </div>
         <ion-icon name="chevron-forward" class="banner-arrow"></ion-icon>

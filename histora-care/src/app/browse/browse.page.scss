@@ -287,6 +287,10 @@ ion-toolbar {
     ion-button[color="primary"] {
       --color: #ffffff !important;
       color: #ffffff !important;
+
+      span {
+        color: #ffffff !important;
+      }
     }
   }
 }
