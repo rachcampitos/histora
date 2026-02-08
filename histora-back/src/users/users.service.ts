@@ -210,7 +210,7 @@ export class UsersService {
   }
 
   private async hashPassword(password: string): Promise<string> {
-    const saltRounds = 10;
+    const saltRounds = 12;
     return bcrypt.hash(password, saltRounds);
   }
 

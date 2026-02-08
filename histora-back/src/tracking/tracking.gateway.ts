@@ -18,6 +18,7 @@ import { Nurse } from '../nurses/schema/nurse.schema';
 interface AuthenticatedSocket extends Socket {
   userId?: string;
   userRole?: string;
+  nurseDocId?: string; // Nurse document _id (different from userId)
 }
 
 interface LocationUpdateData {
@@ -45,7 +46,13 @@ interface TrackingData {
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: [
+      'https://app.nurse-lite.com',
+      'https://nurse-lite.com',
+      ...(process.env.NODE_ENV !== 'production'
+        ? ['http://localhost:8100', 'http://localhost:4200']
+        : []),
+    ],
     credentials: true,
   },
   namespace: '/tracking',
@@ -55,8 +62,9 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
   server: Server;
 
   private readonly logger = new Logger(TrackingGateway.name);
-  private activeNurses: Map<string, Set<string>> = new Map(); // nurseId -> socketIds
-  private nurseRequests: Map<string, string> = new Map(); // nurseId -> current requestId
+  private activeNurses: Map<string, Set<string>> = new Map(); // nurseDocId -> socketIds
+  private nurseRequests: Map<string, string> = new Map(); // nurseDocId -> current requestId
+  private lastLocationUpdate: Map<string, number> = new Map(); // nurseDocId -> timestamp
 
   constructor(
     private jwtService: JwtService,
@@ -78,14 +86,14 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
       const payload = this.jwtService.verify(token);
       client.userId = payload.sub || payload.userId;
       client.userRole = payload.role;
+      client.nurseDocId = payload.nurseId; // Nurse document _id from JWT
 
-      // Track nurse connections
-      if (client.userRole === 'nurse') {
-        const nurseId = client.userId!;
-        if (!this.activeNurses.has(nurseId)) {
-          this.activeNurses.set(nurseId, new Set());
+      // Track nurse connections (keyed by Nurse doc _id)
+      if (client.userRole === 'nurse' && client.nurseDocId) {
+        if (!this.activeNurses.has(client.nurseDocId)) {
+          this.activeNurses.set(client.nurseDocId, new Set());
         }
-        this.activeNurses.get(nurseId)?.add(client.id);
+        this.activeNurses.get(client.nurseDocId)?.add(client.id);
       }
 
       // Join user's personal room
@@ -101,14 +109,14 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   handleDisconnect(client: AuthenticatedSocket) {
-    if (client.userId && client.userRole === 'nurse') {
-      const sockets = this.activeNurses.get(client.userId);
+    if (client.nurseDocId && client.userRole === 'nurse') {
+      const sockets = this.activeNurses.get(client.nurseDocId);
       if (sockets) {
         sockets.delete(client.id);
         if (sockets.size === 0) {
-          this.activeNurses.delete(client.userId);
+          this.activeNurses.delete(client.nurseDocId);
           // Clean up nurse request mapping
-          this.nurseRequests.delete(client.userId);
+          this.nurseRequests.delete(client.nurseDocId);
         }
       }
     }
@@ -129,7 +137,7 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
 
       // Check if user is patient or nurse for this request
       const isPatient = request.patientId.toString() === client.userId;
-      const isNurse = request.nurseId?.toString() === client.userId;
+      const isNurse = client.nurseDocId && request.nurseId?.toString() === client.nurseDocId;
 
       if (!isPatient && !isNurse && client.userRole !== 'platform_admin') {
         return { success: false, error: 'No autorizado para este tracking' };
@@ -140,7 +148,7 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
 
       // If nurse is joining, store the mapping
       if (isNurse) {
-        this.nurseRequests.set(client.userId!, data.requestId);
+        this.nurseRequests.set(client.nurseDocId!, data.requestId);
       }
 
       return { success: true };
@@ -158,8 +166,8 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
     client.leave(`tracking:${data.requestId}`);
 
     // Clean up nurse request mapping if nurse is leaving
-    if (client.userRole === 'nurse' && this.nurseRequests.get(client.userId!) === data.requestId) {
-      this.nurseRequests.delete(client.userId!);
+    if (client.userRole === 'nurse' && client.nurseDocId && this.nurseRequests.get(client.nurseDocId) === data.requestId) {
+      this.nurseRequests.delete(client.nurseDocId);
     }
 
     return { success: true };
@@ -175,14 +183,22 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
         return { success: false, error: 'Solo enfermeras pueden enviar ubicación' };
       }
 
+      // Rate limit: max 1 location update per 2 seconds
+      const now = Date.now();
+      const lastUpdate = this.lastLocationUpdate.get(client.nurseDocId!) || 0;
+      if (now - lastUpdate < 2000) {
+        return { success: false, error: 'Actualizacion muy frecuente' };
+      }
+      this.lastLocationUpdate.set(client.nurseDocId!, now);
+
       // Verify nurse is assigned to this request
       const request = await this.requestModel.findById(data.requestId);
-      if (!request || request.nurseId?.toString() !== client.userId) {
+      if (!request || request.nurseId?.toString() !== client.nurseDocId) {
         return { success: false, error: 'No autorizado para este servicio' };
       }
 
       // Get nurse info for broadcast
-      const nurse = await this.nurseModel.findOne({ userId: new Types.ObjectId(client.userId) })
+      const nurse = await this.nurseModel.findById(client.nurseDocId)
         .populate('userId', 'firstName lastName');
 
       // Parse name from cepRegisteredName or populated user
@@ -217,7 +233,7 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
       // Build tracking data
       const trackingData: TrackingData = {
         requestId: data.requestId,
-        nurseId: client.userId!,
+        nurseId: client.nurseDocId!,
         latitude: data.latitude,
         longitude: data.longitude,
         heading: data.heading,
@@ -269,7 +285,7 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
       }
 
       const request = await this.requestModel.findById(data.requestId);
-      if (!request || request.nurseId?.toString() !== client.userId) {
+      if (!request || request.nurseId?.toString() !== client.nurseDocId) {
         return { success: false, error: 'Servicio no encontrado' };
       }
 
@@ -311,7 +327,7 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
       }
 
       const request = await this.requestModel.findById(data.requestId);
-      if (!request || request.nurseId?.toString() !== client.userId) {
+      if (!request || request.nurseId?.toString() !== client.nurseDocId) {
         return { success: false, error: 'Servicio no encontrado' };
       }
 
@@ -350,7 +366,7 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
       }
 
       const request = await this.requestModel.findById(data.requestId);
-      if (!request || request.nurseId?.toString() !== client.userId) {
+      if (!request || request.nurseId?.toString() !== client.nurseDocId) {
         return { success: false, error: 'Servicio no encontrado' };
       }
 
@@ -374,7 +390,7 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
       });
 
       // Clean up nurse request mapping
-      this.nurseRequests.delete(client.userId!);
+      this.nurseRequests.delete(client.nurseDocId!);
 
       return { success: true };
     } catch (error) {

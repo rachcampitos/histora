@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   Request,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -49,12 +50,26 @@ export class ServiceRequestsController {
     return this.serviceRequestsService.create(req.user.userId, createDto);
   }
 
-  // Get a specific request
+  // Get a specific request (ownership check: patient, assigned nurse, or admin)
   @Get(':id')
   @ApiOperation({ summary: 'Get service request by ID' })
   @ApiResponse({ status: 200, description: 'Service request details' })
-  async findById(@Param('id') id: string) {
-    return this.serviceRequestsService.findById(id);
+  async findById(
+    @Param('id') id: string,
+    @Request() req: { user: { userId: string; nurseId?: string; role: string } },
+  ) {
+    const result = await this.serviceRequestsService.findById(id);
+
+    if (req.user.role === UserRole.PLATFORM_ADMIN) return result;
+
+    const isPatient = result.patientId === req.user.userId;
+    const isNurse = req.user.nurseId && result.nurseId === req.user.nurseId;
+
+    if (!isPatient && !isNurse) {
+      throw new ForbiddenException('No tienes acceso a esta solicitud');
+    }
+
+    return result;
   }
 
   // Patient: Get my requests

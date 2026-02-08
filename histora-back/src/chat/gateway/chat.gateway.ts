@@ -19,7 +19,13 @@ interface AuthenticatedSocket extends Socket {
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: [
+      'https://app.nurse-lite.com',
+      'https://nurse-lite.com',
+      ...(process.env.NODE_ENV !== 'production'
+        ? ['http://localhost:8100', 'http://localhost:4200']
+        : []),
+    ],
     credentials: true,
   },
   namespace: '/chat',
@@ -30,6 +36,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private readonly logger = new Logger(ChatGateway.name);
   private connectedUsers: Map<string, Set<string>> = new Map(); // userId -> socketIds
+  private messageTimestamps: Map<string, number[]> = new Map(); // userId -> timestamps
+
+  private isRateLimited(userId: string, maxMessages = 5, windowMs = 10000): boolean {
+    const now = Date.now();
+    const timestamps = this.messageTimestamps.get(userId) || [];
+    const recent = timestamps.filter(t => now - t < windowMs);
+    if (recent.length >= maxMessages) return true;
+    recent.push(now);
+    this.messageTimestamps.set(userId, recent);
+    return false;
+  }
 
   constructor(
     private chatService: ChatService,
@@ -79,6 +96,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (userSockets?.size === 0) {
         this.connectedUsers.delete(client.userId);
+        this.messageTimestamps.delete(client.userId);
       }
 
       this.logger.log(`User ${client.userId} disconnected (socket: ${client.id})`);
@@ -134,6 +152,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { roomId: string; message: SendMessageDto },
   ) {
     try {
+      if (this.isRateLimited(client.userId!)) {
+        return { success: false, error: 'Demasiados mensajes. Espera unos segundos.' };
+      }
+
       const message = await this.chatService.sendMessage(
         data.roomId,
         client.userId!,

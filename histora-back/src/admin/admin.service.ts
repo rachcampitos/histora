@@ -159,7 +159,7 @@ export class AdminService {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const hashedPassword = await bcrypt.hash(dto.password, 12);
 
     // Create user
     const user = new this.userModel({
@@ -326,7 +326,7 @@ export class AdminService {
 
     // Generate temporary password
     const tempPassword = this.generateTempPassword();
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    const hashedPassword = await bcrypt.hash(tempPassword, 12);
 
     await this.userModel.findByIdAndUpdate(id, { password: hashedPassword });
 

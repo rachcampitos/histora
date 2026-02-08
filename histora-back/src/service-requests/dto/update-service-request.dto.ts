@@ -60,8 +60,8 @@ export class RateServiceRequestDto {
 }
 
 export class VerifySecurityCodeDto {
-  @ApiProperty({ example: '1234', description: 'Codigo de seguridad de 4 digitos del paciente' })
+  @ApiProperty({ example: '123456', description: 'Codigo de seguridad de 6 digitos del paciente' })
   @IsString()
-  @Length(4, 4)
+  @Length(6, 6)
   code: string;
 }

@@ -27,7 +27,13 @@ export interface AdminNotification {
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: [
+      'https://app.nurse-lite.com',
+      'https://nurse-lite.com',
+      ...(process.env.NODE_ENV !== 'production'
+        ? ['http://localhost:8100', 'http://localhost:4200']
+        : []),
+    ],
     credentials: true,
   },
   namespace: '/admin',
