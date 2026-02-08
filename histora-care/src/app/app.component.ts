@@ -1,5 +1,5 @@
 // Histora Care - NurseLite v1.0.0
-import { Component, OnInit, OnDestroy, inject, NgZone, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, NgZone, ChangeDetectionStrategy, effect } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import { Platform, ToastController } from '@ionic/angular';
 import { filter } from 'rxjs/operators';
@@ -25,6 +25,20 @@ export class AppComponent implements OnInit, OnDestroy {
   private toastController = inject(ToastController);
   private notificationSub?: Subscription;
 
+  constructor() {
+    // Reactively initialize/teardown chat notifications when user logs in/out
+    effect(() => {
+      const user = this.authService.user();
+      if (user && !this.notificationSub) {
+        this.initializeChatNotifications();
+      } else if (!user && this.notificationSub) {
+        this.notificationSub.unsubscribe();
+        this.notificationSub = undefined;
+        this.chatService.disconnect();
+      }
+    });
+  }
+
   ngOnInit() {
     this.initializeApp();
     this.setupNavigationBlur();
@@ -43,10 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // Setup OAuth deep link listener (for mobile Google auth)
     this.authService.setupOAuthListener();
 
-    // Connect chat WebSocket if user is authenticated
-    if (this.authService.user()) {
-      this.initializeChatNotifications();
-    }
+    // Chat initialization is handled reactively by the effect in constructor
   }
 
   private async initializeChatNotifications() {
