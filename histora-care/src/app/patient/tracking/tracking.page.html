@@ -266,7 +266,10 @@
         </div>
         @if (i < statusSteps.length - 1) {
         <div class="progress-line"
-             [class.completed]="isStepCompleted(statusSteps[i + 1].key)"></div>
+             [class.completed]="isLineCompleted(i)"
+             [class.active]="isLineActive(i)">
+          <div class="progress-line-fill"></div>
+        </div>
         }
         }
       </div>
