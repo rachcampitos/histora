@@ -618,26 +618,7 @@
   --padding-bottom: 16px;
 }
 
-// Status Teaser (visible at minimum breakpoint ~15%)
-.sheet-status-teaser {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 0 12px;
-
-  .status-text {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ion-text-color, #333);
-  }
-
-  .status-eta {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--ion-color-medium, #666);
-  }
-}
+// No compact header or teaser at minimum breakpoint - just the handle
 
 // Security Codes Section
 .security-codes-section {
@@ -1598,11 +1579,6 @@
 // ============================================================
 .sheet-content.dark-mode {
   --background: #1e293b;
-
-  .sheet-status-teaser {
-    .status-text { color: #f1f5f9; }
-    .status-eta { color: #94a3b8; }
-  }
 
   // Security Codes
   .security-codes-section {

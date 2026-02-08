@@ -93,7 +93,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('trackingSheet', { static: false }) trackingSheet: any; // IonModal
 
   // Bottom sheet config
+  private forceCloseSheet = signal(false);
   showBottomSheet = computed(() => {
+    if (this.forceCloseSheet()) return false;
     return !this.isLoading() && !this.loadError() && !this.isRejected()
       && !this.isCancelled() && this.currentStatus() !== 'pending';
   });
@@ -180,13 +182,14 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     }, 500);
   }
 
+  ionViewWillLeave() {
+    // Force close the tracking sheet by setting isOpen to false via signal
+    // This works even with canDismiss="false" since it uses the [isOpen] binding
+    this.forceCloseSheet.set(true);
+  }
+
   ngOnDestroy() {
-    // Dismiss the tracking sheet modal to prevent it persisting after navigation
-    try {
-      this.trackingSheet?.dismiss();
-    } catch {
-      // Modal may already be dismissed
-    }
+    this.forceCloseSheet.set(true);
     this.stopPolling();
     this.stopSimulation();
     this.chatNotificationSub?.unsubscribe();
