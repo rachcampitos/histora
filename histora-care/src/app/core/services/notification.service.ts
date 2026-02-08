@@ -6,7 +6,7 @@ import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notificati
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, firstValueFrom } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 export interface NotificationPreferences {
@@ -115,13 +115,11 @@ export class NotificationService {
       await PushNotifications.register();
     } else {
       this._permissionGranted.set(false);
-      console.log('Push notifications permission denied');
       return;
     }
 
     // Listen for registration success
     PushNotifications.addListener('registration', async (token: Token) => {
-      console.log('Push registration success, token:', token.value);
       this._deviceToken.set(token.value);
       await this.storage.set(STORAGE_KEYS.DEVICE_TOKEN, token.value);
       await this.registerDeviceToken(token.value);
@@ -134,13 +132,11 @@ export class NotificationService {
 
     // Listen for incoming notifications when app is in foreground
     PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
-      console.log('Push notification received:', notification);
       this.handleIncomingNotification(notification);
     });
 
     // Listen for notification tap/action
     PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
-      console.log('Push notification action:', action);
       this.handleNotificationAction(action.notification);
     });
   }
@@ -151,7 +147,6 @@ export class NotificationService {
   async requestPermission(): Promise<boolean> {
     if (!Capacitor.isNativePlatform()) {
       // For web, we could use Web Push API in the future
-      console.log('Push notifications not available on web');
       return false;
     }
 
@@ -172,18 +167,17 @@ export class NotificationService {
   private async registerDeviceToken(token: string): Promise<void> {
     const platform = Capacitor.getPlatform();
 
-    this.api.post('/notifications/register-device', {
-      token,
-      platform,
-      deviceInfo: {
-        model: this.platform.is('ios') ? 'iOS' : 'Android'
-      }
-    }).pipe(
-      catchError(error => {
-        console.error('Failed to register device token:', error);
-        return of(null);
-      })
-    ).subscribe();
+    try {
+      await firstValueFrom(this.api.post('/notifications/register-device', {
+        token,
+        platform,
+        deviceInfo: {
+          model: this.platform.is('ios') ? 'iOS' : 'Android'
+        }
+      }));
+    } catch (error) {
+      console.error('Failed to register device token:', error);
+    }
   }
 
   /**
@@ -336,12 +330,11 @@ export class NotificationService {
     await this.storage.set(STORAGE_KEYS.PREFERENCES, updated);
 
     // Sync with backend
-    this.api.patch('/notifications/preferences', updated).pipe(
-      catchError(error => {
-        console.error('Failed to save preferences to server:', error);
-        return of(null);
-      })
-    ).subscribe();
+    try {
+      await firstValueFrom(this.api.patch('/notifications/preferences', updated));
+    } catch (error) {
+      console.error('Failed to save preferences to server:', error);
+    }
   }
 
   /**
@@ -438,12 +431,11 @@ export class NotificationService {
   async unregisterDevice(): Promise<void> {
     const token = this._deviceToken();
     if (token) {
-      this.api.post('/notifications/unregister-device', { token }).pipe(
-        catchError(error => {
-          console.error('Failed to unregister device:', error);
-          return of(null);
-        })
-      ).subscribe();
+      try {
+        await firstValueFrom(this.api.post('/notifications/unregister-device', { token }));
+      } catch (error) {
+        console.error('Failed to unregister device:', error);
+      }
     }
 
     await this.storage.remove(STORAGE_KEYS.DEVICE_TOKEN);

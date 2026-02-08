@@ -1,5 +1,6 @@
 // Histora Care - NurseLite v1.0.0
-import { Component, OnInit, OnDestroy, inject, NgZone, ChangeDetectionStrategy, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, NgZone, DestroyRef, ChangeDetectionStrategy, effect } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, NavigationStart } from '@angular/router';
 import { Platform, ToastController } from '@ionic/angular';
 import { filter } from 'rxjs/operators';
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService); // Initialize theme on app start
   private chatService = inject(ChatService);
   private toastController = inject(ToastController);
+  private destroyRef = inject(DestroyRef);
   private notificationSub?: Subscription;
 
   constructor() {
@@ -113,7 +115,10 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   private setupNavigationBlur() {
     this.router.events
-      .pipe(filter(event => event instanceof NavigationStart))
+      .pipe(
+        filter(event => event instanceof NavigationStart),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(() => {
         this.ngZone.runOutsideAngular(() => {
           const activeElement = document.activeElement as HTMLElement;

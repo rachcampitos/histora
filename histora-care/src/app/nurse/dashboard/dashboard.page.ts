@@ -193,7 +193,6 @@ export class DashboardPage implements OnInit, OnDestroy {
       // Guard: Only start tour if we're actually on the dashboard route
       // This prevents the tour from starting when navigating away from verification
       if (!this.router.url.includes('/nurse/dashboard')) {
-        console.log('[DASHBOARD] Skipping tour - not on dashboard route:', this.router.url);
         return;
       }
 

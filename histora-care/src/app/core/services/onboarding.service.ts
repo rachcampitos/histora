@@ -128,7 +128,6 @@ export class OnboardingService {
             };
             // Save to local storage for faster access next time
             await this.storage.set(key, this.onboardingStatus);
-            console.log('[ONBOARDING] Restored status from server - already completed');
           }
         } catch (error) {
           console.error('[ONBOARDING] Failed to sync with server:', error);
@@ -279,9 +278,8 @@ export class OnboardingService {
       await firstValueFrom(
         this.api.patch('/users/me/onboarding/complete', { version: CURRENT_VERSION })
       );
-      console.log('[ONBOARDING] Status saved to server');
     } catch (error) {
-      console.error('[ONBOARDING] Failed to save to server:', error);
+      // Non-critical: local storage will work as fallback
       // Continue anyway - local storage will work
     }
   }

@@ -98,14 +98,12 @@ export class OnboardingPage implements OnInit, OnDestroy {
     // Reset active state when entering the page
     this.isActive = true;
     this.swiperReady = false;
-    console.log('[ONBOARDING] ionViewWillEnter - reset isActive to true');
   }
 
   // Ionic lifecycle - called after view is fully visible
   ionViewDidEnter() {
     // If Swiper wasn't initialized via event, try to get it from the element
     if (!this.swiperReady && this.swiperRef?.nativeElement) {
-      console.log('[ONBOARDING] ionViewDidEnter - attempting to get Swiper from element');
       // Give the Swiper Web Component time to initialize
       setTimeout(() => {
         try {
@@ -113,9 +111,8 @@ export class OnboardingPage implements OnInit, OnDestroy {
           if (swiperEl && swiperEl.swiper) {
             this.swiper = swiperEl.swiper;
             this.swiperReady = true;
-            console.log('[ONBOARDING] Swiper obtained from element successfully');
           } else {
-            console.warn('[ONBOARDING] Swiper not available on element');
+            // Swiper not available on element
           }
         } catch (error) {
           console.error('[ONBOARDING] Error getting Swiper from element:', error);
@@ -153,7 +150,6 @@ export class OnboardingPage implements OnInit, OnDestroy {
       this.swiper = event.detail[0];
       if (this.swiper) {
         this.swiperReady = true;
-        console.log('[ONBOARDING] Swiper initialized successfully');
       }
     } catch (error) {
       console.error('[ONBOARDING] Error initializing swiper:', error);
@@ -178,11 +174,6 @@ export class OnboardingPage implements OnInit, OnDestroy {
 
   nextSlide() {
     if (!this.isActive || !this.swiperReady || !this.swiper) {
-      console.warn('[ONBOARDING] nextSlide called but swiper not ready:', {
-        isActive: this.isActive,
-        swiperReady: this.swiperReady,
-        hasSwiper: !!this.swiper
-      });
       return;
     }
     if (this.currentIndex() < this.slides.length - 1) {

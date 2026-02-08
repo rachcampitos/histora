@@ -207,7 +207,6 @@ export class HistoryPage implements OnInit {
         // 409 = already reviewed - this is OK, not a real error
         if (err?.status === 409) {
           nurseReviewSuccess = true;
-          console.log('Nurse review already exists, continuing...');
         } else {
           console.error('Error submitting nurse review:', err);
         }
@@ -230,7 +229,6 @@ export class HistoryPage implements OnInit {
       // 400 with "Already rated" - this is OK
       if (err?.status === 400 && err?.error?.message?.includes('rated')) {
         serviceRateSuccess = true;
-        console.log('Service already rated, continuing...');
       } else {
         console.error('Error rating service request:', err);
       }

@@ -22,6 +22,7 @@ export class SessionGuardService implements OnDestroy {
   private monitoringSubscription: Subscription | null = null;
   private activitySubscription: Subscription | null = null;
   private warningModal: HTMLIonModalElement | null = null;
+  private warningTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   // Session state
   private sessionInfo = signal<SessionInfo | null>(null);
@@ -63,8 +64,6 @@ export class SessionGuardService implements OnDestroy {
       return; // Already monitoring
     }
 
-    console.log('[SESSION] Starting session monitoring');
-
     // Monitor for expiration every 30 seconds
     this.monitoringSubscription = interval(this.CHECK_INTERVAL).subscribe(() => {
       this.checkSessionStatus();
@@ -87,8 +86,6 @@ export class SessionGuardService implements OnDestroy {
    * Stop session monitoring
    */
   stopMonitoring(): void {
-    console.log('[SESSION] Stopping session monitoring');
-
     if (this.monitoringSubscription) {
       this.monitoringSubscription.unsubscribe();
       this.monitoringSubscription = null;
@@ -97,6 +94,11 @@ export class SessionGuardService implements OnDestroy {
     if (this.activitySubscription) {
       this.activitySubscription.unsubscribe();
       this.activitySubscription = null;
+    }
+
+    if (this.warningTimeoutId) {
+      clearTimeout(this.warningTimeoutId);
+      this.warningTimeoutId = null;
     }
 
     if (this.warningModal) {
@@ -134,7 +136,6 @@ export class SessionGuardService implements OnDestroy {
     // Check inactivity timeout
     const timeSinceActivity = now - lastActivityTime;
     if (timeSinceActivity >= inactivityTimeout) {
-      console.log('[SESSION] Session expired due to inactivity');
       await this.handleSessionExpired('inactivity');
       return;
     }
@@ -151,7 +152,6 @@ export class SessionGuardService implements OnDestroy {
       const timeUntilExpiry = session.expiresAt - now;
 
       if (timeUntilExpiry <= 0) {
-        console.log('[SESSION] Access token expired');
         // Try to refresh the token
         await this.tryRefreshToken();
         return;
@@ -187,11 +187,9 @@ export class SessionGuardService implements OnDestroy {
     try {
       const newToken = await this.refreshTokenCallback();
       if (newToken) {
-        console.log('[SESSION] Token refreshed successfully');
         this.warningShown.set(false);
         // Session info will be updated by handleAuthResponse
       } else {
-        console.log('[SESSION] Failed to refresh token');
         await this.handleSessionExpired('token_expired');
       }
     } catch (error) {
@@ -210,8 +208,6 @@ export class SessionGuardService implements OnDestroy {
 
     this.warningShown.set(true);
     const minutes = Math.max(1, Math.ceil(timeRemaining / (60 * 1000)));
-
-    console.log(`[SESSION] Showing expiration warning - ${minutes} minutes remaining`);
 
     this.warningModal = await this.modalController.create({
       component: SessionWarningModalComponent,
@@ -242,7 +238,8 @@ export class SessionGuardService implements OnDestroy {
     }
 
     // Auto-dismiss after time remaining and trigger expiration
-    setTimeout(async () => {
+    this.warningTimeoutId = setTimeout(async () => {
+      this.warningTimeoutId = null;
       if (this.warningModal) {
         await this.warningModal.dismiss();
         this.warningModal = null;
@@ -255,8 +252,6 @@ export class SessionGuardService implements OnDestroy {
    * Handle session expiration
    */
   private async handleSessionExpired(reason: 'inactivity' | 'token_expired' | 'user_logout' | 'timeout'): Promise<void> {
-    console.log(`[SESSION] Session expired - reason: ${reason}`);
-
     // Stop monitoring
     this.stopMonitoring();
 

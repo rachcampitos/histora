@@ -69,6 +69,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   private hasRealNurseLocation = false;
   private pollingSubscription?: Subscription;
   private chatNotificationSub?: Subscription;
+  private chatNewMessageSub?: Subscription;
   private simulationInterval?: ReturnType<typeof setInterval>;
   private etaRefreshInterval?: ReturnType<typeof setInterval>;
   private previousStatus = signal<TrackingStatus | null>(null);
@@ -204,6 +205,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.stopSimulation();
     this.stopEtaRefresh();
     this.chatNotificationSub?.unsubscribe();
+    this.chatNewMessageSub?.unsubscribe();
     this.wsService.leaveTrackingRoom(this.requestId());
     this.wsService.disconnect();
     this.mapboxService.destroy();
@@ -780,7 +782,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     // Also listen for new-message events (covers case when room was just created)
-    this.chatService.onNewMessage().subscribe(msg => {
+    this.chatNewMessageSub?.unsubscribe();
+    this.chatNewMessageSub = this.chatService.onNewMessage().subscribe(msg => {
       const userId = this.authService.user()?.id;
       if (msg.senderId !== userId) {
         if (!this.chatRoomId) {
@@ -935,7 +938,6 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    */
   private async loadAlternativeNurses(request: ServiceRequest) {
     if (!request.location?.coordinates) {
-      console.log('[TRACKING] No location available for alternatives');
       return;
     }
 
@@ -1071,7 +1073,6 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       // 409 = already reviewed - this is OK
       if (err?.status === 409) {
         nurseReviewSuccess = true;
-        console.log('Nurse review already exists, continuing...');
       } else {
         console.error('Error submitting nurse review:', err);
       }
@@ -1089,7 +1090,6 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       // 400 with "Already rated" - this is OK
       if (err?.status === 400 && err?.error?.message?.includes('rated')) {
         serviceRateSuccess = true;
-        console.log('Service already rated, continuing...');
       } else {
         console.error('Error rating service request:', err);
       }
@@ -1141,7 +1141,6 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       // 409 = already reviewed - this is OK
       if (err?.status === 409) {
         nurseReviewSuccess = true;
-        console.log('Nurse review already exists, continuing...');
       } else {
         console.error('Error submitting nurse review:', err);
       }
@@ -1159,7 +1158,6 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       // 400 with "Already rated" - this is OK
       if (err?.status === 400 && err?.error?.message?.includes('rated')) {
         serviceRateSuccess = true;
-        console.log('Service already rated, continuing...');
       } else {
         console.error('Error rating service request:', err);
       }

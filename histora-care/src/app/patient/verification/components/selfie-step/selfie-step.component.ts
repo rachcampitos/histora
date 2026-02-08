@@ -97,7 +97,6 @@ export class SelfieStepComponent {
     } catch (err: any) {
       // User cancelled
       if (err?.message?.includes('cancelled') || err?.message?.includes('No image')) {
-        console.log('User cancelled selfie');
         return;
       }
       console.error('Error taking selfie:', err);

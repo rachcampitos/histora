@@ -274,14 +274,12 @@ export class ProductTourService {
   async startTour(tourType: TourType, forceShow = false): Promise<void> {
     // Guard: Don't start if another tour is already active
     if (this.isTourActive() || this.activeTourType !== null) {
-      console.log(`Tour ${tourType}: Another tour (${this.activeTourType}) is already active, skipping`);
       return;
     }
 
     // Guard: Verify we're on the correct route for this tour
     const expectedRoute = this.TOUR_ROUTE_MAP[tourType];
     if (expectedRoute && !this.router.url.includes(expectedRoute)) {
-      console.log(`Tour ${tourType}: Wrong route. Expected ${expectedRoute}, got ${this.router.url}. Skipping.`);
       return;
     }
 
@@ -304,7 +302,6 @@ export class ProductTourService {
     // Wait for DOM to be ready
     const elementsReady = await this.waitForElements(tourConfig.steps, timeout);
     if (!elementsReady) {
-      console.warn(`Tour ${tourType}: Some elements not found, skipping tour`);
       return;
     }
 

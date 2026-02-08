@@ -122,7 +122,6 @@ export class UploadsService {
       if (error?.message?.includes('User cancelled') ||
           error?.message?.includes('cancelled') ||
           error?.message?.includes('No image picked')) {
-        console.log('User cancelled photo selection');
         return null;
       }
       // Re-throw other errors for caller to handle
