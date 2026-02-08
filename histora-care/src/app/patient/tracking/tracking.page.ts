@@ -187,10 +187,13 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     }, 500);
   }
 
-  ionViewWillLeave() {
-    // Force close the tracking sheet by setting isOpen to false via signal
-    // This works even with canDismiss="false" since it uses the [isOpen] binding
+  async ionViewWillLeave() {
+    // Force close the tracking sheet before page transition
     this.forceCloseSheet.set(true);
+    // Programmatically dismiss the sheet modal to prevent orphaned overlay
+    if (this.trackingSheet) {
+      try { await this.trackingSheet.dismiss(); } catch {}
+    }
   }
 
   ngOnDestroy() {
@@ -202,6 +205,15 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.wsService.leaveTrackingRoom(this.requestId());
     this.wsService.disconnect();
     this.mapboxService.destroy();
+
+    // Safety: remove any orphaned tracking sheet modal from DOM overlay
+    try {
+      const modal = document.querySelector('ion-modal.tracking-sheet-modal');
+      if (modal) {
+        (modal as any).dismiss?.();
+        modal.remove();
+      }
+    } catch {}
   }
 
   /**
@@ -799,7 +811,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
           handler: async (data) => {
             try {
               await firstValueFrom(this.requestService.cancel(this.requestId(), data.reason || undefined));
-              this.router.navigate(['/patient/history']);
+              await this.navigateAway(['/patient/history']);
             } catch (error) {
               console.error('Error cancelling request:', error);
               this.showError('No se pudo cancelar el servicio. Por favor, intenta de nuevo.');
@@ -879,10 +891,21 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Close the tracking sheet and navigate away
+   */
+  private async navigateAway(url: string[]) {
+    this.forceCloseSheet.set(true);
+    if (this.trackingSheet) {
+      try { await this.trackingSheet.dismiss(); } catch {}
+    }
+    this.router.navigate(url);
+  }
+
+  /**
    * Navigate back
    */
   goBack() {
-    this.router.navigate(['/patient/history']);
+    this.navigateAway(['/patient/history']);
   }
 
   /**
@@ -1003,7 +1026,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       await this.submitReviewFromModal(data);
     } else if (role === 'skip') {
       // Service is completed, navigate to home even if skipped
-      this.router.navigate(['/patient/tabs/home']);
+      await this.navigateAway(['/patient/tabs/home']);
     }
   }
 
@@ -1071,7 +1094,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       });
       await toast.present();
       await toast.onDidDismiss();
-      this.router.navigate(['/patient/tabs/home']);
+      await this.navigateAway(['/patient/tabs/home']);
     } else {
       this.showError('No se pudo enviar tu calificación. Por favor, intenta de nuevo.');
     }
