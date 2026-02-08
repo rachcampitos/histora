@@ -40,6 +40,12 @@ export class CreateServicePaymentDto {
   @IsOptional()
   @IsString()
   yapeNumber?: string;
+
+  // For Plin
+  @ApiPropertyOptional({ description: 'Plin phone number' })
+  @IsOptional()
+  @IsString()
+  plinNumber?: string;
 }
 
 export class VerifyYapePaymentDto {

@@ -149,6 +149,7 @@ export class ServicePaymentsService {
         customerName: dto.customerName,
         customerPhone: dto.customerPhone,
         yapeNumber: dto.yapeNumber,
+        plinNumber: dto.plinNumber,
       });
 
       // Process based on method
@@ -156,6 +157,8 @@ export class ServicePaymentsService {
         return this.processCardPayment(payment, dto.cardToken, dto.customerEmail);
       } else if (dto.method === ServicePaymentMethod.YAPE) {
         return this.processYapePayment(payment, dto.yapeNumber);
+      } else if (dto.method === ServicePaymentMethod.PLIN) {
+        return this.processPlinPayment(payment, dto.plinNumber);
       } else if (dto.method === ServicePaymentMethod.CASH) {
         return this.processCashPayment(payment);
       }
@@ -273,6 +276,27 @@ export class ServicePaymentsService {
     await this.serviceRequestModel.findByIdAndUpdate(payment.serviceRequestId, {
       paymentStatus: 'pending',
       paymentMethod: 'yape',
+      paymentId: payment._id,
+    });
+
+    return {
+      success: true,
+      payment: payment.toObject(),
+    };
+  }
+
+  // Process Plin payment
+  private async processPlinPayment(
+    payment: ServicePaymentDocument,
+    plinNumber?: string,
+  ): Promise<PaymentResponse> {
+    payment.status = ServicePaymentStatus.PENDING;
+    payment.plinNumber = plinNumber;
+    await payment.save();
+
+    await this.serviceRequestModel.findByIdAndUpdate(payment.serviceRequestId, {
+      paymentStatus: 'pending',
+      paymentMethod: 'plin',
       paymentId: payment._id,
     });
 

@@ -145,7 +145,7 @@ export class AuthService {
 
       // Subscribe to web push notifications (only on web platform)
       if (!Capacitor.isNativePlatform()) {
-        this.webPushService.subscribe().then(subscribed => {
+        this.webPushService.initialize().then(() => this.webPushService.subscribe()).then(subscribed => {
           if (subscribed) {
           }
         }).catch(err => {

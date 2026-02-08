@@ -38,11 +38,16 @@ export class WebPushService {
   isSubscribed = this._isSubscribed.asReadonly();
   permissionState = this._permissionState.asReadonly();
 
-  constructor() {
-    this.init();
-  }
+  private _initialized = false;
 
-  private async init() {
+  /**
+   * Initialize WebPush service. Call after app is stable (not in constructor)
+   * to avoid NG0200 circular dependency during APP_INITIALIZER bootstrap.
+   */
+  async initialize(): Promise<void> {
+    if (this._initialized) return;
+    this._initialized = true;
+
     // Only run on web platform
     if (Capacitor.isNativePlatform()) {
       return;

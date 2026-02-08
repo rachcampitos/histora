@@ -5,6 +5,7 @@ export type ServicePaymentDocument = ServicePayment & Document;
 
 export enum ServicePaymentMethod {
   YAPE = 'yape',
+  PLIN = 'plin',
   CARD = 'card',
   CASH = 'cash',
 }
@@ -86,6 +87,10 @@ export class ServicePayment {
 
   @Prop()
   yapeOperationNumber?: string;
+
+  // Plin info
+  @Prop()
+  plinNumber?: string;
 
   // Customer info
   @Prop({ required: true })
