@@ -27,7 +27,7 @@ export class EmailProvider implements OnModuleInit {
 
   constructor(private configService: ConfigService) {
     this.fromEmail = this.configService.get<string>('SENDGRID_FROM_EMAIL', 'noreply@historahealth.com');
-    this.fromName = this.configService.get<string>('SENDGRID_FROM_NAME', 'Histora');
+    this.fromName = this.configService.get<string>('SENDGRID_FROM_NAME', 'NurseLite');
   }
 
   onModuleInit() {
@@ -144,7 +144,7 @@ export class EmailProvider implements OnModuleInit {
   // Email templates
   getWelcomeTemplate(data: { userName: string }): string {
     return `
-      <h2>Bienvenido a Histora Care</h2>
+      <h2>Bienvenido a NurseLite</h2>
       <p>Hola ${data.userName},</p>
       <p>Tu cuenta ha sido creada exitosamente.</p>
       <p>Ahora puedes acceder a la plataforma para:</p>
@@ -153,7 +153,7 @@ export class EmailProvider implements OnModuleInit {
         <li>Ver el estado de tus solicitudes</li>
         <li>Calificar el servicio recibido</li>
       </ul>
-      <p>Saludos,<br>Equipo Histora Care</p>
+      <p>Saludos,<br>Equipo NurseLite</p>
     `;
   }
 
@@ -169,7 +169,7 @@ export class EmailProvider implements OnModuleInit {
         <li><strong>Hora:</strong> ${data.time}</li>
       </ul>
       <p>La enfermera se pondrá en contacto contigo pronto.</p>
-      <p>Saludos,<br>Equipo Histora Care</p>
+      <p>Saludos,<br>Equipo NurseLite</p>
     `;
   }
 
@@ -178,9 +178,9 @@ export class EmailProvider implements OnModuleInit {
       <h2>Servicio Completado</h2>
       <p>Hola ${data.patientName},</p>
       <p>El servicio de <strong>${data.serviceName}</strong> con <strong>${data.nurseName}</strong> ha sido completado.</p>
-      <p>¡Gracias por confiar en Histora Care!</p>
+      <p>¡Gracias por confiar en NurseLite!</p>
       <p>Por favor, tómate un momento para calificar tu experiencia.</p>
-      <p>Saludos,<br>Equipo Histora Care</p>
+      <p>Saludos,<br>Equipo NurseLite</p>
     `;
   }
 
@@ -270,7 +270,7 @@ export class EmailProvider implements OnModuleInit {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Recuperar Contraseña - Histora</title>
+        <title>Recuperar Contraseña - NurseLite</title>
         <!--[if mso]>
         <style type="text/css">
           body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
@@ -297,8 +297,8 @@ export class EmailProvider implements OnModuleInit {
                       </tr>
                       <tr>
                         <td align="center">
-                          <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">Histora</h1>
-                          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 15px; font-weight: 500;">Plataforma Médica</p>
+                          <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">NurseLite</h1>
+                          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 15px; font-weight: 500;">Enfermeria a domicilio</p>
                         </td>
                       </tr>
                     </table>
@@ -430,10 +430,10 @@ export class EmailProvider implements OnModuleInit {
                 <tr>
                   <td style="padding: 32px 20px; text-align: center;">
                     <p style="color: #94a3b8; font-size: 13px; margin: 0 0 8px;">
-                      © ${new Date().getFullYear()} Histora. Todos los derechos reservados.
+                      © ${new Date().getFullYear()} NurseLite. Todos los derechos reservados.
                     </p>
                     <p style="color: #cbd5e1; font-size: 12px; margin: 0;">
-                      Enviado con ❤️ desde Histora
+                      Enviado con ❤️ desde NurseLite
                     </p>
                   </td>
                 </tr>
