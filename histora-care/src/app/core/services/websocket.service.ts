@@ -17,6 +17,9 @@ export interface RequestStatusUpdate {
   status: string;
   updatedAt: Date;
   estimatedArrival?: Date;
+  patientName?: string;
+  serviceName?: string;
+  reason?: string;
 }
 
 export interface NewRequestNotification {
@@ -151,6 +154,9 @@ export class WebSocketService {
         requestId: data.requestId,
         status: 'cancelled',
         updatedAt: new Date(data.timestamp),
+        patientName: data.patientName,
+        serviceName: data.serviceName,
+        reason: data.reason,
       });
     });
 

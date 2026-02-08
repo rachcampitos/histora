@@ -121,9 +121,10 @@
               @if (result.nurse.specialties?.length) {
                 <div class="nurse-specialties">
                   @for (specialty of result.nurse.specialties.slice(0, 2); track specialty) {
-                    <ion-chip size="small">
+                    <span class="specialty-chip" [style]="getChipStyle(specialty)">
+                      <ion-icon [name]="getChipIcon(specialty)"></ion-icon>
                       {{ specialty }}
-                    </ion-chip>
+                    </span>
                   }
                   @if (result.nurse.specialties.length > 2) {
                     <span class="more-count">

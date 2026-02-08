@@ -91,7 +91,7 @@ export class RequestsPage implements OnInit, OnDestroy {
       const statusUpdate = this.wsService.statusUpdate();
       if (statusUpdate) {
         if (statusUpdate.status === 'cancelled') {
-          this.handleCancelledRequest(statusUpdate.requestId);
+          this.handleCancelledRequest(statusUpdate.requestId, statusUpdate.patientName, statusUpdate.serviceName);
         }
         // Refresh active and history lists
         setTimeout(() => {
@@ -125,7 +125,6 @@ export class RequestsPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.geoService.stopWatching();
-    this.wsService.disconnect();
   }
 
   async initLocation() {
@@ -633,15 +632,21 @@ export class RequestsPage implements OnInit, OnDestroy {
   /**
    * Handle cancelled request from WebSocket
    */
-  private async handleCancelledRequest(requestId: string) {
-    // Remove from active list immediately
+  private async handleCancelledRequest(requestId: string, patientName?: string, serviceName?: string) {
+    // Remove from active and pending lists immediately
     this.activeRequests.update(requests =>
       requests.filter(r => r._id !== requestId)
     );
+    this.pendingRequests.update(requests =>
+      requests.filter(r => r._id !== requestId)
+    );
+
+    const name = patientName || 'Un paciente';
+    const service = serviceName ? ` de ${serviceName}` : '';
 
     const toast = await this.toastCtrl.create({
       header: 'Solicitud cancelada',
-      message: 'Un paciente ha cancelado su solicitud',
+      message: `${name} cancelo su solicitud${service}`,
       duration: 4000,
       position: 'top',
       color: 'warning',

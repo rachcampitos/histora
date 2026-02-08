@@ -204,13 +204,23 @@ $primary-gradient: var(--histora-gradient);
   .nurse-specialties {
     margin-top: tokens.$spacing-3;
     display: flex;
-    gap: tokens.$spacing-2; // Increased from 6px
+    gap: tokens.$spacing-2;
     flex-wrap: wrap;
 
-    ion-chip {
-      height: 28px; // Slightly larger for better touch target
+    .specialty-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 14px;
       font-size: tokens.$font-size-xs;
-      margin: 0; // Remove default chip margin
+      font-weight: tokens.$font-weight-medium;
+      white-space: nowrap;
+
+      ion-icon {
+        font-size: 14px;
+      }
     }
   }
 
@@ -576,12 +586,7 @@ $primary-gradient: var(--histora-gradient);
       }
     }
 
-    .nurse-specialties {
-      ion-chip {
-        --background: #{tokens.$surface-dark-tertiary};
-        --color: #{tokens.$text-dark-secondary};
-      }
-    }
+    // Specialty chip colors are set inline via getChipStyle() (handles dark mode)
 
     .nurse-services {
       h4 {

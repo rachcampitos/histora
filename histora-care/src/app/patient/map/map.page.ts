@@ -9,6 +9,7 @@ import { WebSocketService } from '../../core/services/websocket.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NurseSearchResult } from '../../core/models';
 import { NurseListModalComponent } from '../../shared/components/nurse-list-modal/nurse-list-modal.component';
+import { getSpecialtyConfig, getSpecialtyColors } from '../../shared/config/specialty-chips.config';
 
 @Component({
   selector: 'app-map',
@@ -379,6 +380,19 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   requestService(nurseId: string) {
     // Navigate outside tabs to the request form
     this.router.navigate(['/patient/request'], { queryParams: { nurseId } });
+  }
+
+  getChipIcon(specialty: string): string {
+    return getSpecialtyConfig(specialty).icon;
+  }
+
+  getChipStyle(specialty: string): Record<string, string> {
+    const config = getSpecialtyConfig(specialty);
+    const colors = getSpecialtyColors(config.family, this.themeService.isDarkMode());
+    return {
+      'background': colors.bg,
+      'color': colors.text,
+    };
   }
 
   onCategoryChange() {

@@ -277,7 +277,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
               .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe({
                 next: (updated) => {
-                  this.request.set(updated);
+                  this.request.set({ ...updated, patient: updated.patient || req.patient });
                   this.wsService.notifyArrival(req._id);
                   this.showToast('Llegada confirmada', 'success');
                   this.stopLocationBroadcast();
@@ -308,7 +308,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
               .pipe(takeUntilDestroyed(this.destroyRef))
               .subscribe({
                 next: (updated) => {
-                  this.request.set(updated);
+                  this.request.set({ ...updated, patient: updated.patient || req.patient });
                   this.wsService.notifyServiceStarted(req._id);
                   this.showToast('Servicio iniciado', 'success');
                 },
@@ -411,32 +411,26 @@ export class ActiveServicePage implements OnInit, OnDestroy {
           this.chatUnreadCount.set(room.unreadCount[userId] || 0);
         }
       }
-    } catch (err) {
+    } catch {
       // Non-critical, ignore
     }
 
-    // Subscribe to room notifications for new messages
+    // Subscribe to room notifications for new messages (fires when user is NOT in the chat room)
     this.chatService.onRoomNotification()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
-        if (data.roomId === this.chatRoomId) {
+        if (this.chatRoomId && data.roomId === this.chatRoomId) {
           this.chatUnreadCount.update(c => c + 1);
-        }
-      });
-
-    // Also listen for new-message events (covers case when room was just created)
-    this.chatService.onNewMessage()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(msg => {
-        const userId = this.authService.user()?.id;
-        if (msg.senderId !== userId) {
-          // If we don't have a roomId yet, try to get it
-          if (!this.chatRoomId) {
-            this.chatService.getRoomByServiceRequest(requestId).then(room => {
-              if (room) this.chatRoomId = room._id;
-            });
-          }
-          this.chatUnreadCount.update(c => c + 1);
+        } else if (!this.chatRoomId) {
+          // Room may have been created - try to fetch it
+          this.chatService.getRoomByServiceRequest(requestId).then(room => {
+            if (room) {
+              this.chatRoomId = room._id;
+              if (data.roomId === room._id) {
+                this.chatUnreadCount.update(c => c + 1);
+              }
+            }
+          });
         }
       });
   }
@@ -485,7 +479,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
 
     try {
       const updated = await firstValueFrom(this.requestService.verifySecurityCode(req._id, code));
-      this.request.set(updated);
+      this.request.set({ ...updated, patient: updated.patient || req.patient });
       this.showToast('Identidad verificada correctamente', 'success');
     } catch (err: any) {
       const msg = err?.error?.message || 'Codigo incorrecto';

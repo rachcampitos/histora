@@ -85,6 +85,7 @@ describe('AuthService', () => {
     setRefreshTokenCallback: ReturnType<typeof vi.fn>;
   };
   let mockWebPush: {
+    initialize: ReturnType<typeof vi.fn>;
     subscribe: ReturnType<typeof vi.fn>;
     unsubscribe: ReturnType<typeof vi.fn>;
   };
@@ -134,6 +135,7 @@ describe('AuthService', () => {
       setRefreshTokenCallback: vi.fn(),
     };
     mockWebPush = {
+      initialize: vi.fn().mockResolvedValue(undefined),
       subscribe: vi.fn().mockResolvedValue(true),
       unsubscribe: vi.fn().mockResolvedValue(undefined),
     };

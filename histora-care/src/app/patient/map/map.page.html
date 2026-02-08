@@ -100,9 +100,10 @@
       @if (selectedNurse.nurse.specialties?.length) {
         <div class="nurse-specialties" role="list" aria-label="Especialidades">
           @for (specialty of selectedNurse.nurse.specialties.slice(0, 3); track specialty) {
-            <ion-chip role="listitem">
+            <span class="specialty-chip" [ngStyle]="getChipStyle(specialty)" role="listitem">
+              <ion-icon [name]="getChipIcon(specialty)"></ion-icon>
               {{ specialty }}
-            </ion-chip>
+            </span>
           }
         </div>
       }

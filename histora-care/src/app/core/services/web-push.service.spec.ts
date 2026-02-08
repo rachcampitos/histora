@@ -215,7 +215,8 @@ describe('WebPushService', () => {
   });
 
   it('subscribe() should load VAPID key if not already loaded', async () => {
-    // Set VAPID key first
+    // Mark as supported and set VAPID key
+    (service as any)._isSupported.set(true);
     (service as any)._vapidPublicKey.set('BH5m_test_key_already_loaded');
 
     const mockSubscription = {
@@ -257,6 +258,7 @@ describe('WebPushService', () => {
   });
 
   it('subscribe() should return false if permission denied', async () => {
+    (service as any)._isSupported.set(true);
     apiMock.get.mockReturnValue(of({ publicKey: 'BH5m...test-key', enabled: true }));
 
     (window as any).Notification = {
@@ -355,6 +357,7 @@ describe('WebPushService', () => {
   });
 
   it('unsubscribe() should unsubscribe and notify backend', async () => {
+    (service as any)._isSupported.set(true);
     const mockSubscription = {
       endpoint: 'https://fcm.googleapis.com/fcm/send/abc123',
       unsubscribe: vi.fn().mockResolvedValue(true)
@@ -404,6 +407,7 @@ describe('WebPushService', () => {
   });
 
   it('unsubscribe() should ignore backend errors', async () => {
+    (service as any)._isSupported.set(true);
     const mockSubscription = {
       endpoint: 'https://fcm.googleapis.com/fcm/send/abc123',
       unsubscribe: vi.fn().mockResolvedValue(true)

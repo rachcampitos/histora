@@ -73,14 +73,38 @@ export class AppComponent implements OnInit, OnDestroy {
       const toast = await this.toastController.create({
         header: data.senderName,
         message: data.preview,
-        duration: 4000,
+        duration: 5000,
         position: 'top',
         cssClass: 'chat-notification-toast',
         icon: data.senderAvatar ? undefined : 'chatbubble-ellipses',
-        buttons: [{ icon: 'close', role: 'cancel' }],
+        buttons: [
+          {
+            text: 'Ver',
+            handler: () => {
+              this.navigateToChat(data.roomId);
+            }
+          },
+          { icon: 'close', role: 'cancel' },
+        ],
       });
       await toast.present();
     });
+  }
+
+  private async navigateToChat(roomId: string) {
+    try {
+      const room = await this.chatService.getRoom(roomId);
+      const user = this.authService.user();
+      if (room.serviceRequestId && user) {
+        if (user.role === 'nurse') {
+          this.router.navigate(['/nurse/active-service', room.serviceRequestId]);
+        } else {
+          this.router.navigate(['/patient/tracking', room.serviceRequestId]);
+        }
+      }
+    } catch {
+      // Fallback: ignore navigation errors
+    }
   }
 
   private playNotificationSound() {

@@ -111,7 +111,9 @@ export class DashboardPage implements OnInit, OnDestroy {
       const statusUpdate = this.wsService.statusUpdate();
       if (statusUpdate) {
         if (statusUpdate.status === 'cancelled') {
-          this.showToast('Un paciente ha cancelado su solicitud', 'warning');
+          const name = statusUpdate.patientName || 'Un paciente';
+          const service = statusUpdate.serviceName ? ` de ${statusUpdate.serviceName}` : '';
+          this.showToast(`${name} cancelo su solicitud${service}`, 'warning');
         }
         // Small delay to allow backend to persist the status change before querying
         setTimeout(() => {
@@ -301,7 +303,6 @@ export class DashboardPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.stopLocationBroadcast();
     this.stopVerificationPolling();
-    this.wsService.disconnect();
   }
 
   /**
