@@ -141,72 +141,195 @@ export class EmailProvider implements OnModuleInit {
     return { success: true, messageId: `dev_${Date.now()}` };
   }
 
-  // Email templates
-  getWelcomeTemplate(data: { userName: string }): string {
-    return `
-      <h2>Bienvenido a NurseLite</h2>
-      <p>Hola ${data.userName},</p>
-      <p>Tu cuenta ha sido creada exitosamente.</p>
-      <p>Ahora puedes acceder a la plataforma para:</p>
-      <ul>
-        <li>Solicitar servicios de enfermería a domicilio</li>
-        <li>Ver el estado de tus solicitudes</li>
-        <li>Calificar el servicio recibido</li>
-      </ul>
-      <p>Saludos,<br>Equipo NurseLite</p>
-    `;
-  }
-
-  getServiceAcceptedTemplate(data: { patientName: string; nurseName: string; serviceName: string; date: string; time: string }): string {
-    return `
-      <h2>Servicio Aceptado</h2>
-      <p>Hola ${data.patientName},</p>
-      <p>Tu solicitud de servicio ha sido aceptada:</p>
-      <ul>
-        <li><strong>Enfermera:</strong> ${data.nurseName}</li>
-        <li><strong>Servicio:</strong> ${data.serviceName}</li>
-        <li><strong>Fecha:</strong> ${data.date}</li>
-        <li><strong>Hora:</strong> ${data.time}</li>
-      </ul>
-      <p>La enfermera se pondrá en contacto contigo pronto.</p>
-      <p>Saludos,<br>Equipo NurseLite</p>
-    `;
-  }
-
-  getServiceCompletedTemplate(data: { patientName: string; nurseName: string; serviceName: string }): string {
-    return `
-      <h2>Servicio Completado</h2>
-      <p>Hola ${data.patientName},</p>
-      <p>El servicio de <strong>${data.serviceName}</strong> con <strong>${data.nurseName}</strong> ha sido completado.</p>
-      <p>¡Gracias por confiar en NurseLite!</p>
-      <p>Por favor, tómate un momento para calificar tu experiencia.</p>
-      <p>Saludos,<br>Equipo NurseLite</p>
-    `;
-  }
-
-  getVerificationCodeTemplate(data: { userName: string; code: string; expiresIn: string }): string {
-    return `
-      <!DOCTYPE html>
+  // Reusable email wrapper with NurseLite logo
+  private getEmailWrapper(title: string, content: string): string {
+    return `<!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Codigo de Verificacion - NurseLite</title>
+        <title>${title} - NurseLite</title>
+        <!--[if mso]>
+        <style type="text/css">
+          body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
+        </style>
+        <![endif]-->
       </head>
-      <body style="margin: 0; padding: 0; background-color: #f0f9ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+      <body style="margin: 0; padding: 0; background-color: #f0f9ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-font-smoothing: antialiased;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f0f9ff;">
           <tr>
             <td align="center" style="padding: 40px 20px;">
-              <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.12);">
-                <!-- Header -->
+              <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); overflow: hidden;">
+                <!-- Header with logo -->
                 <tr>
-                  <td style="background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%); padding: 40px; text-align: center; border-radius: 20px 20px 0 0;">
-                    <h1 style="color: white; margin: 0; font-size: 28px;">NurseLite</h1>
-                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 14px;">Enfermeria a domicilio</p>
+                  <td style="background: linear-gradient(135deg, #0891b2 0%, #0d9488 50%, #14b8a6 100%); padding: 36px 40px; text-align: center;">
+                    <table role="presentation" width="100%">
+                      <tr>
+                        <td align="center">
+                          <img src="https://nurse-lite.com/nurselite.png" alt="NurseLite" width="56" height="56" style="width: 56px; height: 56px; border-radius: 14px; display: block; margin: 0 auto 14px;" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">NurseLite</h1>
+                          <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 14px; font-weight: 500;">Enfermeria a domicilio</p>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
                 <!-- Content -->
+                ${content}
+
+                <!-- Footer -->
+                <tr>
+                  <td style="border-top: 1px solid #e2e8f0; padding: 24px; text-align: center;">
+                    <p style="color: #94a3b8; font-size: 12px; margin: 0 0 6px;">
+                      © ${new Date().getFullYear()} NurseLite. Todos los derechos reservados.
+                    </p>
+                    <p style="color: #cbd5e1; font-size: 11px; margin: 0;">
+                      <a href="https://nurse-lite.com" style="color: #94a3b8; text-decoration: none;">nurse-lite.com</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>`;
+  }
+
+  // Email templates
+  getWelcomeTemplate(data: { userName: string }): string {
+    const content = `
+                <tr>
+                  <td style="padding: 48px 50px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 50%; display: inline-block; line-height: 80px; margin-bottom: 24px;">
+                      <span style="font-size: 36px;">👋</span>
+                    </div>
+
+                    <h2 style="color: #0f172a; margin: 0 0 16px; font-size: 24px; font-weight: 700;">
+                      Bienvenido a NurseLite
+                    </h2>
+
+                    <p style="color: #64748b; font-size: 16px; line-height: 1.7; margin: 0 0 28px;">
+                      Hola <strong style="color: #0f172a;">${data.userName}</strong>,<br>
+                      Tu cuenta ha sido creada exitosamente.
+                    </p>
+
+                    <table role="presentation" width="100%" style="background: #f8fafc; border-radius: 12px; text-align: left;">
+                      <tr>
+                        <td style="padding: 24px;">
+                          <p style="color: #475569; font-size: 14px; font-weight: 600; margin: 0 0 12px;">Ahora puedes:</p>
+                          <table role="presentation" width="100%">
+                            <tr><td style="padding: 6px 0; color: #64748b; font-size: 14px;">✅ Solicitar servicios de enfermeria a domicilio</td></tr>
+                            <tr><td style="padding: 6px 0; color: #64748b; font-size: 14px;">✅ Ver el estado de tus solicitudes en tiempo real</td></tr>
+                            <tr><td style="padding: 6px 0; color: #64748b; font-size: 14px;">✅ Calificar el servicio recibido</td></tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>`;
+
+    return this.getEmailWrapper('Bienvenido', content);
+  }
+
+  getServiceAcceptedTemplate(data: { patientName: string; nurseName: string; serviceName: string; date: string; time: string }): string {
+    const content = `
+                <tr>
+                  <td style="padding: 48px 50px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 50%; display: inline-block; line-height: 80px; margin-bottom: 24px;">
+                      <span style="font-size: 36px;">✅</span>
+                    </div>
+
+                    <h2 style="color: #0f172a; margin: 0 0 16px; font-size: 24px; font-weight: 700;">
+                      Servicio Aceptado
+                    </h2>
+
+                    <p style="color: #64748b; font-size: 16px; line-height: 1.7; margin: 0 0 28px;">
+                      Hola <strong style="color: #0f172a;">${data.patientName}</strong>,<br>
+                      Tu solicitud de servicio ha sido aceptada.
+                    </p>
+
+                    <table role="presentation" width="100%" style="background: #f8fafc; border-radius: 12px; text-align: left;">
+                      <tr>
+                        <td style="padding: 24px;">
+                          <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                                <span style="color: #94a3b8; font-size: 13px;">Enfermera</span><br>
+                                <strong style="color: #0f172a; font-size: 15px;">${data.nurseName}</strong>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                                <span style="color: #94a3b8; font-size: 13px;">Servicio</span><br>
+                                <strong style="color: #0f172a; font-size: 15px;">${data.serviceName}</strong>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                                <span style="color: #94a3b8; font-size: 13px;">Fecha</span><br>
+                                <strong style="color: #0f172a; font-size: 15px;">${data.date}</strong>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 10px 0;">
+                                <span style="color: #94a3b8; font-size: 13px;">Hora</span><br>
+                                <strong style="color: #0f172a; font-size: 15px;">${data.time}</strong>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="color: #64748b; font-size: 14px; margin: 24px 0 0;">
+                      La enfermera se pondra en contacto contigo pronto.
+                    </p>
+                  </td>
+                </tr>`;
+
+    return this.getEmailWrapper('Servicio Aceptado', content);
+  }
+
+  getServiceCompletedTemplate(data: { patientName: string; nurseName: string; serviceName: string }): string {
+    const content = `
+                <tr>
+                  <td style="padding: 48px 50px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 50%; display: inline-block; line-height: 80px; margin-bottom: 24px;">
+                      <span style="font-size: 36px;">🎉</span>
+                    </div>
+
+                    <h2 style="color: #0f172a; margin: 0 0 16px; font-size: 24px; font-weight: 700;">
+                      Servicio Completado
+                    </h2>
+
+                    <p style="color: #64748b; font-size: 16px; line-height: 1.7; margin: 0 0 28px;">
+                      Hola <strong style="color: #0f172a;">${data.patientName}</strong>,<br>
+                      El servicio de <strong>${data.serviceName}</strong> con <strong>${data.nurseName}</strong> ha sido completado.
+                    </p>
+
+                    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                      <p style="color: #92400e; font-size: 15px; margin: 0; font-weight: 500;">
+                        ⭐ Por favor, toma un momento para calificar tu experiencia
+                      </p>
+                    </div>
+
+                    <p style="color: #64748b; font-size: 15px; margin: 0;">
+                      Gracias por confiar en NurseLite.
+                    </p>
+                  </td>
+                </tr>`;
+
+    return this.getEmailWrapper('Servicio Completado', content);
+  }
+
+  getVerificationCodeTemplate(data: { userName: string; code: string; expiresIn: string }): string {
+    const content = `
                 <tr>
                   <td style="padding: 48px 50px; text-align: center;">
                     <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 50%; display: inline-block; line-height: 80px; margin-bottom: 24px;">
@@ -240,72 +363,17 @@ export class EmailProvider implements OnModuleInit {
                   <td style="padding: 0 50px 40px;">
                     <div style="background: #fef3c7; border-radius: 12px; padding: 16px; text-align: center;">
                       <p style="color: #92400e; font-size: 13px; margin: 0;">
-                        ⚠️ Si no solicitaste este codigo, ignora este correo.
+                        Si no solicitaste este codigo, ignora este correo.
                       </p>
                     </div>
                   </td>
-                </tr>
+                </tr>`;
 
-                <!-- Footer -->
-                <tr>
-                  <td style="border-top: 1px solid #e2e8f0; padding: 24px; text-align: center;">
-                    <p style="color: #94a3b8; font-size: 12px; margin: 0;">
-                      © ${new Date().getFullYear()} NurseLite. Todos los derechos reservados.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-      </html>
-    `;
+    return this.getEmailWrapper('Codigo de Verificacion', content);
   }
 
   getPasswordResetTemplate(data: { userName: string; resetLink: string; expiresIn: string }): string {
-    return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Recuperar Contraseña - NurseLite</title>
-        <!--[if mso]>
-        <style type="text/css">
-          body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
-        </style>
-        <![endif]-->
-      </head>
-      <body style="margin: 0; padding: 0; background-color: #f0f9ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-font-smoothing: antialiased;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f0f9ff; min-height: 100vh;">
-          <tr>
-            <td align="center" style="padding: 40px 20px;">
-              <!-- Main Container - Responsive width: 600px desktop, 100% mobile -->
-              <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); overflow: hidden;">
-                <!-- Header with gradient -->
-                <tr>
-                  <td style="background: linear-gradient(135deg, #0891b2 0%, #0d9488 50%, #14b8a6 100%); padding: 48px 40px; text-align: center;">
-                    <table role="presentation" width="100%">
-                      <tr>
-                        <td align="center">
-                          <!-- Logo Icon -->
-                          <div style="width: 72px; height: 72px; background: rgba(255,255,255,0.2); border-radius: 16px; display: inline-block; line-height: 72px; margin-bottom: 20px;">
-                            <span style="font-size: 32px;">🏥</span>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td align="center">
-                          <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">NurseLite</h1>
-                          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 15px; font-weight: 500;">Enfermeria a domicilio</p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- Main Content -->
+    const content = `
                 <tr>
                   <td style="padding: 48px 50px;">
                     <!-- Lock Icon -->
@@ -341,59 +409,36 @@ export class EmailProvider implements OnModuleInit {
                                     font-weight: 600;
                                     font-size: 16px;
                                     display: inline-block;
-                                    box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4);
-                                    transition: transform 0.2s;">
+                                    box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4);">
                             Restablecer Contraseña
                           </a>
                         </td>
                       </tr>
                     </table>
 
-                    <!-- Two Column Info Section (side by side on desktop) -->
+                    <!-- Two Column Info Section -->
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr>
-                        <!-- Info Box -->
                         <td style="padding: 0 8px 16px 0; vertical-align: top; width: 50%;">
                           <table role="presentation" width="100%" style="background: #f8fafc; border-radius: 12px; height: 100%;">
                             <tr>
-                              <td style="padding: 20px;">
-                                <table role="presentation" width="100%">
-                                  <tr>
-                                    <td align="center" style="padding-bottom: 10px;">
-                                      <span style="font-size: 24px;">⏱️</span>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td align="center">
-                                      <p style="color: #64748b; font-size: 14px; margin: 0; line-height: 1.5; text-align: center;">
-                                        Expira en<br><strong style="color: #0f172a; font-size: 15px;">${data.expiresIn}</strong>
-                                      </p>
-                                    </td>
-                                  </tr>
-                                </table>
+                              <td style="padding: 20px;" align="center">
+                                <span style="font-size: 24px;">⏱️</span>
+                                <p style="color: #64748b; font-size: 14px; margin: 10px 0 0; line-height: 1.5; text-align: center;">
+                                  Expira en<br><strong style="color: #0f172a; font-size: 15px;">${data.expiresIn}</strong>
+                                </p>
                               </td>
                             </tr>
                           </table>
                         </td>
-                        <!-- Security Note -->
                         <td style="padding: 0 0 16px 8px; vertical-align: top; width: 50%;">
                           <table role="presentation" width="100%" style="background: #fef3c7; border-radius: 12px; height: 100%;">
                             <tr>
-                              <td style="padding: 20px;">
-                                <table role="presentation" width="100%">
-                                  <tr>
-                                    <td align="center" style="padding-bottom: 10px;">
-                                      <span style="font-size: 24px;">⚠️</span>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td align="center">
-                                      <p style="color: #92400e; font-size: 14px; margin: 0; line-height: 1.5; text-align: center;">
-                                        <strong>¿No lo solicitaste?</strong><br>Ignora este correo
-                                      </p>
-                                    </td>
-                                  </tr>
-                                </table>
+                              <td style="padding: 20px;" align="center">
+                                <span style="font-size: 24px;">⚠️</span>
+                                <p style="color: #92400e; font-size: 14px; margin: 10px 0 0; line-height: 1.5; text-align: center;">
+                                  <strong>No lo solicitaste?</strong><br>Ignora este correo
+                                </p>
                               </td>
                             </tr>
                           </table>
@@ -403,18 +448,11 @@ export class EmailProvider implements OnModuleInit {
                   </td>
                 </tr>
 
-                <!-- Divider -->
-                <tr>
-                  <td style="padding: 0 50px;">
-                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;">
-                  </td>
-                </tr>
-
                 <!-- Footer Link -->
                 <tr>
-                  <td style="padding: 28px 50px; text-align: center;">
+                  <td style="padding: 0 50px 28px; text-align: center;">
                     <p style="color: #94a3b8; font-size: 13px; margin: 0 0 10px;">
-                      Si el botón no funciona, copia este enlace:
+                      Si el boton no funciona, copia este enlace:
                     </p>
                     <p style="margin: 0; background: #f8fafc; padding: 12px 16px; border-radius: 8px;">
                       <a href="${data.resetLink}" style="color: #0891b2; font-size: 12px; word-break: break-all; text-decoration: none;">
@@ -422,27 +460,8 @@ export class EmailProvider implements OnModuleInit {
                       </a>
                     </p>
                   </td>
-                </tr>
-              </table>
+                </tr>`;
 
-              <!-- Footer -->
-              <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%;">
-                <tr>
-                  <td style="padding: 32px 20px; text-align: center;">
-                    <p style="color: #94a3b8; font-size: 13px; margin: 0 0 8px;">
-                      © ${new Date().getFullYear()} NurseLite. Todos los derechos reservados.
-                    </p>
-                    <p style="color: #cbd5e1; font-size: 12px; margin: 0;">
-                      Enviado con ❤️ desde NurseLite
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-      </html>
-    `;
+    return this.getEmailWrapper('Recuperar Contraseña', content);
   }
 }

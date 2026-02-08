@@ -1,110 +1,97 @@
-# Modo Beta de Pagos - Solo Efectivo
+# Modo Beta de Pagos - Efectivo + Yape/Plin P2P
 
-## Descripción
+## Descripcion
 
-Durante la fase beta de Histora Care, los pagos con tarjeta de crédito/débito y Yape están deshabilitados. Solo se acepta pago en efectivo al finalizar el servicio.
+Durante la fase beta de NurseLite, los pagos con tarjeta de credito/debito estan deshabilitados. Se aceptan tres metodos de pago directo:
 
-## Razón
+1. **Efectivo** - Pago al finalizar el servicio
+2. **Yape P2P** - Pago directo a la enfermera via Yape
+3. **Plin P2P** - Pago directo a la enfermera via Plin
 
-1. **Reducir complejidad** en fase de validación
+## Razon
+
+1. **Reducir complejidad** en fase de validacion
 2. **Evitar costos de procesamiento** antes de tener volumen
 3. **Simplificar disputas/reembolsos** iniciales
-4. **Enfocarse en el core** del servicio (matching enfermera-paciente)
+4. **Multiples opciones** sin necesidad de integrar pasarela de pago
 
-## Implementación
+## Implementacion
 
 ### Frontend (checkout.page.ts)
 
 ```typescript
 // Flag de control
-betaMode = signal(true);  // Cambiar a false para habilitar todos los métodos
+betaMode = signal(true);  // Tarjetas deshabilitadas
+
+// Metodos habilitados en beta:
+// - 'cash': Efectivo
+// - 'yape': Yape P2P (pago directo a enfermera)
+// - 'plin': Plin P2P (pago directo a enfermera)
 ```
 
 ### Comportamiento en UI
 
 Cuando `betaMode = true`:
 
-| Método de Pago | Estado | Badge |
+| Metodo de Pago | Estado | Badge |
 |----------------|--------|-------|
 | Efectivo | ✅ Habilitado | "Disponible" (verde) |
-| Tarjeta | ❌ Deshabilitado | "Próximamente" (gris) |
-| Yape | ❌ Deshabilitado | "Próximamente" (gris) |
+| Yape | ✅ Habilitado | "Disponible" (verde) |
+| Plin | ✅ Habilitado | "Disponible" (verde) |
+| Tarjeta | ❌ Deshabilitado | "Proximamente" (gris) |
 
-### Elementos Visuales
-
-1. **Efectivo destacado** con borde verde
-2. **Tarjeta y Yape** con opacidad reducida (0.6) y no clickeables
-3. **Banner informativo** explicando la limitación beta
-
-### Mensaje al Usuario
+### Flujo P2P (Yape/Plin)
 
 ```
-"Durante el lanzamiento beta, solo aceptamos pagos en efectivo.
-Los pagos con tarjeta y Yape estarán disponibles muy pronto."
+1. Paciente selecciona "Yape" o "Plin"
+   ↓
+2. Modal de confirmacion:
+   "Realizara el pago via [Yape/Plin] directamente a la enfermera."
+   ↓
+3. Click "Confirmar"
+   ↓
+4. Servicio registrado con paymentMethod: 'yape' o 'plin'
+   ↓
+5. Pantalla de confirmacion con recordatorio:
+   "Pagaras S/. XX.XX via [Yape/Plin] a la enfermera"
+   ↓
+6. Enfermera confirma recepcion del pago
 ```
 
-## Flujo de Pago en Efectivo
+### Flujo Efectivo
 
 ```
 1. Paciente selecciona "Efectivo"
    ↓
-2. Modal de confirmación:
-   "Pagará al finalizar el servicio.
-    La enfermera confirmará el pago en persona."
+2. Modal de confirmacion:
+   "Pagara al finalizar el servicio."
    ↓
 3. Click "Confirmar"
    ↓
-4. Servicio queda registrado con paymentMethod: 'cash'
+4. Servicio registrado con paymentMethod: 'cash'
    ↓
 5. Enfermera confirma pago al finalizar servicio
 ```
 
-## Archivos Modificados
+## Archivos Involucrados
 
-- `src/app/patient/checkout/checkout.page.ts` - Flag betaMode
-- `src/app/patient/checkout/checkout.page.html` - Condicionales UI
-- `src/app/patient/checkout/checkout.page.scss` - Estilos disabled/beta
+- `histora-care/src/app/patient/checkout/checkout.page.ts` - Flag betaMode + logica P2P
+- `histora-care/src/app/patient/checkout/checkout.page.html` - UI con 3 opciones activas
+- `histora-care/src/app/patient/checkout/checkout.page.scss` - Estilos Yape/Plin icons
+- `histora-care/src/app/core/models/payment.model.ts` - PaymentMethod type incluye 'plin'
 
-## Habilitar Pagos Completos (Post-Beta)
+## Habilitar Pagos con Tarjeta (Post-Beta)
 
-Para habilitar todos los métodos de pago:
+Para habilitar tarjetas:
 
 ```typescript
 // En checkout.page.ts
 betaMode = signal(false);
 ```
 
-O mejor, moverlo a environment:
-
-```typescript
-// environment.ts
-export const environment = {
-  betaMode: false,
-  // ...
-};
-
-// checkout.page.ts
-betaMode = signal(environment.betaMode);
-```
-
-## Consideraciones Futuras
-
-### Antes de habilitar tarjetas:
-- [ ] Configurar Culqi en producción
-- [ ] Probar flujo completo de pago
-- [ ] Configurar webhooks de confirmación
+### Requisitos previos:
+- [ ] Configurar Culqi en produccion
+- [ ] Probar flujo completo de pago con tarjeta
+- [ ] Configurar webhooks de confirmacion
 - [ ] Implementar manejo de errores de pago
 - [ ] Configurar reembolsos
-
-### Antes de habilitar Yape:
-- [ ] Integrar SDK de Yape/Culqi
-- [ ] Probar flujo de notificación push
-- [ ] Configurar timeout de confirmación
-- [ ] Manejar pagos pendientes
-
-## Métricas Beta
-
-Trackear para entender demanda:
-- Clics en métodos deshabilitados (medir interés)
-- Tasa de abandono en checkout
-- Feedback de usuarios sobre métodos de pago

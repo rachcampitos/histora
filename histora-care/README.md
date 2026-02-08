@@ -1,10 +1,10 @@
-# Histora Care
+# NurseLite
 
 Aplicacion movil para servicios de enfermeria a domicilio, construida con **Ionic 8**, **Angular 20** y **Capacitor**.
 
 ## Descripcion
 
-Histora Care conecta pacientes con enfermeras profesionales para servicios de salud a domicilio. La app incluye:
+NurseLite conecta pacientes con enfermeras profesionales para servicios de salud a domicilio. La app incluye:
 
 - **Para Pacientes**: Busqueda de enfermeras cercanas en mapa, solicitud de servicios, seguimiento en tiempo real
 - **Para Enfermeras**: Dashboard con solicitudes, gestion de disponibilidad, ganancias y perfil profesional
@@ -22,7 +22,7 @@ Histora Care conecta pacientes con enfermeras profesionales para servicios de sa
 
 ## Requisitos
 
-- Node.js 20+
+- Node.js 22+
 - npm 10+
 - Xcode (para iOS)
 - Android Studio (para Android)
@@ -326,4 +326,4 @@ Propietario - Todos los derechos reservados
 
 ---
 
-Desarrollado por **Raul Campos** como parte del ecosistema Histora para servicios de salud.
+Desarrollado por **Raul Campos** | nurse-lite.com

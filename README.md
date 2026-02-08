@@ -1,12 +1,13 @@
-# Histora Care - Enfermeria a Domicilio
+# NurseLite - Enfermeria a Domicilio
 
-**Histora Care** es una plataforma marketplace que conecta pacientes con enfermeras profesionales para servicios de salud a domicilio en Peru. Similar al modelo Uber, permite a los pacientes solicitar servicios de enfermeria y hacer seguimiento en tiempo real.
+**NurseLite** es una plataforma marketplace que conecta pacientes con enfermeras profesionales para servicios de salud a domicilio en Peru. Similar al modelo Uber, permite a los pacientes solicitar servicios de enfermeria y hacer seguimiento en tiempo real.
 
 ## URLs de Produccion
 
 | Servicio | URL |
 |----------|-----|
-| App Web (Histora Care) | https://app.nurse-lite.com |
+| Landing Page | https://nurse-lite.com |
+| App Movil (NurseLite) | https://app.nurse-lite.com |
 | Backend API | https://api.historahealth.com |
 | Swagger Docs | https://api.historahealth.com/docs |
 
@@ -50,6 +51,8 @@ histora/
 │   │       ├── tracking/   # Seguimiento en tiempo real
 │   │       └── history/    # Historial de servicios
 │   └── capacitor.config.ts
+├── nurselite-landing/      # Landing page (Next.js 16 + Tailwind 4)
+├── histora-admin/          # Panel admin (Next.js 16 + TanStack Query)
 ├── histora-front/          # (Legacy - No en uso activo)
 └── CLAUDE.md               # Instrucciones para desarrollo
 ```
@@ -272,11 +275,16 @@ FRONTEND_URL=https://app.nurse-lite.com
 ### App Movil - NurseLite (Cloudflare Pages)
 - **Despliegue automatico** con git push a main
 - Root Directory: `histora-care`
-- Dominio: care.historahealth.com
+- Dominio: app.nurse-lite.com
 
-### App Web Legacy (Railway)
-- Root Directory: `histora-front`
-- Estado: Legacy, no en uso activo
+### Landing Page (Cloudflare Pages)
+- **Despliegue automatico** con git push a main
+- Root Directory: `nurselite-landing`
+- Dominio: nurse-lite.com
+
+### Panel Admin (Cloudflare Pages)
+- **Despliegue automatico** con git push a main
+- Root Directory: `histora-admin`
 
 > **IMPORTANTE**: No ejecutar `railway up` ni `wrangler pages deploy` manualmente. Solo hacer `git push origin main`.
 
@@ -389,25 +397,28 @@ cd histora-care && npm test
 - [x] Verificacion de enfermeras via CEP
 - [x] Busqueda de enfermeras por geolocalizacion
 - [x] Solicitudes de servicio
-- [x] Tracking en tiempo real (Socket.IO)
-- [x] Sistema de calificaciones
-- [x] Panel de administracion
+- [x] Tracking en tiempo real (Socket.IO + Mapbox)
+- [x] Sistema de calificaciones y resenas
+- [x] Panel de administracion (Next.js)
 - [x] Compilacion nativa iOS/Android (Capacitor)
 - [x] Monitoreo de errores (Sentry)
-- [x] Optimizacion de imagenes y lazy loading
+- [x] Chat en tiempo real paciente-enfermera
+- [x] Pagos: Efectivo, Yape P2P, Plin P2P
+- [x] Codigos de seguridad bidireccionales
+- [x] Boton de panico y sistema de emergencia
+- [x] Verificacion de identidad de pacientes
+- [x] Dark mode completo
+- [x] Landing page (nurse-lite.com)
 
-### En Progreso / Pendiente
+### Pendiente
 
-| Issue | Descripcion | Prioridad |
-|-------|-------------|-----------|
-| #27 | Integracion real con Culqi (Yape, Plin, Tarjetas) | Alta |
-| #28 | Notificaciones Push nativas (Firebase/APNs) | Alta |
-| #29 | Escalabilidad: Redis Cache | Media |
-| #30 | API Versioning (/api/v1/) | Media |
-| #32 | Panel Admin Avanzado | Media |
-| #34 | Sistema de Favoritos para Pacientes | Baja |
-| #36 | Testing: Aumentar cobertura a 80% | Media |
-| #38 | Chat en tiempo real Paciente-Enfermera | Baja |
+| Descripcion | Prioridad |
+|-------------|-----------|
+| Notificaciones Push nativas (Firebase/APNs) | Alta |
+| Integracion Culqi para tarjetas de credito | Alta |
+| Escalabilidad: Redis Cache | Media |
+| Sistema de Favoritos para Pacientes | Baja |
+| Testing: Aumentar cobertura a 80% | Media |
 
 ---
 
@@ -415,4 +426,4 @@ cd histora-care && npm test
 
 Proyecto privado y propietario. Todos los derechos reservados.
 
-**Desarrollado por Raul Campos** | historahealth.com
+**Desarrollado por Raul Campos** | nurse-lite.com

@@ -1,4 +1,4 @@
-# Guia de Escalabilidad y Performance - Histora Care
+# Guia de Escalabilidad y Performance - NurseLite
 **Fecha:** 27 de enero de 2026
 **Version:** 1.0
 
@@ -12,7 +12,7 @@
 |------------|---------------|-------------------|
 | Railway (Backend) | ~100-500 req/seg | 1 instancia, RAM limitada |
 | MongoDB Atlas | ~500-1000 conexiones | Tier basico |
-| Vercel (Frontend) | Casi ilimitado | Estatico, CDN global |
+| Cloudflare Pages (Frontend) | Casi ilimitado | Estatico, CDN global |
 | WebSockets | ~1000 conexiones | 1 servidor, memoria |
 
 **Capacidad total estimada:** 200-500 usuarios simultaneos
@@ -27,7 +27,7 @@
 # Chrome DevTools > Lighthouse
 # O via CLI:
 npm install -g lighthouse
-lighthouse https://care.historahealth.com --view
+lighthouse https://app.nurse-lite.com --view
 ```
 
 **Metricas clave:**

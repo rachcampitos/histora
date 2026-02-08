@@ -1,130 +1,113 @@
-# Histora Care - Características Beta
+# NurseLite - Caracteristicas Beta
 
-## Estado Actual: Beta Cerrado
+## Estado Actual: Beta Abierto
 
-Fecha de última actualización: Enero 2026
+Fecha de ultima actualizacion: Febrero 2026
 
 ## Funcionalidades Implementadas
 
-### Autenticación
+### Autenticacion
 - ✅ Registro de pacientes (email + contraseña)
-- ✅ Registro de enfermeras (con validación CEP)
+- ✅ Registro de enfermeras (con validacion CEP)
 - ✅ Login con email/contraseña
 - ✅ Login con Google OAuth
-- ✅ Recuperación de contraseña con OTP (6 dígitos)
+- ✅ Recuperacion de contraseña con OTP (6 digitos)
 - ✅ Remember me (sesiones extendidas)
-- ✅ Refresh token automático
+- ✅ Refresh token automatico
 
-### Verificación de Enfermeras
-- ✅ Validación CEP (Colegio de Enfermeros del Perú)
-- ✅ Verificación de foto oficial CEP
-- ✅ Validación RENIEC (opcional)
-- ✅ Estado de verificación (pendiente, aprobado, rechazado)
+### Verificacion de Enfermeras
+- ✅ Validacion CEP (Colegio de Enfermeros del Peru)
+- ✅ Verificacion de foto oficial CEP
+- ✅ Validacion RENIEC (opcional)
+- ✅ Estado de verificacion (pendiente, aprobado, rechazado)
 - ✅ Panel admin para aprobar/rechazar
 
-### Búsqueda y Solicitud de Servicios
+### Busqueda y Solicitud de Servicios
 - ✅ Mapa con enfermeras cercanas (Mapbox)
 - ✅ Filtros por servicio, precio, distancia
 - ✅ Perfil detallado de enfermera
 - ✅ Solicitud de servicio con fecha/hora
-- ✅ Selección de dirección
+- ✅ Seleccion de direccion
+
+### Tracking en Tiempo Real
+- ✅ Mapa con ubicacion de la enfermera (Mapbox)
+- ✅ Actualizacion de ubicacion en tiempo real (Socket.IO)
+- ✅ Stepper de estados (aceptado → en camino → llego → en progreso → completado)
+- ✅ ETA estimado con ruta en mapa
+- ✅ Bottom sheet con info del servicio
+
+### Chat
+- ✅ Chat en tiempo real paciente-enfermera (Socket.IO)
+- ✅ Quick replies predefinidos
+- ✅ Indicador de mensajes no leidos
+- ✅ Read receipts
 
 ### Pagos
 - ✅ Pago en efectivo
-- ⏳ Pago con tarjeta (próximamente)
-- ⏳ Pago con Yape (próximamente)
+- ✅ Pago via Yape (P2P directo a enfermera)
+- ✅ Pago via Plin (P2P directo a enfermera)
+- ⏳ Pago con tarjeta via Culqi (proximamente)
+
+### Seguridad
+- ✅ Codigos de seguridad bidireccionales (paciente ↔ enfermera)
+- ✅ Verificacion de identidad de pacientes (DNI + selfie)
+- ✅ Boton de panico con alerta a contactos
+- ✅ Tracking GPS durante el servicio
 
 ### Reviews
-- ✅ Sistema de calificación (1-5 estrellas)
+- ✅ Sistema de calificacion (1-5 estrellas)
 - ✅ Comentarios de pacientes
-- ✅ Promedio de calificación en perfil
+- ✅ Sugerencias de comentario segun rating
+- ✅ Promedio de calificacion en perfil
 
-### Navegación Sin Cuenta
-- ✅ Explorar enfermeras sin registrarse
-- ✅ Ver servicios y precios
-- ✅ Registro requerido solo para solicitar
+### Panel de Administracion
+- ✅ Dashboard con KPIs
+- ✅ Gestion de enfermeras y verificaciones
+- ✅ Gestion de pacientes
+- ✅ Dark mode
 
 ### Legal
-- ✅ Términos y condiciones
-- ✅ Política de privacidad
-- ✅ Página de ayuda/FAQ
+- ✅ Terminos y condiciones
+- ✅ Politica de privacidad
+- ✅ Pagina de ayuda/FAQ
 
 ## Funcionalidades Pendientes
 
-### Corto Plazo (Próximas 2 semanas)
-- [ ] Verificación de email durante registro (OTP)
-- [ ] Notificaciones push
-- [ ] Chat en tiempo real enfermera-paciente
-- [ ] Tracking de enfermera en camino
-
-### Mediano Plazo (Próximo mes)
+### Corto Plazo
+- [ ] Notificaciones push nativas (Firebase/APNs)
 - [ ] Pagos con tarjeta (Culqi)
-- [ ] Pagos con Yape
-- [ ] Historial de servicios detallado
-- [ ] Facturas/Boletas electrónicas
+- [ ] Facturas/Boletas electronicas
+
+### Mediano Plazo
 - [ ] Programa de referidos
+- [ ] Suscripciones para servicios recurrentes
+- [ ] Modo offline con sincronizacion
 
 ### Largo Plazo
-- [ ] App nativa iOS/Android (actualmente PWA)
-- [ ] Suscripciones para servicios recurrentes
-- [ ] Integración con seguros de salud
-- [ ] Expansión a otras ciudades
+- [ ] Integracion con seguros de salud
+- [ ] Expansion a otras ciudades
+- [ ] Soporte multi-idioma
 
-## Configuración Beta
+## Configuracion Beta
 
 ### Flags de Feature
 
 ```typescript
-// environment.ts
-export const environment = {
-  production: false,
-  betaMode: true,           // Habilita restricciones beta
-  paymentSimulationMode: true,  // Simula pagos
-};
+// checkout.page.ts
+betaMode = signal(true);  // Tarjetas deshabilitadas, Yape/Plin/Efectivo habilitados
 ```
 
-### Restricciones Activas
+### Estado de Metodos de Pago
 
-| Feature | Estado | Razón |
-|---------|--------|-------|
-| Pagos con tarjeta | Deshabilitado | Simplificar beta |
-| Pagos con Yape | Deshabilitado | Simplificar beta |
-| Notificaciones push | Parcial | En desarrollo |
-| Chat | Deshabilitado | En desarrollo |
-
-## Métricas de Beta
-
-### KPIs Objetivo
-- Registros: 100 usuarios (50 pacientes, 50 enfermeras)
-- Verificaciones completadas: 30 enfermeras
-- Servicios solicitados: 50
-- Servicios completados: 30
-- NPS: > 40
-
-### Tracking Implementado
-- Registros por tipo de usuario
-- Verificaciones iniciadas vs completadas
-- Servicios por estado
-- Tiempo promedio de respuesta enfermera
-- Calificaciones promedio
+| Metodo de Pago | Estado | Tipo |
+|----------------|--------|------|
+| Efectivo | ✅ Habilitado | Directo |
+| Yape | ✅ Habilitado | P2P a enfermera |
+| Plin | ✅ Habilitado | P2P a enfermera |
+| Tarjeta | ⏳ Proximamente | Via Culqi |
 
 ## Feedback y Soporte
 
 ### Canales
 - Email: soporte@historahealth.com
-- WhatsApp: +51 XXX XXX XXX
-- In-app: Página de ayuda
-
-### Bugs Conocidos
-- Ninguno crítico actualmente
-
-## Changelog Beta
-
-### v0.1.0 (Enero 2026)
-- Lanzamiento inicial beta cerrado
-- Registro pacientes y enfermeras
-- Verificación CEP
-- Búsqueda por mapa
-- Solicitud de servicios
-- Pagos en efectivo
-- Reviews básicos
+- In-app: Pagina de ayuda

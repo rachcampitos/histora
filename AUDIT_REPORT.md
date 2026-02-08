@@ -1,4 +1,4 @@
-# Informe de Auditoría Completa - Histora Care
+# Informe de Auditoria Completa - NurseLite
 **Fecha:** 27 de enero de 2026
 **Versión:** 2.0 - Correcciones Aplicadas
 
@@ -49,10 +49,10 @@
 
 ### 1.2 Frontend
 
-#### 1.2.1 Faltan Carpetas Nativas iOS/Android
-- **Problema:** No existen carpetas ios/ ni android/
-- **Impacto:** No se puede compilar para móviles nativos
-- **Estado:** ⏳ REQUIERE EJECUCIÓN MANUAL (ionic cap add ios/android)
+#### 1.2.1 Carpetas Nativas iOS/Android
+- **Problema:** No existian carpetas ios/ ni android/
+- **Impacto:** No se podia compilar para moviles nativos
+- **Estado:** ✅ CORREGIDO (carpetas ios/ y android/ agregadas con Capacitor)
 
 #### 1.2.2 Payment Simulation Mode Activo
 - **Archivo:** `histora-care/src/environments/environment.prod.ts`
