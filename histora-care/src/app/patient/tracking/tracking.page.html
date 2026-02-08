@@ -259,22 +259,6 @@
     cssClass="tracking-sheet-modal">
     <ng-template>
       <ion-content class="sheet-content" [class.dark-mode]="themeService.isDarkMode()" [scrollY]="true">
-        <!-- Status Teaser (visible at ~15% breakpoint) -->
-        <div class="sheet-status-teaser">
-          <span class="status-text">
-            @switch (currentStatus()) {
-            @case ('accepted') { Servicio aceptado }
-            @case ('on_the_way') { En camino }
-            @case ('arrived') { Tu enfermera llego }
-            @case ('in_progress') { Servicio en curso }
-            @case ('completed') { Servicio completado }
-            }
-          </span>
-          @if ((currentStatus() === 'on_the_way' || currentStatus() === 'accepted') && formattedDuration()) {
-          <span class="status-eta">&middot; {{ formattedDuration() }}</span>
-          }
-        </div>
-
         <!-- Status Progress -->
         <div class="status-progress" #statusProgressContainer>
           <div class="progress-track">

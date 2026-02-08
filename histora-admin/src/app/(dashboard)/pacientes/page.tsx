@@ -179,7 +179,7 @@ export default function PacientesPage() {
   // Fetch patients
   const { data: patientsResponse, isLoading } = useQuery<PatientsResponse>({
     queryKey: ['patients', search],
-    queryFn: () => patientsApi.getAll({ search }),
+    queryFn: () => patientsApi.getAll({ search, limit: 100 }),
   });
 
   // Delete mutation

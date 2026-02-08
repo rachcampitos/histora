@@ -453,14 +453,8 @@ export class ServiceRequestsService {
       );
     }
 
-    // Guard: security code must be verified before starting service
-    if (request.status === 'arrived' && status === 'in_progress') {
-      if (!request.codeVerifiedAt) {
-        throw new BadRequestException(
-          'El codigo de seguridad debe ser verificado antes de iniciar el servicio',
-        );
-      }
-    }
+    // Security code verification is informational, not mandatory
+    // Codes are generated on accept and shown to both parties for identity verification
 
     request.status = status;
     request.statusHistory.push({
