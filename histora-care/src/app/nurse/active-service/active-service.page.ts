@@ -12,6 +12,7 @@ import { ChatService } from '../../core/services/chat.service';
 import { VirtualEscortService, ActiveShare } from '../../core/services/virtual-escort.service';
 import { ServiceRequest, Nurse } from '../../core/models';
 import { environment } from '../../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-active-service',
@@ -43,6 +44,11 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   activeShares = signal<ActiveShare[]>([]);
   chatUnreadCount = signal(0);
   private chatRoomId: string | null = null;
+
+  // Security code state
+  codeDigits = signal<string[]>(['', '', '', '']);
+  isVerifyingCode = signal(false);
+  codeVerified = computed(() => !!this.request()?.codeVerifiedAt);
 
   // Location broadcasting
   private locationBroadcastInterval: ReturnType<typeof setInterval> | null = null;
@@ -425,6 +431,67 @@ export class ActiveServicePage implements OnInit, OnDestroy {
       });
   }
 
+  onCodeInput(event: Event, index: number) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.replace(/\D/g, '');
+
+    // Update digit
+    const digits = [...this.codeDigits()];
+    digits[index] = value.slice(-1);
+    this.codeDigits.set(digits);
+
+    if (value && index < 3) {
+      // Auto-focus next input
+      const nextInput = input.parentElement?.querySelector(`input:nth-child(${index + 2})`) as HTMLInputElement;
+      nextInput?.focus();
+    }
+
+    // Auto-submit when all 4 digits entered
+    const fullCode = digits.join('');
+    if (fullCode.length === 4 && digits.every(d => d !== '')) {
+      this.verifySecurityCode(fullCode);
+    }
+  }
+
+  onCodeKeydown(event: KeyboardEvent, index: number) {
+    if (event.key === 'Backspace') {
+      const digits = [...this.codeDigits()];
+      if (!digits[index] && index > 0) {
+        // Focus previous input on backspace when current is empty
+        const input = event.target as HTMLInputElement;
+        const prevInput = input.parentElement?.querySelector(`input:nth-child(${index})`) as HTMLInputElement;
+        prevInput?.focus();
+      }
+      digits[index] = '';
+      this.codeDigits.set(digits);
+    }
+  }
+
+  private async verifySecurityCode(code: string) {
+    const req = this.request();
+    if (!req) return;
+
+    this.isVerifyingCode.set(true);
+
+    try {
+      const updated = await firstValueFrom(this.requestService.verifySecurityCode(req._id, code));
+      this.request.set(updated);
+      this.showToast('Identidad verificada correctamente', 'success');
+    } catch (err: any) {
+      const msg = err?.error?.message || 'Codigo incorrecto';
+      this.showToast(msg, 'danger');
+      // Clear input
+      this.codeDigits.set(['', '', '', '']);
+      // Re-focus first input
+      setTimeout(() => {
+        const firstInput = document.querySelector('.code-inputs input') as HTMLInputElement;
+        firstInput?.focus();
+      }, 100);
+    } finally {
+      this.isVerifyingCode.set(false);
+    }
+  }
+
   goBack() {
     this.router.navigate(['/nurse/dashboard']);
   }
@@ -479,7 +546,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   }
 
   // Get next action based on status
-  get nextAction(): { label: string; action: () => void; color: string } | null {
+  get nextAction(): { label: string; action: () => void; color: string; disabled?: boolean; icon?: string } | null {
     const req = this.request();
     if (!req) return null;
 
@@ -487,7 +554,13 @@ export class ActiveServicePage implements OnInit, OnDestroy {
       case 'on_the_way':
         return { label: 'Llegue', action: () => this.markArrival(), color: 'secondary' };
       case 'arrived':
-        return { label: 'Iniciar Servicio', action: () => this.beginService(), color: 'tertiary' };
+        return {
+          label: this.codeVerified() ? 'Iniciar Servicio' : 'Verificar codigo para iniciar',
+          action: () => this.beginService(),
+          color: this.codeVerified() ? 'tertiary' : 'medium',
+          disabled: !this.codeVerified(),
+          icon: this.codeVerified() ? undefined : 'lock-closed',
+        };
       case 'in_progress':
         return { label: 'Completar Servicio', action: () => this.completeService(), color: 'success' };
       default:

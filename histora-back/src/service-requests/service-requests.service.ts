@@ -349,6 +349,13 @@ export class ServiceRequestsService {
       changedBy: new Types.ObjectId(nurseUserId),
     });
 
+    // Generate security codes
+    request.patientCode = this.generateSecurityCode();
+    request.nurseCode = this.generateSecurityCode();
+    while (request.nurseCode === request.patientCode) {
+      request.nurseCode = this.generateSecurityCode();
+    }
+
     const savedRequest = await request.save();
 
     // Send notification to patient
@@ -444,6 +451,15 @@ export class ServiceRequestsService {
       throw new BadRequestException(
         `Cannot transition from ${request.status} to ${status}`,
       );
+    }
+
+    // Guard: security code must be verified before starting service
+    if (request.status === 'arrived' && status === 'in_progress') {
+      if (!request.codeVerifiedAt) {
+        throw new BadRequestException(
+          'El codigo de seguridad debe ser verificado antes de iniciar el servicio',
+        );
+      }
     }
 
     request.status = status;
@@ -587,5 +603,49 @@ export class ServiceRequestsService {
     }
 
     return request;
+  }
+
+  async verifySecurityCode(
+    id: string,
+    nurseUserId: string,
+    code: string,
+  ): Promise<ServiceRequest> {
+    const nurse = await this.nurseModel.findOne({
+      userId: new Types.ObjectId(nurseUserId),
+    });
+    if (!nurse) {
+      throw new NotFoundException('Nurse profile not found');
+    }
+
+    const request = await this.serviceRequestModel.findById(id);
+    if (!request) {
+      throw new NotFoundException('Service request not found');
+    }
+
+    // Only assigned nurse can verify
+    if (request.nurseId?.toString() !== nurse._id?.toString()) {
+      throw new ForbiddenException('Solo la enfermera asignada puede verificar el codigo');
+    }
+
+    if (request.status !== 'arrived') {
+      throw new BadRequestException('El codigo solo se puede verificar cuando la enfermera ha llegado');
+    }
+
+    if (request.codeVerifiedAt) {
+      throw new BadRequestException('El codigo ya fue verificado');
+    }
+
+    if (code !== request.patientCode) {
+      throw new BadRequestException('Codigo de seguridad incorrecto');
+    }
+
+    request.codeVerifiedAt = new Date();
+    await request.save();
+
+    return this.findById(id);
+  }
+
+  private generateSecurityCode(): string {
+    return Math.floor(1000 + Math.random() * 9000).toString();
   }
 }

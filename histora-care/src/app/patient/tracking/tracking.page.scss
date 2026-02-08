@@ -536,7 +536,7 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 45%;
+  bottom: 0;
   z-index: 1;
 }
 
@@ -606,29 +606,158 @@
   }
 }
 
-// Bottom Sheet
-.bottom-sheet {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  padding: 16px;
-  max-height: 55%;
-  overflow-y: auto;
+// Sheet Modal Global Styles
+:host ::ng-deep .tracking-sheet-modal {
+  &::part(content) {
+    border-radius: 24px 24px 0 0;
+  }
 
-  // Drag handle
-  &::before {
-    content: '';
-    display: block;
+  &::part(handle) {
+    background: #cbd5e1;
     width: 40px;
     height: 4px;
-    background: #ddd;
-    border-radius: 2px;
-    margin: 0 auto 16px;
+    margin-top: 8px;
+  }
+}
+
+// Sheet Content
+.sheet-content {
+  --background: white;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 4px;
+  --padding-bottom: 16px;
+}
+
+// Compact Header (visible at minimum breakpoint)
+.sheet-compact-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 12px;
+
+  .compact-avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    .avatar-placeholder {
+      font-size: 36px;
+      color: #ccc;
+    }
+  }
+
+  .compact-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .compact-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-transform: none;
+    flex-shrink: 0;
+  }
+}
+
+// Security Codes Section
+.security-codes-section {
+  padding: 12px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
+
+  .security-code-block {
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .code-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+
+    > ion-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .code-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .code-subtitle {
+      display: block;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+  }
+
+  .code-digits {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 0;
+
+    .code-digit {
+      width: 42px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0;
+
+      &.patient {
+        background: rgba(var(--ion-color-primary-rgb), 0.1);
+        border: 2px solid var(--ion-color-primary);
+        color: var(--ion-color-primary);
+      }
+
+      &.nurse {
+        background: rgba(var(--ion-color-secondary-rgb, 60, 179, 113), 0.1);
+        border: 2px solid var(--ion-color-secondary, #3cb371);
+        color: var(--ion-color-secondary, #3cb371);
+      }
+    }
+  }
+
+  .code-verified-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(22, 163, 74, 0.1);
+    border-radius: 10px;
+    margin-top: 8px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #16a34a;
+    }
   }
 }
 
@@ -1389,8 +1518,8 @@
 
 // Safe area for iOS
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .bottom-sheet {
-    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  .sheet-content {
+    --padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 }
 
@@ -1487,13 +1616,58 @@
     }
   }
 
-  // Bottom Sheet
-  .bottom-sheet {
-    background: #1e293b;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-
-    &::before {
+  // Sheet Modal
+  :host ::ng-deep .tracking-sheet-modal {
+    &::part(handle) {
       background: #475569;
+    }
+  }
+
+  .sheet-content {
+    --background: #1e293b;
+  }
+
+  .sheet-compact-header {
+    .compact-avatar .avatar-placeholder {
+      color: #475569;
+    }
+
+    .compact-name {
+      color: #f1f5f9;
+    }
+  }
+
+  // Security Codes
+  .security-codes-section {
+    border-top-color: #334155;
+    border-bottom-color: #334155;
+
+    .code-header {
+      .code-title {
+        color: #f1f5f9;
+      }
+
+      .code-subtitle {
+        color: #64748b;
+      }
+    }
+
+    .code-digits .code-digit {
+      &.patient {
+        background: rgba(var(--ion-color-primary-rgb), 0.15);
+      }
+
+      &.nurse {
+        background: rgba(var(--ion-color-secondary-rgb, 60, 179, 113), 0.15);
+      }
+    }
+
+    .code-verified-indicator {
+      background: rgba(22, 163, 74, 0.15);
+
+      span {
+        color: #34d399;
+      }
     }
   }
 
