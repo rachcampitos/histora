@@ -39,6 +39,8 @@ export type NotificationType =
   | 'payment_pending'
   | 'verification_approved'
   | 'verification_rejected'
+  | 'new_message'
+  | 'chat_message'
   | 'promotion'
   | 'reminder'
   | 'system';
@@ -245,6 +247,15 @@ export class NotificationService {
       case 'verification_approved':
       case 'verification_rejected':
         this.router.navigate(['/nurse/verification']);
+        break;
+
+      case 'new_message':
+      case 'chat_message':
+        // Navigate to the active service or tracking page where chat is available
+        if (data.requestId) {
+          // Determine if user is nurse or patient based on route prefix
+          this.router.navigate(['/nurse/active-service', data.requestId]);
+        }
         break;
 
       default:

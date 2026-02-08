@@ -31,6 +31,15 @@
 
   @if (rating() > 0) {
     <p class="rating-text">{{ getRatingLabel() }}</p>
+
+    <!-- Suggestion Chips -->
+    <div class="suggestion-chips">
+      @for (suggestion of commentSuggestions(); track suggestion) {
+        <button class="suggestion-chip" (click)="addSuggestion(suggestion)" type="button">
+          {{ suggestion }}
+        </button>
+      }
+    </div>
   }
 
   <!-- Comment - Compact textarea -->

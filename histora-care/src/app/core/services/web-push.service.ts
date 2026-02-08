@@ -311,6 +311,14 @@ export class WebPushService {
         this.router.navigate(['/nurse/earnings']);
         break;
 
+      case 'new_message':
+      case 'chat_message':
+      case 'NEW_MESSAGE':
+        if (requestId) {
+          this.router.navigate(['/nurse/active-service', requestId]);
+        }
+        break;
+
       case 'TEST':
         console.log('[WebPush] Test notification clicked');
         break;

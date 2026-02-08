@@ -256,7 +256,8 @@
     [showBackdrop]="false"
     [canDismiss]="false"
     [handle]="true"
-    cssClass="tracking-sheet-modal">
+    cssClass="tracking-sheet-modal"
+    (ionBreakpointDidChange)="onBreakpointChange($event)">
     <ng-template>
       <ion-content class="sheet-content" [class.dark-mode]="themeService.isDarkMode()" [scrollY]="true">
         <!-- Status Progress -->
@@ -290,15 +291,22 @@
         <!-- Nurse Info Card -->
         <div class="nurse-card">
           <div class="nurse-info">
-            <ion-avatar class="nurse-avatar">
-              @if (nurse()?.avatar) {
-              <img [src]="nurse()?.avatar" alt="Enfermera">
-              } @else {
-              <ion-icon name="person-circle" class="avatar-placeholder"></ion-icon>
-              }
-            </ion-avatar>
+            <div class="avatar-wrapper">
+              <ion-avatar class="nurse-avatar">
+                @if (nurse()?.avatar) {
+                <img [src]="nurse()?.avatar" alt="Enfermera">
+                } @else {
+                <ion-icon name="person-circle" class="avatar-placeholder"></ion-icon>
+                }
+              </ion-avatar>
+              <span class="status-dot" [ngClass]="'status-' + currentStatus()"></span>
+            </div>
             <div class="nurse-details">
-              <h3>{{ nurse()?.firstName }} {{ nurse()?.lastName }}</h3>
+              <h3>
+                {{ nurse()?.firstName }} {{ nurse()?.lastName }}
+                <ion-icon name="shield-checkmark" class="verified-badge"></ion-icon>
+              </h3>
+              <span class="verified-text">Verificada CEP</span>
               <div class="nurse-meta">
                 @if (nurse()?.rating && nurse()!.rating > 0) {
                 <span class="rating">
@@ -413,7 +421,8 @@
             </div>
           </div>
 
-          <!-- Status Message -->
+          <!-- Status Message (visible at >= 0.75 breakpoint) -->
+          @if (currentBreakpoint() >= 0.75) {
           <div class="status-message" [ngClass]="'status-' + currentStatus()" role="status" aria-live="polite">
             @switch (currentStatus()) {
             @case ('accepted') {
@@ -439,7 +448,10 @@
             }
           </div>
 
-          <!-- Contextual Tip -->
+          }
+
+          <!-- Contextual Tip (visible at >= 0.75 breakpoint) -->
+          @if (currentBreakpoint() >= 0.75) {
           <div class="contextual-tip" role="note">
             @switch (currentStatus()) {
             @case ('accepted') {
@@ -465,8 +477,10 @@
             }
           </div>
 
-          <!-- Cancel Button (only if not started) -->
-          @if (currentStatus() === 'accepted' || currentStatus() === 'on_the_way') {
+          }
+
+          <!-- Cancel Button (only if not started, visible at >= 0.75 breakpoint) -->
+          @if (currentBreakpoint() >= 0.75 && (currentStatus() === 'accepted' || currentStatus() === 'on_the_way')) {
           <div class="cancel-section">
             <ion-button fill="clear" color="danger" expand="block" (click)="cancelRequest()">
               <ion-icon name="close-circle-outline" slot="start"></ion-icon>
@@ -475,8 +489,8 @@
           </div>
           }
 
-          <!-- Payment Section (P2P) -->
-          @if (currentStatus() === 'completed' && hasPaymentMethods()) {
+          <!-- Payment Section (P2P, visible at full breakpoint) -->
+          @if (currentBreakpoint() >= 1 && currentStatus() === 'completed' && hasPaymentMethods()) {
           <div class="payment-section">
             <div class="payment-header">
               <ion-icon name="wallet-outline"></ion-icon>
@@ -536,8 +550,8 @@
           </div>
           }
 
-          <!-- Completed Actions -->
-          @if (currentStatus() === 'completed') {
+          <!-- Completed Actions (visible at full breakpoint) -->
+          @if (currentBreakpoint() >= 1 && currentStatus() === 'completed') {
           <div class="completed-actions">
             @if (shouldShowReview()) {
             <ion-button expand="block" color="primary" (click)="openReviewModal()">

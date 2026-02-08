@@ -154,13 +154,48 @@ h2 {
 }
 
 // Dark mode
-:host-context(.dark) {
+// Modal renders in overlay outside component host, but :host-context still works
+// since body.dark is an ancestor of the overlay container
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
   .benefits {
-    background: var(--histora-surface-secondary);
+    background: #0f172a;
+
+    .benefit-item {
+      &:not(:last-child) {
+        border-bottom-color: #334155;
+      }
+    }
+  }
+
+  .benefit-text {
+    .benefit-title {
+      color: #f1f5f9;
+    }
+
+    .benefit-subtitle {
+      color: #94a3b8;
+    }
   }
 
   .trust-badge {
     background: rgba(107, 181, 179, 0.15);
     border-color: rgba(107, 181, 179, 0.25);
+
+    span {
+      color: #94a3b8;
+    }
+  }
+
+  h2 {
+    color: #f1f5f9;
+  }
+
+  .description {
+    color: #94a3b8;
+  }
+
+  .back-btn {
+    --color: #64748b;
   }
 }
