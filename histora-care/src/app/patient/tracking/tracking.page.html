@@ -258,26 +258,21 @@
     [handle]="true"
     cssClass="tracking-sheet-modal">
     <ng-template>
-      <ion-content class="sheet-content" [scrollY]="true">
-        <!-- Compact Header (visible at ~15%) -->
-        <div class="sheet-compact-header">
-          <ion-avatar class="compact-avatar">
-            @if (nurse()?.avatar) {
-            <img [src]="nurse()?.avatar" alt="Enfermera">
-            } @else {
-            <ion-icon name="person-circle" class="avatar-placeholder"></ion-icon>
-            }
-          </ion-avatar>
-          <span class="compact-name">{{ nurse()?.firstName }} {{ nurse()?.lastName }}</span>
-          <ion-badge [color]="currentStatus() === 'completed' ? 'success' : 'primary'" class="compact-badge">
+      <ion-content class="sheet-content" [class.dark-mode]="themeService.isDarkMode()" [scrollY]="true">
+        <!-- Status Teaser (visible at ~15% breakpoint) -->
+        <div class="sheet-status-teaser">
+          <span class="status-text">
             @switch (currentStatus()) {
-            @case ('accepted') { Aceptado }
+            @case ('accepted') { Servicio aceptado }
             @case ('on_the_way') { En camino }
-            @case ('arrived') { Llego }
-            @case ('in_progress') { En servicio }
-            @case ('completed') { Completado }
+            @case ('arrived') { Tu enfermera llego }
+            @case ('in_progress') { Servicio en curso }
+            @case ('completed') { Servicio completado }
             }
-          </ion-badge>
+          </span>
+          @if ((currentStatus() === 'on_the_way' || currentStatus() === 'accepted') && formattedDuration()) {
+          <span class="status-eta">&middot; {{ formattedDuration() }}</span>
+          }
         </div>
 
         <!-- Status Progress -->

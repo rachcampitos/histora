@@ -139,7 +139,7 @@ export class ChatService {
       auth: { token },
       transports: ['websocket', 'polling'], // Allow polling fallback
       reconnection: true,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       timeout: 10000,
     });

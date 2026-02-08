@@ -115,7 +115,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private nurseApiService: NurseApiService,
     private modalController: ModalController,
-    private themeService: ThemeService,
+    public themeService: ThemeService,
     private chatService: ChatService
   ) {
     // React to WebSocket location updates
@@ -181,6 +181,12 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    // Dismiss the tracking sheet modal to prevent it persisting after navigation
+    try {
+      this.trackingSheet?.dismiss();
+    } catch {
+      // Modal may already be dismissed
+    }
     this.stopPolling();
     this.stopSimulation();
     this.chatNotificationSub?.unsubscribe();
