@@ -71,7 +71,7 @@ const features = [
     icon: Trophy,
     title: "Sistema de Niveles",
     description:
-      "Gamificacion profesional: Certified, Outstanding, Experienced y Elite.",
+      "Gamificacion profesional: Certificada, Destacada, Experimentada y Elite.",
     color: "#d97706",
   },
 ];
@@ -427,18 +427,20 @@ function TrackingScreen({ isDark }: ScreenProps) {
             <div key={s.label} className="flex items-start gap-2.5">
               <div className="flex flex-col items-center">
                 <div className="relative">
-                  {i === activeStep && (
-                    <motion.div
-                      animate={{ scale: [1, 2.5], opacity: [0.5, 0] }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeOut",
-                      }}
-                      className="absolute inset-0 rounded-full"
-                      style={{ background: s.color }}
-                    />
-                  )}
+                  <motion.div
+                    animate={
+                      i === activeStep
+                        ? { scale: [1, 2.5], opacity: [0.4, 0] }
+                        : { scale: 1, opacity: 0 }
+                    }
+                    transition={
+                      i === activeStep
+                        ? { duration: 1.5, repeat: Infinity, ease: "easeOut" }
+                        : { duration: 0.4 }
+                    }
+                    className="absolute inset-0 rounded-full"
+                    style={{ background: s.color }}
+                  />
                   <div
                     className="relative w-4 h-4 rounded-full flex items-center justify-center transition-all duration-400"
                     style={{
@@ -970,19 +972,19 @@ function NurseDashboardScreen({ isDark }: ScreenProps) {
    ════════════════════════════════════════ */
 const tiers = [
   {
-    name: "Certified",
+    name: "Certificada",
     color: "#4a9d9a",
     req: "Verificacion CEP",
     filled: true,
   },
   {
-    name: "Outstanding",
+    name: "Destacada",
     color: "#3b82f6",
     req: "10+ servicios, 4.0+",
     filled: true,
   },
   {
-    name: "Experienced",
+    name: "Experimentada",
     color: "#8b5cf6",
     req: "30+ servicios, 4.5+",
     filled: false,
@@ -1017,7 +1019,7 @@ function TierScreen({ isDark }: ScreenProps) {
           </div>
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
             <span className="text-[7px] px-2 py-0.5 rounded-full bg-[#3b82f6] text-white font-bold shadow-sm whitespace-nowrap">
-              OUTSTANDING
+              DESTACADA
             </span>
           </div>
         </div>
@@ -1034,10 +1036,10 @@ function TierScreen({ isDark }: ScreenProps) {
         >
           <div className="flex items-center justify-between mb-1">
             <span className="text-[7px] text-[#3b82f6] font-semibold">
-              Outstanding
+              Destacada
             </span>
             <span className="text-[7px] text-[#8b5cf6] font-semibold">
-              Experienced
+              Experimentada
             </span>
           </div>
           <div
