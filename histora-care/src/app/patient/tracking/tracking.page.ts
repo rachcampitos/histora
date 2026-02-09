@@ -189,10 +189,12 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ionViewWillLeave() {
-    // Close sheet via reactive binding only - do NOT call dismiss() or removeOrphanedSheet()
-    // Programmatic dismiss/remove conflicts with [isOpen] binding and prevents
-    // the sheet from reopening when Ionic restores this page from cache
+    // Close sheet: signal controls [isOpen] binding, dismiss removes from overlay
     this.forceCloseSheet.set(true);
+    // Explicitly dismiss the modal from Ionic's overlay container
+    try { this.trackingSheet?.dismiss?.(); } catch {}
+    // Safety: remove any orphaned sheet DOM after a short delay
+    setTimeout(() => this.removeOrphanedSheet(), 150);
   }
 
   /**
@@ -929,11 +931,11 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    * Close the tracking sheet and navigate away
    */
   private async navigateAway(url: string[]) {
-    // Close sheet via reactive binding (not programmatic dismiss)
     this.forceCloseSheet.set(true);
+    try { this.trackingSheet?.dismiss?.(); } catch {}
     // Small delay for sheet close animation before navigating
-    await new Promise(resolve => setTimeout(resolve, 100));
-    // Navigate - ngOnDestroy will handle final cleanup if component is destroyed
+    await new Promise(resolve => setTimeout(resolve, 150));
+    this.removeOrphanedSheet();
     this.router.navigate(url);
   }
 
@@ -941,7 +943,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    * Navigate back
    */
   goBack() {
-    this.navigateAway(['/patient/history']);
+    this.navigateAway(['/patient/tabs/home']);
   }
 
   /**

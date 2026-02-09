@@ -1,7 +1,7 @@
 // Checkout Page Styles
 
 .checkout-content {
-  --background: var(--ion-background-color);
+  --background: #f8fafc;
 }
 
 // Simulation mode banner
@@ -65,11 +65,11 @@
 
 // Summary header
 .summary-header {
-  background: var(--ion-color-light);
+  background: #ffffff;
   padding: 16px;
-  margin-bottom: 16px;
   border-radius: 12px;
   margin: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   .summary-row {
     display: flex;
@@ -88,7 +88,6 @@
     }
 
     &.subtotal {
-      border-bottom: 1px solid var(--ion-color-light-shade);
       padding-bottom: 12px;
     }
 
@@ -107,7 +106,7 @@
     }
 
     &.total {
-      border-top: 1px solid var(--ion-color-light-shade);
+      border-top: 1px solid #e2e8f0;
       padding-top: 12px;
       margin-top: 4px;
 
@@ -149,12 +148,16 @@
 
 // Payment options
 .payment-option {
-  --background: var(--ion-color-light);
+  --background: #ffffff;
   --border-radius: 12px;
   --padding-start: 16px;
   --padding-end: 16px;
   --min-height: 64px;
-  margin-bottom: 8px;
+  --border-color: transparent;
+  --inner-border-width: 0;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid transparent;
 
   ion-icon[slot="start"] {
     font-size: 24px;
@@ -176,7 +179,7 @@
   }
 
   &.selected {
-    --background: var(--ion-color-primary-tint);
+    --background: #dbeafe;
     border: 2px solid var(--ion-color-primary);
   }
 }
@@ -185,7 +188,7 @@
 .yape-icon {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -195,7 +198,7 @@
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   span {
@@ -209,7 +212,7 @@
 .plin-icon {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -219,7 +222,7 @@
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 }
 
@@ -227,7 +230,7 @@
 .reminder-logo {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,21 +240,23 @@
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 }
 
 // Beta mode disabled payment options
 .payment-option {
   &.beta-disabled {
-    opacity: 0.45;
+    opacity: 0.5;
     pointer-events: none;
-    --background: #f1f5f9;
+    --background: #f8fafc;
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
     position: relative;
 
     ion-label {
       h3, p {
-        color: var(--ion-color-medium);
+        color: #64748b;
         text-decoration: line-through;
       }
     }
@@ -262,8 +267,9 @@
   }
 
   &.cash-recommended {
-    border: 2px solid var(--ion-color-success);
-    --background: var(--ion-color-success-tint);
+    border: 2px solid #10b981;
+    --background: #ecfdf5;
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.12);
   }
 }
 
@@ -273,20 +279,21 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px;
-  background: var(--ion-color-primary-tint);
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 12px;
   margin-top: 8px;
 
   ion-icon {
     font-size: 24px;
-    color: var(--ion-color-primary);
+    color: #3b82f6;
     flex-shrink: 0;
   }
 
   p {
     margin: 0;
     font-size: 13px;
-    color: var(--ion-color-primary-shade);
+    color: #1e40af;
     line-height: 1.5;
   }
 }
@@ -539,14 +546,15 @@
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: var(--ion-color-warning-tint);
+    background: #fef3c7;
+    border: 1px solid #fde68a;
     border-radius: 12px;
     margin: 16px 0;
     text-align: left;
 
     > ion-icon {
       font-size: 28px;
-      color: var(--ion-color-warning-shade);
+      color: #f59e0b;
       flex-shrink: 0;
     }
 
@@ -558,12 +566,12 @@
       .reminder-title {
         font-weight: 600;
         font-size: 14px;
-        color: var(--ion-color-warning-shade);
+        color: #78350f;
       }
 
       .reminder-text {
         font-size: 14px;
-        color: var(--ion-color-warning-shade);
+        color: #92400e;
       }
     }
   }
@@ -624,11 +632,15 @@
 
 // Dark mode adjustments
 :host-context(body.dark) {
+  .checkout-content {
+    --background: var(--ion-background-color);
+  }
+
   .summary-header {
     background: var(--ion-color-step-100);
+    box-shadow: none;
 
     .summary-row {
-      &.subtotal,
       &.total {
         border-color: var(--ion-color-step-200);
       }
@@ -643,6 +655,8 @@
 
   .payment-option {
     --background: var(--ion-color-step-100);
+    box-shadow: none;
+    border-color: transparent;
 
     ion-label {
       h3 {
@@ -665,6 +679,7 @@
 
     &.beta-disabled {
       --background: #1e293b;
+      border-color: #334155;
 
       ion-label {
         h3, p {
@@ -697,6 +712,7 @@
 
   .beta-info {
     background: rgba(var(--ion-color-primary-rgb), 0.15);
+    border-color: rgba(var(--ion-color-primary-rgb), 0.3);
 
     ion-icon {
       color: var(--ion-color-primary-tint);
@@ -743,6 +759,7 @@
 
   .cash-reminder {
     background: rgba(var(--ion-color-warning-rgb), 0.15);
+    border-color: rgba(var(--ion-color-warning-rgb), 0.3);
 
     > ion-icon {
       color: var(--ion-color-warning);
