@@ -49,7 +49,10 @@ export const NurseReviewSchema = SchemaFactory.createForClass(NurseReview);
 
 // Index for faster queries
 NurseReviewSchema.index({ nurseId: 1, createdAt: -1 });
-NurseReviewSchema.index({ patientId: 1, nurseId: 1 }, { unique: true }); // One review per patient per nurse
+NurseReviewSchema.index(
+  { serviceRequestId: 1 },
+  { unique: true, sparse: true },
+); // One review per service request
 
 // Virtual for populating patient name
 NurseReviewSchema.virtual('patient', {

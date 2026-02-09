@@ -7,6 +7,7 @@ import {
   forwardRef,
   Optional,
   Logger,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -22,7 +23,7 @@ import { CreateNurseReviewDto } from './dto/nurse-review.dto';
 import { AdminNotificationsGateway } from '../admin/admin-notifications.gateway';
 
 @Injectable()
-export class NursesService {
+export class NursesService implements OnModuleInit {
   private readonly logger = new Logger(NursesService.name);
 
   constructor(
@@ -31,6 +32,17 @@ export class NursesService {
     @Optional() @Inject(forwardRef(() => AdminNotificationsGateway))
     private adminNotifications?: AdminNotificationsGateway,
   ) {}
+
+  async onModuleInit() {
+    // Sync indexes to drop old { patientId, nurseId } unique index
+    // and create new { serviceRequestId } unique index
+    try {
+      await this.nurseReviewModel.syncIndexes();
+      this.logger.log('NurseReview indexes synced');
+    } catch (err) {
+      this.logger.warn('Failed to sync NurseReview indexes', err);
+    }
+  }
 
   async create(userId: string, createNurseDto: CreateNurseDto): Promise<Nurse> {
     // Check if nurse profile already exists for this user
@@ -646,15 +658,16 @@ export class NursesService {
       throw new NotFoundException('Enfermera no encontrada');
     }
 
-    // Check if patient already reviewed this nurse
-    const existingReview = await this.nurseReviewModel.findOne({
-      nurseId: new Types.ObjectId(nurseId),
-      patientId: new Types.ObjectId(patientId),
-      isDeleted: { $ne: true },
-    });
+    // Check if this service request already has a review
+    if (createReviewDto.serviceRequestId) {
+      const existingReview = await this.nurseReviewModel.findOne({
+        serviceRequestId: new Types.ObjectId(createReviewDto.serviceRequestId),
+        isDeleted: { $ne: true },
+      });
 
-    if (existingReview) {
-      throw new ConflictException('Ya has dejado una reseña para esta enfermera');
+      if (existingReview) {
+        throw new ConflictException('Este servicio ya tiene una reseña');
+      }
     }
 
     // Determine if review is verified (linked to a completed service)
