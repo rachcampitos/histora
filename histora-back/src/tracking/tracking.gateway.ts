@@ -259,12 +259,14 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
         });
         await request.save();
 
-        // Notify status change
-        this.server.to(`tracking:${data.requestId}`).emit('request:status', {
+        const statusPayload = {
           requestId: data.requestId,
           status: 'on_the_way',
           updatedAt: new Date(),
-        });
+        };
+        // Notify tracking room + patient's personal room (for dashboard updates)
+        this.server.to(`tracking:${data.requestId}`).emit('request:status', statusPayload);
+        this.server.to(`user:${request.patientId}`).emit('request:status', statusPayload);
       }
 
       return { success: true };
@@ -298,16 +300,19 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
       });
       await request.save();
 
-      // Notify all in tracking room
+      // Notify tracking room
       this.server.to(`tracking:${data.requestId}`).emit('nurse:arrived', {
         requestId: data.requestId,
       });
 
-      this.server.to(`tracking:${data.requestId}`).emit('request:status', {
+      const statusPayload = {
         requestId: data.requestId,
         status: 'arrived',
         updatedAt: new Date(),
-      });
+      };
+      // Notify tracking room + patient's personal room (for dashboard updates)
+      this.server.to(`tracking:${data.requestId}`).emit('request:status', statusPayload);
+      this.server.to(`user:${request.patientId}`).emit('request:status', statusPayload);
 
       return { success: true };
     } catch (error) {
@@ -343,11 +348,14 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
         requestId: data.requestId,
       });
 
-      this.server.to(`tracking:${data.requestId}`).emit('request:status', {
+      const statusPayload = {
         requestId: data.requestId,
         status: 'in_progress',
         updatedAt: new Date(),
-      });
+      };
+      // Notify tracking room + patient's personal room (for dashboard updates)
+      this.server.to(`tracking:${data.requestId}`).emit('request:status', statusPayload);
+      this.server.to(`user:${request.patientId}`).emit('request:status', statusPayload);
 
       return { success: true };
     } catch (error) {
@@ -383,11 +391,14 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
         requestId: data.requestId,
       });
 
-      this.server.to(`tracking:${data.requestId}`).emit('request:status', {
+      const statusPayload = {
         requestId: data.requestId,
         status: 'completed',
         updatedAt: new Date(),
-      });
+      };
+      // Notify tracking room + patient's personal room (for dashboard updates)
+      this.server.to(`tracking:${data.requestId}`).emit('request:status', statusPayload);
+      this.server.to(`user:${request.patientId}`).emit('request:status', statusPayload);
 
       // Clean up nurse request mapping
       this.nurseRequests.delete(client.nurseDocId!);

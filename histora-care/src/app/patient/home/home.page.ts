@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
@@ -16,6 +16,7 @@ import { ServiceRequest } from '../../core/models';
 })
 export class HomePage implements OnInit, OnDestroy {
   private router = inject(Router);
+  private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
   private authService = inject(AuthService);
   private serviceRequestService = inject(ServiceRequestService);
@@ -34,6 +35,11 @@ export class HomePage implements OnInit, OnDestroy {
       if (statusUpdate) {
         // Small delay to allow backend to persist the status change before querying
         setTimeout(() => this.loadActiveRequest(), 500);
+
+        // Show arrival alert prompting patient to verify security code
+        if (statusUpdate.status === 'arrived') {
+          this.showNurseArrivedAlert(statusUpdate.requestId);
+        }
       }
     });
   }
@@ -186,6 +192,30 @@ export class HomePage implements OnInit, OnDestroy {
       'rejected': 'danger'
     };
     return colors[status] || 'medium';
+  }
+
+  private async showNurseArrivedAlert(requestId: string) {
+    const request = this.activeRequest();
+    const nurseName = request?.nurse
+      ? `${request.nurse.firstName} ${request.nurse.lastName}`
+      : 'Tu enfermera';
+
+    const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
+      header: 'Tu enfermera ha llegado',
+      message: `${nurseName} esta en la puerta y necesita el codigo de seguridad para confirmar su identidad.`,
+      backdropDismiss: false,
+      buttons: [
+        { text: 'Ahora no', role: 'cancel' },
+        {
+          text: 'Ver mi codigo',
+          handler: () => {
+            this.router.navigate(['/patient/tracking', requestId]);
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   private async showComingSoon(feature: string) {

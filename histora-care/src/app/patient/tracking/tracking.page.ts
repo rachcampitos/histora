@@ -214,6 +214,9 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         this.wsService.joinTrackingRoom(this.requestId());
       }
 
+      // Re-subscribe to chat notifications (subscriptions lost on cache restore)
+      this.loadChatUnread(this.requestId());
+
       // Reinitialize map
       if (!this.isLoading() && !this.loadError() && this.currentStatus() !== 'pending') {
         setTimeout(() => this.initMap(), 300);
