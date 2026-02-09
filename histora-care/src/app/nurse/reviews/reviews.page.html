@@ -45,6 +45,39 @@
       </div>
     </div>
 
+    <!-- Tier Info Accordion -->
+    <div class="tier-info-section">
+      <button class="tier-info-toggle" (click)="toggleTierInfo()">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>Como funcionan los niveles</span>
+        <ion-icon [name]="tierInfoExpanded() ? 'chevron-up' : 'chevron-down'" class="toggle-chevron"></ion-icon>
+      </button>
+      @if (tierInfoExpanded()) {
+        <div class="tier-info-content">
+          <div class="tier-levels-list">
+            @for (level of tierLevels; track level.label) {
+              <div class="tier-level-row" [class.current-tier]="nurseTier().label === level.label">
+                <div class="tier-level-icon" [style.background-color]="level.color + '20'">
+                  <ion-icon [name]="level.icon" [style.color]="level.color"></ion-icon>
+                </div>
+                <div class="tier-level-info">
+                  <span class="tier-level-label">{{ level.label }}</span>
+                  <span class="tier-level-req">{{ level.requirement }}</span>
+                </div>
+                @if (nurseTier().label === level.label) {
+                  <ion-badge color="primary" class="current-badge">Tu nivel</ion-badge>
+                }
+              </div>
+            }
+          </div>
+          <div class="tier-benefit-note">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>Un nivel mas alto te da mayor visibilidad ante los pacientes en las busquedas.</span>
+          </div>
+        </div>
+      }
+    </div>
+
     <!-- Filter Chips -->
     <div class="filter-chips">
       <ion-chip

@@ -699,7 +699,4 @@ export class RequestsPage implements OnInit, OnDestroy {
     await this.loadPendingRequests();
   }
 
-  goBack() {
-    this.router.navigate(['/nurse/dashboard']);
-  }
 }

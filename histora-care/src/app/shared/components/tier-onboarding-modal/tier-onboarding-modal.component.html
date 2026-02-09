@@ -1,0 +1,73 @@
+<ion-content class="onboarding-content" [scrollY]="false">
+  <div class="onboarding-container">
+    <!-- Skip button -->
+    @if (!isLastSlide) {
+      <button class="skip-btn" (click)="skip()">Omitir</button>
+    }
+
+    <!-- Progress dots -->
+    <div class="progress-dots">
+      @for (slide of slides; track $index) {
+        <div class="dot" [class.active]="$index === currentSlide" [class.completed]="$index < currentSlide"></div>
+      }
+    </div>
+
+    <!-- Slide content -->
+    <div class="slide-wrapper">
+      <div class="slide-icon-wrapper">
+        <ion-icon [name]="slides[currentSlide].icon"></ion-icon>
+      </div>
+
+      <h2 class="slide-title">{{ slides[currentSlide].title }}</h2>
+      <p class="slide-description">{{ slides[currentSlide].description }}</p>
+
+      <!-- Tier items (slides 0 and 1) -->
+      @if (slides[currentSlide].items) {
+        <div class="tier-items">
+          @for (item of slides[currentSlide].items; track item.label) {
+            <div class="tier-item">
+              <div class="tier-item-icon" [style.background-color]="item.color + '20'">
+                <ion-icon [name]="item.icon" [style.color]="item.color"></ion-icon>
+              </div>
+              <div class="tier-item-info">
+                <span class="tier-item-label">{{ item.label }}</span>
+                <span class="tier-item-detail">{{ item.detail }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Benefits (slide 2) -->
+      @if (slides[currentSlide].benefits) {
+        <div class="benefits-list">
+          @for (benefit of slides[currentSlide].benefits; track benefit.text) {
+            <div class="benefit-item">
+              <ion-icon [name]="benefit.icon"></ion-icon>
+              <span>{{ benefit.text }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-buttons">
+      @if (currentSlide > 0) {
+        <ion-button fill="clear" (click)="prevSlide()" class="prev-btn">
+          <ion-icon name="arrow-back" slot="start"></ion-icon>
+          Anterior
+        </ion-button>
+      } @else {
+        <div></div>
+      }
+
+      <ion-button (click)="nextSlide()" class="next-btn" [class.final]="isLastSlide">
+        {{ isLastSlide ? 'Entendido' : 'Siguiente' }}
+        @if (!isLastSlide) {
+          <ion-icon name="arrow-forward" slot="end"></ion-icon>
+        }
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

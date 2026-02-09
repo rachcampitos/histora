@@ -1871,6 +1871,31 @@ body.dark ion-modal.review-celebration-modal {
 }
 
 // ==========================================================================
+// Tier Onboarding Modal
+// ==========================================================================
+ion-modal.tier-onboarding-modal {
+  --width: 92%;
+  --max-width: 420px;
+  --height: 520px;
+  --border-radius: 20px;
+  --background: var(--histora-surface, #ffffff);
+  --box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+
+  &::part(content) {
+    border-radius: 20px;
+  }
+}
+
+body.ion-palette-dark ion-modal.tier-onboarding-modal,
+body.dark ion-modal.tier-onboarding-modal {
+  --background: #1e293b;
+
+  &::part(content) {
+    border: 1px solid #334155;
+  }
+}
+
+// ==========================================================================
 // Tracking Sheet Modal - Bottom sheet with breakpoints
 // ==========================================================================
 ion-modal.tracking-sheet-modal {

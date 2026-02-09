@@ -606,10 +606,6 @@ export class ProfilePage implements OnInit {
     this.showToast('El tutorial comenzará en el dashboard', 'primary');
   }
 
-  goBack() {
-    this.router.navigate(['/nurse/dashboard']);
-  }
-
   scrollToPaymentMethods() {
     this.scrollToSection('payment');
   }

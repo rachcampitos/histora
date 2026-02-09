@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, signal, computed, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
-import { AuthService } from '../../core/services/auth.service';
+import { StorageService } from '../../core/services/storage.service';
 import { Nurse, NurseReview } from '../../core/models';
 import { calculateNurseTier, NurseTierInfo } from '../../core/utils/nurse-tier.util';
+import { TierOnboardingModalComponent } from '../../shared/components/tier-onboarding-modal/tier-onboarding-modal.component';
 
 interface RatingBar {
   stars: number;
@@ -22,6 +23,8 @@ interface ReviewsApiResponse {
   ratingDistribution?: { stars: number; count: number }[];
 }
 
+const TIER_ONBOARDING_KEY = 'nurselite-tier-onboarding-seen';
+
 @Component({
   selector: 'app-reviews',
   templateUrl: './reviews.page.html',
@@ -31,8 +34,8 @@ interface ReviewsApiResponse {
 })
 export class ReviewsPage implements OnInit {
   private nurseApi = inject(NurseApiService);
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  private storage = inject(StorageService);
+  private modalCtrl = inject(ModalController);
   private destroyRef = inject(DestroyRef);
 
   nurse = signal<Nurse | null>(null);
@@ -45,6 +48,7 @@ export class ReviewsPage implements OnInit {
   apiRatingDistribution = signal<{ stars: number; count: number }[]>([]);
   apiAverageRating = signal(0);
   apiTotalReviews = signal(0);
+  tierInfoExpanded = signal(false);
 
   private readonly LIMIT = 10;
 
@@ -80,8 +84,40 @@ export class ReviewsPage implements OnInit {
 
   hasMore = computed(() => this.reviews().length < this.total());
 
+  tierLevels = [
+    { icon: 'checkmark-circle', color: '#94a3b8', label: 'Certificada', requirement: 'Nivel inicial al verificarse' },
+    { icon: 'star', color: '#2d5f8a', label: 'Destacada', requirement: '10+ servicios, 4.0+ rating' },
+    { icon: 'ribbon', color: '#7B68EE', label: 'Experimentada', requirement: '30+ servicios, 4.5+ rating, 10+ resenas' },
+    { icon: 'trophy', color: '#FFD700', label: 'Elite', requirement: '50+ servicios, 4.7+ rating, 20+ resenas' },
+  ];
+
   ngOnInit() {
     this.loadNurseProfile();
+    this.checkOnboarding();
+  }
+
+  private async checkOnboarding() {
+    const seen = await this.storage.get<boolean>(TIER_ONBOARDING_KEY);
+    if (!seen) {
+      setTimeout(() => this.showTierOnboarding(), 600);
+    }
+  }
+
+  private async showTierOnboarding() {
+    const modal = await this.modalCtrl.create({
+      component: TierOnboardingModalComponent,
+      cssClass: 'tier-onboarding-modal',
+      backdropDismiss: false,
+    });
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data?.completed) {
+      await this.storage.set(TIER_ONBOARDING_KEY, true);
+    }
+  }
+
+  toggleTierInfo() {
+    this.tierInfoExpanded.update(v => !v);
   }
 
   private loadNurseProfile() {
@@ -184,9 +220,5 @@ export class ReviewsPage implements OnInit {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
     return colors[Math.abs(hash) % colors.length];
-  }
-
-  goBack() {
-    this.router.navigate(['/nurse/dashboard']);
   }
 }

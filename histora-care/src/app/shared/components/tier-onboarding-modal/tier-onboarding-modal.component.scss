@@ -1,0 +1,268 @@
+@use '../../../../theme/design-tokens' as tokens;
+
+.onboarding-content {
+  --background: var(--histora-surface, #ffffff);
+}
+
+.onboarding-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: tokens.$spacing-6;
+  padding-top: tokens.$spacing-8;
+}
+
+// Skip button
+.skip-btn {
+  position: absolute;
+  top: tokens.$spacing-4;
+  right: tokens.$spacing-4;
+  background: none;
+  border: none;
+  color: var(--text-secondary, #{tokens.$text-secondary});
+  font-size: tokens.$font-size-sm;
+  font-weight: tokens.$font-weight-medium;
+  cursor: pointer;
+  z-index: 1;
+  padding: tokens.$spacing-2 tokens.$spacing-3;
+}
+
+// Progress dots
+.progress-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: tokens.$spacing-6;
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: tokens.$color-neutral-300;
+    transition: all tokens.$duration-normal tokens.$easing-standard;
+
+    &.active {
+      width: 24px;
+      border-radius: 4px;
+      background: tokens.$color-brand-primary;
+    }
+
+    &.completed {
+      background: tokens.$color-brand-secondary;
+    }
+  }
+}
+
+// Slide content
+.slide-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.slide-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: tokens.$spacing-5;
+
+  ion-icon {
+    font-size: 36px;
+    color: #ffffff;
+  }
+}
+
+.slide-title {
+  font-size: 22px;
+  font-weight: tokens.$font-weight-bold;
+  color: var(--text-primary, #{tokens.$text-primary});
+  margin: 0 0 tokens.$spacing-2;
+  text-align: center;
+}
+
+.slide-description {
+  font-size: tokens.$font-size-sm;
+  color: var(--text-secondary, #{tokens.$text-secondary});
+  text-align: center;
+  margin: 0 0 tokens.$spacing-6;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+// Tier items
+.tier-items {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-3;
+}
+
+.tier-item {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-3;
+  padding: tokens.$spacing-3 tokens.$spacing-4;
+  background: var(--histora-background, #{tokens.$surface-secondary});
+  border-radius: tokens.$radius-lg;
+
+  .tier-item-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  .tier-item-info {
+    display: flex;
+    flex-direction: column;
+
+    .tier-item-label {
+      font-size: tokens.$font-size-sm;
+      font-weight: tokens.$font-weight-semibold;
+      color: var(--text-primary, #{tokens.$text-primary});
+    }
+
+    .tier-item-detail {
+      font-size: tokens.$font-size-xs;
+      color: var(--text-secondary, #{tokens.$text-secondary});
+    }
+  }
+}
+
+// Benefits list
+.benefits-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-4;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-3;
+  padding: tokens.$spacing-3 tokens.$spacing-4;
+  background: var(--histora-background, #{tokens.$surface-secondary});
+  border-radius: tokens.$radius-lg;
+
+  ion-icon {
+    font-size: 22px;
+    color: tokens.$color-brand-secondary;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: tokens.$font-size-sm;
+    font-weight: tokens.$font-weight-medium;
+    color: var(--text-primary, #{tokens.$text-primary});
+  }
+}
+
+// Navigation
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: tokens.$spacing-4;
+  margin-top: auto;
+
+  .prev-btn {
+    --color: var(--text-secondary, #{tokens.$text-secondary});
+    font-size: tokens.$font-size-sm;
+  }
+
+  .next-btn {
+    --background: #1e3a5f;
+    --color: #ffffff;
+    --border-radius: #{tokens.$radius-lg};
+    font-weight: tokens.$font-weight-semibold;
+    height: 44px;
+    min-width: 130px;
+
+    &.final {
+      --background: #4a9d9a;
+      min-width: 160px;
+    }
+  }
+}
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .onboarding-content {
+    --background: #{tokens.$surface-dark-primary};
+  }
+
+  .skip-btn {
+    color: tokens.$text-dark-secondary;
+  }
+
+  .progress-dots .dot {
+    background: tokens.$color-neutral-700;
+
+    &.active {
+      background: tokens.$color-brand-secondary;
+    }
+
+    &.completed {
+      background: tokens.$color-brand-secondary;
+      opacity: 0.5;
+    }
+  }
+
+  .slide-title {
+    color: tokens.$text-dark-primary;
+  }
+
+  .slide-description {
+    color: tokens.$text-dark-secondary;
+  }
+
+  .tier-item,
+  .benefit-item {
+    background: tokens.$surface-dark-secondary;
+  }
+
+  .tier-item .tier-item-info {
+    .tier-item-label {
+      color: tokens.$text-dark-primary;
+    }
+
+    .tier-item-detail {
+      color: tokens.$text-dark-secondary;
+    }
+  }
+
+  .benefit-item span {
+    color: tokens.$text-dark-primary;
+  }
+
+  .nav-buttons {
+    .prev-btn {
+      --color: #{tokens.$text-dark-secondary};
+    }
+
+    .next-btn {
+      --background: #4a9d9a;
+
+      &.final {
+        --background: #4a9d9a;
+      }
+    }
+  }
+}
