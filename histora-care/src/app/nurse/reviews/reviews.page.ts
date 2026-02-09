@@ -87,8 +87,8 @@ export class ReviewsPage implements OnInit {
   tierLevels = [
     { icon: 'checkmark-circle', color: '#94a3b8', label: 'Certificada', requirement: 'Nivel inicial al verificarse' },
     { icon: 'star', color: '#2d5f8a', label: 'Destacada', requirement: '10+ servicios, 4.0+ rating' },
-    { icon: 'ribbon', color: '#7B68EE', label: 'Experimentada', requirement: '30+ servicios, 4.5+ rating, 10+ resenas' },
-    { icon: 'trophy', color: '#FFD700', label: 'Elite', requirement: '50+ servicios, 4.7+ rating, 20+ resenas' },
+    { icon: 'ribbon', color: '#7B68EE', label: 'Experimentada', requirement: '30+ servicios, 4.5+ rating, 10+ reseñas' },
+    { icon: 'trophy', color: '#FFD700', label: 'Elite', requirement: '50+ servicios, 4.7+ rating, 20+ reseñas' },
   ];
 
   ngOnInit() {

@@ -41,7 +41,7 @@ export class TierOnboardingModalComponent {
       items: [
         { icon: 'medical-outline', color: '#4a9d9a', label: 'Completa servicios', detail: 'Mas servicios, mayor nivel' },
         { icon: 'star-outline', color: '#f59e0b', label: 'Manten un buen rating', detail: '4.0+ para subir' },
-        { icon: 'chatbubble-outline', color: '#7B68EE', label: 'Recibe resenas', detail: '10+ para Experimentada' },
+        { icon: 'chatbubble-outline', color: '#7B68EE', label: 'Recibe reseñas', detail: '10+ para Experimentada' },
       ],
     },
     {

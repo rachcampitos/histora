@@ -46,7 +46,7 @@ export class HelpPage implements OnInit {
         },
         {
           question: 'Como se que el profesional es confiable?',
-          answer: 'Todos nuestros profesionales pasan por un riguroso proceso de verificacion: validamos su colegiatura con el CEP (Colegio de Enfermeros del Peru), verificamos su identidad con RENIEC, y revisamos sus antecedentes. Ademas, puedes ver las calificaciones y resenas de otros pacientes.'
+          answer: 'Todos nuestros profesionales pasan por un riguroso proceso de verificacion: validamos su colegiatura con el CEP (Colegio de Enfermeros del Peru), verificamos su identidad con RENIEC, y revisamos sus antecedentes. Ademas, puedes ver las calificaciones y reseñas de otros pacientes.'
         },
         {
           question: 'Que hago si tengo un problema durante el servicio?',

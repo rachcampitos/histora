@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/nurse/dashboard" text=""></ion-back-button>
     </ion-buttons>
-    <ion-title>Mis Resenas</ion-title>
+    <ion-title>Mis Reseñas</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -25,7 +25,7 @@
             <ion-icon [name]="filled ? 'star' : 'star-outline'" color="warning"></ion-icon>
           }
         </div>
-        <div class="total-reviews">{{ totalReviews() }} resenas</div>
+        <div class="total-reviews">{{ totalReviews() }} reseñas</div>
         <div class="tier-chip" [style.background-color]="nurseTier().color + '20'" [style.border-color]="nurseTier().color">
           <ion-icon [name]="nurseTier().icon" [style.color]="nurseTier().color"></ion-icon>
           <span [style.color]="nurseTier().color">{{ nurseTier().label }}</span>
@@ -134,11 +134,11 @@
       <div class="empty-state">
         <ion-icon name="chatbubbles-outline"></ion-icon>
         @if (selectedRating() !== null) {
-          <p>No hay resenas de {{ selectedRating() }} estrellas</p>
+          <p>No hay reseñas de {{ selectedRating() }} estrellas</p>
           <span>Prueba con otro filtro</span>
         } @else {
-          <p>Aun no tienes resenas</p>
-          <span>Las resenas de tus pacientes apareceran aqui</span>
+          <p>Aun no tienes reseñas</p>
+          <span>Las reseñas de tus pacientes apareceran aqui</span>
         }
       </div>
     }
@@ -146,7 +146,7 @@
     <!-- Infinite Scroll -->
     @if (selectedRating() === null) {
       <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore()">
-        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Cargando mas resenas...">
+        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Cargando mas reseñas...">
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
     }

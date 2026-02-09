@@ -181,7 +181,7 @@ export class AdminNotificationsGateway implements OnGatewayConnection, OnGateway
   notifyNegativeReview(reviewData: { id: string; nurseName: string; rating: number; comment?: string }): void {
     const notification: AdminNotification = {
       type: 'negative_review',
-      title: 'Resena negativa',
+      title: 'Reseña negativa',
       message: `${reviewData.nurseName} recibio ${reviewData.rating} estrellas`,
       data: reviewData,
       timestamp: new Date(),

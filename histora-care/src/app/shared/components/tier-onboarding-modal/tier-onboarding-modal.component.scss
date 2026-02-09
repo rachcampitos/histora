@@ -64,12 +64,15 @@
 
 .slide-icon-wrapper {
   width: 72px;
+  min-width: 72px;
   height: 72px;
+  min-height: 72px;
   border-radius: 50%;
   background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   margin-bottom: tokens.$spacing-5;
 
   ion-icon {

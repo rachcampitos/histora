@@ -1095,7 +1095,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const loading = await this.loadingController.create({
-      message: 'Enviando resena...',
+      message: 'Enviando reseña...',
       spinner: 'crescent',
     });
     await loading.present();

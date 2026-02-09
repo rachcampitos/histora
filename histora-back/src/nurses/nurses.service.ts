@@ -654,7 +654,7 @@ export class NursesService {
     });
 
     if (existingReview) {
-      throw new ConflictException('Ya has dejado una resena para esta enfermera');
+      throw new ConflictException('Ya has dejado una reseña para esta enfermera');
     }
 
     // Determine if review is verified (linked to a completed service)
@@ -760,13 +760,24 @@ export class NursesService {
       count: distMap.get(stars) || 0,
     }));
 
+    const actualAvg = Math.round((stats[0]?.avgRating || 0) * 10) / 10;
+    const actualCount = stats[0]?.count || 0;
+
+    // Auto-sync nurse profile stats if they diverged (e.g. from seed data)
+    const nurse = await this.nurseModel.findById(nurseId).select('averageRating totalReviews').lean();
+    if (nurse && (nurse.totalReviews !== actualCount || Math.abs((nurse.averageRating || 0) - actualAvg) > 0.05)) {
+      await this.nurseModel.findByIdAndUpdate(nurseId, {
+        $set: { averageRating: actualAvg, totalReviews: actualCount },
+      });
+    }
+
     return {
       reviews: mappedReviews as unknown as NurseReview[],
       total,
       page,
       limit,
-      averageRating: stats[0]?.avgRating || 0,
-      totalReviews: stats[0]?.count || 0,
+      averageRating: actualAvg,
+      totalReviews: actualCount,
       ratingDistribution,
     };
   }
@@ -795,11 +806,11 @@ export class NursesService {
     const review = await this.nurseReviewModel.findOne({
       _id: new Types.ObjectId(reviewId),
       patientId: new Types.ObjectId(patientId),
-      isDeleted: false,
+      isDeleted: { $ne: true },
     });
 
     if (!review) {
-      throw new NotFoundException('Resena no encontrada o no tienes permisos para eliminarla');
+      throw new NotFoundException('Reseña no encontrada o no tienes permisos para eliminarla');
     }
 
     review.isDeleted = true;

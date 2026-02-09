@@ -214,7 +214,7 @@ export class BrowsePage implements OnInit, AfterViewInit, OnDestroy {
           <div class="nurse-popup">
             <strong>${nurse.user?.firstName || 'Enfermera'} ${nurse.user?.lastName || ''}</strong>
             <p>${result.distance.toFixed(1)} km de distancia</p>
-            <p>Rating: ${nurse.averageRating.toFixed(1)} (${nurse.totalReviews} resenas)</p>
+            <p>Rating: ${nurse.averageRating.toFixed(1)} (${nurse.totalReviews} reseñas)</p>
           </div>
         `,
         popupOffset: [0, -30],

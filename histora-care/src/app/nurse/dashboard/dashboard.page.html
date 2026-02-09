@@ -109,7 +109,7 @@
               ,
             }
             @if (next.reviewsNeeded > 0) {
-              {{ next.reviewsNeeded }} resenas
+              {{ next.reviewsNeeded }} reseñas
             }
             para {{ next.label }}
           </p>
@@ -175,7 +175,7 @@
     <div class="stat-card stat-card-clickable" (click)="goToReviews()">
       <ion-icon name="chatbubbles" color="tertiary"></ion-icon>
       <div class="stat-value">{{ totalReviews() }}</div>
-      <div class="stat-label">Resenas</div>
+      <div class="stat-label">Reseñas</div>
       <ion-icon name="chevron-forward-outline" class="stat-arrow"></ion-icon>
     </div>
   </div>
@@ -319,7 +319,7 @@
       <div class="menu-icon">
         <ion-icon name="star-outline"></ion-icon>
       </div>
-      <span>Resenas</span>
+      <span>Reseñas</span>
     </div>
     <div class="menu-item" (click)="goToProfile()">
       <div class="menu-icon">

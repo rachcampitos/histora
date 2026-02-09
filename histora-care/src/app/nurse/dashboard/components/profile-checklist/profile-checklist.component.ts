@@ -23,6 +23,8 @@ interface ChecklistItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileChecklistComponent implements OnInit {
+  private static readonly DISMISSED_KEY = 'nurselite-checklist-dismissed';
+
   // Use signal-based input for reactivity with computed()
   nurse = input<Nurse | null>(null);
   @Output() dismissed = new EventEmitter<void>();
@@ -143,21 +145,29 @@ export class ProfileChecklistComponent implements OnInit {
     effect(() => {
       const nurse = this.nurse();
       const allCompleted = this.isAllCompleted();
+      const verified = this.isVerified();
 
       // Only show once we have nurse data
       if (nurse && !this.hasInitialized()) {
         this.hasInitialized.set(true);
+
+        // If already completed + verified + previously dismissed, stay hidden
+        if (allCompleted && verified && this.wasDismissed()) {
+          return;
+        }
+
         // Show the checklist after a brief delay to prevent flickering
         setTimeout(() => {
           this.isVisible.set(true);
         }, 100);
       }
 
-      // Auto-hide completed state after delay
-      if (nurse && allCompleted && this.hasInitialized()) {
+      // Auto-hide completed state after delay and persist dismissal
+      if (nurse && allCompleted && verified && this.hasInitialized()) {
         setTimeout(() => {
           this.isVisible.set(false);
-        }, 5000); // Show completion message for 5 seconds
+          this.persistDismissed();
+        }, 5000);
       }
     });
   }
@@ -177,6 +187,25 @@ export class ProfileChecklistComponent implements OnInit {
 
   dismiss() {
     this.isVisible.set(false);
+    if (this.isAllCompleted() && this.isVerified()) {
+      this.persistDismissed();
+    }
     this.dismissed.emit();
+  }
+
+  private wasDismissed(): boolean {
+    try {
+      return localStorage.getItem(ProfileChecklistComponent.DISMISSED_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  private persistDismissed(): void {
+    try {
+      localStorage.setItem(ProfileChecklistComponent.DISMISSED_KEY, 'true');
+    } catch {
+      // ignore
+    }
   }
 }
