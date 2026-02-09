@@ -52,7 +52,7 @@ export const testimonials: Testimonial[] = [
     location: "Jesús María",
     avatar: "AQ",
     rating: 5,
-    text: "Antes de agendar, pude chatear con la enfermera directamente en la app. Le expliqué la situación de mi abuela y llegó totalmente preparada. Esa comunicación previa hizo toda la diferencia.",
+    text: "Antes de agendar revisé su perfil completo: años de experiencia, especialidades y 47 reseñas verificadas. Eso me dio la confianza para dejar a mi abuela en sus manos. No me equivoqué.",
     service: "Cuidado de adulto mayor",
   },
   {
@@ -61,7 +61,7 @@ export const testimonials: Testimonial[] = [
     location: "Lince",
     avatar: "RP",
     rating: 5,
-    text: "Después de la curación, la enfermera me envió por el chat instrucciones detalladas para el cuidado en casa. No tuve que llamar a nadie, todo quedó registrado en la conversación.",
+    text: "Después de mi cirugía, lo último que quería era salir a una clínica para curaciones. La enfermera llegó a mi casa, trajo todo el material necesario y el servicio fue impecable. Recuperación sin estrés.",
     service: "Curación de heridas",
   },
 ];

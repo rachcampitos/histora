@@ -169,10 +169,10 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-1.5 text-[#64748b]">
               <span>Hecho con</span>
-              <Heart className="w-4 h-4 text-red-500" fill="currentColor" aria-hidden="true" />
+              <Heart className="w-4 h-4 text-red-500 animate-heartbeat" fill="currentColor" aria-hidden="true" />
               <span>por</span>
               <a
-                href="https://codemedia.pe"
+                href="https://codemediaperu.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#4a9d9a] hover:text-[#6bb5b3] font-medium transition-colors"
