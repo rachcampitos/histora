@@ -719,7 +719,7 @@
 .status-progress {
   margin-bottom: 20px;
   overflow-x: auto;
-  padding-top: 8px; // Space for box-shadow on active step
+  padding-top: 16px; // Space between modal handle and progress dots
   padding-bottom: 8px;
 
   &::-webkit-scrollbar {
@@ -794,9 +794,10 @@
   }
 }
 
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+@keyframes fillLine {
+  0% { width: 0%; }
+  80% { width: 100%; }
+  100% { width: 100%; }
 }
 
 @keyframes pulse-dot {
@@ -836,15 +837,9 @@
   }
 
   &.active .progress-line-fill {
-    width: 100%;
-    background: linear-gradient(
-      90deg,
-      var(--ion-color-primary) 0%,
-      var(--ion-color-primary-tint) 50%,
-      var(--ion-color-primary) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s ease-in-out infinite;
+    width: 0%;
+    background: var(--ion-color-primary);
+    animation: fillLine 2.5s ease-in-out infinite;
   }
 }
 
@@ -889,16 +884,19 @@
       background: #94a3b8;
       z-index: 2;
 
-      &.status-accepted { background: #3b82f6; }
+      &.status-accepted { background: #16a34a; }
       &.status-on_the_way {
-        background: #f59e0b;
+        background: #16a34a;
         animation: status-pulse 2s ease-in-out infinite;
       }
       &.status-arrived {
         background: #16a34a;
         animation: status-pulse 2s ease-in-out infinite;
       }
-      &.status-in_progress { background: #6bb5b3; }
+      &.status-in_progress {
+        background: #16a34a;
+        animation: status-pulse 2s ease-in-out infinite;
+      }
       &.status-completed { background: #16a34a; }
     }
   }
@@ -1326,7 +1324,7 @@
     .payment-logo {
       width: 44px;
       height: 44px;
-      border-radius: 12px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1339,7 +1337,7 @@
       img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
+        object-fit: cover;
       }
 
       &.yape {
