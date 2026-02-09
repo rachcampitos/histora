@@ -1842,6 +1842,35 @@ body.dark ion-modal.chat-modal-fullscreen {
 }
 
 // ==========================================================================
+// Review Celebration Modal
+// ==========================================================================
+ion-modal.review-celebration-modal {
+  --width: 90%;
+  --max-width: 400px;
+  --height: auto;
+  --border-radius: 20px;
+  --background: var(--histora-background, #ffffff);
+  --box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  &::part(backdrop) {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &::part(content) {
+    border-radius: 20px;
+  }
+}
+
+body.ion-palette-dark ion-modal.review-celebration-modal,
+body.dark ion-modal.review-celebration-modal {
+  --background: #1e293b;
+
+  &::part(content) {
+    border: 1px solid #334155;
+  }
+}
+
+// ==========================================================================
 // Tracking Sheet Modal - Bottom sheet with breakpoints
 // ==========================================================================
 ion-modal.tracking-sheet-modal {

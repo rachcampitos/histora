@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed, effect, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RefresherCustomEvent, ToastController, AlertController } from '@ionic/angular';
+import { RefresherCustomEvent, ToastController, AlertController, ModalController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -10,6 +10,7 @@ import { WebSocketService, ReviewNotification } from '../../core/services/websoc
 import { ProductTourService } from '../../core/services/product-tour.service';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
 import { CelebrationService } from '../../core/services/celebration.service';
+import { ReviewCelebrationModalComponent } from '../../shared/components/review-celebration-modal/review-celebration-modal.component';
 import { Nurse, ServiceRequest } from '../../core/models';
 
 @Component({
@@ -32,6 +33,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
   private destroyRef = inject(DestroyRef);
+  private modalCtrl = inject(ModalController);
   private celebrationService = inject(CelebrationService);
 
   // State signals
@@ -326,24 +328,26 @@ export class DashboardPage implements OnInit, OnDestroy {
     // Clear queryParams to avoid re-triggering on re-enter
     this.router.navigate([], { queryParams: {}, replaceUrl: true });
 
-    setTimeout(() => this.showReviewCelebration(rating), 300);
+    setTimeout(() => this.showReviewCelebration({ rating }), 300);
   }
 
   private handleReviewNotification(review: ReviewNotification) {
-    setTimeout(() => this.showReviewCelebration(review.rating, review.patientName), 300);
+    setTimeout(() => this.showReviewCelebration(review), 300);
   }
 
-  private async showReviewCelebration(rating: number, patientName?: string) {
-    const from = patientName ? `${patientName} califico` : 'Un paciente califico';
-
-    if (rating >= 5) {
-      this.celebrationService.triggerConfetti();
-      this.showToast(`${from} tu servicio con 5 estrellas. Servicio excepcional!`, 'success');
-    } else if (rating === 4) {
-      this.showToast(`${from} tu servicio con 4 estrellas. Muy buen trabajo!`, 'success');
-    } else {
-      this.showToast('Tienes una nueva resena de un paciente', 'primary');
-    }
+  private async showReviewCelebration(data: { rating: number; patientName?: string; serviceName?: string; comment?: string }) {
+    const modal = await this.modalCtrl.create({
+      component: ReviewCelebrationModalComponent,
+      componentProps: {
+        rating: data.rating,
+        patientName: data.patientName || '',
+        serviceName: data.serviceName || '',
+        comment: data.comment || '',
+      },
+      cssClass: 'review-celebration-modal',
+      backdropDismiss: false,
+    });
+    await modal.present();
   }
 
   ngOnDestroy() {

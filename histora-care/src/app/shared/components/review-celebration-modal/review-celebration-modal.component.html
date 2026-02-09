@@ -1,0 +1,49 @@
+<div class="celebration-container">
+  <!-- Estrellas -->
+  <div class="stars-container">
+    @for (star of stars; track $index) {
+      <ion-icon
+        name="star"
+        class="star"
+        [style.animation-delay.ms]="$index * 80"
+      ></ion-icon>
+    }
+  </div>
+
+  <!-- Titulo -->
+  <h1 class="title" [class.five-stars]="rating >= 5">{{ title }}</h1>
+
+  <!-- Subtitulo -->
+  <p class="subtitle">{{ subtitle }}</p>
+
+  <!-- Servicio -->
+  @if (serviceName) {
+    <div class="service-chip-container">
+      <ion-chip color="primary" outline>
+        <ion-icon name="medkit-outline"></ion-icon>
+        <ion-label>{{ serviceName }}</ion-label>
+      </ion-chip>
+    </div>
+  }
+
+  <!-- Comentario del paciente -->
+  @if (comment) {
+    <div class="comment-card" [class.highlight]="rating >= 4" [class.constructive]="rating < 4">
+      <ion-icon [name]="rating >= 4 ? 'chatbubble-ellipses-outline' : 'bulb-outline'"></ion-icon>
+      @if (rating < 4) {
+        <p class="comment-label">Retroalimentacion del paciente:</p>
+      }
+      <p class="comment-text">"{{ comment }}"</p>
+    </div>
+  }
+
+  <!-- Placeholder sin comentario para 5 estrellas -->
+  @if (!comment && rating >= 5 && patientName) {
+    <p class="no-comment">{{ patientName }} quedo muy satisfecho con tu atencion</p>
+  }
+
+  <!-- Boton -->
+  <ion-button expand="block" (click)="dismiss()" class="cta-button">
+    {{ ctaText }}
+  </ion-button>
+</div>
