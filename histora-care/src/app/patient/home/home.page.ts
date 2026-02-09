@@ -5,6 +5,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
 import { WebSocketService } from '../../core/services/websocket.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { ServiceRequest } from '../../core/models';
 
 @Component({
@@ -22,8 +23,10 @@ export class HomePage implements OnInit, OnDestroy {
   private serviceRequestService = inject(ServiceRequestService);
   private productTourService = inject(ProductTourService);
   private wsService = inject(WebSocketService);
+  private notificationService = inject(NotificationService);
 
   user = this.authService.user;
+  unreadNotifications = this.notificationService.unreadCount;
   activeRequest = signal<ServiceRequest | null>(null);
   recentNurses = signal<{ nurseId: string; firstName: string; lastName: string; avatar?: string }[]>([]);
   isLoading = signal(false);
@@ -161,6 +164,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   goToSettings() {
     this.router.navigate(['/patient/tabs/settings']);
+  }
+
+  openNotifications() {
+    this.router.navigate(['/notifications']);
   }
 
   viewActiveRequest() {

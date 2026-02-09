@@ -1,13 +1,26 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar>
-    <ion-title>Inicio</ion-title>
+    <ion-buttons slot="start">
+      <div class="header-brand">
+        <img src="assets/icon/nurselite.png" alt="NurseLite" class="header-logo">
+      </div>
+    </ion-buttons>
+    <ion-title>NurseLite</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openNotifications()" class="notification-btn">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+        @if (unreadNotifications() > 0) {
+          <div class="notification-badge">{{ unreadNotifications() > 9 ? '9+' : unreadNotifications() }}</div>
+        }
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Inicio</ion-title>
+      <ion-title size="large">NurseLite</ion-title>
     </ion-toolbar>
   </ion-header>
 
