@@ -715,29 +715,27 @@
   }
 }
 
-// Status Progress
+// Status Progress - Rappi-style collapsing track
 .status-progress {
   margin-bottom: 20px;
-  overflow-x: auto;
+  overflow: hidden;
   padding-top: 35px; // Space between modal handle and progress dots
   padding-bottom: 8px;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .progress-track {
   display: flex;
   align-items: flex-start;
-  min-width: max-content;
+  width: 100%;
+  padding: 0 12px;
 }
 
 .progress-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 70px;
+  flex-shrink: 0;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
   .step-dot {
     width: 32px;
@@ -747,7 +745,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     ion-icon {
       font-size: 16px;
@@ -761,6 +759,9 @@
     margin-top: 6px;
     text-align: center;
     white-space: nowrap;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 70px;
+    overflow: hidden;
   }
 
   &.active {
@@ -812,14 +813,18 @@
 }
 
 .progress-line {
-  flex: 1;
   height: 3px;
   background: #e0e0e0;
   margin: 15px 4px 0;
-  min-width: 24px;
   border-radius: 2px;
   position: relative;
   overflow: hidden;
+  transition: flex 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Default: compressed (future lines)
+  flex: 0 0 16px;
+  min-width: 16px;
 
   .progress-line-fill {
     position: absolute;
@@ -831,15 +836,27 @@
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &.completed .progress-line-fill {
-    width: 100%;
-    background: #16a34a;
+  // Completed lines: compressed with green fill
+  &.completed {
+    flex: 0 0 16px;
+    min-width: 16px;
+
+    .progress-line-fill {
+      width: 100%;
+      background: #16a34a;
+    }
   }
 
-  &.active .progress-line-fill {
-    width: 0%;
-    background: var(--ion-color-primary);
-    animation: fillLine 2.5s ease-in-out infinite;
+  // Active line: expands to fill available space with shimmer animation
+  &.active {
+    flex: 1 1 auto;
+    min-width: 80px;
+
+    .progress-line-fill {
+      width: 0%;
+      background: var(--ion-color-primary);
+      animation: fillLine 2.5s ease-in-out infinite;
+    }
   }
 }
 
