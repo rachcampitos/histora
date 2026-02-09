@@ -309,8 +309,10 @@ export class RequestsPage implements OnInit, OnDestroy {
           },
           ...requests
         ]);
-        // Auto-switch to active tab so nurse can see and manage the accepted request
-        this.currentTab.set('active');
+        // Navigate to active service after brief delay for toast visibility
+        setTimeout(() => {
+          this.router.navigate(['/nurse/active-service', updatedRequest._id]);
+        }, 500);
       },
       error: (err) => {
         loading.dismiss();
