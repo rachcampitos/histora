@@ -22,14 +22,14 @@ const features = [
     icon: Search,
     title: "Busca tu Enfermera",
     description:
-      "Encuentra profesionales verificadas cerca de ti con filtros por especialidad y disponibilidad.",
+      "Busca por distrito y encuentra enfermeras verificadas cerca de ti. Filtra por especialidad, disponibilidad y calificacion.",
     color: "#22c55e",
   },
   {
     icon: ShieldCheck,
     title: "Perfil Verificado CEP",
     description:
-      "Cada enfermera validada contra el Colegio de Enfermeros del Peru. 100% profesionales reales.",
+      "Cada enfermera validada con el Colegio de Enfermeros del Peru. 100% profesionales reales.",
     color: "#10b981",
   },
   {
@@ -57,7 +57,7 @@ const features = [
     icon: Wallet,
     title: "Pagos Seguros",
     description:
-      "Paga con Yape, Plin, tarjeta o efectivo. Procesado por Culqi con encriptacion SSL.",
+      "Paga con tarjeta Visa/Mastercard o Yape directamente en la app. Procesado por Culqi con encriptacion SSL.",
     color: "#4a9d9a",
   },
   {

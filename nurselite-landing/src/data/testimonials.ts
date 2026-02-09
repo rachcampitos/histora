@@ -26,7 +26,7 @@ export const testimonials: Testimonial[] = [
     avatar: "AM",
     rating: 5,
     text: "Como mamá primeriza, tener una enfermera especializada que me ayudó con la lactancia fue invaluable. Me sentí acompañada y segura en esos primeros días.",
-    service: "Atención materno-infantil",
+    service: "Cuidados Especiales",
   },
   {
     id: 4,

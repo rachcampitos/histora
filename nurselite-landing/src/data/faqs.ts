@@ -24,7 +24,7 @@ export const faqs: FAQItem[] = [
   {
     question: "¿Cómo funciona el pago?",
     answer:
-      "El pago se coordina directamente con la enfermera al finalizar el servicio. Puedes pagar en efectivo, Yape, Plin o transferencia bancaria según lo acordado. Estamos trabajando en integrar pagos seguros dentro de la app para mayor comodidad y protección.",
+      "Todos los pagos se procesan de forma segura dentro de la app a través de Culqi, la pasarela de pagos líder en Perú. Puedes pagar con tarjeta Visa o Mastercard, o directamente con Yape. El cobro se realiza al confirmar el servicio y tu información financiera está protegida con encriptación SSL en todo momento.",
   },
   {
     question: "¿Qué pasa si no estoy satisfecho con el servicio?",

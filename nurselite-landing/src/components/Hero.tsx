@@ -38,7 +38,7 @@ const audiences = {
     microCopy: "Sin registro previo. Proceso en menos de 3 minutos.",
     benefits: [
       { icon: ShieldCheck, text: "Verificación oficial CEP + RENIEC" },
-      { icon: Clock, text: "Profesionales disponibles hoy" },
+      { icon: Clock, text: "Encuentra profesionales en tu zona" },
       { icon: Star, text: "4.9/5 de calificación promedio" },
     ],
   },
@@ -288,7 +288,7 @@ export function Hero() {
 
                   {/* Search Preview - Real Data */}
                   <div className="bg-white dark:bg-[#1e293b] rounded-xl p-4 shadow-sm mb-4">
-                    <p className="text-sm text-[#64748b] dark:text-[#94a3b8] mb-3">Profesionales disponibles hoy</p>
+                    <p className="text-sm text-[#64748b] dark:text-[#94a3b8] mb-3">Profesionales cerca de ti</p>
                     <div className="space-y-3">
                       {professionals.map((prof, i) => (
                         <motion.div
