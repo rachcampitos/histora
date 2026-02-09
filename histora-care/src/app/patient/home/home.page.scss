@@ -5,6 +5,11 @@
   ion-content {
     --background: #f5f5f5;
   }
+
+  ion-header ion-toolbar {
+    --background: #ffffff;
+    --color: #1e293b;
+  }
 }
 
 // ============================================================
@@ -511,6 +516,11 @@
 :host-context(body.dark) {
   ion-content {
     --background: #{tokens.$surface-dark-primary};
+  }
+
+  ion-header ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
   }
 
   .notification-badge {

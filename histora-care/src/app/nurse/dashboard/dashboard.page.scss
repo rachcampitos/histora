@@ -8,6 +8,14 @@ $primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
   --background: #{tokens.$surface-secondary};
 }
 
+// Header Toolbar
+:host {
+  ion-header ion-toolbar {
+    --background: #ffffff;
+    --color: #1e293b;
+  }
+}
+
 // Header Logo
 .logo-btn {
   --padding-start: 0;
@@ -760,6 +768,11 @@ $primary-gradient: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
 :host-context(body.ion-palette-dark) {
   .dashboard-content {
     --background: #{tokens.$surface-dark-primary};
+  }
+
+  ion-header ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
   }
 
   // Welcome section keeps gradient
