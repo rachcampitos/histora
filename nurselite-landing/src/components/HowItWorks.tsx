@@ -9,9 +9,10 @@ import {
   ArrowRight,
   Smartphone,
   Shield,
-  Clock,
+  MessageCircle,
 } from "lucide-react";
 import { AnimatedSection, StaggerContainer, StaggerItem } from "./ui/AnimatedSection";
+import Link from "next/link";
 
 const steps = [
   {
@@ -27,7 +28,7 @@ const steps = [
     icon: UserCheck,
     title: "Verifica su perfil",
     description:
-      "Revisa su verificación CEP, experiencia, servicios ofrecidos y reseñas de otros pacientes.",
+      "Revisa su verificación CEP, experiencia y reseñas. Usa el chat integrado para consultar antes de agendar.",
     color: "#2d5f8a",
   },
   {
@@ -35,7 +36,7 @@ const steps = [
     icon: Calendar,
     title: "Agenda tu cita",
     description:
-      "Selecciona el servicio que necesitas, elige fecha y hora. La enfermera confirmará tu solicitud.",
+      "Selecciona el servicio, elige fecha y hora. Coordina detalles por chat con tu enfermera.",
     color: "#4a9d9a",
   },
   {
@@ -43,7 +44,7 @@ const steps = [
     icon: Home,
     title: "Recibe atención en casa",
     description:
-      "La enfermera llegará a tu domicilio puntualmente. Tú y tu familia en las mejores manos.",
+      "La enfermera llega a tu domicilio puntualmente. Mantente conectado por chat durante todo el servicio.",
     color: "#6bb5b3",
   },
 ];
@@ -60,9 +61,9 @@ const features = [
     description: "Todas las enfermeras son verificadas por el CEP",
   },
   {
-    icon: Clock,
-    title: "Rápido",
-    description: "Encuentra enfermera disponible en minutos",
+    icon: MessageCircle,
+    title: "Chat en Tiempo Real",
+    description: "Comunícate directo con tu enfermera desde la app",
   },
 ];
 
@@ -160,6 +161,21 @@ export function HowItWorks() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </AnimatedSection>
+
+        {/* CTA Enfermera */}
+        <AnimatedSection delay={0.5} className="mt-12 text-center">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-6 py-4 bg-white dark:bg-[#1e293b] rounded-2xl border border-[#e2e8f0] dark:border-[#334155] shadow-sm">
+            <p className="text-[#64748b] dark:text-[#94a3b8] text-sm">
+              Eres profesional de enfermería?
+            </p>
+            <Link
+              href="https://app.nurse-lite.com/auth/register?type=nurse"
+              className="text-sm font-semibold text-[#1e3a5f] dark:text-[#4a9d9a] hover:underline"
+            >
+              Únete a la red de NurseLite →
+            </Link>
           </div>
         </AnimatedSection>
       </div>

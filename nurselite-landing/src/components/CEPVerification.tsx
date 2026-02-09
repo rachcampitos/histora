@@ -164,12 +164,18 @@ export function CEPVerification() {
                   ))}
                 </div>
 
-                {/* CTA */}
+                {/* CTAs */}
                 <Link
                   href="https://app.nurse-lite.com/auth/register"
                   className="mt-8 block w-full py-4 bg-white text-[#1e3a5f] font-semibold text-center rounded-xl hover:bg-white/90 transition-colors"
                 >
                   Buscar Enfermeras Verificadas
+                </Link>
+                <Link
+                  href="https://app.nurse-lite.com/auth/register?type=nurse"
+                  className="mt-3 block w-full py-3 bg-white/10 text-white font-medium text-center rounded-xl hover:bg-white/20 transition-colors text-sm border border-white/20"
+                >
+                  Soy enfermera y quiero verificarme
                 </Link>
               </div>
 

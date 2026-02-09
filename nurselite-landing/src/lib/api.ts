@@ -52,12 +52,21 @@ export interface FeaturedResponse {
 
 /**
  * Fetch featured professionals for the landing page
- * NOTE: Using fallback data until /nurses/featured endpoint is created in backend
  */
-export async function getFeaturedProfessionals(limit = 3): Promise<FeaturedResponse | null> {
-  // TODO: Enable API call when /nurses/featured endpoint is ready
-  // For now, always return fallback data to avoid CORS/404 errors
-  return fallbackFeaturedData;
+export async function getFeaturedProfessionals(limit = 3): Promise<FeaturedResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/nurses/featured?limit=${limit}`, {
+      next: { revalidate: 300 }, // Cache for 5 minutes
+    });
+
+    if (!response.ok) {
+      return fallbackFeaturedData;
+    }
+
+    return response.json();
+  } catch {
+    return fallbackFeaturedData;
+  }
 }
 
 /**

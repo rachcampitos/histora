@@ -46,4 +46,22 @@ export const testimonials: Testimonial[] = [
     text: "Soy enfermera y NurseLite cambió mi forma de trabajar. Ahora tengo control de mi horario y gano más que antes. El modelo sin comisiones es justo para nosotras.",
     service: "Enfermera registrada",
   },
+  {
+    id: 6,
+    name: "Andrea Quispe M.",
+    location: "Jesús María",
+    avatar: "AQ",
+    rating: 5,
+    text: "Antes de agendar, pude chatear con la enfermera directamente en la app. Le expliqué la situación de mi abuela y llegó totalmente preparada. Esa comunicación previa hizo toda la diferencia.",
+    service: "Cuidado de adulto mayor",
+  },
+  {
+    id: 7,
+    name: "Ricardo Paredes V.",
+    location: "Lince",
+    avatar: "RP",
+    rating: 5,
+    text: "Después de la curación, la enfermera me envió por el chat instrucciones detalladas para el cuidado en casa. No tuve que llamar a nadie, todo quedó registrado en la conversación.",
+    service: "Curación de heridas",
+  },
 ];

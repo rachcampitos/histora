@@ -1,3 +1,5 @@
+"use client";
+
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { AppFeatures } from "@/components/AppFeatures";
@@ -7,6 +9,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { Services } from "@/components/Services";
 import { Security } from "@/components/Security";
 import { CEPVerification } from "@/components/CEPVerification";
+import { NursePlans } from "@/components/NursePlans";
 import { Testimonials } from "@/components/Testimonials";
 import { FAQ } from "@/components/FAQ";
 import { CTA } from "@/components/CTA";
@@ -14,10 +17,11 @@ import { Footer } from "@/components/Footer";
 import { StickyCTA } from "@/components/StickyCTA";
 import { WhatsAppWidget } from "@/components/WhatsAppWidget";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { StatsProvider } from "@/lib/StatsContext";
 
 export default function Home() {
   return (
-    <>
+    <StatsProvider>
       <ScrollProgress />
       <Header />
       <main id="main-content">
@@ -29,6 +33,7 @@ export default function Home() {
         <Services />
         <Security />
         <CEPVerification />
+        <NursePlans />
         <Testimonials />
         <FAQ />
         <CTA />
@@ -36,6 +41,6 @@ export default function Home() {
       <Footer />
       <StickyCTA />
       <WhatsAppWidget />
-    </>
+    </StatsProvider>
   );
 }

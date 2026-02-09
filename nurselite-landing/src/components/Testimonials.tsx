@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Quote, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight, MapPin, CheckCircle2 } from "lucide-react";
 import { AnimatedSection } from "./ui/AnimatedSection";
 import { testimonials } from "@/data/testimonials";
+import { useStats } from "@/lib/StatsContext";
 
 export function Testimonials() {
+  const { stats } = useStats();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -131,9 +133,15 @@ export function Testimonials() {
                       </div>
                     </div>
                   </div>
-                  <span className="px-4 py-2 bg-[#4a9d9a]/10 dark:bg-[#4a9d9a]/20 text-[#4a9d9a] rounded-full text-sm font-medium">
-                    {testimonials[currentIndex].service}
-                  </span>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="px-4 py-2 bg-[#4a9d9a]/10 dark:bg-[#4a9d9a]/20 text-[#4a9d9a] rounded-full text-sm font-medium">
+                      {testimonials[currentIndex].service}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Reseña verificada en NurseLite
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -182,9 +190,9 @@ export function Testimonials() {
         <AnimatedSection delay={0.4} className="mt-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { value: "4.9", label: "Calificacion promedio", suffix: "/5" },
-              { value: "500+", label: "Enfermeras activas", suffix: "" },
-              { value: "2,000+", label: "Servicios realizados", suffix: "" },
+              { value: `${stats.averageRating}`, label: "Calificación promedio", suffix: "/5" },
+              { value: `${stats.totalProfessionals}+`, label: "Enfermeras activas", suffix: "" },
+              { value: `${stats.totalServices.toLocaleString()}+`, label: "Servicios realizados", suffix: "" },
               { value: "98%", label: "Clientes satisfechos", suffix: "" },
             ].map((stat, index) => (
               <motion.div
@@ -203,6 +211,11 @@ export function Testimonials() {
               </motion.div>
             ))}
           </div>
+
+          {/* Trust text */}
+          <p className="text-center text-sm text-[#94a3b8] dark:text-[#64748b] mt-6">
+            Todas las reseñas provienen de servicios completados y verificados en nuestra plataforma.
+          </p>
         </AnimatedSection>
       </div>
     </section>

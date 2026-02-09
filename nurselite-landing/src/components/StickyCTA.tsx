@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, X, Users } from "lucide-react";
 import Link from "next/link";
+import { useStats } from "@/lib/StatsContext";
 
 export function StickyCTA() {
+  const { stats } = useStats();
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
 
@@ -57,7 +59,7 @@ export function StickyCTA() {
             {/* Badge */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full whitespace-nowrap">
               <Users className="w-3 h-3" />
-              <span>500+ disponibles</span>
+              <span>{stats.totalProfessionals}+ disponibles</span>
             </div>
           </div>
         </motion.div>

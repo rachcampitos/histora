@@ -14,6 +14,7 @@ import {
 import { AnimatedSection } from "./ui/AnimatedSection";
 import { AnimatedStats } from "./ui/AnimatedStats";
 import Link from "next/link";
+import { useStats } from "@/lib/StatsContext";
 
 const bentoServices = [
   {
@@ -55,13 +56,14 @@ const bentoServices = [
   },
 ];
 
-const stats = [
-  { value: 500, suffix: "+", label: "Profesionales" },
-  { value: 2000, suffix: "+", label: "Servicios" },
-  { value: 4.9, suffix: "/5", label: "Rating" },
-];
-
 export function Services() {
+  const { stats: apiStats } = useStats();
+
+  const stats = [
+    { value: apiStats.totalProfessionals, suffix: "+", label: "Profesionales" },
+    { value: apiStats.totalServices, suffix: "+", label: "Servicios" },
+    { value: apiStats.averageRating, suffix: "/5", label: "Rating" },
+  ];
   return (
     <section
       id="servicios"
@@ -209,13 +211,20 @@ export function Services() {
           * Los precios son referenciales. Cada enfermera establece sus tarifas segun experiencia y ubicacion.
         </p>
 
-        {/* CTA */}
-        <AnimatedSection delay={0.4} className="mt-10 text-center">
+        {/* CTAs */}
+        <AnimatedSection delay={0.4} className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="https://app.nurse-lite.com/auth/register?type=patient"
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg"
           >
             Ver Todos los Servicios
+            <ChevronRight className="w-5 h-5" />
+          </Link>
+          <Link
+            href="https://app.nurse-lite.com/auth/register?type=nurse"
+            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#1e3a5f] dark:border-[#4a9d9a] text-[#1e3a5f] dark:text-[#4a9d9a] font-semibold rounded-xl hover:bg-[#1e3a5f]/5 dark:hover:bg-[#4a9d9a]/10 transition-colors"
+          >
+            Ofrecer mis Servicios
             <ChevronRight className="w-5 h-5" />
           </Link>
         </AnimatedSection>
