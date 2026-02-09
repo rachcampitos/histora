@@ -152,9 +152,10 @@ ion-card-title {
 
     ion-radio {
       margin-inline-end: 12px;
-      --color: #94a3b8;
+      --color: #64748b;
       --color-checked: var(--ion-color-primary);
       --size: 22px;
+      --border-width: 2px;
     }
   }
 }
