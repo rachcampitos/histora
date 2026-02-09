@@ -95,8 +95,8 @@ export class SubscriptionPage implements OnInit {
       price: 79,
       features: [
         'Todo del Plan Pro',
-        'Badge "Elite" dorado',
-        '5x mas visible + Seccion Destacadas',
+        'Perfil destacado en resultados',
+        '5x mas visible en busquedas',
         'Dashboard profesional con analytics',
         'WhatsApp directo con soporte',
         'Agenda integrada con calendario'
