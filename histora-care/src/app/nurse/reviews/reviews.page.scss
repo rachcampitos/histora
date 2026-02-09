@@ -1,0 +1,368 @@
+@use '../../../theme/design-tokens' as tokens;
+
+:host {
+  ion-header ion-toolbar {
+    --background: #ffffff;
+    --color: #1e293b;
+  }
+}
+
+.reviews-content {
+  --background: #{tokens.$surface-secondary};
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: tokens.$spacing-12;
+}
+
+// Rating Summary Card
+.rating-summary {
+  display: flex;
+  gap: tokens.$spacing-4;
+  padding: tokens.$spacing-5;
+  margin: tokens.$spacing-4;
+  background: var(--histora-surface, #ffffff);
+  border-radius: tokens.$radius-xl;
+  box-shadow: tokens.$shadow-md;
+
+  .summary-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+
+    .big-rating {
+      font-size: 48px;
+      font-weight: tokens.$font-weight-bold;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .stars-row {
+      display: flex;
+      gap: 2px;
+      margin: tokens.$spacing-2 0;
+
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+
+    .total-reviews {
+      font-size: tokens.$font-size-sm;
+      color: var(--text-secondary);
+      margin-bottom: tokens.$spacing-3;
+    }
+
+    .tier-chip {
+      display: flex;
+      align-items: center;
+      gap: tokens.$spacing-1;
+      padding: 4px 10px;
+      border-radius: tokens.$radius-full;
+      border: 1.5px solid;
+      font-size: tokens.$font-size-xs;
+      font-weight: tokens.$font-weight-semibold;
+
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .summary-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+
+    .rating-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .bar-label {
+        font-size: tokens.$font-size-sm;
+        font-weight: tokens.$font-weight-semibold;
+        color: var(--text-primary);
+        width: 12px;
+        text-align: right;
+      }
+
+      .bar-star {
+        font-size: 12px;
+      }
+
+      .bar-track {
+        flex: 1;
+        height: 8px;
+        background: tokens.$color-neutral-200;
+        border-radius: tokens.$radius-full;
+        overflow: hidden;
+
+        .bar-fill {
+          height: 100%;
+          background: tokens.$color-warmth-primary;
+          border-radius: tokens.$radius-full;
+          transition: width tokens.$duration-normal tokens.$easing-standard;
+        }
+      }
+
+      .bar-count {
+        font-size: tokens.$font-size-xs;
+        color: var(--text-tertiary);
+        width: 20px;
+        text-align: right;
+      }
+    }
+  }
+}
+
+// Filter Chips
+.filter-chips {
+  display: flex;
+  gap: tokens.$spacing-2;
+  padding: 0 tokens.$spacing-4 tokens.$spacing-3;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  ion-chip {
+    --background: var(--histora-surface, #ffffff);
+    --color: var(--text-secondary);
+    font-size: tokens.$font-size-sm;
+    font-weight: tokens.$font-weight-medium;
+    flex-shrink: 0;
+    height: 32px;
+
+    ion-icon {
+      font-size: 14px;
+      margin-left: 2px;
+    }
+
+    &.selected {
+      --background: #{tokens.$color-brand-primary};
+      --color: #ffffff;
+
+      ion-icon {
+        color: #ffffff !important;
+      }
+    }
+  }
+}
+
+// Reviews List
+.reviews-list {
+  padding: 0 tokens.$spacing-4;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-3;
+}
+
+.review-card {
+  background: var(--histora-surface, #ffffff);
+  border-radius: tokens.$radius-lg;
+  padding: tokens.$spacing-4;
+  box-shadow: tokens.$shadow-sm;
+
+  .review-header {
+    display: flex;
+    align-items: flex-start;
+    gap: tokens.$spacing-3;
+
+    .reviewer-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .avatar-initials {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: tokens.$font-size-sm;
+        font-weight: tokens.$font-weight-semibold;
+        border-radius: 50%;
+      }
+    }
+
+    .reviewer-info {
+      flex: 1;
+      min-width: 0;
+
+      .reviewer-name {
+        display: block;
+        font-size: tokens.$font-size-sm;
+        font-weight: tokens.$font-weight-semibold;
+        color: var(--text-primary);
+      }
+
+      .review-stars {
+        display: flex;
+        gap: 1px;
+        margin-top: 2px;
+
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .review-date {
+      font-size: tokens.$font-size-xs;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+  }
+
+  .review-comment {
+    margin: tokens.$spacing-3 0 0;
+    font-size: tokens.$font-size-sm;
+    font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: tokens.$spacing-10 tokens.$spacing-5;
+  margin: tokens.$spacing-4;
+  background: var(--histora-surface, #ffffff);
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-sm;
+
+  ion-icon {
+    font-size: 64px;
+    color: tokens.$color-neutral-300;
+    margin-bottom: tokens.$spacing-4;
+  }
+
+  p {
+    margin: 0;
+    font-size: tokens.$font-size-base;
+    font-weight: tokens.$font-weight-semibold;
+    color: var(--text-secondary);
+  }
+
+  span {
+    display: block;
+    margin-top: tokens.$spacing-2;
+    font-size: tokens.$font-size-sm;
+    color: var(--text-tertiary);
+  }
+}
+
+// ============================================================
+// DARK MODE STYLES
+// ============================================================
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  ion-header ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
+  }
+
+  .reviews-content {
+    --background: #{tokens.$surface-dark-primary};
+  }
+
+  .rating-summary {
+    background: tokens.$surface-dark-secondary;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+
+    .summary-left {
+      .big-rating {
+        color: tokens.$text-dark-primary;
+      }
+
+      .total-reviews {
+        color: tokens.$text-dark-secondary;
+      }
+    }
+
+    .summary-right {
+      .rating-bar-row {
+        .bar-label {
+          color: tokens.$text-dark-primary;
+        }
+
+        .bar-track {
+          background: tokens.$color-neutral-700;
+        }
+
+        .bar-count {
+          color: tokens.$text-dark-tertiary;
+        }
+      }
+    }
+  }
+
+  .filter-chips {
+    ion-chip {
+      --background: #{tokens.$surface-dark-secondary};
+      --color: #{tokens.$text-dark-secondary};
+
+      &.selected {
+        --background: #{tokens.$color-brand-secondary};
+        --color: #ffffff;
+      }
+    }
+  }
+
+  .review-card {
+    background: tokens.$surface-dark-secondary;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+    .review-header {
+      .reviewer-info {
+        .reviewer-name {
+          color: tokens.$text-dark-primary;
+        }
+      }
+
+      .review-date {
+        color: tokens.$text-dark-tertiary;
+      }
+    }
+
+    .review-comment {
+      color: tokens.$text-dark-secondary;
+    }
+  }
+
+  .empty-state {
+    background: tokens.$surface-dark-secondary;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    ion-icon {
+      color: tokens.$color-neutral-600;
+    }
+
+    p {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    span {
+      color: tokens.$color-neutral-500;
+    }
+  }
+}

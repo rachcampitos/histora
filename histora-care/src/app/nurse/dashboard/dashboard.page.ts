@@ -12,6 +12,7 @@ import { NurseOnboardingService } from '../../core/services/nurse-onboarding.ser
 import { CelebrationService } from '../../core/services/celebration.service';
 import { ReviewCelebrationModalComponent } from '../../shared/components/review-celebration-modal/review-celebration-modal.component';
 import { Nurse, ServiceRequest } from '../../core/models';
+import { calculateNurseTier, getNextTierInfo, NurseTierInfo, NextTierInfo } from '../../core/utils/nurse-tier.util';
 
 @Component({
   selector: 'app-dashboard',
@@ -61,6 +62,24 @@ export class DashboardPage implements OnInit, OnDestroy {
   verificationStatus = computed(() => this.nurse()?.verificationStatus || 'pending');
   isVerified = computed(() => this.verificationStatus() === 'approved');
   needsVerification = computed(() => !this.isVerified());
+
+  // Tier system
+  nurseTier = computed<NurseTierInfo>(() => {
+    return calculateNurseTier({
+      averageRating: this.rating(),
+      totalServicesCompleted: this.totalServices(),
+      totalReviews: this.totalReviews(),
+    });
+  });
+
+  nextTier = computed<NextTierInfo | null>(() => {
+    const tier = this.nurseTier();
+    return getNextTierInfo(tier.tier, {
+      averageRating: this.rating(),
+      totalServicesCompleted: this.totalServices(),
+      totalReviews: this.totalReviews(),
+    });
+  });
 
   // Check if we have an active "on_the_way" request
   hasActiveTracking = computed(() => {
@@ -672,6 +691,10 @@ export class DashboardPage implements OnInit, OnDestroy {
 
   goToProfile() {
     this.router.navigate(['/nurse/profile']);
+  }
+
+  goToReviews() {
+    this.router.navigate(['/nurse/reviews']);
   }
 
   goToVerification() {

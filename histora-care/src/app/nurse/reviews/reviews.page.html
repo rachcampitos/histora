@@ -1,0 +1,121 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/nurse/dashboard" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Resenas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="reviews-content">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  }
+
+  @if (!isLoading()) {
+    <!-- Rating Summary Card -->
+    <div class="rating-summary">
+      <div class="summary-left">
+        <div class="big-rating">{{ rating() | number:'1.1-1' }}</div>
+        <div class="stars-row">
+          @for (filled of getStarsArray(rating()); track $index) {
+            <ion-icon [name]="filled ? 'star' : 'star-outline'" color="warning"></ion-icon>
+          }
+        </div>
+        <div class="total-reviews">{{ totalReviews() }} resenas</div>
+        <div class="tier-chip" [style.background-color]="nurseTier().color + '20'" [style.border-color]="nurseTier().color">
+          <ion-icon [name]="nurseTier().icon" [style.color]="nurseTier().color"></ion-icon>
+          <span [style.color]="nurseTier().color">{{ nurseTier().label }}</span>
+        </div>
+      </div>
+      <div class="summary-right">
+        @for (bar of ratingDistribution(); track bar.stars) {
+          <div class="rating-bar-row">
+            <span class="bar-label">{{ bar.stars }}</span>
+            <ion-icon name="star" color="warning" class="bar-star"></ion-icon>
+            <div class="bar-track">
+              <div class="bar-fill" [style.width.%]="bar.percentage"></div>
+            </div>
+            <span class="bar-count">{{ bar.count }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Filter Chips -->
+    <div class="filter-chips">
+      <ion-chip
+        [class.selected]="selectedRating() === null"
+        (click)="filterByRating(null)">
+        Todas
+      </ion-chip>
+      @for (star of [5, 4, 3, 2, 1]; track star) {
+        <ion-chip
+          [class.selected]="selectedRating() === star"
+          (click)="filterByRating(star)">
+          {{ star }}<ion-icon name="star" color="warning"></ion-icon>
+        </ion-chip>
+      }
+    </div>
+
+    <!-- Review Cards -->
+    @if (filteredReviews.length > 0) {
+      <div class="reviews-list">
+        @for (review of filteredReviews; track review._id) {
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer-avatar">
+                @if (review.patient?.avatar) {
+                  <img [src]="review.patient?.avatar" [alt]="review.patient?.firstName">
+                } @else {
+                  <div class="avatar-initials" [style.background-color]="getAvatarColor(review.patient?.firstName || 'U')">
+                    {{ getInitials(review.patient?.firstName, review.patient?.lastName) }}
+                  </div>
+                }
+              </div>
+              <div class="reviewer-info">
+                <span class="reviewer-name">
+                  {{ review.patient?.firstName || 'Paciente' }} {{ review.patient?.lastName || '' }}
+                </span>
+                <div class="review-stars">
+                  @for (filled of getStarsArray(review.rating); track $index) {
+                    <ion-icon [name]="filled ? 'star' : 'star-outline'" color="warning"></ion-icon>
+                  }
+                </div>
+              </div>
+              <span class="review-date">{{ review.createdAt | date:'dd/MM/yyyy' }}</span>
+            </div>
+            @if (review.comment) {
+              <p class="review-comment">"{{ review.comment }}"</p>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (filteredReviews.length === 0 && !isLoading()) {
+      <div class="empty-state">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        @if (selectedRating() !== null) {
+          <p>No hay resenas de {{ selectedRating() }} estrellas</p>
+          <span>Prueba con otro filtro</span>
+        } @else {
+          <p>Aun no tienes resenas</p>
+          <span>Las resenas de tus pacientes apareceran aqui</span>
+        }
+      </div>
+    }
+
+    <!-- Infinite Scroll -->
+    @if (selectedRating() === null) {
+      <ion-infinite-scroll (ionInfinite)="loadMore($event)" [disabled]="!hasMore()">
+        <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Cargando mas resenas...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    }
+  }
+</ion-content>

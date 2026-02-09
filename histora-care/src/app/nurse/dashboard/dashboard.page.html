@@ -8,7 +8,9 @@
     <ion-title>NurseLite</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="goToProfile()" class="profile-avatar-btn">
-        <div class="avatar-wrapper" [class.verified]="isVerified()">
+        <div class="avatar-wrapper" [class.verified]="isVerified()"
+             [style.border-color]="nurseTier().color"
+             [class.tier-elite]="nurseTier().tier === 'elite'">
           <!-- Photo -->
           @if (nurse()?.user?.avatar) {
             <img
@@ -30,10 +32,10 @@
               name="person-circle"
             class="avatar-icon"></ion-icon>
           }
-          <!-- Verification badge -->
+          <!-- Tier badge -->
           @if (isVerified()) {
-            <div class="verified-badge">
-              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <div class="tier-badge" [style.background-color]="nurseTier().color">
+              <ion-icon [name]="nurseTier().icon"></ion-icon>
             </div>
           }
           <!-- Profile incomplete badge -->
@@ -93,6 +95,26 @@
     <div class="welcome-text">
       <h1>Hola, {{ user()?.firstName || 'Enfermera' }}</h1>
       <p>{{ isAvailable() ? 'Estás disponible para recibir solicitudes' : 'No estás recibiendo solicitudes' }}</p>
+      @if (isVerified()) {
+        <div class="tier-chip-welcome" [style.border-color]="nurseTier().color">
+          <ion-icon [name]="nurseTier().icon" [style.color]="nurseTier().color"></ion-icon>
+          <span>Enfermera {{ nurseTier().label }}</span>
+        </div>
+        @if (nextTier(); as next) {
+          <p class="tier-progress">
+            @if (next.servicesNeeded > 0) {
+              {{ next.servicesNeeded }} servicios
+            }
+            @if (next.servicesNeeded > 0 && (next.ratingNeeded > 0 || next.reviewsNeeded > 0)) {
+              ,
+            }
+            @if (next.reviewsNeeded > 0) {
+              {{ next.reviewsNeeded }} resenas
+            }
+            para {{ next.label }}
+          </p>
+        }
+      }
     </div>
     <div class="availability-toggle">
       <ion-toggle
@@ -150,10 +172,11 @@
       <div class="stat-value">{{ totalServices() }}</div>
       <div class="stat-label">Servicios</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card stat-card-clickable" (click)="goToReviews()">
       <ion-icon name="chatbubbles" color="tertiary"></ion-icon>
       <div class="stat-value">{{ totalReviews() }}</div>
-      <div class="stat-label">Reseñas</div>
+      <div class="stat-label">Resenas</div>
+      <ion-icon name="chevron-forward-outline" class="stat-arrow"></ion-icon>
     </div>
   </div>
 
@@ -291,6 +314,12 @@
         <ion-icon name="analytics-outline"></ion-icon>
       </div>
       <span>Actividad</span>
+    </div>
+    <div class="menu-item" (click)="goToReviews()">
+      <div class="menu-icon">
+        <ion-icon name="star-outline"></ion-icon>
+      </div>
+      <span>Resenas</span>
     </div>
     <div class="menu-item" (click)="goToProfile()">
       <div class="menu-icon">
