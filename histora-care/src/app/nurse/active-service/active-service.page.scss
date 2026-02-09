@@ -445,6 +445,21 @@ ion-header ion-toolbar {
     border-top-color: var(--histora-border-dark, #334155);
   }
 
+  .actions-section {
+    .main-action-btn {
+      --color: #ffffff;
+
+      ion-icon {
+        color: #ffffff;
+      }
+    }
+
+    .nav-btn {
+      --color: #e2e8f0;
+      --border-color: #475569;
+    }
+  }
+
   .security-card {
     --background: var(--histora-card-bg-dark, #1e293b);
 
