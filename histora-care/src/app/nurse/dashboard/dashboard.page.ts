@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed, effect, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RefresherCustomEvent, ToastController, AlertController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
@@ -9,6 +9,7 @@ import { GeolocationService } from '../../core/services/geolocation.service';
 import { WebSocketService } from '../../core/services/websocket.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
+import { CelebrationService } from '../../core/services/celebration.service';
 import { Nurse, ServiceRequest } from '../../core/models';
 
 @Component({
@@ -26,10 +27,12 @@ export class DashboardPage implements OnInit, OnDestroy {
   private wsService = inject(WebSocketService);
   private productTour = inject(ProductTourService);
   private nurseOnboarding = inject(NurseOnboardingService);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
   private destroyRef = inject(DestroyRef);
+  private celebrationService = inject(CelebrationService);
 
   // State signals
   nurse = signal<Nurse | null>(null);
@@ -189,6 +192,9 @@ export class DashboardPage implements OnInit, OnDestroy {
       this.loadRequests(nurseId);
     }
 
+    // Handle review notification queryParams
+    this.handleReviewQueryParams();
+
     // Start verification polling if not yet approved
     this.startVerificationPolling();
 
@@ -298,6 +304,28 @@ export class DashboardPage implements OnInit, OnDestroy {
       backdropDismiss: false
     });
     await alert.present();
+  }
+
+  private handleReviewQueryParams() {
+    const params = this.route.snapshot.queryParams;
+    if (params['showReview'] !== 'true') return;
+
+    const rating = Number(params['rating']) || 0;
+
+    // Clear queryParams to avoid re-triggering on re-enter
+    this.router.navigate([], { queryParams: {}, replaceUrl: true });
+
+    // Small delay so the page is fully visible before showing the celebration
+    setTimeout(() => {
+      if (rating >= 5) {
+        this.celebrationService.triggerConfetti();
+        this.showToast('Un paciente califico tu servicio con 5 estrellas. Servicio excepcional!', 'success');
+      } else if (rating === 4) {
+        this.showToast('Un paciente califico tu servicio con 4 estrellas. Muy buen trabajo!', 'success');
+      } else {
+        this.showToast('Tienes una nueva resena de un paciente', 'primary');
+      }
+    }, 300);
   }
 
   ngOnDestroy() {

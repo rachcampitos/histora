@@ -43,7 +43,8 @@ export type NotificationType =
   | 'chat_message'
   | 'promotion'
   | 'reminder'
-  | 'system';
+  | 'system'
+  | 'new_nurse_review';
 
 const STORAGE_KEYS = {
   PREFERENCES: 'notification_preferences',
@@ -250,6 +251,12 @@ export class NotificationService {
           // Determine if user is nurse or patient based on route prefix
           this.router.navigate(['/nurse/active-service', data.requestId]);
         }
+        break;
+
+      case 'new_nurse_review':
+        this.router.navigate(['/nurse/tabs/dashboard'], {
+          queryParams: { showReview: true, rating: data.rating, requestId: data.requestId }
+        });
         break;
 
       default:
