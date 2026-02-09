@@ -362,7 +362,7 @@ ion-header ion-toolbar {
 // Actions Section
 .actions-section {
   padding: 16px;
-  padding-bottom: 100px; // Space for panic button
+  padding-bottom: 140px; // Space for panic button + safe area
 
   .main-action-btn {
     margin-bottom: 12px;

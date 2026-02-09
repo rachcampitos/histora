@@ -97,6 +97,22 @@ export class CheckoutPage implements OnInit, OnDestroy {
     }
   });
 
+  // Nurse accepted payment methods
+  nurseAcceptsCash = computed(() => {
+    const nurse = this.serviceRequest()?.nurse as any;
+    return nurse?.acceptsCash !== false;
+  });
+
+  nurseAcceptsYape = computed(() => {
+    const nurse = this.serviceRequest()?.nurse as any;
+    return !!nurse?.yapeNumber;
+  });
+
+  nurseAcceptsPlin = computed(() => {
+    const nurse = this.serviceRequest()?.nurse as any;
+    return !!nurse?.plinNumber;
+  });
+
   // Yape phone number
   yapeNumber = signal('');
 

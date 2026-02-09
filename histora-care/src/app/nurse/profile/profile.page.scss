@@ -959,12 +959,18 @@ ion-range {
     padding: 0;
 
     ion-item {
-      --background: #{tokens.$surface-secondary};
+      --background: #ffffff;
       --padding-start: #{tokens.$spacing-3};
       --padding-end: #{tokens.$spacing-3};
       --inner-padding-end: #{tokens.$spacing-2};
       --border-radius: #{tokens.$radius-md};
-      margin: 0;
+      margin: 0 0 tokens.$spacing-2 0;
+      border-radius: tokens.$radius-md;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
 
       .setting-icon {
         font-size: 22px;
@@ -1444,6 +1450,7 @@ ion-modal {
       ion-item {
         --background: #{tokens.$surface-dark-tertiary};
         --color: #{tokens.$text-dark-primary};
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
         .setting-icon {
           color: #6bb5b3;

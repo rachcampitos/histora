@@ -361,7 +361,7 @@ $primary-gradient: var(--histora-gradient);
 
 // Skip Button
 .skip-btn {
-  --color: var(--text-secondary);
+  --color: #475569;
   font-weight: tokens.$font-weight-medium;
   min-width: 80px;
   text-transform: none;
@@ -374,9 +374,9 @@ $primary-gradient: var(--histora-gradient);
 
 // Next Button
 .next-btn {
-  --background: #{$primary-gradient};
-  --background-hover: #{$primary-gradient};
-  --background-activated: #{$primary-gradient};
+  --background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+  --background-hover: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+  --background-activated: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
   --color: #ffffff;
   --color-hover: #ffffff;
   --color-activated: #ffffff;
@@ -448,9 +448,9 @@ $primary-gradient: var(--histora-gradient);
   max-width: 320px;
 
   .cta-btn {
-    --background: #{$primary-gradient};
-    --background-hover: #{$primary-gradient};
-    --background-activated: #{$primary-gradient};
+    --background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+    --background-hover: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
+    --background-activated: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%);
     --color: #ffffff;
     --color-hover: #ffffff;
     --color-activated: #ffffff;

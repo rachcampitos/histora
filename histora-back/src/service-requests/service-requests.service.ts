@@ -147,6 +147,9 @@ export class ServiceRequestsService {
         // Use official CEP photo as primary avatar, fallback to user avatar
         avatar: nurseData.officialCepPhotoUrl || userData.avatar,
         cepNumber: nurseData.cepNumber,
+        yapeNumber: nurseData.yapeNumber || null,
+        plinNumber: nurseData.plinNumber || null,
+        acceptsCash: nurseData.acceptsCash !== false,
       };
     }
 

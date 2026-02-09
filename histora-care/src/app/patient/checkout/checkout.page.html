@@ -109,18 +109,20 @@
           <h3 class="section-title">Metodos de pago</h3>
 
           <!-- Cash (primary in beta) -->
-          <ion-item button (click)="selectMethod('cash')" class="payment-option cash-recommended">
-            <ion-icon name="cash-outline" slot="start" color="success"></ion-icon>
-            <ion-label>
-              <h3>Efectivo</h3>
-              <p>Paga al finalizar el servicio</p>
-            </ion-label>
-            @if (betaMode()) {
-              <ion-badge color="success" slot="end">Disponible</ion-badge>
-            } @else {
-              <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
-            }
-          </ion-item>
+          @if (nurseAcceptsCash()) {
+            <ion-item button (click)="selectMethod('cash')" class="payment-option cash-recommended">
+              <ion-icon name="cash-outline" slot="start" color="success"></ion-icon>
+              <ion-label>
+                <h3>Efectivo</h3>
+                <p>Paga al finalizar el servicio</p>
+              </ion-label>
+              @if (betaMode()) {
+                <ion-badge color="success" slot="end">Disponible</ion-badge>
+              } @else {
+                <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+              }
+            </ion-item>
+          }
 
           <!-- Card (disabled in beta) -->
           <ion-item class="payment-option disabled" [class.beta-disabled]="betaMode()">
@@ -137,43 +139,47 @@
           </ion-item>
 
           <!-- Yape P2P -->
-          <ion-item button (click)="selectMethod('yape')" class="payment-option">
-            <div class="yape-icon" slot="start">
-              <img src="assets/img/logo-yape.png" alt="Yape" />
-            </div>
-            <ion-label>
-              <h3>Yape</h3>
-              <p>Paga directamente a la enfermera</p>
-            </ion-label>
-            @if (betaMode()) {
-              <ion-badge color="success" slot="end">Disponible</ion-badge>
-            } @else {
-              <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
-            }
-          </ion-item>
+          @if (nurseAcceptsYape()) {
+            <ion-item button (click)="selectMethod('yape')" class="payment-option">
+              <div class="yape-icon" slot="start">
+                <img src="assets/img/logo-yape.png" alt="Yape" />
+              </div>
+              <ion-label>
+                <h3>Yape</h3>
+                <p>Paga directamente a la enfermera</p>
+              </ion-label>
+              @if (betaMode()) {
+                <ion-badge color="success" slot="end">Disponible</ion-badge>
+              } @else {
+                <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+              }
+            </ion-item>
+          }
 
           <!-- Plin P2P -->
-          <ion-item button (click)="selectMethod('plin')" class="payment-option">
-            <div class="plin-icon" slot="start">
-              <img src="assets/img/logo-plin.png" alt="Plin" />
-            </div>
-            <ion-label>
-              <h3>Plin</h3>
-              <p>Paga directamente a la enfermera</p>
-            </ion-label>
-            @if (betaMode()) {
-              <ion-badge color="success" slot="end">Disponible</ion-badge>
-            } @else {
-              <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
-            }
-          </ion-item>
+          @if (nurseAcceptsPlin()) {
+            <ion-item button (click)="selectMethod('plin')" class="payment-option">
+              <div class="plin-icon" slot="start">
+                <img src="assets/img/logo-plin.png" alt="Plin" />
+              </div>
+              <ion-label>
+                <h3>Plin</h3>
+                <p>Paga directamente a la enfermera</p>
+              </ion-label>
+              @if (betaMode()) {
+                <ion-badge color="success" slot="end">Disponible</ion-badge>
+              } @else {
+                <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+              }
+            </ion-item>
+          }
         </div>
 
         <!-- Beta Info -->
         @if (betaMode()) {
           <div class="beta-info">
             <ion-icon name="information-circle-outline"></ion-icon>
-            <p>Los pagos con tarjeta seran habilitados proximamente. Puedes pagar en efectivo, Yape o Plin directamente a la enfermera.</p>
+            <p>Los pagos con tarjeta seran habilitados proximamente. Puedes pagar con los metodos habilitados por la enfermera.</p>
           </div>
         }
       </div>
