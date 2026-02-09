@@ -28,7 +28,7 @@ const steps = [
     icon: UserCheck,
     title: "Verifica su perfil",
     description:
-      "Revisa su verificación CEP, experiencia y reseñas. Usa el chat integrado para consultar antes de agendar.",
+      "Revisa su verificación CEP, experiencia, servicios ofrecidos y reseñas de otros pacientes.",
     color: "#2d5f8a",
   },
   {
@@ -36,7 +36,7 @@ const steps = [
     icon: Calendar,
     title: "Agenda tu cita",
     description:
-      "Selecciona el servicio, elige fecha y hora. Coordina detalles por chat con tu enfermera.",
+      "Selecciona el servicio, elige fecha y hora. La enfermera confirmará tu solicitud.",
     color: "#4a9d9a",
   },
   {

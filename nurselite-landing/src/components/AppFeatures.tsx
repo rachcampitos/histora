@@ -793,7 +793,7 @@ function PaymentScreen({ isDark }: ScreenProps) {
             <span
               className={`text-[12px] font-bold ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}
             >
-              S/ 80.00
+              S/ 40.00
             </span>
           </div>
         </div>
@@ -843,7 +843,7 @@ function PaymentScreen({ isDark }: ScreenProps) {
           className={`rounded-xl py-2.5 text-center ${t(isDark, "bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a]", "bg-gradient-to-r from-[#4a9d9a] to-[#6bb5b3]")}`}
         >
           <span className="text-white text-[9px] font-semibold">
-            Pagar S/ 80.00
+            Pagar S/ 40.00
           </span>
         </div>
       </div>
