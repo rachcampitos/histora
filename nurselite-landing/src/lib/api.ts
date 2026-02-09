@@ -1,6 +1,6 @@
 // API Configuration for NurseLite Landing
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.historahealth.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.historahealth.com/api';
 
 export interface FeaturedProfessional {
   id: string;

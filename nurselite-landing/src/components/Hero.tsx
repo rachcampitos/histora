@@ -192,14 +192,21 @@ export function Hero() {
                     <span className="sm:hidden">{content.ctaMobile}</span>
                     <ChevronRight className="w-5 h-5" />
                   </Link>
-                  <Link
+                  <a
                     href="#como-funciona"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById("como-funciona");
+                      if (el) {
+                        window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+                      }
+                    }}
                     className="btn-secondary flex items-center justify-center gap-2 text-base whitespace-nowrap"
                   >
                     <Play className="w-5 h-5" />
                     <span className="hidden sm:inline">Ver cómo funciona</span>
                     <span className="sm:hidden">Cómo funciona</span>
-                  </Link>
+                  </a>
                 </div>
 
                 {/* Micro-copy */}

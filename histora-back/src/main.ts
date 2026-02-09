@@ -86,6 +86,7 @@ async function bootstrap() {
     'https://app.historahealth.com',
     'https://historahealth.com',
     'https://app.nurse-lite.com',
+    'https://nurse-lite.com',
     'https://admin.nurse-lite.com',
   ];
 
