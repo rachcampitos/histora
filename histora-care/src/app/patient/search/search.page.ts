@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, IonicSafeString, LoadingController, ToastController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { Nurse, NurseReview } from '../../core/models';
 
@@ -180,7 +180,7 @@ export class SearchPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'CEP Verificado',
       subHeader: 'Garantia de profesionalismo',
-      message: `
+      message: new IonicSafeString(`
         <div class="cep-explanation">
           <div class="cep-icon-header">
             <div class="cep-icon-circle">
@@ -196,7 +196,7 @@ export class SearchPage implements OnInit {
           </ul>
           <p class="cep-trust">Tu seguridad es nuestra prioridad. Solo trabajamos con profesionales 100% verificados.</p>
         </div>
-      `,
+      `),
       buttons: ['Entendido'],
       cssClass: 'cep-alert'
     });
