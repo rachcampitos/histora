@@ -709,7 +709,8 @@ export class DashboardPage implements OnInit, OnDestroy {
       case 'on_the_way':
         return { label: 'Llegué', action: () => this.markArrival(request), color: 'secondary' };
       case 'arrived':
-        return { label: 'Iniciar servicio', action: () => this.beginService(request), color: 'tertiary' };
+        // Navigate to active-service to enforce security code verification
+        return { label: 'Verificar codigo', action: () => this.router.navigate(['/nurse/active-service', request._id]), color: 'tertiary' };
       case 'in_progress':
         return { label: 'Completar', action: () => this.completeService(request), color: 'success' };
       default:

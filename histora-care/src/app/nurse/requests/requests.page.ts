@@ -377,17 +377,21 @@ export class RequestsPage implements OnInit, OnDestroy {
   async updateStatus(request: ServiceRequest, newStatus: ServiceRequestStatus, event: Event) {
     event.stopPropagation();
 
+    // Security: arrived→in_progress requires code verification via active-service page
+    if (newStatus === 'in_progress') {
+      this.router.navigate(['/nurse/active-service', request._id]);
+      return;
+    }
+
     const statusLabels: Record<string, string> = {
       on_the_way: 'En camino',
       arrived: 'He llegado',
-      in_progress: 'Iniciar servicio',
       completed: 'Completar servicio'
     };
 
     const confirmMessages: Record<string, string> = {
       on_the_way: '¿Confirmas que vas en camino hacia el paciente?',
       arrived: '¿Confirmas que has llegado a la ubicacion del paciente?',
-      in_progress: '¿Confirmas que estas iniciando el servicio?',
       completed: '¿Confirmas que has completado el servicio?'
     };
 
@@ -469,7 +473,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     const labels: Record<string, string> = {
       on_the_way: 'Ir en camino',
       arrived: 'He llegado',
-      in_progress: 'Iniciar servicio',
+      in_progress: 'Verificar codigo',
       completed: 'Completar'
     };
     return labels[nextStatus] || nextStatus;
@@ -483,7 +487,7 @@ export class RequestsPage implements OnInit, OnDestroy {
     const icons: Record<string, string> = {
       on_the_way: 'car-outline',
       arrived: 'location-outline',
-      in_progress: 'medical-outline',
+      in_progress: 'lock-closed-outline',
       completed: 'checkmark-circle-outline'
     };
     return icons[nextStatus] || 'arrow-forward';
