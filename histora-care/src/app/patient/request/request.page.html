@@ -87,7 +87,7 @@
                     [class.selected]="selectedServiceId() === service._id"
                     (click)="selectedServiceId.set(service._id || '')"
                   >
-                    <ion-radio slot="start" [value]="service._id"></ion-radio>
+                    <ion-radio slot="start" [value]="service._id" mode="md"></ion-radio>
                     <ion-label>
                       <h3>{{ service.name }}</h3>
                       <p>{{ getCategoryLabel(service.category) }} - {{ formatDuration(service.durationMinutes) }}</p>
@@ -99,6 +99,12 @@
                 }
               </ion-list>
             </ion-radio-group>
+            @if (!selectedServiceId() && availableServices().length > 1) {
+              <p class="selection-hint">
+                <ion-icon name="hand-left-outline"></ion-icon>
+                Toca una opcion para continuar
+              </p>
+            }
           }
         </ion-card-content>
       </ion-card>

@@ -111,6 +111,7 @@ export class RequestPage implements OnInit {
       const services = this.availableServices();
       if (services.length === 1 && services[0]._id) {
         this.selectedServiceId.set(services[0]._id);
+        this.showToast('Servicio seleccionado automaticamente', 'success');
       }
 
       this.error.set(null);
