@@ -91,6 +91,9 @@ export class NurseApiService {
     total: number;
     page: number;
     limit: number;
+    averageRating?: number;
+    totalReviews?: number;
+    ratingDistribution?: { stars: number; count: number }[];
   }> {
     return this.api.get(`/nurses/${nurseId}/reviews`, { page, limit });
   }

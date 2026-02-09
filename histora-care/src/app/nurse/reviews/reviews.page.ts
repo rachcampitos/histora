@@ -12,6 +12,16 @@ interface RatingBar {
   percentage: number;
 }
 
+interface ReviewsApiResponse {
+  reviews: NurseReview[];
+  total: number;
+  page: number;
+  limit: number;
+  averageRating?: number;
+  totalReviews?: number;
+  ratingDistribution?: { stars: number; count: number }[];
+}
+
 @Component({
   selector: 'app-reviews',
   templateUrl: './reviews.page.html',
@@ -32,11 +42,14 @@ export class ReviewsPage implements OnInit {
   isLoading = signal(true);
   isLoadingMore = signal(false);
   selectedRating = signal<number | null>(null);
+  apiRatingDistribution = signal<{ stars: number; count: number }[]>([]);
+  apiAverageRating = signal(0);
+  apiTotalReviews = signal(0);
 
   private readonly LIMIT = 10;
 
-  rating = computed(() => this.nurse()?.averageRating ?? 0);
-  totalReviews = computed(() => this.nurse()?.totalReviews ?? 0);
+  rating = computed(() => this.apiTotalReviews() > 0 ? this.apiAverageRating() : (this.nurse()?.averageRating ?? 0));
+  totalReviews = computed(() => this.apiTotalReviews() > 0 ? this.apiTotalReviews() : (this.nurse()?.totalReviews ?? 0));
   totalServices = computed(() => this.nurse()?.totalServicesCompleted ?? 0);
 
   nurseTier = computed<NurseTierInfo>(() => {
@@ -48,15 +61,20 @@ export class ReviewsPage implements OnInit {
   });
 
   ratingDistribution = computed<RatingBar[]>(() => {
+    const dist = this.apiRatingDistribution();
+    const total = this.totalReviews();
+    if (dist.length > 0) {
+      return [5, 4, 3, 2, 1].map(stars => {
+        const entry = dist.find(d => d.stars === stars);
+        const count = entry?.count || 0;
+        return { stars, count, percentage: total > 0 ? (count / total) * 100 : 0 };
+      });
+    }
+    // Fallback: compute from loaded reviews
     const allReviews = this.reviews();
-    const total = this.total();
     return [5, 4, 3, 2, 1].map(stars => {
       const count = allReviews.filter(r => Math.round(r.rating) === stars).length;
-      return {
-        stars,
-        count,
-        percentage: total > 0 ? (count / total) * 100 : 0,
-      };
+      return { stars, count, percentage: total > 0 ? (count / total) * 100 : 0 };
     });
   });
 
@@ -89,9 +107,18 @@ export class ReviewsPage implements OnInit {
     this.nurseApi.getNurseReviews(nurseId, 1, this.LIMIT)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response) => {
+        next: (response: ReviewsApiResponse) => {
           this.reviews.set(response.reviews);
           this.total.set(response.total);
+          if (response.ratingDistribution) {
+            this.apiRatingDistribution.set(response.ratingDistribution);
+          }
+          if (response.averageRating !== undefined) {
+            this.apiAverageRating.set(response.averageRating);
+          }
+          if (response.totalReviews !== undefined) {
+            this.apiTotalReviews.set(response.totalReviews);
+          }
           this.isLoading.set(false);
         },
         error: () => {

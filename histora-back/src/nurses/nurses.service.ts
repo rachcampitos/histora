@@ -650,7 +650,7 @@ export class NursesService {
     const existingReview = await this.nurseReviewModel.findOne({
       nurseId: new Types.ObjectId(nurseId),
       patientId: new Types.ObjectId(patientId),
-      isDeleted: false,
+      isDeleted: { $ne: true },
     });
 
     if (existingReview) {
@@ -707,25 +707,28 @@ export class NursesService {
     limit: number;
     averageRating: number;
     totalReviews: number;
+    ratingDistribution: { stars: number; count: number }[];
   }> {
     const skip = (page - 1) * limit;
+    const filter = { nurseId: new Types.ObjectId(nurseId), isDeleted: { $ne: true } };
 
-    const [reviews, total, stats] = await Promise.all([
+    const [reviews, total, stats, distribution] = await Promise.all([
       this.nurseReviewModel
-        .find({ nurseId: new Types.ObjectId(nurseId), isDeleted: false })
+        .find(filter)
         .populate('patientId', 'firstName lastName avatar')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean()
         .exec(),
-      this.nurseReviewModel.countDocuments({
-        nurseId: new Types.ObjectId(nurseId),
-        isDeleted: false,
-      }),
+      this.nurseReviewModel.countDocuments(filter),
       this.nurseReviewModel.aggregate([
-        { $match: { nurseId: new Types.ObjectId(nurseId), isDeleted: false } },
+        { $match: filter },
         { $group: { _id: null, avgRating: { $avg: '$rating' }, count: { $sum: 1 } } },
+      ]),
+      this.nurseReviewModel.aggregate([
+        { $match: filter },
+        { $group: { _id: { $round: ['$rating', 0] }, count: { $sum: 1 } } },
       ]),
     ]);
 
@@ -747,6 +750,16 @@ export class NursesService {
       };
     });
 
+    // Build per-star distribution (5 → 1)
+    const distMap = new Map<number, number>();
+    for (const d of distribution) {
+      distMap.set(d._id, d.count);
+    }
+    const ratingDistribution = [5, 4, 3, 2, 1].map(stars => ({
+      stars,
+      count: distMap.get(stars) || 0,
+    }));
+
     return {
       reviews: mappedReviews as unknown as NurseReview[],
       total,
@@ -754,6 +767,7 @@ export class NursesService {
       limit,
       averageRating: stats[0]?.avgRating || 0,
       totalReviews: stats[0]?.count || 0,
+      ratingDistribution,
     };
   }
 
@@ -762,7 +776,7 @@ export class NursesService {
    */
   private async recalculateNurseRating(nurseId: string): Promise<void> {
     const stats = await this.nurseReviewModel.aggregate([
-      { $match: { nurseId: new Types.ObjectId(nurseId), isDeleted: false } },
+      { $match: { nurseId: new Types.ObjectId(nurseId), isDeleted: { $ne: true } } },
       { $group: { _id: null, avgRating: { $avg: '$rating' }, count: { $sum: 1 } } },
     ]);
 

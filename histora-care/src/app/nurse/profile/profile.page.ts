@@ -8,6 +8,7 @@ import { UploadsService } from '../../core/services/uploads.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
 import { PeruLocationsService, Departamento, Distrito } from '../../core/services/peru-locations.service';
 import { Nurse } from '../../core/models';
+import { calculateNurseTier, NurseTierInfo } from '../../core/utils/nurse-tier.util';
 
 interface DayOption {
   value: number;
@@ -105,6 +106,14 @@ export class ProfilePage implements OnInit {
   avatar = computed(() => this.user()?.avatar || null);
   cepNumber = computed(() => this.nurse()?.cepNumber || '');
   cepVerified = computed(() => this.nurse()?.cepVerified || false);
+  nurseTier = computed<NurseTierInfo>(() => {
+    const n = this.nurse();
+    return calculateNurseTier({
+      averageRating: n?.averageRating ?? 0,
+      totalServicesCompleted: n?.totalServicesCompleted ?? 0,
+      totalReviews: n?.totalReviews ?? 0,
+    });
+  });
   hasPaymentMethod = computed(() => {
     return !!(this.yapeNumber() || this.plinNumber() || this.acceptsCash());
   });

@@ -43,6 +43,10 @@
             <ion-icon name="checkmark-circle"></ion-icon>
           </div>
         }
+        <div class="tier-badge-profile" [style.background-color]="nurseTier().color"
+             [class.tier-elite]="nurseTier().tier === 'elite'">
+          <ion-icon [name]="nurseTier().icon"></ion-icon>
+        </div>
         @if (isUploadingAvatar()) {
           <div class="avatar-loading">
             <ion-spinner name="crescent" color="light"></ion-spinner>
@@ -50,7 +54,10 @@
         }
       </div>
       <h1 class="nurse-name">{{ fullName() }}</h1>
-      <p class="nurse-role">Enfermera Profesional</p>
+      <div class="tier-chip-profile">
+        <ion-icon [name]="nurseTier().icon"></ion-icon>
+        <span>Enfermera {{ nurseTier().label }}</span>
+      </div>
     </div>
     <!-- CEP Number Section (Display Only) -->
     <div class="section cep-section" id="tour-cep-section">

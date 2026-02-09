@@ -132,6 +132,30 @@ ion-header ion-toolbar {
       }
     }
 
+    .tier-badge-profile {
+      position: absolute;
+      bottom: 0;
+      right: calc(50% - 50px);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+
+      ion-icon {
+        font-size: 18px;
+        color: white !important;
+      }
+
+      &.tier-elite {
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+
     .avatar-loading {
       position: absolute;
       top: 0;
@@ -162,13 +186,27 @@ ion-header ion-toolbar {
     --ion-text-color: #ffffff !important;
   }
 
-  p.nurse-role,
-  .nurse-role {
-    margin: tokens.$spacing-1 0 0;
-    font-size: tokens.$font-size-sm;
-    color: rgba(255, 255, 255, 0.9) !important;
-    -webkit-text-fill-color: rgba(255, 255, 255, 0.9) !important;
-    --ion-text-color: rgba(255, 255, 255, 0.9) !important;
+  .tier-chip-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: tokens.$spacing-2;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+
+    ion-icon {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    span {
+      font-size: 13px;
+      font-weight: tokens.$font-weight-semibold;
+      color: rgba(255, 255, 255, 0.95) !important;
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.95) !important;
+    }
   }
 }
 
