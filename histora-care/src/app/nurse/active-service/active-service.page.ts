@@ -260,6 +260,38 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   }
 
   // Action handlers
+  async startOnTheWay() {
+    const req = this.request();
+    if (!req) return;
+
+    const alert = await this.alertCtrl.create({
+      cssClass: 'histora-alert histora-alert-primary',
+      header: 'Ir al Paciente',
+      message: 'Confirmas que vas en camino al paciente?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Confirmar',
+          handler: () => {
+            this.requestService.updateStatus(req._id, 'on_the_way')
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: (updated) => {
+                  this.request.set({ ...updated, patient: updated.patient || req.patient });
+                  this.showToast('En camino al paciente', 'success');
+                  this.startLocationBroadcast(req._id);
+                  this.startTime = new Date();
+                  this.startTimer();
+                },
+                error: () => this.showToast('Error al actualizar estado', 'danger')
+              });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   async markArrival() {
     const req = this.request();
     if (!req) return;
@@ -433,6 +465,16 @@ export class ActiveServicePage implements OnInit, OnDestroy {
           });
         }
       });
+
+    // Subscribe to all-read events (fires when markAllAsRead is called in chat modal)
+    this.chatService.onAllRead()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        if (this.chatRoomId && data.roomId === this.chatRoomId) {
+          this.chatUnreadCount.set(0);
+        }
+      });
+
   }
 
   onCodeInput(event: Event, index: number) {
@@ -555,6 +597,8 @@ export class ActiveServicePage implements OnInit, OnDestroy {
     if (!req) return null;
 
     switch (req.status) {
+      case 'accepted':
+        return { label: 'Ir al paciente', action: () => this.startOnTheWay(), color: 'primary' };
       case 'on_the_way':
         return { label: 'Llegue', action: () => this.markArrival(), color: 'secondary' };
       case 'arrived':
