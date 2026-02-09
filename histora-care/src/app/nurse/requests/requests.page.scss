@@ -1,3 +1,10 @@
+:host {
+  ion-header ion-toolbar {
+    --background: #ffffff;
+    --color: #1e293b;
+  }
+}
+
 .requests-content {
   --background: var(--histora-background, #f5f7fa);
 }
@@ -526,6 +533,11 @@ ion-item-options {
 :host-context(body.dark) {
   // Define dark mode specific custom properties
   --in-progress-gradient-end: #1e1b4b;
+
+  ion-header ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
+  }
 
   .requests-content {
     --background: var(--histora-background);

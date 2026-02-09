@@ -166,10 +166,12 @@ export class DashboardPage implements OnInit, OnDestroy {
    */
   private async showNewRequestNotification(request: { service: { name: string }; location: { district?: string } }) {
     const toast = await this.toastCtrl.create({
-      message: `Nueva solicitud: ${request.service.name} en ${request.location.district || 'tu zona'}`,
+      header: 'Nueva solicitud',
+      message: `${request.service.name} en ${request.location.district || 'tu zona'}`,
       duration: 5000,
       position: 'top',
-      color: 'primary',
+      icon: 'notifications-outline',
+      cssClass: 'new-request-toast',
       buttons: [
         {
           text: 'Ver',

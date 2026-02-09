@@ -148,10 +148,15 @@ class CreateNurseReviewDto {
 - `src/nurses/nurses.controller.ts` - Endpoints
 - `src/nurses/nurses.module.ts` - Módulo actualizado
 
-### Frontend (pendiente)
-- Componente de estrellas para calificar
-- Modal para escribir review después de servicio
-- Lista de reviews en perfil de enfermera
+### Frontend
+- `src/app/nurse/reviews/reviews.page.ts` - Pagina de resenas de enfermera
+- `src/app/nurse/reviews/reviews.page.html` - Template con rating summary, filtros, cards
+- `src/app/nurse/reviews/reviews.page.scss` - Estilos con dark mode
+- `src/app/nurse/reviews/reviews.module.ts` - Modulo NgModule
+- `src/app/nurse/reviews/reviews-routing.module.ts` - Routing lazy-loaded
+- `src/app/core/utils/nurse-tier.util.ts` - Sistema de niveles (certified/outstanding/experienced/elite)
+- `src/app/nurse/dashboard/dashboard.page.ts` - Tier computed + navegacion a resenas
+- `src/app/shared/components/review-celebration-modal/` - Modal celebratorio post-resena
 
 ## Consideraciones de Seguridad
 
@@ -170,10 +175,23 @@ class CreateNurseReviewDto {
 'nurse_profile_rating_clicked': { nurseId, currentRating }
 ```
 
+## Sistema de Niveles (Tiers)
+
+El frontend calcula el nivel de la enfermera basado en sus stats:
+
+| Nivel | Label | Color | Criterio |
+|-------|-------|-------|----------|
+| certified | Certificada | #94a3b8 (gris) | Base (verificada) |
+| outstanding | Destacada | #2d5f8a (azul) | 10+ servicios, 4.0+ rating |
+| experienced | Experimentada | #7B68EE (morado) | 30+ servicios, 4.5+ rating, 10+ resenas |
+| elite | Elite | #FFD700 (dorado) | 50+ servicios, 4.7+ rating, 20+ resenas |
+
+Utilidad: `histora-care/src/app/core/utils/nurse-tier.util.ts`
+
 ## Futuras Mejoras
 
 - [ ] Respuestas de enfermeras a reviews
 - [ ] Reportar reviews inapropiados
-- [ ] Filtrar reviews por rating
+- [x] Filtrar reviews por rating (implementado en reviews page)
 - [ ] Reviews con fotos
 - [ ] Incentivos por dejar reviews

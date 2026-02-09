@@ -54,11 +54,16 @@ Fecha de ultima actualizacion: Febrero 2026
 - ✅ Boton de panico con alerta a contactos
 - ✅ Tracking GPS durante el servicio
 
-### Reviews
+### Reviews y Niveles
 - ✅ Sistema de calificacion (1-5 estrellas)
 - ✅ Comentarios de pacientes
 - ✅ Sugerencias de comentario segun rating
 - ✅ Promedio de calificacion en perfil
+- ✅ Pagina de resenas para enfermera con distribucion de rating y filtros
+- ✅ Modal celebratorio con confeti al recibir resena
+- ✅ Notificacion en tiempo real de nuevas resenas (WebSocket)
+- ✅ Sistema de niveles (Certificada, Destacada, Experimentada, Elite)
+- ✅ Badge de nivel en avatar y dashboard
 
 ### Panel de Administracion
 - ✅ Dashboard con KPIs
@@ -77,6 +82,7 @@ Fecha de ultima actualizacion: Febrero 2026
 - [ ] Notificaciones push nativas (Firebase/APNs)
 - [ ] Pagos con tarjeta (Culqi)
 - [ ] Facturas/Boletas electronicas
+- [ ] Respuestas de enfermeras a resenas
 
 ### Mediano Plazo
 - [ ] Programa de referidos

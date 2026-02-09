@@ -323,7 +323,7 @@ ion-button:not([fill="outline"]):not([fill="clear"]) {
 
 /* Primary button class for consistent styling */
 .primary-btn {
-  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, #2c5282 100%);
+  --background: #1e3a5f;
   --color: white;
   --border-radius: 12px;
   height: 52px;
@@ -409,13 +409,13 @@ ion-alert {
 
     &.alert-button-role-destructive,
     &.danger {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: #dc2626;
       color: #fff;
     }
 
-    // Primary/confirm button - NurseLite gradient
+    // Primary/confirm button - NurseLite navy solid
     &:not(.alert-button-role-cancel):not(.alert-button-role-destructive):not(.danger) {
-      background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+      background: #1e3a5f;
       color: #fff;
     }
   }
@@ -446,13 +446,13 @@ body.dark ion-alert {
 
     &.alert-button-role-destructive,
     &.danger {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: #dc2626;
       color: #fff;
     }
 
-    // Primary button in dark mode - slightly brighter gradient
+    // Primary button in dark mode - teal for contrast
     &:not(.alert-button-role-cancel):not(.alert-button-role-destructive):not(.danger) {
-      background: linear-gradient(135deg, #5fb3af 0%, #3d7aa8 100%);
+      background: #4a9d9a;
       color: #fff;
     }
   }
@@ -957,27 +957,27 @@ ion-alert.logout-alert {
 ion-alert.histora-alert-danger,
 ion-alert.logout-alert {
   .alert-button {
-    // Confirm/destructive button - red gradient
+    // Confirm/destructive button - red solid
     &:not(.alert-button-role-cancel) {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: #dc2626;
       color: #ffffff;
       font-weight: 700;
     }
 
     &.alert-button-role-destructive {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: #dc2626;
       color: #ffffff;
       font-weight: 700;
     }
   }
 }
 
-// Primary variant (confirm actions - NurseLite teal)
+// Primary variant (confirm actions - NurseLite navy)
 ion-alert.histora-alert-primary {
   .alert-button {
-    // Confirm button - teal gradient
+    // Confirm button - navy solid
     &:not(.alert-button-role-cancel) {
-      background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+      background: #1e3a5f;
       color: #ffffff;
       font-weight: 700;
     }
@@ -987,9 +987,9 @@ ion-alert.histora-alert-primary {
 // Warning variant (amber/yellow)
 ion-alert.histora-alert-warning {
   .alert-button {
-    // Confirm button - amber gradient
+    // Confirm button - amber solid
     &:not(.alert-button-role-cancel) {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      background: #d97706;
       color: #ffffff;
       font-weight: 700;
     }
@@ -999,9 +999,9 @@ ion-alert.histora-alert-warning {
 // Success variant (green) - Verde puro diferenciado del teal accent
 ion-alert.histora-alert-success {
   .alert-button {
-    // Confirm button - green gradient
+    // Confirm button - green solid
     &:not(.alert-button-role-cancel) {
-      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      background: #16a34a;
       color: #ffffff;
       font-weight: 700;
     }
@@ -1409,7 +1409,7 @@ body.dark {
   }
 
   button.driver-popover-next-btn {
-    background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%) !important;
+    background: #1e3a5f !important;
     color: #ffffff !important;
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35) !important;
     text-shadow: none !important;
@@ -1499,7 +1499,7 @@ body.dark .histora-tour-popover {
   }
 
   button.driver-popover-next-btn {
-    background: linear-gradient(135deg, #1e3a5f 0%, #4a9d9a 100%) !important;
+    background: #1e3a5f !important;
     color: #ffffff !important;
     text-shadow: none !important;
   }
@@ -1946,5 +1946,63 @@ body.dark ion-toast.chat-notification-toast {
 
   &::part(button) {
     color: #64748b;
+  }
+}
+
+// ==========================================================================
+// New Request Notification Toast
+// ==========================================================================
+ion-toast.new-request-toast {
+  --background: #ffffff;
+  --color: #1e293b;
+  --border-radius: 14px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --start: 8px;
+  --end: 8px;
+
+  &::part(header) {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e3a5f;
+  }
+
+  &::part(message) {
+    font-size: 13px;
+    color: #475569;
+    padding-top: 2px;
+  }
+
+  &::part(icon) {
+    color: #1e3a5f;
+    font-size: 24px;
+  }
+
+  &::part(button) {
+    color: #1e3a5f;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 12px;
+  }
+}
+
+body.ion-palette-dark ion-toast.new-request-toast,
+body.dark ion-toast.new-request-toast {
+  --background: #1e293b;
+  --color: #f1f5f9;
+
+  &::part(header) {
+    color: #f1f5f9;
+  }
+
+  &::part(message) {
+    color: #94a3b8;
+  }
+
+  &::part(icon) {
+    color: #4a9d9a;
+  }
+
+  &::part(button) {
+    color: #4a9d9a;
   }
 }

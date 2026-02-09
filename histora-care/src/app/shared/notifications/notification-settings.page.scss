@@ -1,5 +1,12 @@
 @use '../../../theme/design-tokens' as tokens;
 
+:host {
+  ion-header ion-toolbar {
+    --background: #ffffff;
+    --color: #1e293b;
+  }
+}
+
 .notification-settings-content {
   --background: var(--surface-secondary);
 }
@@ -144,6 +151,11 @@
 // Dark mode
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
+  ion-header ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
+  }
+
   .notification-settings-content {
     --background: #{tokens.$surface-dark-primary};
   }

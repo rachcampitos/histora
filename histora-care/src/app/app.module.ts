@@ -24,6 +24,7 @@ function initializeApp(authService: AuthService) {
     BrowserAnimationsModule,
     IonicModule.forRoot({
       mode: 'ios', // Use iOS styling for consistency
+      innerHTMLTemplatesEnabled: true,
     }),
     AppRoutingModule,
     ServiceWorkerModule.register('sw-push.js', {
