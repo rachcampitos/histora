@@ -944,10 +944,11 @@ ion-alert.logout-alert {
     font-size: 15px;
     flex: 1;
 
-    // Cancel button - always gray
+    // Cancel button - visible gray with border
     &.alert-button-role-cancel {
-      background: #f1f5f9;
-      color: #475569;
+      background: #e2e8f0;
+      color: #334155;
+      border: 1px solid #cbd5e1;
     }
   }
 }
@@ -1073,17 +1074,27 @@ ion-alert.review-view-alert {
 ion-alert.cep-alert {
   .alert-wrapper {
     max-width: 360px;
+    border-radius: 16px;
+    overflow: hidden;
   }
 
   .alert-head {
-    padding: 20px 20px 8px;
+    padding: 16px 20px 0;
+    text-align: center;
   }
 
   .alert-title {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
-    text-align: left;
+    text-align: center;
     color: #1e3a5f;
+  }
+
+  .alert-sub-title {
+    font-size: 14px;
+    color: #64748b;
+    text-align: center;
+    margin-top: 4px;
   }
 
   .alert-message {
@@ -1091,6 +1102,26 @@ ion-alert.cep-alert {
     padding: 8px 20px 16px;
 
     .cep-explanation {
+      .cep-icon-header {
+        text-align: center;
+        margin-bottom: 16px;
+
+        .cep-icon-circle {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 56px;
+          height: 56px;
+          background: rgba(22, 163, 74, 0.1);
+          border-radius: 50%;
+
+          ion-icon {
+            font-size: 28px;
+            color: #16a34a;
+          }
+        }
+      }
+
       p {
         margin: 0 0 12px;
         font-size: 14px;
@@ -1103,14 +1134,41 @@ ion-alert.cep-alert {
       }
 
       ul {
+        list-style: none;
         margin: 0 0 16px;
-        padding-left: 20px;
+        padding: 0;
 
         li {
-          margin-bottom: 8px;
-          font-size: 13px;
+          margin-bottom: 10px;
+          font-size: 14px;
           line-height: 1.4;
           color: #475569;
+          padding-left: 24px;
+          position: relative;
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            background: rgba(22, 163, 74, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          &::after {
+            content: '\2713';
+            position: absolute;
+            left: 3px;
+            top: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #16a34a;
+          }
 
           strong {
             color: #16a34a;
@@ -1119,21 +1177,30 @@ ion-alert.cep-alert {
       }
 
       .cep-trust {
-        background: rgba(22, 163, 74, 0.1);
+        background: rgba(22, 163, 74, 0.08);
         border-left: 3px solid #16a34a;
-        padding: 10px 12px;
-        border-radius: 0 8px 8px 0;
+        padding: 12px 14px;
+        border-radius: 0 10px 10px 0;
         font-size: 13px;
         color: #15803d;
+        line-height: 1.5;
         margin: 0;
       }
     }
   }
 
+  .alert-button-group {
+    padding: 8px 16px 16px;
+  }
+
   .alert-button {
-    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+    background: var(--ion-color-primary, #1e3a5f) !important;
     color: #ffffff !important;
     font-weight: 600;
+    border-radius: 12px !important;
+    min-height: 44px;
+    font-size: 16px;
+    margin: 0 !important;
   }
 }
 
@@ -1198,11 +1265,23 @@ body.dark {
     }
 
     .alert-title {
-      color: #6bb5b3;
+      color: #f1f5f9;
+    }
+
+    .alert-sub-title {
+      color: #94a3b8;
     }
 
     .alert-message {
       .cep-explanation {
+        .cep-icon-header .cep-icon-circle {
+          background: rgba(34, 197, 94, 0.15);
+
+          ion-icon {
+            color: #34d399;
+          }
+        }
+
         p {
           color: #cbd5e1;
 
@@ -1214,17 +1293,29 @@ body.dark {
         ul li {
           color: #cbd5e1;
 
+          &::before {
+            background: rgba(34, 197, 94, 0.15);
+          }
+
+          &::after {
+            color: #34d399;
+          }
+
           strong {
             color: #34d399;
           }
         }
 
         .cep-trust {
-          background: rgba(34, 197, 94, 0.15);
+          background: rgba(34, 197, 94, 0.12);
           border-left-color: #22c55e;
           color: #34d399;
         }
       }
+    }
+
+    .alert-button {
+      background: #354d6f !important;
     }
   }
 }

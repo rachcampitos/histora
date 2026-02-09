@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, ModalController, Platform, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService, HapticsService } from '../../core/services';
 import { ChatService } from '../../core/services/chat.service';
 import { ServiceRequest } from '../../core/models';
@@ -70,6 +70,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   private pollingSubscription?: Subscription;
   private chatNotificationSub?: Subscription;
   private chatNewMessageSub?: Subscription;
+  private chatAllReadSub?: Subscription;
   private simulationInterval?: ReturnType<typeof setInterval>;
   private etaRefreshInterval?: ReturnType<typeof setInterval>;
   private previousStatus = signal<TrackingStatus | null>(null);
@@ -115,6 +116,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     private platform: Platform,
     private alertController: AlertController,
     private toastController: ToastController,
+    private loadingController: LoadingController,
     public mapboxService: MapboxService,
     private wsService: WebSocketService,
     private geoService: GeolocationService,
@@ -204,24 +206,29 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     // Reset sheet visibility in case ionViewWillLeave set it to true
     this.forceCloseSheet.set(false);
 
-    // Re-initialize map if it was destroyed
-    const currentMap = this.mapboxService.getMap();
-    if (!currentMap && this.requestId()) {
-      this.mapInitialized = false;
+    if (this.requestId()) {
+      // Always refresh request data to ensure signals are up-to-date (sheet depends on them)
+      await this.loadRequestData();
 
-      // Reconnect WebSocket if needed
-      const token = await this.authService.getToken();
-      if (token) {
-        this.wsService.connect(token);
-        this.wsService.joinTrackingRoom(this.requestId());
-      }
+      // Re-initialize map if it was destroyed
+      const currentMap = this.mapboxService.getMap();
+      if (!currentMap) {
+        this.mapInitialized = false;
 
-      // Re-subscribe to chat notifications (subscriptions lost on cache restore)
-      this.loadChatUnread(this.requestId());
+        // Reconnect WebSocket if needed
+        const token = await this.authService.getToken();
+        if (token) {
+          this.wsService.connect(token);
+          this.wsService.joinTrackingRoom(this.requestId());
+        }
 
-      // Reinitialize map
-      if (!this.isLoading() && !this.loadError() && this.currentStatus() !== 'pending') {
-        setTimeout(() => this.initMap(), 300);
+        // Re-subscribe to chat notifications (subscriptions lost on cache restore)
+        this.loadChatUnread(this.requestId());
+
+        // Reinitialize map
+        if (!this.isLoading() && !this.loadError() && this.currentStatus() !== 'pending') {
+          setTimeout(() => this.initMap(), 300);
+        }
       }
     }
   }
@@ -233,6 +240,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.stopEtaRefresh();
     this.chatNotificationSub?.unsubscribe();
     this.chatNewMessageSub?.unsubscribe();
+    this.chatAllReadSub?.unsubscribe();
     this.wsService.leaveTrackingRoom(this.requestId());
     this.mapboxService.destroy();
 
@@ -820,6 +828,14 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         this.chatUnreadCount.update(c => c + 1);
       }
     });
+
+    // Listen for all-read events (when user reads all messages in chat modal)
+    this.chatAllReadSub?.unsubscribe();
+    this.chatAllReadSub = this.chatService.onAllRead().subscribe(data => {
+      if (data.roomId === this.chatRoomId) {
+        this.chatUnreadCount.set(0);
+      }
+    });
   }
 
   /**
@@ -1078,6 +1094,12 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    const loading = await this.loadingController.create({
+      message: 'Enviando calificacion...',
+      spinner: 'crescent',
+    });
+    await loading.present();
+
     let nurseReviewSuccess = false;
     let serviceRateSuccess = false;
 
@@ -1114,6 +1136,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
         console.error('Error rating service request:', err);
       }
     }
+
+    await loading.dismiss();
 
     // Evaluate results
     if (nurseReviewSuccess || serviceRateSuccess) {

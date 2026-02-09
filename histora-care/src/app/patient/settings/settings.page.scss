@@ -1,5 +1,12 @@
 @use '../../../theme/design-tokens' as tokens;
 
+// Page background - light gray to contrast with white cards
+:host {
+  ion-content {
+    --background: #f5f5f5;
+  }
+}
+
 // Profile Section
 .profile-section {
   display: flex;
@@ -7,9 +14,9 @@
   gap: 16px;
   padding: 20px 16px;
   margin: 16px;
-  background: tokens.$surface-primary;
+  background: #ffffff;
   border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: transform tokens.$duration-normal tokens.$easing-standard,
               box-shadow tokens.$duration-normal tokens.$easing-standard;
 
@@ -56,7 +63,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid tokens.$surface-primary;
+    border: 2px solid #ffffff;
 
     ion-icon {
       font-size: 12px;
@@ -107,26 +114,38 @@
   }
 }
 
-// Lists
-ion-list {
-  margin-top: 16px;
-  background: transparent;
+// Settings Groups - Card-based layout
+.settings-group {
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
 
-  ion-list-header {
-    ion-label {
-      font-size: tokens.$font-size-xs;
-      font-weight: tokens.$font-weight-semibold;
-      color: tokens.$text-tertiary;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-  }
+.settings-section-title {
+  font-size: tokens.$font-size-xs;
+  font-weight: tokens.$font-weight-semibold;
+  color: tokens.$text-tertiary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 4px 8px;
+}
+
+.settings-card {
+  background: #ffffff;
+  border-radius: tokens.$radius-lg;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 
   ion-item {
-    --background: #{tokens.$surface-primary};
+    --background: transparent;
     --padding-start: 16px;
     --padding-end: 16px;
     --min-height: 52px;
+    --border-color: rgba(0, 0, 0, 0.06);
+    --inner-border-width: 0 0 0.55px 0;
+
+    &:last-child {
+      --inner-border-width: 0;
+    }
 
     ion-icon[slot="start"] {
       font-size: 22px;
@@ -152,9 +171,9 @@ ion-list {
   }
 }
 
-// Logout item
+// Logout item - no extra margin needed, card handles spacing
 .logout-item {
-  margin-top: 24px;
+  --inner-border-width: 0 !important;
 }
 
 // App version
@@ -179,6 +198,10 @@ ion-list {
 // ============================================================
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
+  ion-content {
+    --background: #{tokens.$surface-dark-primary};
+  }
+
   .profile-section {
     background: tokens.$surface-dark-secondary;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -207,16 +230,18 @@ ion-list {
     }
   }
 
-  ion-list {
-    ion-list-header {
-      ion-label {
-        color: tokens.$text-dark-tertiary;
-      }
-    }
+  .settings-section-title {
+    color: tokens.$text-dark-tertiary;
+  }
+
+  .settings-card {
+    background: tokens.$surface-dark-secondary;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
     ion-item {
-      --background: #{tokens.$surface-dark-secondary};
+      --background: transparent;
       --color: #{tokens.$text-dark-primary};
+      --border-color: rgba(255, 255, 255, 0.08);
 
       ion-label {
         color: tokens.$text-dark-primary;

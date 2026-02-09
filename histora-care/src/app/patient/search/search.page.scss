@@ -171,7 +171,71 @@ ion-card-title {
   }
 }
 
-// Service Price
+// Services List - Floating card items
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.service-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  transition: transform 0.15s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .service-icon-box {
+    width: 44px;
+    height: 44px;
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 22px;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .service-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .service-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .service-meta {
+      font-size: 13px;
+      color: #64748b;
+    }
+  }
+
+  .service-price {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+// Legacy service-price (outside cards)
 .service-price {
   font-weight: 600;
   font-size: 14px;
@@ -298,7 +362,7 @@ ion-footer {
     }
   }
 
-  // Service items
+  // Service items (legacy ion-item)
   ion-item {
     --background: transparent;
     --color: #e2e8f0;
@@ -314,9 +378,32 @@ ion-footer {
     }
   }
 
-  // Service price
+  // Service card items
+  .service-card-item {
+    background: #0f172a;
+
+    .service-icon-box {
+      background: rgba(var(--ion-color-primary-rgb), 0.15);
+    }
+
+    .service-details {
+      .service-name {
+        color: #f1f5f9;
+      }
+
+      .service-meta {
+        color: #94a3b8;
+      }
+    }
+
+    .service-price {
+      color: #6ee7b7;
+    }
+  }
+
+  // Legacy service price
   .service-price {
-    color: #6ee7b7 !important; // Brighter in dark mode
+    color: #6ee7b7 !important;
   }
 
   // Chips

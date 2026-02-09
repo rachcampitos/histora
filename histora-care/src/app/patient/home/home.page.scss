@@ -1,5 +1,12 @@
 @use '../../../theme/design-tokens' as tokens;
 
+// Page background - light gray to contrast with white cards
+:host {
+  ion-content {
+    --background: #f5f5f5;
+  }
+}
+
 // ============================================================
 // ACTIVE SERVICE BANNER - Prominent when service is in progress
 // ============================================================
@@ -305,7 +312,7 @@
     // Reset button
     border: none;
     outline: none;
-    background: var(--surface-primary);
+    background: #ffffff;
     font-family: inherit;
     cursor: pointer;
 
@@ -318,7 +325,7 @@
     padding: tokens.$spacing-4 tokens.$spacing-2;
     min-height: tokens.$touch-target-comfortable;
     border-radius: tokens.$radius-lg;
-    box-shadow: tokens.$shadow-sm;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: transform tokens.$duration-normal tokens.$easing-standard,
                 box-shadow tokens.$duration-normal tokens.$easing-standard;
 
@@ -465,6 +472,10 @@
 // ============================================================
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
+  ion-content {
+    --background: #{tokens.$surface-dark-primary};
+  }
+
   .hero-section {
     background: linear-gradient(135deg, tokens.$color-brand-secondary 0%, tokens.$color-brand-primary 100%);
 

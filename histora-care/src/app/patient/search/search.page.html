@@ -124,22 +124,22 @@
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-list lines="full">
+            <div class="services-list">
               @for (service of nurse()!.services; track service._id) {
                 @if (service.isActive) {
-                  <ion-item>
-                    <ion-icon name="medical-outline" slot="start" color="primary"></ion-icon>
-                    <ion-label>
-                      <h3>{{ service.name }}</h3>
-                      <p>{{ getCategoryLabel(service.category) }} - {{ formatDuration(service.durationMinutes) }}</p>
-                    </ion-label>
-                    <ion-note slot="end" color="primary" class="service-price">
-                      {{ formatPrice(service.price, service.currency) }}
-                    </ion-note>
-                  </ion-item>
+                  <div class="service-card-item">
+                    <div class="service-icon-box">
+                      <ion-icon name="medical-outline"></ion-icon>
+                    </div>
+                    <div class="service-details">
+                      <span class="service-name">{{ service.name }}</span>
+                      <span class="service-meta">{{ getCategoryLabel(service.category) }} - {{ formatDuration(service.durationMinutes) }}</span>
+                    </div>
+                    <span class="service-price">{{ formatPrice(service.price, service.currency) }}</span>
+                  </div>
                 }
               }
-            </ion-list>
+            </div>
           </ion-card-content>
         </ion-card>
       }

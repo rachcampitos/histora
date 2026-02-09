@@ -28,6 +28,8 @@ export class HomePage implements OnInit, OnDestroy {
   recentNurses = signal<{ nurseId: string; firstName: string; lastName: string; avatar?: string }[]>([]);
   isLoading = signal(false);
 
+  private arrivedAlertShownFor: string | null = null;
+
   constructor() {
     // React to WebSocket status updates
     effect(() => {
@@ -36,9 +38,15 @@ export class HomePage implements OnInit, OnDestroy {
         // Small delay to allow backend to persist the status change before querying
         setTimeout(() => this.loadActiveRequest(), 500);
 
-        // Show arrival alert prompting patient to verify security code
-        if (statusUpdate.status === 'arrived') {
+        // Show arrival alert prompting patient to verify security code (once per request)
+        if (statusUpdate.status === 'arrived' && this.arrivedAlertShownFor !== statusUpdate.requestId) {
+          this.arrivedAlertShownFor = statusUpdate.requestId;
           this.showNurseArrivedAlert(statusUpdate.requestId);
+        }
+
+        // Reset guard when status moves past arrived
+        if (statusUpdate.status !== 'arrived') {
+          this.arrivedAlertShownFor = null;
         }
       }
     });

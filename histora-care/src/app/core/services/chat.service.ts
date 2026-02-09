@@ -102,6 +102,7 @@ export class ChatService {
   private newMessage$ = new Subject<ChatMessage>();
   private messageRead$ = new Subject<{ roomId: string; messageIds: string[]; readBy: string }>();
   private roomNotification$ = new Subject<{ roomId: string; type: string; preview: string; senderName: string; senderAvatar?: string }>();
+  private allRead$ = new Subject<{ roomId: string; readBy: string }>();
 
   // Get observable for new messages
   onNewMessage(): Observable<ChatMessage> {
@@ -114,6 +115,10 @@ export class ChatService {
 
   onRoomNotification(): Observable<{ roomId: string; type: string; preview: string; senderName: string; senderAvatar?: string }> {
     return this.roomNotification$.asObservable();
+  }
+
+  onAllRead(): Observable<{ roomId: string; readBy: string }> {
+    return this.allRead$.asObservable();
   }
 
   /**
@@ -213,6 +218,12 @@ export class ChatService {
           )
         );
       }
+      // Reset unread count when current user reads all messages
+      const currentUserId = this.authService.user()?.id;
+      if (data.readBy === currentUserId) {
+        this._unreadCount.set(0);
+      }
+      this.allRead$.next(data);
     });
 
     this.socket.on('room-notification', (data: { roomId: string; type: string; preview: string; senderName: string; senderAvatar?: string }) => {

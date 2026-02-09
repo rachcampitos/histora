@@ -178,9 +178,15 @@ export class SearchPage implements OnInit {
 
   async showCepExplanation() {
     const alert = await this.alertCtrl.create({
-      header: '¿Que significa CEP Verificado?',
+      header: 'CEP Verificado',
+      subHeader: 'Garantia de profesionalismo',
       message: `
         <div class="cep-explanation">
+          <div class="cep-icon-header">
+            <div class="cep-icon-circle">
+              <ion-icon name="shield-checkmark"></ion-icon>
+            </div>
+          </div>
           <p><strong>CEP</strong> = Colegio de Enfermeros del Peru</p>
           <p>Todas las enfermeras en NurseLite estan verificadas directamente con el CEP, garantizando:</p>
           <ul>
