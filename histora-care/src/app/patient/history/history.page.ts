@@ -199,7 +199,8 @@ export class HistoryPage implements OnInit {
         await this.nurseApiService.submitReview(request.nurseId, {
           rating: reviewData.rating,
           comment: reviewData.comment,
-          serviceRequestId: request._id
+          serviceRequestId: request._id,
+          allowPublicUse: reviewData.allowPublicUse
         }).toPromise();
         nurseReviewSuccess = true;
       } catch (err: any) {

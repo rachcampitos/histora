@@ -262,6 +262,14 @@ export class NursesController {
 
   // ============= Nurse Reviews =============
 
+  // Public endpoint: Get public testimonials for landing page
+  @Get('reviews/public-testimonials')
+  @ApiOperation({ summary: 'Get public testimonials for landing page' })
+  @ApiResponse({ status: 200, description: 'List of public testimonials' })
+  async getPublicTestimonials(@Query('limit') limit = 10) {
+    return this.nursesService.getPublicTestimonials(Number(limit));
+  }
+
   // Public endpoint: Get reviews for a nurse
   @Get(':nurseId/reviews')
   @ApiOperation({ summary: 'Get reviews for a nurse' })

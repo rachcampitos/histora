@@ -103,6 +103,7 @@ export class NurseApiService {
     rating: number;
     comment: string;
     serviceRequestId?: string;
+    allowPublicUse?: boolean;
   }): Observable<NurseReview> {
     return this.api.post(`/nurses/${nurseId}/reviews`, review);
   }

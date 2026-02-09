@@ -3,6 +3,7 @@ import {
   IsNumber,
   IsString,
   IsOptional,
+  IsBoolean,
   IsMongoId,
   Min,
   Max,
@@ -39,6 +40,11 @@ export class CreateNurseReviewDto {
   @IsOptional()
   @IsMongoId({ message: 'ID de solicitud invalido' })
   serviceRequestId?: string;
+
+  @ApiPropertyOptional({ description: 'Allow review to be used as public testimonial on landing page' })
+  @IsOptional()
+  @IsBoolean()
+  allowPublicUse?: boolean;
 }
 
 export class NurseReviewResponseDto {

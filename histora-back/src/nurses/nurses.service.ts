@@ -686,6 +686,7 @@ export class NursesService implements OnModuleInit {
       rating: createReviewDto.rating,
       comment: createReviewDto.comment || '',
       isVerified,
+      allowPublicUse: createReviewDto.allowPublicUse || false,
     });
 
     const savedReview = await review.save();
@@ -831,5 +832,23 @@ export class NursesService implements OnModuleInit {
 
     // Recalculate nurse's rating
     await this.recalculateNurseRating(review.nurseId.toString());
+  }
+
+  /**
+   * Get public testimonials (reviews with allowPublicUse opt-in)
+   */
+  async getPublicTestimonials(limit = 10): Promise<NurseReview[]> {
+    return this.nurseReviewModel
+      .find({
+        allowPublicUse: true,
+        isDeleted: { $ne: true },
+        rating: { $gte: 4 },
+        comment: { $exists: true, $ne: '' },
+      })
+      .populate('patientId', 'firstName lastName')
+      .sort({ rating: -1, createdAt: -1 })
+      .limit(limit)
+      .lean()
+      .exec();
   }
 }

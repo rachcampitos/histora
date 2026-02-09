@@ -29,6 +29,9 @@ export class NurseReview {
   @Prop({ default: false })
   isDeleted: boolean;
 
+  @Prop({ default: false })
+  allowPublicUse: boolean;
+
   // Response from nurse (optional)
   @Prop({
     type: {

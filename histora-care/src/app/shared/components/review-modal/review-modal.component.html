@@ -56,6 +56,17 @@
     <span class="char-count">{{ comment().length }}/200</span>
   </div>
 
+  <!-- Opt-in for public testimonial -->
+  @if (rating() >= 4 && comment().length >= 20) {
+    <label class="optin-row">
+      <input type="checkbox" [checked]="allowPublicUse()" (change)="togglePublicUse()">
+      <span class="optin-text">
+        Autorizo publicar mi resena en nurse-lite.com
+        <span class="optin-detail">(Solo tu nombre e inicial de apellido)</span>
+      </span>
+    </label>
+  }
+
   <!-- Actions - Single row -->
   <div class="actions-row">
     <button class="skip-btn" (click)="skip()" [disabled]="isSubmitting()">

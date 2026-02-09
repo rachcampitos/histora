@@ -1108,7 +1108,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       await firstValueFrom(this.nurseApiService.submitReview(nurseId, {
         rating: reviewData.rating,
         comment: reviewData.comment,
-        serviceRequestId: this.requestId()
+        serviceRequestId: this.requestId(),
+        allowPublicUse: reviewData.allowPublicUse
       }));
       nurseReviewSuccess = true;
     } catch (err: any) {

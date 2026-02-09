@@ -8,6 +8,7 @@ import { HapticsService } from '../../../core/services';
 export interface ReviewSubmitData {
   rating: number;
   comment: string;
+  allowPublicUse: boolean;
 }
 
 /**
@@ -38,6 +39,7 @@ export class ReviewModalComponent {
   rating = signal<number>(0);
   comment = signal<string>('');
   isSubmitting = signal<boolean>(false);
+  allowPublicUse = signal<boolean>(false);
 
   stars = [1, 2, 3, 4, 5];
 
@@ -58,6 +60,10 @@ export class ReviewModalComponent {
   onStarClick(star: number): void {
     this.rating.set(star);
     this.haptics.selectionChanged();
+  }
+
+  togglePublicUse(): void {
+    this.allowPublicUse.update(v => !v);
   }
 
   addSuggestion(text: string): void {
@@ -120,7 +126,8 @@ export class ReviewModalComponent {
 
     const reviewData: ReviewSubmitData = {
       rating: this.rating(),
-      comment: this.comment().trim()
+      comment: this.comment().trim(),
+      allowPublicUse: this.allowPublicUse()
     };
 
     // Haptic feedback on successful submit
