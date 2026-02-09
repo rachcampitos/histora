@@ -199,6 +199,32 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.removeOrphanedSheet();
   }
 
+  /**
+   * Re-initialize when Ionic restores this page from cache
+   */
+  async ionViewDidEnter() {
+    // Reset sheet visibility in case ionViewWillLeave set it to true
+    this.forceCloseSheet.set(false);
+
+    // Re-initialize map if it was destroyed
+    const currentMap = this.mapboxService.getMap();
+    if (!currentMap && this.requestId()) {
+      this.mapInitialized = false;
+
+      // Reconnect WebSocket if needed
+      const token = await this.authService.getToken();
+      if (token) {
+        this.wsService.connect(token);
+        this.wsService.joinTrackingRoom(this.requestId());
+      }
+
+      // Reinitialize map
+      if (!this.isLoading() && !this.loadError() && this.currentStatus() !== 'pending') {
+        setTimeout(() => this.initMap(), 300);
+      }
+    }
+  }
+
   ngOnDestroy() {
     this.forceCloseSheet.set(true);
     this.stopPolling();
@@ -207,7 +233,6 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     this.chatNotificationSub?.unsubscribe();
     this.chatNewMessageSub?.unsubscribe();
     this.wsService.leaveTrackingRoom(this.requestId());
-    this.wsService.disconnect();
     this.mapboxService.destroy();
 
     // Safety: remove any orphaned tracking sheet modal from DOM overlay

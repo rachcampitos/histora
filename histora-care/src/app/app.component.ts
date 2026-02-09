@@ -2,12 +2,13 @@
 import { Component, OnInit, OnDestroy, inject, NgZone, DestroyRef, ChangeDetectionStrategy, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, NavigationStart } from '@angular/router';
-import { Platform, ToastController } from '@ionic/angular';
+import { ModalController, Platform, ToastController } from '@ionic/angular';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { AuthService } from './core/services/auth.service';
 import { ThemeService } from './core/services/theme.service';
 import { ChatService } from './core/services/chat.service';
+import { ChatModalComponent } from './shared/components/chat-modal';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService); // Initialize theme on app start
   private chatService = inject(ChatService);
   private toastController = inject(ToastController);
+  private modalController = inject(ModalController);
   private destroyRef = inject(DestroyRef);
   private notificationSub?: Subscription;
 
@@ -95,13 +97,27 @@ export class AppComponent implements OnInit, OnDestroy {
     try {
       const room = await this.chatService.getRoom(roomId);
       const user = this.authService.user();
-      if (room.serviceRequestId && user) {
-        if (user.role === 'nurse') {
-          this.router.navigate(['/nurse/active-service', room.serviceRequestId]);
-        } else {
-          this.router.navigate(['/patient/tracking', room.serviceRequestId]);
-        }
-      }
+      if (!room.serviceRequestId || !user) return;
+
+      // Find the other participant to get their name/avatar
+      const otherParticipant = room.participants.find(p => p.userId !== user.id);
+      const otherName = otherParticipant?.name || 'Chat';
+      const otherAvatar = otherParticipant?.avatar;
+      const otherRole = otherParticipant?.role || (user.role === 'nurse' ? 'patient' : 'nurse');
+
+      // Open chat modal directly (same experience for both roles)
+      const modal = await this.modalController.create({
+        component: ChatModalComponent,
+        componentProps: {
+          serviceRequestId: room.serviceRequestId,
+          otherUserName: otherName,
+          otherUserAvatar: otherAvatar,
+          otherUserRole: otherRole,
+        },
+        cssClass: 'chat-modal-fullscreen',
+        canDismiss: true,
+      });
+      await modal.present();
     } catch {
       // Fallback: ignore navigation errors
     }
