@@ -6,7 +6,7 @@ import { NurseApiService } from '../../core/services/nurse.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { AuthService } from '../../core/services/auth.service';
 import { GeolocationService } from '../../core/services/geolocation.service';
-import { WebSocketService } from '../../core/services/websocket.service';
+import { WebSocketService, ReviewNotification } from '../../core/services/websocket.service';
 import { ProductTourService } from '../../core/services/product-tour.service';
 import { NurseOnboardingService } from '../../core/services/nurse-onboarding.service';
 import { CelebrationService } from '../../core/services/celebration.service';
@@ -125,6 +125,17 @@ export class DashboardPage implements OnInit, OnDestroy {
             this.loadRequests(nurseId);
           }
         }, 500);
+      }
+    });
+
+    // React to new review notifications (real-time)
+    effect(() => {
+      const review = this.wsService.reviewReceived();
+      if (review) {
+        this.handleReviewNotification(review);
+        this.wsService.clearReviewReceived();
+        // Refresh profile to update averageRating
+        this.refreshNurseProfile();
       }
     });
   }
@@ -315,17 +326,24 @@ export class DashboardPage implements OnInit, OnDestroy {
     // Clear queryParams to avoid re-triggering on re-enter
     this.router.navigate([], { queryParams: {}, replaceUrl: true });
 
-    // Small delay so the page is fully visible before showing the celebration
-    setTimeout(() => {
-      if (rating >= 5) {
-        this.celebrationService.triggerConfetti();
-        this.showToast('Un paciente califico tu servicio con 5 estrellas. Servicio excepcional!', 'success');
-      } else if (rating === 4) {
-        this.showToast('Un paciente califico tu servicio con 4 estrellas. Muy buen trabajo!', 'success');
-      } else {
-        this.showToast('Tienes una nueva resena de un paciente', 'primary');
-      }
-    }, 300);
+    setTimeout(() => this.showReviewCelebration(rating), 300);
+  }
+
+  private handleReviewNotification(review: ReviewNotification) {
+    setTimeout(() => this.showReviewCelebration(review.rating, review.patientName), 300);
+  }
+
+  private async showReviewCelebration(rating: number, patientName?: string) {
+    const from = patientName ? `${patientName} califico` : 'Un paciente califico';
+
+    if (rating >= 5) {
+      this.celebrationService.triggerConfetti();
+      this.showToast(`${from} tu servicio con 5 estrellas. Servicio excepcional!`, 'success');
+    } else if (rating === 4) {
+      this.showToast(`${from} tu servicio con 4 estrellas. Muy buen trabajo!`, 'success');
+    } else {
+      this.showToast('Tienes una nueva resena de un paciente', 'primary');
+    }
   }
 
   ngOnDestroy() {

@@ -473,6 +473,23 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   /**
+   * Notify nurse about a new review from a patient
+   */
+  notifyNurseNewReview(nurseUserId: string, data: {
+    requestId: string;
+    rating: number;
+    comment?: string;
+    patientName: string;
+    serviceName: string;
+  }) {
+    this.logger.log(`Notifying nurse ${nurseUserId} about new review (${data.rating} stars)`);
+    this.server.to(`user:${nurseUserId}`).emit('review:new', {
+      ...data,
+      timestamp: new Date(),
+    });
+  }
+
+  /**
    * Notify nurse about a new service request
    * Broadcasts to the nurse's personal room
    */

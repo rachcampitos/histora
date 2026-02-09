@@ -31,6 +31,15 @@ export interface NewRequestNotification {
   timestamp: Date;
 }
 
+export interface ReviewNotification {
+  requestId: string;
+  rating: number;
+  comment?: string;
+  patientName: string;
+  serviceName: string;
+  timestamp: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -44,6 +53,7 @@ export class WebSocketService {
   private _newRequest = signal<NewRequestNotification | null>(null);
   private _connectionError = signal<string | null>(null);
   private _nurseAvailabilityChanged = signal<Date | null>(null);
+  private _reviewReceived = signal<ReviewNotification | null>(null);
 
   // Public readonly signals
   isConnected = this._isConnected.asReadonly();
@@ -52,6 +62,7 @@ export class WebSocketService {
   newRequest = this._newRequest.asReadonly();
   connectionError = this._connectionError.asReadonly();
   nurseAvailabilityChanged = this._nurseAvailabilityChanged.asReadonly();
+  reviewReceived = this._reviewReceived.asReadonly();
 
   /**
    * Connect to WebSocket server for real-time tracking
@@ -165,6 +176,14 @@ export class WebSocketService {
       this._nurseAvailabilityChanged.set(new Date(data.timestamp));
     });
 
+    // Listen for new review notifications (for nurses)
+    this.socket.on('review:new', (data: ReviewNotification) => {
+      this._reviewReceived.set({
+        ...data,
+        timestamp: new Date(data.timestamp)
+      });
+    });
+
     // Listen for new request notifications (for nurses)
     this.socket.on('request:new', (data: NewRequestNotification) => {
       this._newRequest.set({
@@ -274,6 +293,7 @@ export class WebSocketService {
       this._statusUpdate.set(null);
       this._newRequest.set(null);
       this._nurseAvailabilityChanged.set(null);
+      this._reviewReceived.set(null);
     }
   }
 
@@ -282,6 +302,13 @@ export class WebSocketService {
    */
   clearNewRequest(): void {
     this._newRequest.set(null);
+  }
+
+  /**
+   * Clear review notification (after it's been handled)
+   */
+  clearReviewReceived(): void {
+    this._reviewReceived.set(null);
   }
 
   /**

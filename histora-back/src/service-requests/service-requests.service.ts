@@ -635,6 +635,15 @@ export class ServiceRequestsService {
             comment: rateDto.review,
             serviceName: request.service.name,
           });
+
+          // Real-time WebSocket event
+          this.trackingGateway.notifyNurseNewReview(nurseUserId, {
+            requestId: id,
+            rating: rateDto.rating,
+            comment: rateDto.review,
+            patientName,
+            serviceName: request.service.name,
+          });
         }
       } catch (error) {
         this.logger.error(`Failed to send review notification to nurse: ${error.message}`);
