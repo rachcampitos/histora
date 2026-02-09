@@ -112,12 +112,12 @@
                     }
                   </div>
                   <!-- Actions -->
-                  <div class="card-actions">
-                    <ion-button fill="outline" color="danger" size="small" (click)="rejectRequest(request, $event)">
+                  <div class="card-actions pending-actions">
+                    <ion-button fill="outline" color="danger" (click)="rejectRequest(request, $event)">
                       <ion-icon slot="start" name="close-outline"></ion-icon>
                       Rechazar
                     </ion-button>
-                    <ion-button fill="solid" color="success" size="small" (click)="acceptRequest(request, $event)">
+                    <ion-button fill="solid" color="success" (click)="acceptRequest(request, $event)">
                       <ion-icon slot="start" name="checkmark-outline"></ion-icon>
                       Aceptar
                     </ion-button>
