@@ -23,6 +23,7 @@
     <div class="active-service-banner"
          [class.pending]="activeRequest()!.status === 'pending'"
          (click)="viewActiveRequest()">
+      <div class="banner-shimmer"></div>
       @if (activeRequest()!.status !== 'pending') {
         <div class="banner-pulse"></div>
       }

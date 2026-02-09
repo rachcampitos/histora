@@ -376,6 +376,13 @@ export class ServiceRequestsService {
         requestedDate,
         requestedTime: request.requestedTimeSlot,
       });
+
+      // Notify patient via WebSocket for real-time banner update
+      this.trackingGateway.notifyPatientStatusChange(request.patientId.toString(), {
+        requestId: id,
+        status: 'accepted',
+        nurse: { firstName: nurseUser.firstName, lastName: nurseUser.lastName },
+      });
     } catch (error) {
       this.logger.error(`Failed to send acceptance notification: ${error.message}`);
     }
@@ -423,6 +430,12 @@ export class ServiceRequestsService {
         nurseName,
         serviceName: request.service.name,
         reason,
+      });
+
+      // Notify patient via WebSocket for real-time banner update
+      this.trackingGateway.notifyPatientStatusChange(request.patientId.toString(), {
+        requestId: id,
+        status: 'rejected',
       });
     } catch (error) {
       this.logger.error(`Failed to send rejection notification: ${error.message}`);

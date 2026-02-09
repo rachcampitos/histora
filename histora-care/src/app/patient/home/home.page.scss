@@ -57,8 +57,6 @@
   margin: tokens.$spacing-3;
   padding: tokens.$spacing-4;
   background: linear-gradient(135deg, #15803d 0%, #22c55e 50%, #15803d 100%);
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
   border-radius: tokens.$radius-xl;
   box-shadow:
     0 4px 20px rgba(21, 128, 61, 0.4),
@@ -68,6 +66,25 @@
 
   &:active {
     transform: scale(0.98);
+  }
+
+  // Continuous shimmer sweep (left to right, disappear, reappear)
+  .banner-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 40%,
+      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.15) 60%,
+      transparent 100%
+    );
+    animation: shimmer-sweep 2.5s ease-in-out infinite;
+    pointer-events: none;
   }
 
   .banner-pulse {
@@ -148,12 +165,21 @@
   }
 }
 
-@keyframes gradient-shift {
-  0%, 100% {
-    background-position: 0% 50%;
+// Continuous one-direction shimmer: left → right, disappear, reappear from left
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
   }
-  50% {
-    background-position: 100% 50%;
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }
 
@@ -168,12 +194,25 @@
   }
 }
 
-// Pending status variant - amber/orange instead of green
+// Pending status variant - amber/orange with subtle shimmer
 .active-service-banner.pending {
   background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #d97706 100%);
   box-shadow:
     0 4px 20px rgba(217, 119, 6, 0.4),
     0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+
+  // Slower, more subtle shimmer for pending state
+  .banner-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 40%,
+      rgba(255, 255, 255, 0.18) 50%,
+      rgba(255, 255, 255, 0.1) 60%,
+      transparent 100%
+    );
+    animation: shimmer-sweep 3.5s ease-in-out infinite;
+  }
 }
 
 // ============================================================
