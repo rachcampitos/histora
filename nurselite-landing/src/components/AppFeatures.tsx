@@ -87,7 +87,7 @@ const screenLabels = [
   "Niveles",
 ];
 
-const slideDurations = [4500, 4500, 9000, 4500, 5000, 4500, 5000, 5000];
+const slideDurations = [4500, 4500, 7500, 4500, 5000, 4500, 5000, 5000];
 
 /* ── Theme helper ── */
 interface ScreenProps {
@@ -208,9 +208,9 @@ function HomeScreen({ isDark }: ScreenProps) {
             </p>
           </div>
           <div
-            className={`rounded-lg px-2 py-1 ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+            className={`rounded-lg px-2 py-1 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
           >
-            <span className="text-white text-[7px] font-semibold">Ver</span>
+            <span className="text-white text-[7px] font-semibold leading-none">Ver</span>
           </div>
         </div>
       </div>
@@ -299,9 +299,9 @@ function NurseProfileScreen({ isDark }: ScreenProps) {
           )}
         </div>
         <div
-          className={`rounded-xl py-2 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+          className={`rounded-xl py-2 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
         >
-          <span className="text-white text-[9px] font-semibold">
+          <span className="text-white text-[9px] font-semibold leading-none">
             Solicitar Servicio
           </span>
         </div>
@@ -355,9 +355,10 @@ function TrackingScreen({ isDark }: ScreenProps) {
   const [activeStep, setActiveStep] = useState(0);
 
   useEffect(() => {
+    setActiveStep(0);
     const timer = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % serviceSteps.length);
-    }, 1600);
+      setActiveStep((prev) => (prev >= serviceSteps.length - 1 ? prev : prev + 1));
+    }, 1500);
     return () => clearInterval(timer);
   }, []);
 
@@ -523,9 +524,9 @@ function TrackingScreen({ isDark }: ScreenProps) {
             <p className="text-[6px] text-[#4a9d9a]">Enfermera Elite</p>
           </div>
           <div
-            className={`rounded-lg px-2 py-1 ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+            className={`rounded-lg px-2 py-1 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
           >
-            <span className="text-white text-[7px] font-semibold">Chat</span>
+            <span className="text-white text-[7px] font-semibold leading-none">Chat</span>
           </div>
         </div>
       </div>
@@ -841,9 +842,9 @@ function PaymentScreen({ isDark }: ScreenProps) {
           </span>
         </div>
         <div
-          className={`rounded-xl py-2.5 text-center ${t(isDark, "bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a]", "bg-gradient-to-r from-[#4a9d9a] to-[#6bb5b3]")}`}
+          className={`rounded-xl py-2.5 flex items-center justify-center ${t(isDark, "bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a]", "bg-gradient-to-r from-[#4a9d9a] to-[#6bb5b3]")}`}
         >
-          <span className="text-white text-[9px] font-semibold">
+          <span className="text-white text-[9px] font-semibold leading-none">
             Pagar S/ 40.00
           </span>
         </div>
@@ -916,15 +917,15 @@ function NurseDashboardScreen({ isDark }: ScreenProps) {
             </div>
           </div>
           <div className="flex gap-1.5">
-            <div className="flex-1 rounded-lg py-1.5 text-center bg-[#ef4444]/10 border border-[#ef4444]/20">
-              <span className="text-[8px] font-semibold text-[#ef4444]">
+            <div className="flex-1 rounded-lg py-1.5 flex items-center justify-center bg-[#ef4444]/10 border border-[#ef4444]/20">
+              <span className="text-[8px] font-semibold leading-none text-[#ef4444]">
                 Rechazar
               </span>
             </div>
             <div
-              className={`flex-1 rounded-lg py-1.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+              className={`flex-1 rounded-lg py-1.5 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
             >
-              <span className="text-white text-[8px] font-semibold">
+              <span className="text-white text-[8px] font-semibold leading-none">
                 Aceptar
               </span>
             </div>
