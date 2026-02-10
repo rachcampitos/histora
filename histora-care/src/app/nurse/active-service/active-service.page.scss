@@ -193,7 +193,8 @@ ion-header ion-toolbar {
     flex: 1 1 auto;
     min-width: 16px;
     margin: 0 4px;
-    margin-bottom: 18px; // align with dots (label height offset)
+    align-self: flex-start;
+    margin-top: 13px; // center with 28px dot
     border-radius: 1px;
     overflow: hidden;
     transition: flex 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -217,13 +218,14 @@ ion-header ion-toolbar {
       &[data-status="in_progress"] .stepper-line-fill { background: #0891b2; }
     }
 
-    // Active line animates fill
+    // Active line: shimmer sweep left → right
     &.active {
       flex: 1 1 auto;
       min-width: 60px;
 
       .stepper-line-fill {
-        animation: stepper-fillLine 2.5s ease-in-out infinite;
+        width: 100%;
+        animation: stepper-line-shimmer 2s ease-in-out infinite;
       }
 
       &[data-status="accepted"] .stepper-line-fill { background: #2563eb; }
@@ -240,10 +242,17 @@ ion-header ion-toolbar {
   50% { box-shadow: 0 0 0 6px rgba(var(--pulse-color-rgb, 37, 99, 235), 0.1); }
 }
 
-@keyframes stepper-fillLine {
-  0% { width: 0%; }
-  50% { width: 100%; }
-  100% { width: 0%; }
+@keyframes stepper-line-shimmer {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 @keyframes badge-breathe {

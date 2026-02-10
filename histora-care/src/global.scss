@@ -628,7 +628,7 @@ body.dark ion-popover {
   }
 
   ion-radio {
-    --color-checked: var(--ion-color-primary);
+    --color-checked: #6bb5b3;
   }
 
   ion-select-popover {
@@ -792,6 +792,11 @@ body.dark {
 /* ==========================================================================
    Radio Group & List Dark Mode
    ========================================================================== */
+
+body.ion-palette-dark ion-radio,
+body.dark ion-radio {
+  --color-checked: #6bb5b3;
+}
 
 body.ion-palette-dark ion-radio-group,
 body.dark ion-radio-group {
