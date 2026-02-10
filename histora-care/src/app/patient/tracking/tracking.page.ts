@@ -688,14 +688,15 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
       this.updateNurseMarker();
       this.updateRoute();
 
-      // Check if arrived (within 50 meters)
+      // Stop simulation when nurse reaches patient vicinity (50m)
+      // Status change to 'arrived' must come from the nurse's action via WebSocket
       const distance = this.geoService.calculateDistance(
         currentLoc[1], currentLoc[0],
         targetLoc[1], targetLoc[0]
-      ) * 1000; // Convert to meters
+      ) * 1000;
 
-      if (distance < 50 && this.currentStatus() === 'on_the_way') {
-        this.currentStatus.set('arrived');
+      if (distance < 50) {
+        this.stopSimulation();
       }
     }, 3000);
   }

@@ -217,6 +217,7 @@ $primary-gradient: var(--histora-gradient);
       font-size: tokens.$font-size-xs;
       font-weight: tokens.$font-weight-medium;
       white-space: nowrap;
+      line-height: 1;
 
       ion-icon {
         font-size: 14px;

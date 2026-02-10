@@ -880,9 +880,9 @@
   transition: flex 0.5s cubic-bezier(0.4, 0, 0.2, 1),
               min-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
-  // Default: compressed (future lines)
-  flex: 0 0 16px;
-  min-width: 16px;
+  // Default: future/inactive lines get equal spacing
+  flex: 1 1 auto;
+  min-width: 20px;
 
   .progress-line-fill {
     position: absolute;
@@ -1869,6 +1869,7 @@
 
     .nurse-actions {
       .action-btn ion-icon[color="primary"] {
+        --ion-color-base: #6bb5b3 !important;
         color: #6bb5b3 !important;
       }
 

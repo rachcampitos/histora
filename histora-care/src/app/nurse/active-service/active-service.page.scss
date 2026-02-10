@@ -441,6 +441,7 @@ ion-header ion-toolbar {
 
       .patient-actions {
         ion-icon[color="primary"] {
+          --ion-color-base: #6bb5b3 !important;
           color: #6bb5b3 !important;
         }
       }
@@ -474,10 +475,13 @@ ion-header ion-toolbar {
     }
 
     .nav-btn {
+      --ion-color-primary: #6bb5b3;
+      --ion-color-primary-shade: #5a9e9c;
       --color: #6bb5b3;
       --border-color: #6bb5b3;
 
       ion-icon {
+        --ion-color-base: #6bb5b3 !important;
         color: #6bb5b3 !important;
       }
     }
