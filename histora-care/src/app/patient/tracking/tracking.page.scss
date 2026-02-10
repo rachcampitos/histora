@@ -854,9 +854,16 @@
 }
 
 @keyframes fillLine {
-  0% { width: 0%; }
-  80% { width: 100%; }
-  100% { width: 100%; }
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 @keyframes pulse-dot {
@@ -916,8 +923,8 @@
     min-width: 80px;
 
     .progress-line-fill {
-      width: 0%;
-      animation: fillLine 2.5s ease-in-out infinite;
+      width: 100%;
+      animation: fillLine 2s ease-in-out infinite;
     }
 
     // Status-specific line colors
