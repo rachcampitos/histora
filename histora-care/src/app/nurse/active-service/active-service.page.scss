@@ -74,7 +74,7 @@ ion-header ion-toolbar {
 // Compact Status Stepper (positioned above actions)
 .compact-stepper {
   background: var(--histora-card-bg, #ffffff);
-  padding: 10px 16px 12px;
+  padding: 10px 16px 24px; // extra bottom for absolutely positioned labels
   border-top: 1px solid var(--histora-border, #e2e8f0);
 
   .stepper-track {
@@ -84,10 +84,11 @@ ion-header ion-toolbar {
   }
 
   .stepper-step {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    flex: 0 0 28px; // fixed width = dot size, labels won't affect layout
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     .stepper-dot {
@@ -107,7 +108,12 @@ ion-header ion-toolbar {
       }
     }
 
+    // Labels are absolutely positioned so they don't affect step width
     .stepper-label {
+      position: absolute;
+      top: 32px; // dot 28px + 4px gap
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 10px;
       font-weight: 500;
       color: #94a3b8;
@@ -117,6 +123,10 @@ ion-header ion-toolbar {
 
     .stepper-label-dot {
       display: none;
+      position: absolute;
+      top: 34px; // dot 28px + 6px gap
+      left: 50%;
+      transform: translateX(-50%);
       width: 6px;
       height: 6px;
       border-radius: 50%;
@@ -191,9 +201,7 @@ ion-header ion-toolbar {
     background: #e2e8f0;
     flex: 1 1 auto;
     min-width: 16px;
-    margin: 0 4px;
-    align-self: flex-start;
-    margin-top: 13px; // center with 28px dot
+    margin: 13px 4px 0; // 13px = center with 28px dot (28/2 - 1)
     border-radius: 1px;
     overflow: hidden;
     transition: flex 0.4s cubic-bezier(0.4, 0, 0.2, 1);
