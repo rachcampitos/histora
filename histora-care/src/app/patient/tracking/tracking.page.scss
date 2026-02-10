@@ -764,34 +764,46 @@
     overflow: hidden;
   }
 
+  // Status-specific colors for active step
   &.active {
     .step-dot {
-      background: var(--ion-color-primary);
       animation: pulse-dot 2s ease-in-out infinite;
-
-      ion-icon {
-        color: white;
-      }
+      ion-icon { color: white; }
     }
+    .step-label { font-weight: 600; }
 
-    .step-label {
-      color: var(--ion-color-primary);
-      font-weight: 600;
+    // Default active color (fallback)
+    .step-dot { background: var(--ion-color-primary); }
+    .step-label { color: var(--ion-color-primary); }
+
+    &[data-status="accepted"] {
+      .step-dot { background: #2563eb; --pulse-color-rgb: 37, 99, 235; }
+      .step-label { color: #2563eb; }
+    }
+    &[data-status="on_the_way"] {
+      .step-dot { background: #ea580c; --pulse-color-rgb: 234, 88, 12; }
+      .step-label { color: #ea580c; }
+    }
+    &[data-status="arrived"] {
+      .step-dot { background: #d97706; --pulse-color-rgb: 217, 119, 6; }
+      .step-label { color: #d97706; }
+    }
+    &[data-status="in_progress"] {
+      .step-dot { background: #0891b2; --pulse-color-rgb: 8, 145, 178; }
+      .step-label { color: #0891b2; }
+    }
+    &[data-status="completed"] {
+      .step-dot { background: #16a34a; --pulse-color-rgb: 22, 163, 74; }
+      .step-label { color: #16a34a; }
     }
   }
 
   &.completed {
     .step-dot {
       background: #16a34a;
-
-      ion-icon {
-        color: white;
-      }
+      ion-icon { color: white; }
     }
-
-    .step-label {
-      color: #16a34a;
-    }
+    .step-label { color: #16a34a; }
   }
 }
 
@@ -802,8 +814,8 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.2); }
-  50% { box-shadow: 0 0 0 8px rgba(var(--ion-color-primary-rgb), 0.1); }
+  0%, 100% { box-shadow: 0 0 0 4px rgba(var(--pulse-color-rgb, var(--ion-color-primary-rgb)), 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(var(--pulse-color-rgb, var(--ion-color-primary-rgb)), 0.1); }
 }
 
 // QW3: Status dot pulse animation
@@ -854,9 +866,16 @@
 
     .progress-line-fill {
       width: 0%;
-      background: var(--ion-color-primary);
       animation: fillLine 2.5s ease-in-out infinite;
     }
+
+    // Status-specific line colors
+    .progress-line-fill { background: var(--ion-color-primary); }
+    &[data-status="accepted"] .progress-line-fill { background: #2563eb; }
+    &[data-status="on_the_way"] .progress-line-fill { background: #ea580c; }
+    &[data-status="arrived"] .progress-line-fill { background: #d97706; }
+    &[data-status="in_progress"] .progress-line-fill { background: #0891b2; }
+    &[data-status="completed"] .progress-line-fill { background: #16a34a; }
   }
 }
 
@@ -901,17 +920,17 @@
       background: #94a3b8;
       z-index: 2;
 
-      &.status-accepted { background: #16a34a; }
+      &.status-accepted { background: #2563eb; }
       &.status-on_the_way {
-        background: #16a34a;
+        background: #ea580c;
         animation: status-pulse 2s ease-in-out infinite;
       }
       &.status-arrived {
-        background: #16a34a;
+        background: #d97706;
         animation: status-pulse 2s ease-in-out infinite;
       }
       &.status-in_progress {
-        background: #16a34a;
+        background: #0891b2;
         animation: status-pulse 2s ease-in-out infinite;
       }
       &.status-completed { background: #16a34a; }
@@ -1210,28 +1229,28 @@
   }
 
   &.status-accepted {
-    background: #f0f9ff;
-    color: #0369a1;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
   }
 
   &.status-on_the_way {
-    background: #fef3c7;
-    color: #d97706;
+    background: rgba(234, 88, 12, 0.1);
+    color: #ea580c;
   }
 
   &.status-arrived {
-    background: #ecfdf5;
-    color: #15803d;
+    background: rgba(217, 119, 6, 0.1);
+    color: #d97706;
   }
 
   &.status-in_progress {
-    background: #e0f2fe;
-    color: #2d5f8a;
+    background: rgba(8, 145, 178, 0.1);
+    color: #0891b2;
   }
 
   &.status-completed {
-    background: #d1fae5;
-    color: #047857;
+    background: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
   }
 }
 
@@ -1676,13 +1695,29 @@
     .step-label { color: #94a3b8; }
 
     &.active {
-      .step-dot {
-        background: var(--ion-color-primary);
-        ion-icon { color: white; }
+      .step-dot { ion-icon { color: white; } }
+      .step-label { font-weight: 600; }
+
+      // Dark mode status colors (lighter variants)
+      &[data-status="accepted"] {
+        .step-dot { background: #60a5fa; --pulse-color-rgb: 96, 165, 250; }
+        .step-label { color: #60a5fa; }
       }
-      .step-label {
-        color: var(--ion-color-primary-tint);
-        font-weight: 600;
+      &[data-status="on_the_way"] {
+        .step-dot { background: #fb923c; --pulse-color-rgb: 251, 146, 60; }
+        .step-label { color: #fb923c; }
+      }
+      &[data-status="arrived"] {
+        .step-dot { background: #fbbf24; --pulse-color-rgb: 251, 191, 36; }
+        .step-label { color: #fbbf24; }
+      }
+      &[data-status="in_progress"] {
+        .step-dot { background: #22d3ee; --pulse-color-rgb: 34, 211, 238; }
+        .step-label { color: #22d3ee; }
+      }
+      &[data-status="completed"] {
+        .step-dot { background: #4ade80; --pulse-color-rgb: 74, 222, 128; }
+        .step-label { color: #4ade80; }
       }
     }
 
@@ -1700,14 +1735,12 @@
 
     &.completed .progress-line-fill { background: #16a34a; }
 
-    &.active .progress-line-fill {
-      background: linear-gradient(
-        90deg,
-        var(--ion-color-primary) 0%,
-        var(--ion-color-primary-tint) 50%,
-        var(--ion-color-primary) 100%
-      );
-      background-size: 200% 100%;
+    &.active {
+      &[data-status="accepted"] .progress-line-fill { background: #60a5fa; }
+      &[data-status="on_the_way"] .progress-line-fill { background: #fb923c; }
+      &[data-status="arrived"] .progress-line-fill { background: #fbbf24; }
+      &[data-status="in_progress"] .progress-line-fill { background: #22d3ee; }
+      &[data-status="completed"] .progress-line-fill { background: #4ade80; }
     }
   }
 
@@ -1759,13 +1792,13 @@
     .info-divider { background: #334155; }
   }
 
-  // Status Message
+  // Status Message - consistent with stepper colors
   .status-message {
-    &.status-accepted { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
-    &.status-on_the_way { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-    &.status-arrived { background: rgba(22, 163, 74, 0.15); color: #34d399; }
-    &.status-in_progress { background: rgba(107, 181, 179, 0.15); color: #6bb5b3; }
-    &.status-completed { background: rgba(22, 163, 74, 0.2); color: #34d399; }
+    &.status-accepted { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+    &.status-on_the_way { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+    &.status-arrived { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    &.status-in_progress { background: rgba(34, 211, 238, 0.15); color: #22d3ee; }
+    &.status-completed { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
   }
 
   // Contextual Tip

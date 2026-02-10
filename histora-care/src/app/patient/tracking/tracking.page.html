@@ -267,7 +267,8 @@
             <div class="progress-step"
                  [id]="'step-' + step.key"
                  [class.completed]="isStepCompleted(step.key)"
-                 [class.active]="isStepActive(step.key)">
+                 [class.active]="isStepActive(step.key)"
+                 [attr.data-status]="step.key">
               <div class="step-dot">
                 @if (isStepCompleted(step.key)) {
                 <ion-icon name="checkmark"></ion-icon>
@@ -280,7 +281,8 @@
             @if (i < statusSteps.length - 1) {
             <div class="progress-line"
                  [class.completed]="isLineCompleted(i)"
-                 [class.active]="isLineActive(i)">
+                 [class.active]="isLineActive(i)"
+                 [attr.data-status]="statusSteps[i].key">
               <div class="progress-line-fill"></div>
             </div>
             }
