@@ -141,6 +141,7 @@
   <!-- Active Service Banner - Most prominent when service is in progress -->
   @if (getActiveInProgressRequest(); as activeRequest) {
     <div class="active-service-banner" (click)="viewRequest(activeRequest)">
+      <div class="banner-shimmer"></div>
       <div class="banner-pulse"></div>
       <div class="banner-content">
         <div class="banner-icon">

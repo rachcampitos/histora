@@ -562,15 +562,15 @@ body.dark ion-action-sheet {
 
           &.action-sheet-selected,
           &.selected-theme {
-            color: #6bb5b3;
+            color: #6bb5b3 !important;
             font-weight: 600;
 
             .action-sheet-button-inner {
-              color: #6bb5b3;
+              color: #6bb5b3 !important;
             }
 
             ion-icon {
-              color: #6bb5b3;
+              color: #6bb5b3 !important;
             }
           }
 

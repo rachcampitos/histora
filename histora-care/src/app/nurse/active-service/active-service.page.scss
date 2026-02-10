@@ -71,11 +71,11 @@ ion-header ion-toolbar {
   }
 }
 
-// Compact Status Stepper
+// Compact Status Stepper (positioned above actions)
 .compact-stepper {
   background: var(--histora-card-bg, #ffffff);
   padding: 10px 16px 12px;
-  border-bottom: 1px solid var(--histora-border, #e2e8f0);
+  border-top: 1px solid var(--histora-border, #e2e8f0);
 
   .stepper-track {
     display: flex;
@@ -667,7 +667,7 @@ ion-header ion-toolbar {
 
   .compact-stepper {
     background: #1e293b;
-    border-bottom-color: #334155;
+    border-top-color: #334155;
 
     .stepper-step {
       .stepper-dot {
