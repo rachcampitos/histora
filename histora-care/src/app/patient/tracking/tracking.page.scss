@@ -1731,6 +1731,14 @@
     border-top-color: #334155;
 
     .code-header {
+      ion-icon[color="primary"] {
+        --ion-color-base: #6bb5b3 !important;
+        color: #6bb5b3 !important;
+      }
+      ion-icon[color="secondary"] {
+        --ion-color-base: #22d3ee !important;
+        color: #22d3ee !important;
+      }
       .code-title { color: #f1f5f9; }
       .code-subtitle { color: #64748b; }
     }
@@ -1894,6 +1902,7 @@
       color: #f1f5f9;
 
       ion-icon {
+        --ion-color-base: #6bb5b3 !important;
         color: #6bb5b3 !important;
       }
     }
@@ -1902,9 +1911,13 @@
 
   // Route Info
   .route-info {
-    .info-item .info-content {
-      .info-value { color: #f1f5f9; }
-      .info-label { color: #64748b; }
+    .info-item {
+      ion-icon { color: #6bb5b3; }
+
+      .info-content {
+        .info-value { color: #f1f5f9; }
+        .info-label { color: #64748b; }
+      }
     }
     .info-divider { background: #334155; }
   }

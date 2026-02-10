@@ -630,6 +630,7 @@ $border-color: #e2e8f0;
 
     &:focus {
       background: #1e293b;
+      border-color: #6bb5b3;
     }
 
     &::placeholder {
@@ -642,9 +643,22 @@ $border-color: #e2e8f0;
     border-color: #334155;
     color: #f1f5f9;
 
+    ion-icon {
+      color: #6bb5b3;
+    }
+
     &:active {
       background: rgba(107, 181, 179, 0.1);
       border-color: #6bb5b3;
+    }
+  }
+
+  .chat-input__send-btn {
+    --background: #4a9d9a;
+    --background-activated: #3d8886;
+
+    ion-icon {
+      color: #ffffff;
     }
   }
 
