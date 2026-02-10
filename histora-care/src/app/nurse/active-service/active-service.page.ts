@@ -43,7 +43,16 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   elapsedTime = signal('00:00:00');
   activeShares = signal<ActiveShare[]>([]);
   chatUnreadCount = signal(0);
+  buttonState = signal<'idle' | 'success'>('idle');
   private chatRoomId: string | null = null;
+
+  readonly statusSteps: { key: string; label: string; icon: string }[] = [
+    { key: 'accepted', label: 'Aceptado', icon: 'checkmark-circle' },
+    { key: 'on_the_way', label: 'En camino', icon: 'navigate' },
+    { key: 'arrived', label: 'Llego', icon: 'location' },
+    { key: 'in_progress', label: 'En servicio', icon: 'medical' },
+    { key: 'completed', label: 'Completado', icon: 'checkmark-done' },
+  ];
 
   // Security code state
   codeDigits = signal<string[]>(['', '', '', '', '', '']);
@@ -280,6 +289,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
                   this.request.set({ ...updated, patient: updated.patient || req.patient });
                   this.wsService.notifyOnTheWay(req._id);
                   this.showToast('En camino al paciente', 'success');
+                  this.triggerButtonSuccess();
                   this.startLocationBroadcast(req._id);
                   this.startTime = new Date();
                   this.startTimer();
@@ -313,6 +323,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
                   this.request.set({ ...updated, patient: updated.patient || req.patient });
                   this.wsService.notifyArrival(req._id);
                   this.showToast('Llegada confirmada', 'success');
+                  this.triggerButtonSuccess();
                   this.stopLocationBroadcast();
                 },
                 error: () => this.showToast('Error al actualizar estado', 'danger')
@@ -344,6 +355,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
                   this.request.set({ ...updated, patient: updated.patient || req.patient });
                   this.wsService.notifyServiceStarted(req._id);
                   this.showToast('Servicio iniciado', 'success');
+                  this.triggerButtonSuccess();
                 },
                 error: () => this.showToast('Error al actualizar estado', 'danger')
               });
@@ -580,6 +592,38 @@ export class ActiveServicePage implements OnInit, OnDestroy {
       completed: 'success',
     };
     return colors[status] || 'medium';
+  }
+
+  // Stepper helpers
+  private getCurrentStepIndex(): number {
+    const status = this.request()?.status || '';
+    return this.statusSteps.findIndex(s => s.key === status);
+  }
+
+  isStepCompleted(stepKey: string): boolean {
+    return this.statusSteps.findIndex(s => s.key === stepKey) < this.getCurrentStepIndex();
+  }
+
+  isStepActive(stepKey: string): boolean {
+    return this.request()?.status === stepKey;
+  }
+
+  isStepCollapsed(stepKey: string): boolean {
+    return this.isStepCompleted(stepKey);
+  }
+
+  isLineCompleted(lineIndex: number): boolean {
+    return lineIndex < this.getCurrentStepIndex();
+  }
+
+  isLineActive(lineIndex: number): boolean {
+    const idx = this.getCurrentStepIndex();
+    return lineIndex === idx && idx < this.statusSteps.length - 1;
+  }
+
+  private triggerButtonSuccess(): void {
+    this.buttonState.set('success');
+    setTimeout(() => this.buttonState.set('idle'), 800);
   }
 
   private async showToast(message: string, color: string) {

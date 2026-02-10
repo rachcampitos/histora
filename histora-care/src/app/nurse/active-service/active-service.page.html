@@ -22,7 +22,38 @@
         <ion-icon name="time-outline"></ion-icon>
         <span class="timer-value">{{ elapsedTime() }}</span>
       </div>
-      <ion-badge [color]="statusColor()">{{ statusLabel() }}</ion-badge>
+      <ion-badge [color]="statusColor()" class="badge-breathe">{{ statusLabel() }}</ion-badge>
+    </div>
+
+    <!-- Compact Status Stepper -->
+    <div class="compact-stepper">
+      <div class="stepper-track">
+        @for (step of statusSteps; track step.key; let i = $index) {
+          <div class="stepper-step"
+               [class.completed]="isStepCompleted(step.key)"
+               [class.active]="isStepActive(step.key)"
+               [class.collapsed]="isStepCollapsed(step.key)"
+               [attr.data-status]="step.key">
+            <div class="stepper-dot">
+              @if (isStepCompleted(step.key)) {
+                <ion-icon name="checkmark"></ion-icon>
+              } @else {
+                <ion-icon [name]="step.icon"></ion-icon>
+              }
+            </div>
+            <span class="stepper-label">{{ step.label }}</span>
+            <span class="stepper-label-dot"></span>
+          </div>
+          @if (i < statusSteps.length - 1) {
+            <div class="stepper-line"
+                 [class.completed]="isLineCompleted(i)"
+                 [class.active]="isLineActive(i)"
+                 [attr.data-status]="statusSteps[i].key">
+              <div class="stepper-line-fill"></div>
+            </div>
+          }
+        }
+      </div>
     </div>
 
     <!-- Map Preview -->
@@ -154,13 +185,19 @@
         <ion-button
           expand="block"
           class="main-action-btn"
+          [class.success-state]="buttonState() === 'success'"
           [attr.data-status]="request()?.status"
           [disabled]="nextAction.disabled"
           (click)="nextAction.action()">
-          @if (nextAction.icon) {
-            <ion-icon [name]="nextAction.icon" slot="start"></ion-icon>
+          @if (buttonState() === 'success') {
+            <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+            Actualizado
+          } @else {
+            @if (nextAction.icon) {
+              <ion-icon [name]="nextAction.icon" slot="start"></ion-icon>
+            }
+            {{ nextAction.label }}
           }
-          {{ nextAction.label }}
         </ion-button>
       }
 
