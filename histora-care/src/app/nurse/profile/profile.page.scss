@@ -1518,8 +1518,19 @@ ion-modal {
   ion-modal {
     ion-datetime {
       --background: #{tokens.$surface-dark-secondary};
-      --background-rgb: 30, 41, 59;
+      --background-rgb: 35, 43, 62;
+      --wheel-highlight-background: rgba(107, 181, 179, 0.2);
+      --wheel-fade-background-rgb: 35, 43, 62;
       color: tokens.$text-dark-primary;
+
+      &::part(wheel-item) {
+        color: #cbd5e1;
+      }
+
+      &::part(wheel-item active) {
+        color: #6bb5b3;
+        font-weight: 600;
+      }
     }
   }
 }
