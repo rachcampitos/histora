@@ -689,7 +689,7 @@ body.dark ion-datetime {
   }
 
   &::part(wheel-item active) {
-    color: var(--ion-color-primary);
+    color: #6bb5b3;
   }
 
   .calendar-day {
@@ -700,7 +700,7 @@ body.dark ion-datetime {
     }
 
     &.calendar-day-active {
-      background: var(--ion-color-primary);
+      background: #4a9d9a;
       color: #fff;
     }
   }
@@ -721,7 +721,7 @@ body.dark ion-datetime {
 
   ion-buttons {
     ion-button {
-      --color: var(--ion-color-primary);
+      --color: #6bb5b3;
     }
   }
 }

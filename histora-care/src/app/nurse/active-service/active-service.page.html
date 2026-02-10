@@ -153,8 +153,8 @@
       @if (nextAction) {
         <ion-button
           expand="block"
-          [color]="nextAction.color"
           class="main-action-btn"
+          [attr.data-status]="request()?.status"
           [disabled]="nextAction.disabled"
           (click)="nextAction.action()">
           @if (nextAction.icon) {

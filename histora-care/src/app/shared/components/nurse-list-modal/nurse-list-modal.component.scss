@@ -7,11 +7,16 @@ $border-color: #e7e5e4;
 
 ion-header {
   ion-toolbar {
-    --background: var(--ion-background-color);
+    --background: #ffffff;
+    --color: #1e293b;
 
     ion-title {
       font-size: 18px;
       font-weight: 600;
+    }
+
+    ion-button {
+      --color: #1e293b;
     }
   }
 }

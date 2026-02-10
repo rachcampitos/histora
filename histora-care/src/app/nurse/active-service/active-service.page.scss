@@ -370,12 +370,42 @@ ion-header ion-toolbar {
     height: 52px;
     font-size: 16px;
     font-weight: 600;
+    --color: #ffffff;
+
+    // Status-specific button colors matching stepper
+    &[data-status="accepted"] {
+      --background: #2563eb;
+      --background-activated: #1d4ed8;
+    }
+    &[data-status="on_the_way"] {
+      --background: #ea580c;
+      --background-activated: #c2410c;
+    }
+    &[data-status="arrived"] {
+      --background: #d97706;
+      --background-activated: #b45309;
+
+      &[disabled] {
+        --background: #94a3b8;
+      }
+    }
+    &[data-status="in_progress"] {
+      --background: #0891b2;
+      --background-activated: #0e7490;
+    }
   }
 
   .nav-btn {
     --border-radius: 12px;
     height: 48px;
     font-size: 14px;
+    --color: #ea580c;
+    --border-color: #ea580c;
+    --ion-color-primary: #ea580c;
+
+    ion-icon {
+      color: #ea580c;
+    }
   }
 }
 
@@ -472,17 +502,38 @@ ion-header ion-toolbar {
       ion-icon {
         color: #ffffff;
       }
+
+      // Dark mode: lighter status colors
+      &[data-status="accepted"] {
+        --background: #3b82f6;
+        --background-activated: #2563eb;
+      }
+      &[data-status="on_the_way"] {
+        --background: #f97316;
+        --background-activated: #ea580c;
+      }
+      &[data-status="arrived"] {
+        --background: #f59e0b;
+        --background-activated: #d97706;
+
+        &[disabled] {
+          --background: #475569;
+        }
+      }
+      &[data-status="in_progress"] {
+        --background: #06b6d4;
+        --background-activated: #0891b2;
+      }
     }
 
     .nav-btn {
-      --ion-color-primary: #6bb5b3;
-      --ion-color-primary-shade: #5a9e9c;
-      --color: #6bb5b3;
-      --border-color: #6bb5b3;
+      --ion-color-primary: #fb923c;
+      --color: #fb923c;
+      --border-color: #fb923c;
 
       ion-icon {
-        --ion-color-base: #6bb5b3 !important;
-        color: #6bb5b3 !important;
+        --ion-color-base: #fb923c !important;
+        color: #fb923c !important;
       }
     }
   }
