@@ -246,19 +246,26 @@ ion-header {
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
   ion-header ion-toolbar {
-    --background: #1a1a1a;
+    --background: #0f172a;
+    --color: #f1f5f9;
   }
 
   .nurses-count {
     background: #1e293b;
+
+    ion-icon {
+      color: #6bb5b3;
+    }
 
     span {
       color: #f1f5f9;
     }
   }
 
-  .nurse-list ion-item {
+  .nurse-list ion-item,
+  .nurse-list .nurse-item-wrapper {
     --background: #1e293b;
+    background: #1e293b;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 

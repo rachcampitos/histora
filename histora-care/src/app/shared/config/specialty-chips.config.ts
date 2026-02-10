@@ -24,11 +24,11 @@ const SPECIALTY_MAP: Record<string, SpecialtyChipConfig> = {
 };
 
 const FAMILY_COLORS = {
-  blue:   { bgLight: '#dbeafe', textLight: '#1e40af', bgDark: '#1e3a5f', textDark: '#93c5fd' },
-  purple: { bgLight: '#f3e8ff', textLight: '#7c3aed', bgDark: '#4c1d95', textDark: '#c4b5fd' },
-  rose:   { bgLight: '#ffe4e6', textLight: '#be123c', bgDark: '#881337', textDark: '#fda4af' },
-  green:  { bgLight: '#dcfce7', textLight: '#15803d', bgDark: '#14532d', textDark: '#86efac' },
-  amber:  { bgLight: '#fef3c7', textLight: '#b45309', bgDark: '#78350f', textDark: '#fcd34d' },
+  blue:   { bgLight: '#dbeafe', textLight: '#1e40af', bgDark: 'rgba(96, 165, 250, 0.15)', textDark: '#93c5fd' },
+  purple: { bgLight: '#f3e8ff', textLight: '#7c3aed', bgDark: 'rgba(196, 181, 253, 0.15)', textDark: '#c4b5fd' },
+  rose:   { bgLight: '#ffe4e6', textLight: '#be123c', bgDark: 'rgba(253, 164, 175, 0.15)', textDark: '#fda4af' },
+  green:  { bgLight: '#dcfce7', textLight: '#15803d', bgDark: 'rgba(134, 239, 172, 0.15)', textDark: '#86efac' },
+  amber:  { bgLight: '#fef3c7', textLight: '#b45309', bgDark: 'rgba(252, 211, 77, 0.15)', textDark: '#fcd34d' },
 };
 
 const DEFAULT_CONFIG: SpecialtyChipConfig = { icon: 'medkit-outline', family: 'blue' };

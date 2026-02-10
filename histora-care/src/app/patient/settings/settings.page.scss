@@ -243,6 +243,10 @@
       --color: #{tokens.$text-dark-primary};
       --border-color: rgba(255, 255, 255, 0.08);
 
+      ion-icon[slot="start"][color="primary"] {
+        color: #6bb5b3 !important;
+      }
+
       ion-label {
         color: tokens.$text-dark-primary;
 

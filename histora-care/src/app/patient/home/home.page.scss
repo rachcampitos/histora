@@ -575,7 +575,7 @@
 
       .cta-content {
         .cta-icon {
-          color: var(--ion-color-primary-tint);
+          color: #6bb5b3;
         }
 
         .cta-text {
@@ -604,7 +604,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
       .quick-icon {
-        color: var(--ion-color-primary-tint);
+        color: #6bb5b3;
       }
 
       .quick-label {
@@ -618,14 +618,14 @@
       color: tokens.$text-dark-primary;
 
       ion-icon {
-        color: var(--ion-color-primary-tint);
+        color: #6bb5b3;
       }
     }
 
     .recent-nurses-list {
       .recent-nurse-item {
         .nurse-avatar-recent {
-          border-color: var(--ion-color-primary-tint);
+          border-color: #6bb5b3;
 
           &.nurse-avatar-placeholder {
             background: tokens.$surface-dark-tertiary;

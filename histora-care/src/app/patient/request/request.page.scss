@@ -538,7 +538,7 @@ ion-content {
     color: #f1f5f9;
 
     ion-icon {
-      color: var(--ion-color-primary-tint);
+      color: #6bb5b3;
     }
   }
 
@@ -573,8 +573,8 @@ ion-content {
       --background: #1e293b;
 
       &.selected {
-        border-color: var(--ion-color-primary);
-        background: rgba(var(--ion-color-primary-rgb), 0.15);
+        border-color: #6bb5b3;
+        background: rgba(107, 181, 179, 0.15);
       }
 
       ion-label {
@@ -669,15 +669,15 @@ ion-content {
       }
 
       &.selected {
-        border-color: var(--ion-color-primary);
-        background: rgba(var(--ion-color-primary-rgb), 0.2);
+        border-color: #6bb5b3;
+        background: rgba(107, 181, 179, 0.15);
 
         ion-icon {
-          color: var(--ion-color-primary-tint);
+          color: #6bb5b3;
         }
 
         span {
-          color: var(--ion-color-primary-tint);
+          color: #6bb5b3;
         }
       }
     }

@@ -1,3 +1,13 @@
+// Header Toolbar
+ion-header ion-toolbar {
+  --background: #ffffff;
+  --color: #1e293b;
+
+  ion-back-button {
+    --color: #1e293b;
+  }
+}
+
 // Loading & Error States
 .loading-container,
 .error-container {
@@ -184,6 +194,7 @@ ion-card-title {
   gap: 12px;
   padding: 14px;
   background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   transition: transform 0.15s ease;
 
@@ -291,6 +302,16 @@ ion-footer {
 // Dark Mode Support
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
+  // Header toolbar
+  ion-header ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
+
+    ion-back-button {
+      --color: #f1f5f9;
+    }
+  }
+
   // Avatar placeholder
   .avatar-placeholder {
     background: #334155 !important; // More visible in dark mode
@@ -311,7 +332,7 @@ ion-footer {
     color: #f1f5f9;
 
     ion-icon {
-      color: var(--ion-color-primary-tint);
+      color: #6bb5b3;
     }
   }
 
@@ -381,9 +402,14 @@ ion-footer {
   // Service card items
   .service-card-item {
     background: #0f172a;
+    border-color: #334155;
 
     .service-icon-box {
-      background: rgba(var(--ion-color-primary-rgb), 0.15);
+      background: rgba(107, 181, 179, 0.15);
+
+      ion-icon {
+        color: #6bb5b3;
+      }
     }
 
     .service-details {
@@ -412,7 +438,7 @@ ion-footer {
     --color: #e2e8f0;
 
     ion-icon {
-      color: var(--ion-color-primary-tint);
+      color: #6bb5b3;
     }
   }
 
@@ -421,6 +447,23 @@ ion-footer {
     ion-toolbar {
       --background: #0f172a;
       border-top: 1px solid #334155;
+    }
+
+    ion-button {
+      --background: #4a9d9a;
+      --background-activated: #3d8886;
+    }
+  }
+
+  // Show more reviews button
+  .show-more-btn {
+    --color: #6bb5b3;
+  }
+
+  // Stats chatbubbles icon
+  .stats-card {
+    .stat-item ion-icon[color="primary"] {
+      color: #6bb5b3 !important;
     }
   }
 

@@ -615,6 +615,11 @@ $primary-gradient: var(--histora-gradient);
           --background: #{tokens.$surface-dark-tertiary};
         }
       }
+
+      ion-button[color="primary"]:not([fill="outline"]) {
+        --background: #4a9d9a;
+        --background-activated: #3d8886;
+      }
     }
 
     // Availability badge in dark mode
@@ -642,7 +647,7 @@ $primary-gradient: var(--histora-gradient);
       }
 
       ion-button {
-        --color: var(--ion-color-primary-tint);
+        --color: #6bb5b3;
       }
     }
 
