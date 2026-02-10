@@ -1675,8 +1675,16 @@
     }
 
     .code-digits .code-digit {
-      &.patient { background: rgba(var(--ion-color-primary-rgb), 0.15); }
-      &.nurse { background: rgba(var(--ion-color-secondary-rgb, 60, 179, 113), 0.15); }
+      &.patient {
+        background: rgba(107, 181, 179, 0.15);
+        border-color: #6bb5b3;
+        color: #6bb5b3;
+      }
+      &.nurse {
+        background: rgba(110, 231, 183, 0.15);
+        border-color: #6ee7b7;
+        color: #6ee7b7;
+      }
     }
 
     .code-verified-indicator {

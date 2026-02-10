@@ -631,7 +631,8 @@
 }
 
 // Dark mode adjustments
-:host-context(body.dark) {
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
   .checkout-content {
     --background: var(--ion-background-color);
   }
@@ -668,8 +669,8 @@
     }
 
     &.selected {
-      --background: rgba(var(--ion-color-primary-rgb), 0.2);
-      border-color: var(--ion-color-primary);
+      --background: rgba(107, 181, 179, 0.15);
+      border-color: #6bb5b3;
     }
 
     &.cash-recommended {
@@ -711,15 +712,15 @@
   }
 
   .beta-info {
-    background: rgba(var(--ion-color-primary-rgb), 0.15);
-    border-color: rgba(var(--ion-color-primary-rgb), 0.3);
+    background: rgba(107, 181, 179, 0.15);
+    border-color: rgba(107, 181, 179, 0.3);
 
     ion-icon {
-      color: var(--ion-color-primary-tint);
+      color: #6bb5b3;
     }
 
     p {
-      color: var(--ion-color-primary-tint);
+      color: #6bb5b3;
     }
   }
 
@@ -732,11 +733,19 @@
   .status-container {
     .status-icon {
       &.processing {
-        background: rgba(var(--ion-color-primary-rgb), 0.2);
+        background: rgba(107, 181, 179, 0.2);
+
+        ion-spinner {
+          --color: #6bb5b3;
+        }
       }
 
       &.success {
-        background: rgba(var(--ion-color-success-rgb), 0.2);
+        background: rgba(22, 163, 74, 0.15);
+
+        ion-icon {
+          color: #ffffff;
+        }
       }
 
       &.error {
@@ -744,10 +753,10 @@
       }
 
       &.confirmed {
-        background: rgba(var(--ion-color-success-rgb), 0.2);
+        background: rgba(22, 163, 74, 0.15);
 
         ion-icon {
-          color: var(--ion-color-success);
+          color: #ffffff;
         }
       }
     }

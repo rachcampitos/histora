@@ -420,8 +420,14 @@ ion-header ion-toolbar {
     background: var(--histora-card-bg-dark, #1e293b);
     border-bottom-color: var(--histora-border-dark, #334155);
 
-    .timer-display .timer-value {
-      color: var(--histora-text-primary-dark, #f1f5f9);
+    .timer-display {
+      ion-icon {
+        color: #6bb5b3;
+      }
+
+      .timer-value {
+        color: var(--histora-text-primary-dark, #f1f5f9);
+      }
     }
   }
 
@@ -432,11 +438,24 @@ ion-header ion-toolbar {
       .patient-info h3 {
         color: var(--histora-text-primary-dark, #f1f5f9);
       }
+
+      .patient-actions {
+        ion-icon[color="primary"] {
+          color: #6bb5b3 !important;
+        }
+      }
     }
 
     .address-section,
     .notes-section {
       background: var(--histora-surface-dark, #0f172a);
+    }
+  }
+
+  // Security header icons
+  .security-card {
+    ion-icon[color="primary"] {
+      color: #6bb5b3 !important;
     }
   }
 
@@ -455,8 +474,8 @@ ion-header ion-toolbar {
     }
 
     .nav-btn {
-      --color: #e2e8f0;
-      --border-color: #475569;
+      --color: #6bb5b3;
+      --border-color: #6bb5b3;
     }
   }
 
@@ -475,7 +494,9 @@ ion-header ion-toolbar {
     }
 
     .code-display .code-digit {
-      background: rgba(var(--ion-color-primary-rgb), 0.15);
+      background: rgba(107, 181, 179, 0.15);
+      border-color: #6bb5b3;
+      color: #6bb5b3;
     }
 
     .code-verification {
@@ -488,7 +509,8 @@ ion-header ion-toolbar {
       color: var(--histora-text-primary-dark, #f1f5f9);
 
       &:focus {
-        border-color: var(--ion-color-primary);
+        border-color: #6bb5b3;
+        box-shadow: 0 0 0 3px rgba(107, 181, 179, 0.15);
       }
     }
 

@@ -564,7 +564,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
       accepted: 'Aceptado',
       on_the_way: 'En Camino',
       arrived: 'En el Domicilio',
-      in_progress: 'En Progreso',
+      in_progress: 'En Servicio',
       completed: 'Completado',
     };
     return labels[status] || status;
@@ -573,9 +573,9 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   private getStatusColor(status: string): string {
     const colors: Record<string, string> = {
       accepted: 'primary',
-      on_the_way: 'tertiary',
-      arrived: 'secondary',
-      in_progress: 'warning',
+      on_the_way: 'warning',
+      arrived: 'warning',
+      in_progress: 'secondary',
       completed: 'success',
     };
     return colors[status] || 'medium';

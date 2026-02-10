@@ -9,7 +9,7 @@
 // Header
 .escort-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 16px;
@@ -28,7 +28,7 @@
 
   .header-left {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
   }
 
@@ -89,7 +89,6 @@
     font-size: 20px;
     color: var(--histora-text-muted, #94a3b8);
     transition: transform 0.2s ease;
-    margin-top: 12px;
   }
 }
 
@@ -238,6 +237,14 @@
       background: var(--histora-hover-bg-dark, #334155);
     }
 
+    &.expanded {
+      border-bottom-color: var(--histora-border-dark, #334155);
+    }
+
+    .icon-container {
+      background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+    }
+
     .header-text {
       .title {
         color: var(--histora-text-primary-dark, #f1f5f9);
@@ -253,6 +260,10 @@
     background: var(--histora-surface-dark, #0f172a);
     border-color: var(--histora-border-dark, #334155);
 
+    .share-avatar {
+      background: #4a9d9a;
+    }
+
     .share-details {
       .share-name {
         color: var(--histora-text-primary-dark, #f1f5f9);
@@ -260,11 +271,17 @@
     }
   }
 
+  .add-contact-btn {
+    --color: #6bb5b3;
+    --border-color: #6bb5b3;
+  }
+
   .max-contacts-notice {
     background: var(--histora-surface-dark, #0f172a);
   }
 
   .info-text {
-    background: rgba(var(--ion-color-primary-rgb, 59, 130, 246), 0.15);
+    background: rgba(107, 181, 179, 0.12);
+    color: #6bb5b3;
   }
 }
