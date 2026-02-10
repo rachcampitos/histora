@@ -582,6 +582,14 @@ $primary-gradient: var(--histora-gradient);
           span {
             color: tokens.$text-dark-tertiary;
           }
+
+          .distance ion-icon {
+            color: #6bb5b3;
+          }
+
+          .rating ion-icon {
+            color: #fbbf24;
+          }
         }
       }
     }

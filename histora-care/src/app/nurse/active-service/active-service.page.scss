@@ -476,6 +476,10 @@ ion-header ion-toolbar {
     .nav-btn {
       --color: #6bb5b3;
       --border-color: #6bb5b3;
+
+      ion-icon {
+        color: #6bb5b3 !important;
+      }
     }
   }
 

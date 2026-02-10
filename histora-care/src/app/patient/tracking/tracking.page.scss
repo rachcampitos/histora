@@ -804,6 +804,24 @@
       ion-icon { color: white; }
     }
     .step-label { color: #16a34a; }
+
+    // Status-specific colors for completed step icons
+    &[data-status="accepted"] {
+      .step-dot { background: #2563eb; }
+      .step-label { color: #2563eb; }
+    }
+    &[data-status="on_the_way"] {
+      .step-dot { background: #ea580c; }
+      .step-label { color: #ea580c; }
+    }
+    &[data-status="arrived"] {
+      .step-dot { background: #d97706; }
+      .step-label { color: #d97706; }
+    }
+    &[data-status="in_progress"] {
+      .step-dot { background: #0891b2; }
+      .step-label { color: #0891b2; }
+    }
   }
 
   // Label dot: hidden by default, shown when step is collapsed
@@ -876,7 +894,7 @@
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  // Completed lines: compressed with green fill
+  // Completed lines: compressed with status-specific color
   &.completed {
     flex: 0 0 16px;
     min-width: 16px;
@@ -885,6 +903,11 @@
       width: 100%;
       background: #16a34a;
     }
+
+    &[data-status="accepted"] .progress-line-fill { background: #2563eb; }
+    &[data-status="on_the_way"] .progress-line-fill { background: #ea580c; }
+    &[data-status="arrived"] .progress-line-fill { background: #d97706; }
+    &[data-status="in_progress"] .progress-line-fill { background: #0891b2; }
   }
 
   // Active line: expands to fill available space with shimmer animation
@@ -1651,8 +1674,18 @@
       }
     }
 
+    .waiting-service-card {
+      .service-row ion-icon {
+        color: #6bb5b3;
+      }
+    }
+
     .waiting-info {
       background: rgba(107, 181, 179, 0.15);
+
+      ion-icon {
+        color: #6bb5b3;
+      }
 
       span {
         color: #94a3b8;
@@ -1763,6 +1796,24 @@
         ion-icon { color: white; }
       }
       .step-label { color: #22c55e; }
+
+      // Dark mode status-specific colors for completed steps
+      &[data-status="accepted"] {
+        .step-dot { background: #60a5fa; }
+        .step-label { color: #60a5fa; }
+      }
+      &[data-status="on_the_way"] {
+        .step-dot { background: #fb923c; }
+        .step-label { color: #fb923c; }
+      }
+      &[data-status="arrived"] {
+        .step-dot { background: #fbbf24; }
+        .step-label { color: #fbbf24; }
+      }
+      &[data-status="in_progress"] {
+        .step-dot { background: #22d3ee; }
+        .step-label { color: #22d3ee; }
+      }
     }
 
     // Dark mode collapsed label dots with lighter status colors
@@ -1779,7 +1830,13 @@
   .progress-line {
     background: #334155;
 
-    &.completed .progress-line-fill { background: #16a34a; }
+    &.completed {
+      .progress-line-fill { background: #16a34a; }
+      &[data-status="accepted"] .progress-line-fill { background: #60a5fa; }
+      &[data-status="on_the_way"] .progress-line-fill { background: #fb923c; }
+      &[data-status="arrived"] .progress-line-fill { background: #fbbf24; }
+      &[data-status="in_progress"] .progress-line-fill { background: #22d3ee; }
+    }
 
     &.active {
       &[data-status="accepted"] .progress-line-fill { background: #60a5fa; }
@@ -1810,15 +1867,21 @@
       }
     }
 
-    .nurse-actions .chat-btn-wrapper {
-      .chat-tooltip {
-        background: #0f172a;
-        color: #f1f5f9;
-        &::before { background: #0f172a; }
+    .nurse-actions {
+      .action-btn ion-icon[color="primary"] {
+        color: #6bb5b3 !important;
       }
 
-      .chat-btn .chat-pulse {
-        background: rgba(107, 181, 179, 0.3);
+      .chat-btn-wrapper {
+        .chat-tooltip {
+          background: #0f172a;
+          color: #f1f5f9;
+          &::before { background: #0f172a; }
+        }
+
+        .chat-btn .chat-pulse {
+          background: rgba(107, 181, 179, 0.3);
+        }
       }
     }
   }
@@ -1826,7 +1889,14 @@
   // Service Info
   .service-info {
     border-bottom-color: #334155;
-    .service-name { color: #f1f5f9; }
+    .service-name {
+      color: #f1f5f9;
+
+      ion-icon {
+        color: #6bb5b3 !important;
+      }
+    }
+    .service-price { color: #6bb5b3; }
   }
 
   // Route Info
