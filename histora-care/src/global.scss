@@ -36,9 +36,6 @@
 @import "@ionic/angular/css/palettes/dark.class.css";
 /* dark.system.css removed - ThemeService handles system preference detection */
 
-/* Mapbox GL CSS */
-@import "mapbox-gl/dist/mapbox-gl.css";
-
 /* ==========================================================================
    Custom Global Styles for NurseLite
    ========================================================================== */
@@ -674,6 +671,8 @@ body.dark ion-datetime {
   --background: #1e293b;
   --background-rgb: 30, 41, 59;
   --title-color: #f1f5f9;
+  --wheel-highlight-background: rgba(148, 163, 184, 0.15);
+  --wheel-fade-background-rgb: 30, 41, 59;
   color: #f1f5f9;
 
   &::part(wheel-item) {

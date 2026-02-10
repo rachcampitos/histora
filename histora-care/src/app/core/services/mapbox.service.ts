@@ -21,6 +21,7 @@ export interface RouteInfo {
 export class MapboxService {
   private map: MapboxMap | null = null;
   private markersMap = new Map<string, Marker>();
+  private static cssLoaded = false;
 
   // Default to Lima, Peru
   private defaultCenter: [number, number] = [-77.042793, -12.046374];
@@ -42,9 +43,22 @@ export class MapboxService {
   }
 
   /**
+   * Load mapbox-gl CSS on demand (only when map is first used)
+   */
+  private loadCss(): void {
+    if (MapboxService.cssLoaded) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://api.mapbox.com/mapbox-gl-js/v3.18.0/mapbox-gl.css';
+    document.head.appendChild(link);
+    MapboxService.cssLoaded = true;
+  }
+
+  /**
    * Initialize a new map instance
    */
   initMap(config: MapConfig): MapboxMap {
+    this.loadCss();
     if (this.map) {
       this.map.remove();
     }
