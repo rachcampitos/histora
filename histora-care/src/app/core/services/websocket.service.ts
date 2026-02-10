@@ -225,6 +225,15 @@ export class WebSocketService {
   }
 
   /**
+   * Nurse marks on the way to patient
+   */
+  notifyOnTheWay(requestId: string): void {
+    if (this.socket?.connected) {
+      this.socket.emit('nurse:on_the_way', { requestId });
+    }
+  }
+
+  /**
    * Nurse marks arrival at patient location
    */
   notifyArrival(requestId: string): void {

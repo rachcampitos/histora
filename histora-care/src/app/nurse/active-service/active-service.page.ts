@@ -278,6 +278,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
               .subscribe({
                 next: (updated) => {
                   this.request.set({ ...updated, patient: updated.patient || req.patient });
+                  this.wsService.notifyOnTheWay(req._id);
                   this.showToast('En camino al paciente', 'success');
                   this.startLocationBroadcast(req._id);
                   this.startTime = new Date();

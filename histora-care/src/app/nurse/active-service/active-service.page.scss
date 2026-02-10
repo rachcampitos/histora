@@ -484,6 +484,11 @@ ion-header ion-toolbar {
 
     .security-header,
     .verification-header {
+      > ion-icon {
+        --ion-color-primary: #6bb5b3;
+        color: #6bb5b3 !important;
+      }
+
       h4 {
         color: var(--histora-text-primary-dark, #f1f5f9);
       }

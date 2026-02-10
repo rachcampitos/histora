@@ -253,7 +253,7 @@ export class RequestPage implements OnInit {
 
       const result = await this.serviceRequestService.create(requestData).toPromise();
 
-      await this.showToast('Solicitud creada. Procede al pago.', 'success');
+      await this.showToast('Solicitud creada. Procede a seleccionar tu método de pago.', 'success');
 
       // Navigate to checkout page
       if (result?._id) {

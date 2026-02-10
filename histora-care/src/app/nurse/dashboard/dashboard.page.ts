@@ -518,8 +518,9 @@ export class DashboardPage implements OnInit, OnDestroy {
           handler: () => {
             this.requestService.updateStatus(request._id, 'on_the_way').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
               next: () => {
+                // Notify via WebSocket
+                this.wsService.notifyOnTheWay(request._id);
                 this.showToast('En camino al paciente', 'success');
-                // Refresh requests to trigger location broadcasting
                 this.loadRequests(this.nurse()?._id || '');
               },
               error: () => this.showToast('Error al actualizar estado', 'danger')

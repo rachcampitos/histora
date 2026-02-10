@@ -900,6 +900,15 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Check if a completed step should collapse to a dot
+   * Completed steps collapse unless it's the final "completed" status
+   * where the active step itself shows the label
+   */
+  isStepCollapsed(stepKey: TrackingStatus): boolean {
+    return this.isStepCompleted(stepKey);
+  }
+
+  /**
    * Check if the progress line at index i is completed
    * Line i connects step[i] to step[i+1]
    * Completed when we've reached or passed step[i+1]

@@ -268,6 +268,7 @@
                  [id]="'step-' + step.key"
                  [class.completed]="isStepCompleted(step.key)"
                  [class.active]="isStepActive(step.key)"
+                 [class.collapsed]="isStepCollapsed(step.key)"
                  [attr.data-status]="step.key">
               <div class="step-dot">
                 @if (isStepCompleted(step.key)) {

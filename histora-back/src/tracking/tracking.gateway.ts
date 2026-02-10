@@ -276,6 +276,36 @@ export class TrackingGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
   }
 
+  @SubscribeMessage('nurse:on_the_way')
+  async handleNurseOnTheWay(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: { requestId: string },
+  ) {
+    try {
+      if (client.userRole !== 'nurse') {
+        return { success: false, error: 'No autorizado' };
+      }
+
+      const request = await this.requestModel.findById(data.requestId);
+      if (!request || request.nurseId?.toString() !== client.nurseDocId) {
+        return { success: false, error: 'Servicio no encontrado' };
+      }
+
+      const statusPayload = {
+        requestId: data.requestId,
+        status: 'on_the_way',
+        updatedAt: new Date(),
+      };
+      this.server.to(`tracking:${data.requestId}`).emit('request:status', statusPayload);
+      this.server.to(`user:${request.patientId}`).emit('request:status', statusPayload);
+
+      return { success: true };
+    } catch (error) {
+      this.logger.error('Nurse on the way error:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
   @SubscribeMessage('nurse:arrived')
   async handleNurseArrived(
     @ConnectedSocket() client: AuthenticatedSocket,
