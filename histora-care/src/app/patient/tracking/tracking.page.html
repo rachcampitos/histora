@@ -226,13 +226,13 @@
   <div id="tracking-map" class="map-container"></div>
 
   <!-- Map Controls -->
-  <div class="map-controls" role="navigation" aria-label="Navegación">
+  <div class="map-controls" [class.controls-hidden]="currentBreakpoint() >= 0.85" role="navigation" aria-label="Navegación">
     <ion-button fill="clear" class="control-btn" (click)="goBack()" aria-label="Volver atrás">
       <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
     </ion-button>
   </div>
 
-  <div class="map-controls-right" role="group" aria-label="Controles del mapa">
+  <div class="map-controls-right" [class.controls-hidden]="currentBreakpoint() >= 0.85" role="group" aria-label="Controles del mapa">
     <ion-button fill="clear" class="control-btn" (click)="centerOnPatient()" aria-label="Centrar en mi ubicación">
       <ion-icon name="locate" slot="icon-only"></ion-icon>
     </ion-button>
@@ -243,7 +243,7 @@
 
   <!-- ETA Badge -->
   @if (eta()) {
-  <div class="eta-badge">
+  <div class="eta-badge" [class.controls-hidden]="currentBreakpoint() >= 0.85">
     <ion-icon name="time-outline"></ion-icon>
     <span class="eta-time">{{ formattedEta() }}</span>
     <span class="eta-label">llegada</span>

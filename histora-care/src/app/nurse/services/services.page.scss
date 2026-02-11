@@ -285,10 +285,6 @@ ion-fab-button {
         font-size: 14px;
         color: var(--ion-color-medium);
         margin-bottom: 4px;
-
-        &[position="stacked"] {
-          transform: none !important;
-        }
       }
 
       ion-input, ion-textarea, ion-select {

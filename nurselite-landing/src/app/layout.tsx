@@ -80,7 +80,7 @@ const jsonLd = {
     "@type": "City",
     name: "Lima Metropolitana",
   },
-  priceRange: "S/. 25 - S/. 250",
+  priceRange: "S/ 25 - S/ 250",
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "4.9",

@@ -1,7 +1,7 @@
 <div class="chat-container">
   <!-- Header -->
   <div class="chat-header">
-    <button class="back-btn" (click)="dismiss()">
+    <button class="back-btn" (click)="dismiss()" aria-label="Volver">
       <ion-icon name="arrow-back"></ion-icon>
     </button>
 
@@ -33,7 +33,7 @@
       </p>
     </div>
 
-    <button class="menu-btn" (click)="dismiss()">
+    <button class="menu-btn" (click)="dismiss()" aria-label="Cerrar chat">
       <ion-icon name="close"></ion-icon>
     </button>
   </div>
@@ -163,7 +163,8 @@
       <ion-button
         class="chat-input__send-btn"
         [disabled]="!messageText().trim() || isSending()"
-        (click)="sendMessage()">
+        (click)="sendMessage()"
+        aria-label="Enviar mensaje">
         @if (isSending()) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {

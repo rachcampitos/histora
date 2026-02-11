@@ -34,6 +34,7 @@ export class HistoryPage implements OnInit {
   isRefreshing = signal(false);
   error = signal<string | null>(null);
   selectedTab = signal<FilterTab>('all');
+  selectedDateRange = signal<'month' | '3months' | 'all'>('all');
 
   // Tabs configuration
   tabs: TabOption[] = [
@@ -46,21 +47,37 @@ export class HistoryPage implements OnInit {
   // Active statuses
   private activeStatuses: ServiceRequestStatus[] = ['pending', 'accepted', 'on_the_way', 'arrived', 'in_progress'];
 
-  // Filtered requests based on selected tab
+  // Filtered requests based on selected tab and date range
   filteredRequests = computed(() => {
     const requests = this.allRequests();
     const tab = this.selectedTab();
+    const dateRange = this.selectedDateRange();
 
+    // 1. Filter by status tab
+    let filtered: ServiceRequest[];
     switch (tab) {
       case 'active':
-        return requests.filter(r => this.activeStatuses.includes(r.status));
+        filtered = requests.filter(r => this.activeStatuses.includes(r.status));
+        break;
       case 'completed':
-        return requests.filter(r => r.status === 'completed');
+        filtered = requests.filter(r => r.status === 'completed');
+        break;
       case 'cancelled':
-        return requests.filter(r => r.status === 'cancelled' || r.status === 'rejected');
+        filtered = requests.filter(r => r.status === 'cancelled' || r.status === 'rejected');
+        break;
       default:
-        return requests;
+        filtered = requests;
     }
+
+    // 2. Filter by date range
+    if (dateRange !== 'all') {
+      const now = new Date();
+      const daysBack = dateRange === 'month' ? 30 : 90;
+      const cutoff = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
+      filtered = filtered.filter(r => new Date(r.createdAt).getTime() >= cutoff.getTime());
+    }
+
+    return filtered;
   });
 
   // Counts for badges
@@ -142,6 +159,13 @@ export class HistoryPage implements OnInit {
    */
   onTabChange(tab: FilterTab) {
     this.selectedTab.set(tab);
+  }
+
+  /**
+   * Change date range filter
+   */
+  onDateRangeChange(range: 'month' | '3months' | 'all') {
+    this.selectedDateRange.set(range);
   }
 
   /**
@@ -407,7 +431,7 @@ export class HistoryPage implements OnInit {
   private async showToast(message: string, color: string = 'primary') {
     const toast = await this.toastController.create({
       message,
-      duration: 2500,
+      duration: color === 'danger' ? 4000 : 3000,
       position: 'bottom',
       color
     });

@@ -123,10 +123,10 @@
                 </div>
               </ion-item>
               <ion-item-options side="end">
-                <ion-item-option color="success" (click)="acceptRequest(request, $event)">
+                <ion-item-option color="success" (click)="acceptRequest(request, $event)" aria-label="Aceptar solicitud">
                   <ion-icon slot="icon-only" name="checkmark"></ion-icon>
                 </ion-item-option>
-                <ion-item-option color="danger" (click)="rejectRequest(request, $event)">
+                <ion-item-option color="danger" (click)="rejectRequest(request, $event)" aria-label="Rechazar solicitud">
                   <ion-icon slot="icon-only" name="close"></ion-icon>
                 </ion-item-option>
               </ion-item-options>
@@ -207,10 +207,10 @@
                 </div>
                 <!-- Quick Actions -->
                 <div class="quick-actions">
-                  <ion-button fill="clear" size="small" (click)="callPatient(request, $event)">
+                  <ion-button fill="clear" size="small" (click)="callPatient(request, $event)" aria-label="Llamar al paciente">
                     <ion-icon slot="icon-only" name="call-outline"></ion-icon>
                   </ion-button>
-                  <ion-button fill="clear" size="small" (click)="openMaps(request, $event)">
+                  <ion-button fill="clear" size="small" (click)="openMaps(request, $event)" aria-label="Ver en mapa">
                     <ion-icon slot="icon-only" name="map-outline"></ion-icon>
                   </ion-button>
                 </div>

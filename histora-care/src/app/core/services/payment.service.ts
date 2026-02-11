@@ -255,7 +255,7 @@ export class PaymentService {
         serviceRequestId: request.serviceRequestId,
         patientId: 'sim_patient',
         nurseId: 'sim_nurse',
-        amount: 8000, // S/. 80.00 mock
+        amount: 8000, // S/ 80.00 mock
         currency: 'PEN',
         serviceFee: 1200,
         culqiFee: 350,
@@ -304,7 +304,7 @@ export class PaymentService {
     if (SIMULATION_MODE) {
       // Return mock summary (will be replaced with real data from service request)
       const mockSummary: PaymentSummary = {
-        subtotal: 8000, // S/. 80.00
+        subtotal: 8000, // S/ 80.00
         serviceFee: 0, // No fee shown to patient in MVP
         discount: 0,
         total: 8000,

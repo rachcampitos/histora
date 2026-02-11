@@ -267,7 +267,7 @@ export class PanicButtonComponent implements OnInit, OnDestroy {
   private async showToast(message: string, color: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 4000,
+      duration: color === 'danger' ? 4000 : 3000,
       position: 'top',
       color,
     });

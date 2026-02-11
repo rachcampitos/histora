@@ -365,7 +365,7 @@ export class OnboardingPage implements OnInit, OnDestroy {
   private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 2500,
+      duration: color === 'danger' ? 4000 : 3000,
       color,
       position: 'bottom',
     });

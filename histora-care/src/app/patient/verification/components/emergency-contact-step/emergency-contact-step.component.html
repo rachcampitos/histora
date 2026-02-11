@@ -14,7 +14,7 @@
           <div class="contact-header">
             <span class="contact-number">Contacto {{ i + 1 }}</span>
             @if (contacts.length > 2) {
-              <ion-button fill="clear" color="danger" size="small" (click)="removeContact(i)">
+              <ion-button fill="clear" color="danger" size="small" (click)="removeContact(i)" aria-label="Eliminar contacto">
                 <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
               </ion-button>
             }

@@ -36,6 +36,7 @@ export class RequestPage implements OnInit {
   isLoading = signal(true);
   isSubmitting = signal(false);
   error = signal<string | null>(null);
+  formDirty = signal(false);
 
   // Form signals
   selectedServiceId = signal<string>('');
@@ -62,12 +63,29 @@ export class RequestPage implements OnInit {
   private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Time slot options
-  timeSlotOptions: TimeSlotOption[] = [
+  private allTimeSlotOptions: TimeSlotOption[] = [
     { value: 'asap', label: 'Lo antes posible', icon: 'flash-outline' },
     { value: 'morning', label: 'Manana (8:00 - 12:00)', icon: 'sunny-outline' },
     { value: 'afternoon', label: 'Tarde (12:00 - 18:00)', icon: 'partly-sunny-outline' },
     { value: 'evening', label: 'Noche (18:00 - 21:00)', icon: 'moon-outline' }
   ];
+
+  availableTimeSlots = computed(() => {
+    const selectedDate = this.requestedDate();
+    const today = new Date().toISOString().split('T')[0];
+    const isToday = selectedDate.split('T')[0] === today;
+
+    if (!isToday) return this.allTimeSlotOptions;
+
+    const hour = new Date().getHours();
+    return this.allTimeSlotOptions.filter(slot => {
+      if (slot.value === 'asap') return true;
+      if (slot.value === 'morning') return hour < 12;
+      if (slot.value === 'afternoon') return hour < 18;
+      if (slot.value === 'evening') return hour < 21;
+      return true;
+    });
+  });
 
   // Computed signals
   availableServices = computed(() => {
@@ -183,6 +201,7 @@ export class RequestPage implements OnInit {
 
   toggleLocationMode() {
     this.useCurrentLocation.set(!this.useCurrentLocation());
+    this.formDirty.set(true);
     if (this.useCurrentLocation() && !this.currentLocation()) {
       this.loadCurrentLocation();
     }
@@ -190,14 +209,17 @@ export class RequestPage implements OnInit {
 
   onServiceChange(event: CustomEvent) {
     this.selectedServiceId.set(event.detail.value);
+    this.formDirty.set(true);
   }
 
   onDateChange(event: CustomEvent) {
     this.requestedDate.set(event.detail.value);
+    this.formDirty.set(true);
   }
 
   onTimeSlotChange(value: string) {
     this.requestedTimeSlot.set(value);
+    this.formDirty.set(true);
   }
 
   async submitRequest() {
@@ -288,6 +310,7 @@ export class RequestPage implements OnInit {
       const result = await this.serviceRequestService.create(requestData).toPromise();
 
       await this.showToast('Solicitud creada. Procede a seleccionar tu método de pago.', 'success');
+      this.formDirty.set(false);
 
       // Navigate to checkout page
       if (result?._id) {
@@ -316,6 +339,26 @@ export class RequestPage implements OnInit {
     }
   }
 
+  onDistrictInput(value: string) {
+    this.manualDistrict.set(value);
+    this.formDirty.set(true);
+  }
+
+  onCityInput(value: string) {
+    this.manualCity.set(value);
+    this.formDirty.set(true);
+  }
+
+  onReferenceInput(value: string) {
+    this.addressReference.set(value);
+    this.formDirty.set(true);
+  }
+
+  onNotesInput(value: string) {
+    this.patientNotes.set(value);
+    this.formDirty.set(true);
+  }
+
   // Helper methods
   getMinDate(): string {
     return new Date().toISOString();
@@ -333,7 +376,7 @@ export class RequestPage implements OnInit {
   }
 
   formatPrice(price: number, currency: string = 'PEN'): string {
-    return currency === 'PEN' ? `S/. ${price.toFixed(2)}` : `${currency} ${price.toFixed(2)}`;
+    return currency === 'PEN' ? `S/ ${price.toFixed(2)}` : `${currency} ${price.toFixed(2)}`;
   }
 
   formatDuration(minutes: number): string {
@@ -366,6 +409,7 @@ export class RequestPage implements OnInit {
    */
   onAddressInput(value: string) {
     this.manualAddress.set(value);
+    this.formDirty.set(true);
     this.addressSuggestions.set([]);
 
     if (this.searchDebounceTimer) {
@@ -393,6 +437,7 @@ export class RequestPage implements OnInit {
     this.manualDistrict.set(suggestion.district);
     this.manualCity.set(suggestion.city || 'Lima');
     this.addressSuggestions.set([]);
+    this.formDirty.set(true);
   }
 
   /**
@@ -413,7 +458,7 @@ export class RequestPage implements OnInit {
   private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 3000,
+      duration: color === 'danger' ? 4000 : 3000,
       color,
       position: 'bottom'
     });

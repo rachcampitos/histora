@@ -1,7 +1,7 @@
 <ion-content class="register-content" [fullscreen]="true">
   <div class="register-container">
     <!-- Back Button -->
-    <ion-button fill="clear" class="back-btn" (click)="goBack()">
+    <ion-button fill="clear" class="back-btn" (click)="goBack()" aria-label="Volver">
       <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
     </ion-button>
 
@@ -176,17 +176,19 @@
               placeholder="Contraseña"
               autocomplete="new-password">
             </ion-input>
-            <ion-button fill="clear" slot="end" (click)="togglePassword()" class="password-toggle">
+            <ion-button fill="clear" slot="end" (click)="togglePassword()" class="password-toggle" [attr.aria-label]="showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'">
               <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
             </ion-button>
           </ion-item>
+          <div class="password-hint">
+            <ion-icon [name]="password?.value?.length >= 8 ? 'checkmark-circle' : 'ellipse-outline'"
+              [color]="password?.value?.length >= 8 ? 'success' : 'medium'"></ion-icon>
+            <span [class.met]="password?.value?.length >= 8">Mínimo 8 caracteres</span>
+          </div>
           @if (password?.invalid && password?.touched) {
             <div class="error-message">
               @if (password?.errors?.['required']) {
                 <span>La contraseña es requerida</span>
-              }
-              @if (password?.errors?.['minlength']) {
-                <span>Mínimo 8 caracteres</span>
               }
             </div>
           }
@@ -199,7 +201,7 @@
               placeholder="Confirmar contraseña"
               autocomplete="new-password">
             </ion-input>
-            <ion-button fill="clear" slot="end" (click)="toggleConfirmPassword()" class="password-toggle">
+            <ion-button fill="clear" slot="end" (click)="toggleConfirmPassword()" class="password-toggle" [attr.aria-label]="showConfirmPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'">
               <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
             </ion-button>
           </ion-item>

@@ -160,7 +160,7 @@ export class SearchPage implements OnInit {
   }
 
   formatPrice(price: number, currency: string = 'PEN'): string {
-    return currency === 'PEN' ? `S/. ${price.toFixed(2)}` : `${currency} ${price.toFixed(2)}`;
+    return currency === 'PEN' ? `S/ ${price.toFixed(2)}` : `${currency} ${price.toFixed(2)}`;
   }
 
   formatDuration(minutes: number): string {

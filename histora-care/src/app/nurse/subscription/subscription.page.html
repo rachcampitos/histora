@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
+      <ion-button (click)="goBack()" aria-label="Volver">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -135,7 +135,7 @@
                 <div class="yape-details">
                   <div class="yape-number">
                     <span>{{ yapeNumber }}</span>
-                    <ion-button fill="clear" size="small" (click)="copyToClipboard(yapeNumber, 'number')">
+                    <ion-button fill="clear" size="small" (click)="copyToClipboard(yapeNumber, 'number')" aria-label="Copiar numero">
                       <ion-icon [name]="isCopied() === 'number' ? 'checkmark' : 'copy-outline'" slot="icon-only"></ion-icon>
                     </ion-button>
                   </div>
@@ -152,7 +152,7 @@
               <h3>Monto exacto:</h3>
               <div class="amount-card">
                 <span class="amount">S/ {{ selectedPlanInfo()?.price }}.00</span>
-                <ion-button fill="clear" size="small" (click)="copyToClipboard('{{ selectedPlanInfo()?.price }}', 'amount')">
+                <ion-button fill="clear" size="small" (click)="copyToClipboard('{{ selectedPlanInfo()?.price }}', 'amount')" aria-label="Copiar monto">
                   <ion-icon [name]="isCopied() === 'amount' ? 'checkmark' : 'copy-outline'" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
@@ -166,7 +166,7 @@
               <h3>En el mensaje incluye (opcional):</h3>
               <div class="message-card">
                 <span class="message">{{ getPaymentMessage() }}</span>
-                <ion-button fill="clear" size="small" (click)="copyToClipboard(getPaymentMessage(), 'message')">
+                <ion-button fill="clear" size="small" (click)="copyToClipboard(getPaymentMessage(), 'message')" aria-label="Copiar mensaje">
                   <ion-icon [name]="isCopied() === 'message' ? 'checkmark' : 'copy-outline'" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
@@ -211,7 +211,7 @@
           @if (proofImage()) {
             <div class="proof-preview">
               <img [src]="proofImage()" alt="Comprobante de pago">
-              <ion-button fill="clear" class="remove-btn" (click)="removeProofImage(); $event.stopPropagation()">
+              <ion-button fill="clear" class="remove-btn" (click)="removeProofImage(); $event.stopPropagation()" aria-label="Eliminar comprobante">
                 <ion-icon name="close-circle" slot="icon-only"></ion-icon>
               </ion-button>
             </div>

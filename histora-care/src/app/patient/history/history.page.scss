@@ -38,25 +38,76 @@ $border-color: #e7e5e4;
   }
 }
 
-// Loading State
-.loading-container {
+// Date Filter Chips
+.date-filter-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px 12px;
+
+  ion-chip {
+    --border-radius: 20px;
+    margin: 0;
+    height: 32px;
+    font-size: 13px;
+    font-weight: 500;
+
+    ion-icon {
+      font-size: 16px;
+      margin-right: 4px;
+    }
+
+    ion-label {
+      margin: 0;
+    }
+  }
+}
+
+// Skeleton Loading State
+.skeleton-container {
+  padding: 0 16px;
+}
+
+.skeleton-card {
+  margin: 0 0 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-lines {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.skeleton-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid $border-color;
+}
+
+.skeleton-footer {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 60px 24px;
-  gap: 16px;
-
-  ion-spinner {
-    width: 48px;
-    height: 48px;
-  }
-
-  p {
-    margin: 0;
-    font-size: 15px;
-    color: $text-muted;
-  }
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid $border-color;
 }
 
 // Error State
@@ -417,6 +468,18 @@ $border-color: #e7e5e4;
 // Dark Mode
 :host-context(body.ion-palette-dark),
 :host-context(body.dark) {
+  .date-filter-chips {
+    ion-chip {
+      --background: #334155;
+      --color: #94a3b8;
+
+      &[ng-reflect-color="primary"] {
+        --background: var(--ion-color-primary);
+        --color: var(--ion-color-primary-contrast);
+      }
+    }
+  }
+
   .tabs-container {
     background: var(--ion-background-color, #1a1a1a);
 
@@ -425,10 +488,14 @@ $border-color: #e7e5e4;
     }
   }
 
-  .loading-container {
-    p {
-      color: #71717a;
-    }
+  .skeleton-card {
+    --background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .skeleton-body,
+  .skeleton-footer {
+    border-top-color: #334155;
   }
 
   .error-container {

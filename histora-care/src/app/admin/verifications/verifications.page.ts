@@ -247,7 +247,7 @@ export class VerificationsPage implements OnInit {
   private async showToast(message: string, color: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 3000,
+      duration: color === 'danger' ? 4000 : 3000,
       color,
       position: 'bottom'
     });

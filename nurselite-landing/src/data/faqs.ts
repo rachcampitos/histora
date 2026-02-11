@@ -4,7 +4,7 @@ export const faqs: FAQItem[] = [
   {
     question: "¿Cuánto cuesta el servicio?",
     answer:
-      "Los precios varían según el tipo de servicio y la experiencia de cada profesional. La mayoría de servicios básicos como inyecciones o control de signos vitales cuestan menos de S/. 50. Cada enfermera establece sus propios precios, los cuales puedes ver en su perfil antes de solicitar el servicio. No hay costos ocultos ni comisiones adicionales.",
+      "Los precios varían según el tipo de servicio y la experiencia de cada profesional. La mayoría de servicios básicos como inyecciones o control de signos vitales cuestan menos de S/ 50. Cada enfermera establece sus propios precios, los cuales puedes ver en su perfil antes de solicitar el servicio. No hay costos ocultos ni comisiones adicionales.",
   },
   {
     question: "¿Cómo sé que las enfermeras están realmente verificadas?",

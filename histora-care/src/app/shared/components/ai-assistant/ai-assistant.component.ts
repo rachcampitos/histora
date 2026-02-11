@@ -295,7 +295,7 @@ export class AIAssistantComponent implements OnInit, OnDestroy {
 
     if (lower.includes('precio') || lower.includes('costo') || lower.includes('cuánto')) {
       return {
-        text: 'Los precios varían según el servicio:\n• Control de signos: desde S/. 35\n• Curaciones: desde S/. 45\n• Inyectables: desde S/. 30',
+        text: 'Los precios varían según el servicio:\n• Control de signos: desde S/ 35\n• Curaciones: desde S/ 45\n• Inyectables: desde S/ 30',
         suggestions: ['Ver servicios', 'Agendar'],
         intent: 'pricing'
       };

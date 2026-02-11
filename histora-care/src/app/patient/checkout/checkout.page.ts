@@ -83,7 +83,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
 
   formattedTotal = computed(() => {
     const summary = this.paymentSummary();
-    if (!summary) return 'S/. 0.00';
+    if (!summary) return 'S/ 0.00';
     return this.paymentService.formatAmount(summary.total);
   });
 
@@ -515,7 +515,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
   private async showToast(message: string, color: 'success' | 'warning' | 'danger') {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 3000,
+      duration: color === 'danger' ? 4000 : 3000,
       color,
       position: 'bottom'
     });

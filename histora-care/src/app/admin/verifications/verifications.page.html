@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
+      <ion-button (click)="goBack()" aria-label="Volver">
         <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -86,7 +86,7 @@
       <div class="detail-modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h2>Detalle de Verificacion</h2>
-          <ion-button fill="clear" (click)="closeDetail()">
+          <ion-button fill="clear" (click)="closeDetail()" aria-label="Cerrar">
             <ion-icon name="close" slot="icon-only"></ion-icon>
           </ion-button>
         </div>

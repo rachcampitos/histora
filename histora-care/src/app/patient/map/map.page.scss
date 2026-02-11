@@ -17,6 +17,44 @@ $primary-gradient: var(--histora-gradient);
   z-index: 1;
 }
 
+// Map Loading Overlay
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2; // Above map (1), below header/search (1000)
+  background: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .map-loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: tokens.$spacing-3;
+    background: white;
+    padding: tokens.$spacing-6 tokens.$spacing-8;
+    border-radius: tokens.$radius-xl;
+    box-shadow: tokens.$shadow-lg;
+
+    ion-spinner {
+      --color: #{tokens.$color-brand-secondary};
+      width: 36px;
+      height: 36px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: tokens.$font-size-sm;
+      font-weight: tokens.$font-weight-medium;
+    }
+  }
+}
+
 // Search Overlay
 .search-overlay {
   position: absolute;
@@ -521,6 +559,19 @@ $primary-gradient: var(--histora-gradient);
 
 // Dark mode mixin for reusability
 @mixin map-dark-mode {
+  .map-loading-overlay {
+    background: rgba(15, 23, 42, 0.75);
+
+    .map-loading-content {
+      background: tokens.$surface-dark-secondary;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+
+      p {
+        color: tokens.$text-dark-secondary;
+      }
+    }
+  }
+
   .search-overlay .search-bar {
     background: tokens.$surface-dark-secondary;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);

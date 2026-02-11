@@ -156,7 +156,7 @@
                   } @else {
                     <span>Ubicacion obtenida correctamente</span>
                   }
-                  <ion-button fill="clear" size="small" (click)="refreshLocation()">
+                  <ion-button fill="clear" size="small" (click)="refreshLocation()" aria-label="Actualizar ubicacion">
                     <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
                   </ion-button>
                 </div>
@@ -164,11 +164,12 @@
 
               <!-- Address Reference for Current Location -->
               <ion-item lines="none" class="reference-input">
-                <ion-label position="stacked">Referencia (opcional)</ion-label>
                 <ion-input
+                  label="Referencia (opcional)"
+                  label-placement="stacked"
                   placeholder="Ayudanos a llegar facil: color de casa, edificio, etc."
                   [value]="addressReference()"
-                  (ionInput)="addressReference.set($any($event).target.value)"
+                  (ionInput)="onReferenceInput($any($event).target.value)"
                 ></ion-input>
               </ion-item>
             </div>
@@ -178,8 +179,9 @@
           @if (!useCurrentLocation()) {
             <div class="manual-address-section">
               <ion-item lines="none">
-                <ion-label position="stacked">Direccion *</ion-label>
                 <ion-input
+                  label="Direccion *"
+                  label-placement="stacked"
                   placeholder="Ej: Av. Javier Prado 1520, San Isidro"
                   [value]="manualAddress()"
                   (ionInput)="onAddressInput($any($event).target.value)"
@@ -208,31 +210,34 @@
               }
 
               <ion-item lines="none">
-                <ion-label position="stacked">Distrito *</ion-label>
                 <ion-input
+                  label="Distrito *"
+                  label-placement="stacked"
                   placeholder="Ej: San Isidro, Miraflores, Surco..."
                   [value]="manualDistrict()"
-                  (ionInput)="manualDistrict.set($any($event).target.value)"
+                  (ionInput)="onDistrictInput($any($event).target.value)"
                   required
                 ></ion-input>
               </ion-item>
 
               <ion-item lines="none">
-                <ion-label position="stacked">Ciudad *</ion-label>
                 <ion-input
+                  label="Ciudad *"
+                  label-placement="stacked"
                   placeholder="Lima"
                   [value]="manualCity()"
-                  (ionInput)="manualCity.set($any($event).target.value)"
+                  (ionInput)="onCityInput($any($event).target.value)"
                   required
                 ></ion-input>
               </ion-item>
 
               <ion-item lines="none">
-                <ion-label position="stacked">Referencia (opcional)</ion-label>
                 <ion-input
+                  label="Referencia (opcional)"
+                  label-placement="stacked"
                   placeholder="Ayudanos a llegar facil: color de casa, edificio, etc."
                   [value]="addressReference()"
-                  (ionInput)="addressReference.set($any($event).target.value)"
+                  (ionInput)="onReferenceInput($any($event).target.value)"
                 ></ion-input>
               </ion-item>
             </div>
@@ -252,7 +257,7 @@
           <p class="section-helper">La enfermera confirmara la hora exacta contigo antes de la visita.</p>
           <!-- Date Picker -->
           <ion-item lines="none" class="date-picker-item">
-            <ion-label position="stacked">Fecha deseada *</ion-label>
+            <ion-label>Fecha deseada *</ion-label>
             <ion-datetime-button datetime="request-date"></ion-datetime-button>
             <ion-modal [keepContentsMounted]="true">
               <ng-template>
@@ -276,7 +281,7 @@
           <div class="time-slot-section">
             <ion-label class="time-slot-label">Horario preferido *</ion-label>
             <div class="time-slot-grid">
-              @for (slot of timeSlotOptions; track slot.value) {
+              @for (slot of availableTimeSlots(); track slot.value) {
                 <div
                   class="time-slot-option"
                   [class.selected]="requestedTimeSlot() === slot.value"
@@ -303,7 +308,7 @@
           <ion-textarea
             placeholder="Alergias, medicamentos, movilidad reducida..."
             [value]="patientNotes()"
-            (ionInput)="patientNotes.set($any($event).target.value)"
+            (ionInput)="onNotesInput($any($event).target.value)"
             [autoGrow]="true"
             [rows]="3"
             [maxlength]="500"

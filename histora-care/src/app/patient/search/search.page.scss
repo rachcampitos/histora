@@ -8,8 +8,7 @@ ion-header ion-toolbar {
   }
 }
 
-// Loading & Error States
-.loading-container,
+// Error State
 .error-container {
   display: flex;
   flex-direction: column;
@@ -25,6 +24,63 @@ ion-header ion-toolbar {
   h3 {
     color: var(--ion-color-medium);
     text-align: center;
+  }
+}
+
+// Skeleton Loading State
+.skeleton-container {
+  padding: 0 16px;
+}
+
+.skeleton-card {
+  margin: 0 0 16px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.skeleton-service-item {
+  margin-bottom: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.skeleton-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+
+.skeleton-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.skeleton-profile-header {
+  .skeleton-row {
+    align-items: flex-start;
   }
 }
 
@@ -484,12 +540,23 @@ ion-footer {
     }
   }
 
-  // Loading and error states
-  .loading-container,
+  // Error state
   .error-container {
     h3 {
       color: #94a3b8;
     }
+  }
+
+  // Skeleton loading state
+  .skeleton-card {
+    --background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid #334155;
+  }
+
+  .skeleton-service-item {
+    background: #0f172a;
+    border-color: #334155;
   }
 }
 

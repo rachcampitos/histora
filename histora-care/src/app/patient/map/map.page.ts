@@ -7,6 +7,7 @@ import { NurseApiService } from '../../core/services/nurse.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { WebSocketService } from '../../core/services/websocket.service';
 import { AuthService } from '../../core/services/auth.service';
+import mapboxgl from 'mapbox-gl';
 import { NurseSearchResult } from '../../core/models';
 import { NurseListModalComponent } from '../../shared/components/nurse-list-modal/nurse-list-modal.component';
 import { getSpecialtyConfig, getSpecialtyColors } from '../../shared/config/specialty-chips.config';
@@ -39,6 +40,13 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       const isDark = this.themeService.isDarkMode();
       if (this.mapInitialized) {
         this.mapboxService.setStyle(isDark ? 'dark' : 'streets');
+        // After style change, re-add cluster layers (style change removes all layers/sources)
+        const map = this.mapboxService.getMap();
+        if (map && this.usesClustering) {
+          map.once('style.load', () => {
+            this.updateNurseMarkers();
+          });
+        }
       }
     });
 
@@ -60,6 +68,10 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   nearbyNurses: NurseSearchResult[] = [];
   selectedNurse: NurseSearchResult | null = null;
   isSearching = signal(false);
+  isMapLoading = signal(true);
+
+  // Clustering
+  private usesClustering = false;
 
   // Filter options
   selectedCategory = '';
@@ -99,11 +111,13 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (mapContainer && !this.mapInitialized) {
+      this.isMapLoading.set(true);
       setTimeout(() => {
         this.initMap();
         this.getUserLocation();
       }, 100);
     } else if (currentMap) {
+      this.isMapLoading.set(false);
       setTimeout(() => currentMap.resize(), 100);
     }
 
@@ -122,7 +136,9 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.removeClusters();
     this.mapInitialized = false;
+    this.usesClustering = false;
     this.mapboxService.destroy();
   }
 
@@ -130,13 +146,15 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.mapInitialized) return;
 
     try {
+      this.isMapLoading.set(true);
+
       // Use ThemeService to determine initial map style
       const isDarkMode = this.themeService.isDarkMode();
       const mapStyle = isDarkMode
         ? 'mapbox://styles/mapbox/dark-v11'
         : 'mapbox://styles/mapbox/streets-v12';
 
-      this.mapboxService.initMap({
+      const map = this.mapboxService.initMap({
         container: 'map',
         center: [this.userLng, this.userLat],
         zoom: 14,
@@ -144,9 +162,17 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       });
       this.mapInitialized = true;
 
+      map.on('load', () => {
+        this.isMapLoading.set(false);
+      });
+
+      // Fallback: hide loading after timeout in case 'load' never fires
+      setTimeout(() => this.isMapLoading.set(false), 10000);
+
       // Theme changes are handled by the effect in constructor
     } catch (error) {
       console.error('Error initializing map:', error);
+      this.isMapLoading.set(false);
     }
   }
 
@@ -254,29 +280,55 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private previousNurseCount = 0;
+  private static readonly CLUSTER_THRESHOLD = 5;
+  private static readonly CLUSTER_SOURCE_ID = 'nurses-cluster-source';
+  private static readonly CLUSTER_LAYER_ID = 'nurses-clusters';
+  private static readonly CLUSTER_COUNT_LAYER_ID = 'nurses-cluster-count';
+  private static readonly UNCLUSTERED_LAYER_ID = 'nurses-unclustered-point';
 
   private updateNurseMarkers() {
-    // Clear ALL existing nurse markers (use previous count)
+    const map = this.mapboxService.getMap();
+
+    // Clean up previous state
+    this.removeClusters();
     for (let i = 0; i < Math.max(this.previousNurseCount, 20); i++) {
       this.mapboxService.removeMarker(`nurse-${i}`);
     }
     this.previousNurseCount = this.nearbyNurses.length;
+    this.usesClustering = false;
 
     const allCoordinates: [number, number][] = [[this.userLng, this.userLat]];
 
-    // Add markers for each nurse
-    this.nearbyNurses.forEach((result, index) => {
-      const nurse = result.nurse;
-      if (!nurse.location?.coordinates) return;
-
-      const [lng, lat] = nurse.location.coordinates;
+    // Collect valid nurse coordinates
+    const validNurses = this.nearbyNurses.filter(r => r.nurse.location?.coordinates);
+    validNurses.forEach(r => {
+      const [lng, lat] = r.nurse.location!.coordinates;
       allCoordinates.push([lng, lat]);
+    });
 
-      // Create custom nurse marker element
+    // Use clustering for 5+ nurses, individual markers otherwise
+    if (validNurses.length >= MapPage.CLUSTER_THRESHOLD && map) {
+      this.addClusteredNurses(map, validNurses);
+    } else {
+      this.addIndividualNurseMarkers(validNurses);
+    }
+
+    // Fit bounds to show all markers if there are any
+    if (allCoordinates.length > 1) {
+      this.mapboxService.fitBounds(allCoordinates, 60);
+    }
+  }
+
+  /**
+   * Add nurses as individual Mapbox markers (for < 5 nurses)
+   */
+  private addIndividualNurseMarkers(nurses: NurseSearchResult[]) {
+    nurses.forEach((result, index) => {
+      const nurse = result.nurse;
+      const [lng, lat] = nurse.location!.coordinates;
+
       const nurseElement = this.createNurseMarkerElement(result);
 
-      // Use anchor 'center' for circular avatar markers
-      // Popup offset [0, -30] positions it above the 44px marker
       this.mapboxService.addMarker(`nurse-${index}`, [lng, lat], {
         element: nurseElement,
         anchor: 'center',
@@ -291,10 +343,180 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
         onPopupClose: () => this.onMapboxPopupClose()
       });
     });
+  }
 
-    // Fit bounds to show all markers if there are any
-    if (allCoordinates.length > 1) {
-      this.mapboxService.fitBounds(allCoordinates, 60);
+  /**
+   * Add nurses as a GeoJSON clustered source + layers (for 5+ nurses)
+   */
+  private addClusteredNurses(map: any, nurses: NurseSearchResult[]) {
+    this.usesClustering = true;
+
+    // Build GeoJSON FeatureCollection
+    const geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: nurses.map((result, index) => {
+        const nurse = result.nurse;
+        const [lng, lat] = nurse.location!.coordinates;
+        return {
+          type: 'Feature' as const,
+          geometry: {
+            type: 'Point' as const,
+            coordinates: [lng, lat]
+          },
+          properties: {
+            index,
+            nurseId: nurse._id,
+            firstName: nurse.user?.firstName || 'Enfermera',
+            lastName: nurse.user?.lastName || '',
+            distance: result.distance.toFixed(1),
+            rating: nurse.averageRating.toFixed(1),
+            totalReviews: nurse.totalReviews,
+            isAvailable: nurse.isAvailable,
+            avatar: nurse.user?.avatar || 'assets/img/default-avatar.png'
+          }
+        };
+      })
+    };
+
+    // Add the clustered source
+    map.addSource(MapPage.CLUSTER_SOURCE_ID, {
+      type: 'geojson',
+      data: geojson,
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 50
+    });
+
+    // Layer: cluster circles (sized by point_count)
+    map.addLayer({
+      id: MapPage.CLUSTER_LAYER_ID,
+      type: 'circle',
+      source: MapPage.CLUSTER_SOURCE_ID,
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': [
+          'step', ['get', 'point_count'],
+          '#4a9d9a',   // < 10 points: teal
+          10, '#1e3a5f', // 10+ points: navy
+          25, '#7c3aed'  // 25+ points: purple
+        ],
+        'circle-radius': [
+          'step', ['get', 'point_count'],
+          20,   // < 10 points: 20px
+          10, 28, // 10+ points: 28px
+          25, 36  // 25+ points: 36px
+        ],
+        'circle-stroke-width': 3,
+        'circle-stroke-color': '#ffffff'
+      }
+    });
+
+    // Layer: cluster count labels
+    map.addLayer({
+      id: MapPage.CLUSTER_COUNT_LAYER_ID,
+      type: 'symbol',
+      source: MapPage.CLUSTER_SOURCE_ID,
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': ['get', 'point_count_abbreviated'],
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 13
+      },
+      paint: {
+        'text-color': '#ffffff'
+      }
+    });
+
+    // Layer: unclustered individual points
+    map.addLayer({
+      id: MapPage.UNCLUSTERED_LAYER_ID,
+      type: 'circle',
+      source: MapPage.CLUSTER_SOURCE_ID,
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-color': [
+          'case',
+          ['get', 'isAvailable'], '#16a34a',
+          '#94a3b8'
+        ],
+        'circle-radius': 10,
+        'circle-stroke-width': 3,
+        'circle-stroke-color': '#ffffff'
+      }
+    });
+
+    // Click on cluster -> zoom in
+    map.on('click', MapPage.CLUSTER_LAYER_ID, (e: any) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: [MapPage.CLUSTER_LAYER_ID] });
+      if (!features.length) return;
+      const clusterId = features[0].properties.cluster_id;
+      const source = map.getSource(MapPage.CLUSTER_SOURCE_ID) as any;
+      source.getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+        if (err) return;
+        map.easeTo({
+          center: features[0].geometry.coordinates,
+          zoom
+        });
+      });
+    });
+
+    // Click on unclustered point -> show popup / select nurse
+    map.on('click', MapPage.UNCLUSTERED_LAYER_ID, (e: any) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: [MapPage.UNCLUSTERED_LAYER_ID] });
+      if (!features.length) return;
+      const props = features[0].properties;
+      const coords = features[0].geometry.coordinates.slice() as [number, number];
+      const nurseIndex = props.index;
+
+      // Select the nurse (triggers card display)
+      if (nurseIndex !== undefined && this.nearbyNurses[nurseIndex]) {
+        this.selectNurse(this.nearbyNurses[nurseIndex]);
+      }
+
+      // Also show a popup on the map
+      const popupHtml = `
+        <div class="nurse-popup">
+          <strong>${props.firstName} ${props.lastName}</strong>
+          <p>${props.distance} km de distancia</p>
+          <p>Rating: ${props.rating} (${props.totalReviews} reseñas)</p>
+        </div>
+      `;
+
+      new mapboxgl.Popup({ offset: 25, closeButton: true, closeOnClick: false })
+        .setLngLat(coords)
+        .setHTML(popupHtml)
+        .addTo(map);
+    });
+
+    // Change cursor on hover over clusters and points
+    map.on('mouseenter', MapPage.CLUSTER_LAYER_ID, () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', MapPage.CLUSTER_LAYER_ID, () => {
+      map.getCanvas().style.cursor = '';
+    });
+    map.on('mouseenter', MapPage.UNCLUSTERED_LAYER_ID, () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', MapPage.UNCLUSTERED_LAYER_ID, () => {
+      map.getCanvas().style.cursor = '';
+    });
+  }
+
+  /**
+   * Remove clustering layers and source from the map
+   */
+  private removeClusters() {
+    const map = this.mapboxService.getMap();
+    if (!map) return;
+
+    try {
+      if (map.getLayer(MapPage.UNCLUSTERED_LAYER_ID)) map.removeLayer(MapPage.UNCLUSTERED_LAYER_ID);
+      if (map.getLayer(MapPage.CLUSTER_COUNT_LAYER_ID)) map.removeLayer(MapPage.CLUSTER_COUNT_LAYER_ID);
+      if (map.getLayer(MapPage.CLUSTER_LAYER_ID)) map.removeLayer(MapPage.CLUSTER_LAYER_ID);
+      if (map.getSource(MapPage.CLUSTER_SOURCE_ID)) map.removeSource(MapPage.CLUSTER_SOURCE_ID);
+    } catch (e) {
+      // Layers/source may not exist yet
     }
   }
 

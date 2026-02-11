@@ -80,7 +80,7 @@ export class NotificationSettingsPage implements OnInit {
   private async showToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 2000,
+      duration: 3000,
       position: 'bottom'
     });
     await toast.present();

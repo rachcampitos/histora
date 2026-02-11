@@ -300,7 +300,7 @@ export class ServicesPage implements OnInit {
   private async showToast(message: string, color: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 2000,
+      duration: color === 'danger' ? 4000 : 3000,
       color,
       position: 'bottom',
     });

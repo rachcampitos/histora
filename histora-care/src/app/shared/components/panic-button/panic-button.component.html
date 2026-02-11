@@ -13,7 +13,7 @@
         <span class="alert-status">{{ getAlertStatusText() }}</span>
       </div>
     </div>
-    <ion-button fill="clear" size="small" color="light" (click)="cancelAlert()">
+    <ion-button fill="clear" size="small" color="light" (click)="cancelAlert()" aria-label="Cancelar alerta">
       <ion-icon slot="icon-only" name="close-circle"></ion-icon>
     </ion-button>
   </div>

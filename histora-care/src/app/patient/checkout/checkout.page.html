@@ -2,11 +2,11 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       @if (currentStep() === 'method') {
-        <ion-button (click)="cancelCheckout()" color="medium">
+        <ion-button (click)="cancelCheckout()" color="medium" aria-label="Cerrar">
           <ion-icon name="close-outline" slot="icon-only"></ion-icon>
         </ion-button>
       } @else if (currentStep() === 'card' || currentStep() === 'yape') {
-        <ion-button (click)="backToMethodSelection()" color="medium">
+        <ion-button (click)="backToMethodSelection()" color="medium" aria-label="Volver">
           <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
         </ion-button>
       }
@@ -193,7 +193,7 @@
         <form [formGroup]="cardForm" class="card-form">
           <!-- Card Number -->
           <div class="form-group">
-            <ion-label position="stacked">Numero de tarjeta</ion-label>
+            <ion-label>Numero de tarjeta</ion-label>
             <div class="input-with-icon">
               <ion-input
                 formControlName="number"
@@ -213,7 +213,7 @@
 
           <!-- Cardholder Name -->
           <div class="form-group">
-            <ion-label position="stacked">Nombre en la tarjeta</ion-label>
+            <ion-label>Nombre en la tarjeta</ion-label>
             <ion-input
               formControlName="name"
               type="text"
@@ -228,7 +228,7 @@
           <!-- Expiry and CVV Row -->
           <div class="form-row">
             <div class="form-group half">
-              <ion-label position="stacked">Vencimiento</ion-label>
+              <ion-label>Vencimiento</ion-label>
               <div class="expiry-inputs">
                 <ion-input
                   formControlName="expMonth"
@@ -250,7 +250,7 @@
               </div>
             </div>
             <div class="form-group half">
-              <ion-label position="stacked">CVV</ion-label>
+              <ion-label>CVV</ion-label>
               <div class="input-with-icon">
                 <ion-input
                   formControlName="cvv"
@@ -267,7 +267,7 @@
 
           <!-- Email -->
           <div class="form-group">
-            <ion-label position="stacked">Correo electronico</ion-label>
+            <ion-label>Correo electronico</ion-label>
             <ion-input
               formControlName="email"
               type="email"
@@ -307,8 +307,9 @@
         </div>
 
         <div class="form-group">
-          <ion-label position="stacked">Numero de celular Yape</ion-label>
           <ion-input
+            label="Numero de celular Yape"
+            label-placement="stacked"
             type="tel"
             inputmode="numeric"
             placeholder="999 999 999"

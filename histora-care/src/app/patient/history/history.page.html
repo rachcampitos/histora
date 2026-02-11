@@ -30,11 +30,56 @@
     </ion-segment>
   </div>
 
-  <!-- Loading State -->
+  <!-- Date Range Filter Chips -->
+  <div class="date-filter-chips">
+    <ion-chip
+      [color]="selectedDateRange() === 'month' ? 'primary' : 'medium'"
+      [outline]="selectedDateRange() !== 'month'"
+      (click)="onDateRangeChange('month')">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <ion-label>Este mes</ion-label>
+    </ion-chip>
+    <ion-chip
+      [color]="selectedDateRange() === '3months' ? 'primary' : 'medium'"
+      [outline]="selectedDateRange() !== '3months'"
+      (click)="onDateRangeChange('3months')">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <ion-label>3 meses</ion-label>
+    </ion-chip>
+    <ion-chip
+      [color]="selectedDateRange() === 'all' ? 'primary' : 'medium'"
+      [outline]="selectedDateRange() !== 'all'"
+      (click)="onDateRangeChange('all')">
+      <ion-icon name="albums-outline"></ion-icon>
+      <ion-label>Todo</ion-label>
+    </ion-chip>
+  </div>
+
+  <!-- Loading State - Skeleton Cards -->
   @if (isLoading() && !isRefreshing()) {
-    <div class="loading-container">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p>Cargando tus servicios...</p>
+    <div class="skeleton-container">
+      @for (i of [1, 2, 3]; track i) {
+        <ion-card class="skeleton-card">
+          <ion-card-content>
+            <div class="skeleton-row">
+              <ion-skeleton-text [animated]="true" style="width: 48px; height: 48px; border-radius: 50%"></ion-skeleton-text>
+              <div class="skeleton-lines">
+                <ion-skeleton-text [animated]="true" style="width: 60%; height: 16px"></ion-skeleton-text>
+                <ion-skeleton-text [animated]="true" style="width: 40%; height: 14px"></ion-skeleton-text>
+              </div>
+              <ion-skeleton-text [animated]="true" style="width: 60px; height: 24px; border-radius: 12px"></ion-skeleton-text>
+            </div>
+            <div class="skeleton-body">
+              <ion-skeleton-text [animated]="true" style="width: 70%; height: 14px"></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true" style="width: 50%; height: 12px"></ion-skeleton-text>
+            </div>
+            <div class="skeleton-footer">
+              <ion-skeleton-text [animated]="true" style="width: 80px; height: 20px"></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true" style="width: 24px; height: 24px; border-radius: 4px"></ion-skeleton-text>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
     </div>
   }
 

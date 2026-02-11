@@ -2,6 +2,16 @@
   <!-- Map Container -->
   <div id="map" class="map-container" role="application" aria-label="Mapa de enfermeras cercanas"></div>
 
+  <!-- Map Loading Overlay -->
+  @if (isMapLoading()) {
+    <div class="map-loading-overlay" role="status" aria-live="polite" aria-label="Cargando mapa">
+      <div class="map-loading-content">
+        <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+        <p>Cargando mapa...</p>
+      </div>
+    </div>
+  }
+
   <!-- Search Bar Overlay -->
   <div class="search-overlay" role="search" aria-label="Filtros de busqueda">
     <div class="search-bar">

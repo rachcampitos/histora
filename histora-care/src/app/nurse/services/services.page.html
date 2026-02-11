@@ -75,10 +75,10 @@
                 </ion-toggle>
               </ion-item>
               <ion-item-options side="end">
-                <ion-item-option color="primary" (click)="openEditModal(service)">
+                <ion-item-option color="primary" (click)="openEditModal(service)" aria-label="Editar servicio">
                   <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                 </ion-item-option>
-                <ion-item-option color="danger" (click)="confirmDeleteService(service)">
+                <ion-item-option color="danger" (click)="confirmDeleteService(service)" aria-label="Eliminar servicio">
                   <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                 </ion-item-option>
               </ion-item-options>
@@ -121,10 +121,10 @@
                 </ion-toggle>
               </ion-item>
               <ion-item-options side="end">
-                <ion-item-option color="primary" (click)="openEditModal(service)">
+                <ion-item-option color="primary" (click)="openEditModal(service)" aria-label="Editar servicio">
                   <ion-icon slot="icon-only" name="create-outline"></ion-icon>
                 </ion-item-option>
-                <ion-item-option color="danger" (click)="confirmDeleteService(service)">
+                <ion-item-option color="danger" (click)="confirmDeleteService(service)" aria-label="Eliminar servicio">
                   <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                 </ion-item-option>
               </ion-item-options>
@@ -150,7 +150,7 @@
   <!-- FAB Button -->
   @if (!isLoading() && services().length > 0) {
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="openAddModal()">
+      <ion-fab-button (click)="openAddModal()" aria-label="Agregar servicio">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -189,8 +189,9 @@
       <ion-list>
         <!-- Name -->
         <ion-item>
-          <ion-label position="stacked">Nombre del servicio *</ion-label>
           <ion-input
+            label="Nombre del servicio *"
+            label-placement="stacked"
             type="text"
             placeholder="Ej: Inyeccion intramuscular"
             [value]="serviceForm().name"
@@ -200,8 +201,9 @@
 
         <!-- Description -->
         <ion-item>
-          <ion-label position="stacked">Descripcion</ion-label>
           <ion-textarea
+            label="Descripcion"
+            label-placement="stacked"
             placeholder="Describe el servicio..."
             [value]="serviceForm().description"
             (ionInput)="updateFormField('description', $event.detail.value)"
@@ -211,8 +213,9 @@
 
         <!-- Category -->
         <ion-item>
-          <ion-label position="stacked">Categoria *</ion-label>
           <ion-select
+            label="Categoria *"
+            label-placement="stacked"
             placeholder="Selecciona una categoria"
             [value]="serviceForm().category"
             (ionChange)="updateFormField('category', $event.detail.value)"
@@ -227,8 +230,9 @@
 
         <!-- Price -->
         <ion-item>
-          <ion-label position="stacked">Precio (S/) *</ion-label>
           <ion-input
+            label="Precio (S/) *"
+            label-placement="stacked"
             type="number"
             placeholder="0.00"
             [value]="serviceForm().price"
@@ -240,8 +244,9 @@
 
         <!-- Duration -->
         <ion-item>
-          <ion-label position="stacked">Duracion (minutos) *</ion-label>
           <ion-input
+            label="Duracion (minutos) *"
+            label-placement="stacked"
             type="number"
             placeholder="30"
             [value]="serviceForm().durationMinutes"

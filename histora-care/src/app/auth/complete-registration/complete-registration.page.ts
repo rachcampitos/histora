@@ -385,7 +385,7 @@ export class CompleteRegistrationPage {
   private async showToast(message: string, color: 'success' | 'warning' | 'danger' = 'warning') {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 2500,
+      duration: color === 'danger' ? 4000 : 3000,
       position: 'bottom',
       color,
     });

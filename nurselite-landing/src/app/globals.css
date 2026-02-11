@@ -361,6 +361,16 @@ section {
   color: var(--foreground);
 }
 
+.dark .btn-primary {
+  background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+}
+
+.dark .btn-primary:hover {
+  background: linear-gradient(135deg, #5bb8b5 0%, #3a7aab 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
 .dark .btn-secondary {
   color: var(--secondary-light);
   border-color: var(--secondary-light);
