@@ -140,6 +140,12 @@
     }
   }
 
+  .service-chip-container ion-chip {
+    --background: rgba(74, 157, 154, 0.15);
+    --color: #6bb5b3;
+    border-color: #6bb5b3;
+  }
+
   .cta-button {
     --background: #4a9d9a;
     --box-shadow: 0 4px 12px rgba(74, 157, 154, 0.3);
