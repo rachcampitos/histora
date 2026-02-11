@@ -4,6 +4,7 @@ import { LoadingController, ToastController, AlertController } from '@ionic/angu
 import { NurseApiService } from '../../core/services/nurse.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
 import { GeolocationService, LocationCoordinates } from '../../core/services/geolocation.service';
+import { MapboxService, AddressSuggestion } from '../../core/services/mapbox.service';
 import { Nurse, NurseService, CreateServiceRequest } from '../../core/models';
 
 interface TimeSlotOption {
@@ -28,6 +29,7 @@ export class RequestPage implements OnInit {
   private nurseService = inject(NurseApiService);
   private serviceRequestService = inject(ServiceRequestService);
   private geolocationService = inject(GeolocationService);
+  private mapboxService = inject(MapboxService);
 
   // State signals
   nurse = signal<Nurse | null>(null);
@@ -50,6 +52,14 @@ export class RequestPage implements OnInit {
   currentLocation = signal<LocationCoordinates | null>(null);
   isLoadingLocation = signal(false);
   locationError = signal<string | null>(null);
+  resolvedAddress = signal<string>('');
+  resolvedDistrict = signal<string>('');
+  resolvedCity = signal<string>('');
+
+  // Address autocomplete
+  addressSuggestions = signal<AddressSuggestion[]>([]);
+  isSearchingAddress = signal(false);
+  private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Time slot options
   timeSlotOptions: TimeSlotOption[] = [
@@ -89,6 +99,11 @@ export class RequestPage implements OnInit {
       if (nurseId) {
         this.loadNurseData(nurseId);
         this.loadCurrentLocation();
+
+        // Pre-fill from retry params if present
+        if (params['retryRequestId']) {
+          this.prefillFromRetry(params);
+        }
       } else {
         this.error.set('No se especifico una enfermera');
         this.isLoading.set(false);
@@ -145,6 +160,14 @@ export class RequestPage implements OnInit {
 
       const coords = await this.geolocationService.getCurrentPosition();
       this.currentLocation.set(coords);
+
+      // Reverse geocode to get real address from GPS coordinates
+      const address = await this.mapboxService.reverseGeocode(coords.longitude, coords.latitude);
+      if (address) {
+        this.resolvedAddress.set(address.address);
+        this.resolvedDistrict.set(address.district);
+        this.resolvedCity.set(address.city);
+      }
     } catch (err) {
       console.error('Error getting location:', err);
       this.locationError.set('No se pudo obtener la ubicacion');
@@ -226,15 +249,26 @@ export class RequestPage implements OnInit {
         const coords = this.currentLocation()!;
         locationData = {
           coordinates: [coords.longitude, coords.latitude],
-          address: this.manualAddress() || 'Ubicacion actual',
+          address: this.resolvedAddress() || 'Ubicacion actual',
           reference: this.addressReference() || undefined,
-          district: nurseData.location?.district || 'No especificado',
-          city: nurseData.location?.city || 'Lima'
+          district: this.resolvedDistrict() || 'No especificado',
+          city: this.resolvedCity() || 'Lima'
         };
       } else {
-        // For manual location, we need to geocode or use nurse's area
+        // Geocode manual address to get real coordinates
+        const geocoded = await this.mapboxService.geocodeAddress(
+          this.manualAddress(), this.manualDistrict(), this.manualCity()
+        );
+
+        if (!geocoded) {
+          await this.showToast('No pudimos encontrar esta direccion. Verifica los datos ingresados.', 'warning');
+          this.isSubmitting.set(false);
+          await loading.dismiss();
+          return;
+        }
+
         locationData = {
-          coordinates: nurseData.location.coordinates,
+          coordinates: geocoded.coordinates,
           address: this.manualAddress(),
           reference: this.addressReference() || undefined,
           district: this.manualDistrict(),
@@ -325,6 +359,55 @@ export class RequestPage implements OnInit {
       other: 'Otro'
     };
     return labels[category] || category;
+  }
+
+  /**
+   * Search addresses for autocomplete (debounced)
+   */
+  onAddressInput(value: string) {
+    this.manualAddress.set(value);
+    this.addressSuggestions.set([]);
+
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+
+    if (!value || value.length < 3) return;
+
+    this.searchDebounceTimer = setTimeout(async () => {
+      this.isSearchingAddress.set(true);
+      const proximity = this.currentLocation()
+        ? [this.currentLocation()!.longitude, this.currentLocation()!.latitude] as [number, number]
+        : this.mapboxService['defaultCenter'];
+      const results = await this.mapboxService.searchAddresses(value, proximity);
+      this.addressSuggestions.set(results);
+      this.isSearchingAddress.set(false);
+    }, 300);
+  }
+
+  /**
+   * Select an address suggestion
+   */
+  selectSuggestion(suggestion: AddressSuggestion) {
+    this.manualAddress.set(suggestion.address);
+    this.manualDistrict.set(suggestion.district);
+    this.manualCity.set(suggestion.city || 'Lima');
+    this.addressSuggestions.set([]);
+  }
+
+  /**
+   * Pre-fill form from retry queryParams
+   */
+  private prefillFromRetry(params: { [key: string]: string }) {
+    if (params['address']) {
+      this.useCurrentLocation.set(false);
+      this.manualAddress.set(params['address']);
+    }
+    if (params['district']) this.manualDistrict.set(params['district']);
+    if (params['city']) this.manualCity.set(params['city']);
+    if (params['date']) this.requestedDate.set(params['date']);
+    if (params['timeSlot']) this.requestedTimeSlot.set(params['timeSlot']);
+    if (params['notes']) this.patientNotes.set(params['notes']);
   }
 
   private async showToast(message: string, color: 'success' | 'warning' | 'danger') {

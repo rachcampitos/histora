@@ -107,11 +107,16 @@
 
     <!-- Actions -->
     <div class="status-actions">
-      <ion-button expand="block" (click)="searchAnotherNurse()">
+      <ion-button expand="block" (click)="retryWithSameData()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Solicitar mismo servicio
+      </ion-button>
+      <p class="retry-hint">Usaremos los mismos datos para buscar otra enfermera</p>
+      <ion-button expand="block" fill="outline" (click)="searchAnotherNurse()">
         <ion-icon name="search-outline" slot="start"></ion-icon>
         Buscar en el mapa
       </ion-button>
-      <ion-button expand="block" fill="outline" routerLink="/patient/history">
+      <ion-button expand="block" fill="clear" routerLink="/patient/history">
         <ion-icon name="list-outline" slot="start"></ion-icon>
         Ver historial
       </ion-button>

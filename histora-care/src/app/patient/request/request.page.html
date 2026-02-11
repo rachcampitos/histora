@@ -151,7 +151,11 @@
               } @else if (currentLocation()) {
                 <div class="location-success">
                   <ion-icon name="checkmark-circle" color="success"></ion-icon>
-                  <span>Ubicacion obtenida correctamente</span>
+                  @if (resolvedAddress()) {
+                    <span class="resolved-address">{{ resolvedAddress() }}</span>
+                  } @else {
+                    <span>Ubicacion obtenida correctamente</span>
+                  }
                   <ion-button fill="clear" size="small" (click)="refreshLocation()">
                     <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
                   </ion-button>
@@ -176,12 +180,32 @@
               <ion-item lines="none">
                 <ion-label position="stacked">Direccion *</ion-label>
                 <ion-input
-                  placeholder="¿Donde te visitamos? Ej: Av. Javier Prado 1520"
+                  placeholder="Ej: Av. Javier Prado 1520, San Isidro"
                   [value]="manualAddress()"
-                  (ionInput)="manualAddress.set($any($event).target.value)"
+                  (ionInput)="onAddressInput($any($event).target.value)"
                   required
                 ></ion-input>
               </ion-item>
+
+              <!-- Address Suggestions -->
+              @if (addressSuggestions().length > 0) {
+                <div class="address-suggestions">
+                  @for (suggestion of addressSuggestions(); track suggestion.id) {
+                    <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+                      <ion-icon name="location-outline" color="primary"></ion-icon>
+                      <div class="suggestion-text">
+                        <span class="suggestion-address">{{ suggestion.address }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              @if (isSearchingAddress()) {
+                <div class="address-searching">
+                  <ion-spinner name="dots" color="primary"></ion-spinner>
+                  <span>Buscando direcciones...</span>
+                </div>
+              }
 
               <ion-item lines="none">
                 <ion-label position="stacked">Distrito *</ion-label>

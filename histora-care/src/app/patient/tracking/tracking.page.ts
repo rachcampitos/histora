@@ -1036,6 +1036,29 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Retry the same service request with a different nurse
+   */
+  retryWithSameData() {
+    const req = this.request();
+    if (!req) return;
+
+    this.router.navigate(['/patient/tabs/map'], {
+      queryParams: {
+        retryRequestId: req._id,
+        serviceCategory: req.service?.category,
+        lat: req.location?.coordinates?.[1],
+        lng: req.location?.coordinates?.[0],
+        address: req.location?.address,
+        district: req.location?.district,
+        city: req.location?.city,
+        date: req.requestedDate,
+        timeSlot: req.requestedTimeSlot,
+        notes: req.patientNotes
+      }
+    });
+  }
+
+  /**
    * Show error alert
    */
   private async showError(message: string) {

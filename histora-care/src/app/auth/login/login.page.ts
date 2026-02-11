@@ -103,18 +103,26 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         await loading.dismiss();
 
         let message = 'Error al iniciar sesión';
-        if (error.status === 401) {
-          message = 'Credenciales incorrectas';
-        } else if (error.status === 0) {
+        let icon = 'alert-circle-outline';
+
+        if (error.status === 0) {
           message = 'Error de conexión. Verifica tu internet.';
+          icon = 'wifi-outline';
+        } else if (error.status === 401 && error.error?.message) {
+          message = error.error.message;
+          if (message.includes('bloqueada')) icon = 'lock-closed-outline';
+          else if (message.includes('desactivada')) icon = 'person-remove-outline';
+          else if (message.includes('Google')) icon = 'logo-google';
+        } else if (error.status === 401) {
+          message = 'Credenciales incorrectas';
         }
 
         const toast = await this.toastCtrl.create({
           message,
-          duration: 3000,
+          duration: 4000,
           position: 'bottom',
           color: 'danger',
-          icon: 'alert-circle-outline'
+          icon
         });
         await toast.present();
       }

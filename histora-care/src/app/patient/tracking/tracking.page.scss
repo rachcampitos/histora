@@ -449,6 +449,13 @@
       --border-radius: 12px;
       font-weight: 600;
     }
+
+    .retry-hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--ion-color-medium);
+      margin: -8px 0 4px;
+    }
   }
 }
 

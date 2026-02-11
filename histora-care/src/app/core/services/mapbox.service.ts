@@ -15,6 +15,27 @@ export interface RouteInfo {
   geometry: GeoJSON.LineString;
 }
 
+export interface GeocodingResult {
+  coordinates: [number, number]; // [lng, lat]
+  address: string;
+  district: string;
+  city: string;
+}
+
+export interface ReverseGeocodingResult {
+  address: string;
+  district: string;
+  city: string;
+}
+
+export interface AddressSuggestion {
+  id: string;
+  address: string;
+  district: string;
+  city: string;
+  coordinates: [number, number];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -362,6 +383,105 @@ export class MapboxService {
   setStyle(style: keyof typeof this.styles): void {
     if (this.map) {
       this.map.setStyle(this.styles[style]);
+    }
+  }
+
+  /**
+   * Forward geocoding: address string -> coordinates
+   */
+  async geocodeAddress(address: string, district: string, city: string): Promise<GeocodingResult | null> {
+    const query = `${address}, ${district}, ${city}`;
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?country=pe&limit=1&language=es&access_token=${mapboxgl.accessToken}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const [lng, lat] = feature.center;
+        const context = feature.context || [];
+        const resolvedDistrict = context.find((c: any) => c.id?.startsWith('locality') || c.id?.startsWith('place'))?.text || district;
+        const resolvedCity = context.find((c: any) => c.id?.startsWith('region'))?.text || city;
+
+        return {
+          coordinates: [lng, lat],
+          address: feature.place_name || address,
+          district: resolvedDistrict,
+          city: resolvedCity
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error geocoding address:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Reverse geocoding: coordinates -> address
+   */
+  async reverseGeocode(lng: number, lat: number): Promise<ReverseGeocodingResult | null> {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?country=pe&language=es&types=address,poi&limit=1&access_token=${mapboxgl.accessToken}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const context = feature.context || [];
+        const district = context.find((c: any) => c.id?.startsWith('locality') || c.id?.startsWith('place'))?.text || '';
+        const city = context.find((c: any) => c.id?.startsWith('region'))?.text || 'Lima';
+
+        return {
+          address: feature.place_name || '',
+          district,
+          city
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error reverse geocoding:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Search addresses for autocomplete suggestions
+   */
+  async searchAddresses(query: string, proximity?: [number, number]): Promise<AddressSuggestion[]> {
+    if (!query || query.length < 3) return [];
+
+    let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?country=pe&language=es&limit=5&types=address,poi&access_token=${mapboxgl.accessToken}`;
+
+    if (proximity) {
+      url += `&proximity=${proximity[0]},${proximity[1]}`;
+    }
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.features) {
+        return data.features.map((feature: any) => {
+          const context = feature.context || [];
+          const district = context.find((c: any) => c.id?.startsWith('locality') || c.id?.startsWith('place'))?.text || '';
+          const city = context.find((c: any) => c.id?.startsWith('region'))?.text || 'Lima';
+
+          return {
+            id: feature.id,
+            address: feature.place_name || '',
+            district,
+            city,
+            coordinates: feature.center as [number, number]
+          };
+        });
+      }
+      return [];
+    } catch (error) {
+      console.error('Error searching addresses:', error);
+      return [];
     }
   }
 
