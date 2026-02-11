@@ -182,14 +182,14 @@ function HomeScreen({ isDark }: ScreenProps) {
           className={`rounded-xl p-2.5 shadow-sm border flex items-center gap-2.5 ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}
         >
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center flex-shrink-0 ring-2 ring-[#f59e0b]">
-            <span className="text-white text-[9px] font-bold">MC</span>
+            <span className="text-white text-[9px] font-bold">MG</span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1">
               <p
                 className={`text-[9px] font-semibold ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}
               >
-                Maria C.
+                Maria E.
               </p>
               <span className="text-[6px] px-1 py-0.5 rounded bg-[#f59e0b]/15 text-[#d97706] font-bold">
                 ELITE
@@ -204,7 +204,7 @@ function HomeScreen({ isDark }: ScreenProps) {
               </span>
             </div>
             <p className="text-[7px] text-[#4a9d9a] font-medium">
-              CEP 108887 Verificada
+              CEP 125430 Verificada
             </p>
           </div>
           <div
@@ -238,7 +238,7 @@ function NurseProfileScreen({ isDark }: ScreenProps) {
       >
         <div className="flex flex-col items-center mb-3">
           <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-3 ring-[#f59e0b] shadow-lg">
-            <span className="text-white text-sm font-bold">MC</span>
+            <span className="text-white text-sm font-bold">MG</span>
           </div>
           <span className="text-[7px] px-1.5 py-0.5 rounded-full bg-[#f59e0b]/15 text-[#d97706] font-bold mt-1">
             ELITE
@@ -246,12 +246,12 @@ function NurseProfileScreen({ isDark }: ScreenProps) {
           <p
             className={`text-[10px] font-bold mt-1 ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}
           >
-            Maria Claudia C.
+            Maria Elena G.
           </p>
           <div className="flex items-center gap-1 mt-0.5">
             <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
             <span className="text-[7px] text-[#22c55e] font-medium">
-              CEP 108887 - HABIL
+              CEP 125430 - HABIL
             </span>
           </div>
           <div className="flex items-center gap-0.5 mt-1">
@@ -513,13 +513,13 @@ function TrackingScreen({ isDark }: ScreenProps) {
           className={`rounded-xl p-2 flex items-center gap-2 border ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}
         >
           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-[#f59e0b]">
-            <span className="text-white text-[6px] font-bold">MC</span>
+            <span className="text-white text-[6px] font-bold">MG</span>
           </div>
           <div className="flex-1">
             <p
               className={`text-[8px] font-semibold ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}
             >
-              Maria C.
+              Maria E.
             </p>
             <p className="text-[6px] text-[#4a9d9a]">Enfermera Elite</p>
           </div>
@@ -546,10 +546,10 @@ function ChatScreen({ isDark }: ScreenProps) {
             <span className="text-white text-[8px]">&larr;</span>
           </div>
           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-1 ring-[#f59e0b]">
-            <span className="text-white text-[7px] font-bold">MC</span>
+            <span className="text-white text-[7px] font-bold">MG</span>
           </div>
           <div className="flex-1">
-            <p className="text-white text-[9px] font-semibold">Maria C.</p>
+            <p className="text-white text-[9px] font-semibold">Maria E.</p>
             <div className="flex items-center gap-1">
               <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
               <span className="text-[#22c55e] text-[7px]">En linea</span>
@@ -570,7 +570,7 @@ function ChatScreen({ isDark }: ScreenProps) {
         {/* Nurse message */}
         <div className="flex gap-1.5 max-w-[85%]">
           <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center flex-shrink-0 mt-auto">
-            <span className="text-white text-[6px] font-bold">MC</span>
+            <span className="text-white text-[6px] font-bold">MG</span>
           </div>
           <div>
             <div
@@ -609,7 +609,7 @@ function ChatScreen({ isDark }: ScreenProps) {
         {/* Typing indicator */}
         <div className="flex gap-1.5 max-w-[40%]">
           <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center flex-shrink-0 mt-auto">
-            <span className="text-white text-[6px] font-bold">MC</span>
+            <span className="text-white text-[6px] font-bold">MG</span>
           </div>
           <div
             className={`rounded-2xl rounded-bl-sm px-3 py-2 shadow-sm border flex items-center gap-1 ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}
@@ -784,7 +784,7 @@ function PaymentScreen({ isDark }: ScreenProps) {
                 Inyeccion Intramuscular
               </p>
               <p className="text-[7px] text-[#64748b]">
-                Maria C. - Elite - 30 min
+                Maria E. - Elite - 30 min
               </p>
             </div>
           </div>
@@ -863,7 +863,7 @@ function NurseDashboardScreen({ isDark }: ScreenProps) {
         <div className="flex items-center justify-between mb-3">
           <div>
             <p className="text-white/60 text-[8px]">Panel Profesional</p>
-            <p className="text-white font-bold text-[11px]">Hola, Maria C.</p>
+            <p className="text-white font-bold text-[11px]">Hola, Maria E.</p>
           </div>
           <div className="flex items-center gap-1.5 bg-white/15 rounded-full px-2 py-1">
             <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
@@ -1017,7 +1017,7 @@ function TierScreen({ isDark }: ScreenProps) {
         {/* Current tier avatar */}
         <div className="relative mb-3">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-3 ring-[#3b82f6] shadow-lg">
-            <span className="text-white text-lg font-bold">MC</span>
+            <span className="text-white text-lg font-bold">MG</span>
           </div>
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
             <span className="text-[7px] px-2 py-0.5 rounded-full bg-[#3b82f6] text-white font-bold shadow-sm whitespace-nowrap">
@@ -1028,7 +1028,7 @@ function TierScreen({ isDark }: ScreenProps) {
         <p
           className={`text-[10px] font-bold mt-1 ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}
         >
-          Maria Claudia
+          Maria Elena
         </p>
         <p className="text-[7px] text-[#64748b] mb-3">Nivel 2 de 4</p>
 

@@ -12,3 +12,6 @@ CLAUDE.md
 
 # Archivos sensibles
 *.pdf
+
+# Demos TikTok (solo local)
+demo-*.html

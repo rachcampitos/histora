@@ -98,13 +98,13 @@ function TypingField({
 
 /* ── Mock data ── */
 const nurseMockData = {
-  firstName: "Maria Claudia",
-  lastName: "Chavez Torres",
-  email: "maria.chavez@gmail.com",
-  cep: "108887",
+  firstName: "Maria Elena",
+  lastName: "Garcia Lopez",
+  email: "maria.garcia@gmail.com",
+  cep: "125430",
   region: "CONSEJO REGIONAL III LIMA METROPOLITANA",
   status: "HABIL",
-  initials: "MC",
+  initials: "MG",
 };
 
 const patientMockData = {
@@ -345,7 +345,7 @@ function CEPResultScreen({ isDark }: ScreenProps) {
         className={`w-full rounded-xl p-2.5 border mb-3 ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}
       >
         {[
-          { label: "Nombre", value: "CHAVEZ TORRES MARIA CLAUDIA" },
+          { label: "Nombre", value: "GARCIA LOPEZ MARIA ELENA" },
           { label: "CEP", value: nurseMockData.cep },
           { label: "Region", value: nurseMockData.region },
         ].map((item, i) => (
@@ -836,7 +836,7 @@ function PatientMapScreen({ isDark }: ScreenProps) {
 
           {/* Nurse markers */}
           {[
-            { top: "25%", left: "30%", initials: "MC", delay: 0.3 },
+            { top: "25%", left: "30%", initials: "MG", delay: 0.3 },
             { top: "40%", left: "60%", initials: "LP", delay: 0.5 },
             { top: "55%", left: "25%", initials: "RS", delay: 0.7 },
             { top: "35%", left: "75%", initials: "AT", delay: 0.9 },
@@ -1924,6 +1924,44 @@ export function OnboardingDemo() {
   const flow = flows[activeTab];
   const totalScreens = flow.screens.length;
 
+  // Touch/swipe tracking for mobile
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const dx = e.changedTouches[0].clientX - touchStartX.current;
+      const dy = e.changedTouches[0].clientY - touchStartY.current;
+      // Only register horizontal swipes (dx > dy) with min 40px threshold
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+      if (dx < 0) {
+        // Swipe left → next
+        setActiveScreen((prev) => {
+          if (prev >= totalScreens - 1) {
+            setFinished(true);
+            return prev;
+          }
+          setFinished(false);
+          return prev + 1;
+        });
+      } else {
+        // Swipe right → previous
+        setActiveScreen((prev) => {
+          if (prev <= 0) return prev;
+          setFinished(false);
+          return prev - 1;
+        });
+      }
+    },
+    [totalScreens]
+  );
+
   const handleTabChange = useCallback((tab: FlowTab) => {
     setActiveTab(tab);
     setActiveScreen(0);
@@ -2110,9 +2148,11 @@ export function OnboardingDemo() {
           <AnimatedSection direction="right" className="order-2 flex flex-col items-center">
             <div
               ref={phoneRef}
-              className="relative w-[300px]"
+              className="relative w-[300px] touch-pan-y"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
             >
               {/* Glow */}
               <div
