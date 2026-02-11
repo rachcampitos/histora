@@ -9,7 +9,7 @@ $nurselite-gradient: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
 // Progress Dots
 .progress-dots {
   position: absolute;
-  top: 16px;
+  top: calc(16px + env(safe-area-inset-top, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
@@ -48,7 +48,7 @@ swiper-slide {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 60px 24px 24px;
+  padding: calc(60px + env(safe-area-inset-top, 0px)) 24px 24px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -764,8 +764,27 @@ swiper-slide {
 
   ion-button {
     margin-top: 8px;
-    --border-radius: 8px;
+    --border-radius: 10px;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
     font-weight: 600;
+    font-size: 14px;
+    height: 42px;
+    width: 100%;
+  }
+
+  &.pro ion-button {
+    --background: linear-gradient(135deg, #4a9d9a 0%, #2d5f8a 100%);
+    --color: #ffffff;
+    --border-width: 0;
+    --box-shadow: 0 3px 10px rgba(74, 157, 154, 0.3);
+  }
+
+  &.premium ion-button {
+    --background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --color: #ffffff;
+    --border-width: 0;
+    --box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3);
   }
 }
 
@@ -962,7 +981,12 @@ swiper-slide {
     }
 
     .plan-badge {
-      background: rgba(22, 163, 74, 0.15);
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+
+      ion-icon {
+        color: #4ade80;
+      }
     }
   }
 
