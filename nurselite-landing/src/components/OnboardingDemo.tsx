@@ -1013,13 +1013,17 @@ function PatientTrackingScreen({ isDark }: ScreenProps) {
     { label: "En camino", color: "#f97316" },
     { label: "Llego", color: "#f59e0b" },
     { label: "En servicio", color: "#10b981" },
+    { label: "Completado", color: "#22c55e" },
   ];
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveStep((prev) => (prev >= 1 ? 1 : prev + 1));
-    }, 2000);
-    return () => clearInterval(timer);
+    const timers = [
+      setTimeout(() => setActiveStep(1), 1200),
+      setTimeout(() => setActiveStep(2), 2400),
+      setTimeout(() => setActiveStep(3), 3400),
+      setTimeout(() => setActiveStep(4), 4600),
+    ];
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   useEffect(() => {
