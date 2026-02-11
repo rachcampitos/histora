@@ -28,8 +28,25 @@
     </div>
   }
 
+  <!-- Nurse Unavailable State (C2) -->
+  @if (nurse() && !nurse()!.isAvailable && !isLoading() && !error()) {
+    <div class="unavailable-state">
+      <ion-icon name="calendar-clear-outline" color="medium"></ion-icon>
+      <h3>Enfermera no disponible</h3>
+      <p>{{ nurse()!.user?.firstName }} no esta recibiendo solicitudes en este momento.</p>
+      <ion-button expand="block" (click)="searchOtherNurses()">
+        <ion-icon name="search-outline" slot="start"></ion-icon>
+        Buscar otras enfermeras
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="goBack()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        Volver al perfil
+      </ion-button>
+    </div>
+  }
+
   <!-- Request Form -->
-  @if (nurse() && !isLoading() && !error()) {
+  @if (nurse() && nurse()!.isAvailable && !isLoading() && !error()) {
     <div class="request-form">
       <!-- Nurse Info Card -->
       <ion-card class="nurse-summary-card">
@@ -242,6 +259,14 @@
               </ion-item>
             </div>
           }
+
+          <!-- Geocoding feedback (A2) -->
+          @if (isGeocodingAddress()) {
+            <div class="geocoding-feedback">
+              <ion-spinner name="dots" color="primary"></ion-spinner>
+              <span>Validando direccion...</span>
+            </div>
+          }
         </ion-card-content>
       </ion-card>
 
@@ -359,7 +384,7 @@
 </ion-content>
 
 <!-- Submit Button Footer -->
-@if (nurse() && !isLoading() && !error()) {
+@if (nurse() && nurse()!.isAvailable && !isLoading() && !error()) {
   <ion-footer class="ion-no-border">
     <ion-toolbar>
       <ion-button

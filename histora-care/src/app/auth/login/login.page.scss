@@ -220,10 +220,22 @@ $border-radius: 12px;
 .options-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin: 16px 0 24px;
   flex-wrap: wrap;
   gap: 8px;
+
+  .remember-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .remember-hint {
+      font-size: 11px;
+      color: var(--histora-text-muted, #52525b);
+      padding-left: 30px;
+    }
+  }
 
   ion-checkbox {
     --size: 18px;

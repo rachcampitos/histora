@@ -170,12 +170,12 @@
     </div>
     <div class="stat-card">
       <ion-icon name="medical" color="primary"></ion-icon>
-      <div class="stat-value">{{ totalServices() }}</div>
+      <div class="stat-value">{{ formatStat(totalServices()) }}</div>
       <div class="stat-label">Servicios</div>
     </div>
     <div class="stat-card stat-card-clickable" (click)="goToReviews()">
       <ion-icon name="chatbubbles" color="tertiary"></ion-icon>
-      <div class="stat-value">{{ totalReviews() }}</div>
+      <div class="stat-value">{{ formatStat(totalReviews()) }}</div>
       <div class="stat-label">Reseñas</div>
       <ion-icon name="chevron-forward-outline" class="stat-arrow"></ion-icon>
     </div>

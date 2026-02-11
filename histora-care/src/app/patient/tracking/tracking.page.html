@@ -277,9 +277,9 @@
                  [attr.data-status]="step.key">
               <div class="step-dot">
                 @if (isStepCompleted(step.key)) {
-                <ion-icon name="checkmark"></ion-icon>
+                <ion-icon name="checkmark" [attr.aria-label]="step.label + ' completado'"></ion-icon>
                 } @else {
-                <ion-icon [name]="step.icon"></ion-icon>
+                <ion-icon [name]="step.icon" [attr.aria-label]="step.label"></ion-icon>
                 }
               </div>
               <span class="step-label">{{ step.label }}</span>
@@ -354,7 +354,7 @@
                 <ion-icon name="shield-checkmark-outline" color="primary"></ion-icon>
                 <div>
                   <span class="code-title">Tu codigo de seguridad</span>
-                  <span class="code-subtitle">Comparte este codigo con la enfermera al llegar</span>
+                  <span class="code-subtitle">{{ currentStatus() === 'arrived' || currentStatus() === 'in_progress' || currentStatus() === 'completed' ? 'Comparte este codigo con la enfermera' : 'Ten este codigo listo para cuando llegue la enfermera' }}</span>
                 </div>
               </div>
               <div class="code-digits">

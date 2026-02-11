@@ -111,9 +111,12 @@
 
         <!-- Remember Me & Forgot Password -->
         <div class="options-row">
-          <ion-checkbox formControlName="rememberMe" labelPlacement="end">
-            Recordarme
-          </ion-checkbox>
+          <div class="remember-wrapper">
+            <ion-checkbox formControlName="rememberMe" labelPlacement="end">
+              Recordarme
+            </ion-checkbox>
+            <span class="remember-hint">Mantiene tu sesion activa en este dispositivo</span>
+          </div>
           <ion-button fill="clear" size="small" class="forgot-btn" (click)="forgotPassword()">
             ¿Olvidaste tu contraseña?
           </ion-button>

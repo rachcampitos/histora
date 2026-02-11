@@ -60,6 +60,9 @@ export class RequestPage implements OnInit {
   // Retry service category (for auto-select after retry)
   private retryServiceCategory = signal<string>('');
 
+  // Geocoding feedback
+  isGeocodingAddress = signal(false);
+
   // Address autocomplete
   addressSuggestions = signal<AddressSuggestion[]>([]);
   isSearchingAddress = signal(false);
@@ -291,9 +294,11 @@ export class RequestPage implements OnInit {
         };
       } else {
         // Geocode manual address to get real coordinates
+        this.isGeocodingAddress.set(true);
         const geocoded = await this.mapboxService.geocodeAddress(
           this.manualAddress(), this.manualDistrict(), this.manualCity()
         );
+        this.isGeocodingAddress.set(false);
 
         if (!geocoded) {
           await this.showToast('No pudimos encontrar esta direccion. Verifica los datos ingresados.', 'warning');
@@ -339,6 +344,10 @@ export class RequestPage implements OnInit {
       this.isSubmitting.set(false);
       await loading.dismiss();
     }
+  }
+
+  searchOtherNurses() {
+    this.router.navigate(['/patient/tabs/map']);
   }
 
   goBack() {

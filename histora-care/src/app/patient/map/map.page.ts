@@ -70,6 +70,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   selectedNurse: NurseSearchResult | null = null;
   isSearching = signal(false);
   isMapLoading = signal(true);
+  hasSearched = signal(false);
 
   // Retry params from rejected tracking page
   private retryParams = signal<Record<string, string>>({});
@@ -277,15 +278,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       this.nearbyNurses = results || [];
       this.updateNurseMarkers();
 
-      if (this.nearbyNurses.length === 0) {
-        const toast = await this.toastCtrl.create({
-          message: 'No se encontraron enfermeras disponibles en tu zona.',
-          duration: 3000,
-          position: 'bottom',
-          color: 'warning'
-        });
-        await toast.present();
-      }
+      // Empty state overlay handles the "no results" case visually (A4)
     } catch (error) {
       console.error('Error searching nurses:', error);
       const toast = await this.toastCtrl.create({
@@ -297,6 +290,7 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       await toast.present();
     } finally {
       this.isSearching.set(false);
+      this.hasSearched.set(true);
     }
   }
 
@@ -638,6 +632,16 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
       'background': colors.bg,
       'color': colors.text,
     };
+  }
+
+  expandRadius() {
+    this.searchRadius = 20;
+    this.searchNearbyNurses();
+  }
+
+  clearFilters() {
+    this.selectedCategory = '';
+    this.searchNearbyNurses();
   }
 
   onCategoryChange() {

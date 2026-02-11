@@ -302,15 +302,10 @@
               }
             </div>
 
-            @if (reviews().length > 3) {
-              <ion-button fill="clear" expand="block" (click)="toggleShowAllReviews()" class="show-more-btn">
-                @if (showAllReviews()) {
-                  <ion-icon name="chevron-up-outline" slot="start"></ion-icon>
-                  Ver menos
-                } @else {
-                  <ion-icon name="chevron-down-outline" slot="start"></ion-icon>
-                  Ver todas las reseñas ({{ reviews().length }})
-                }
+            @if ((nurse()!.totalReviews || 0) > 3) {
+              <ion-button fill="clear" expand="block" (click)="viewAllReviews()" class="show-more-btn">
+                <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
+                Ver todas las reseñas ({{ nurse()!.totalReviews }})
               </ion-button>
             }
           }

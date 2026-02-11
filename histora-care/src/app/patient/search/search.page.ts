@@ -75,11 +75,10 @@ export class SearchPage implements OnInit {
   async loadReviews(nurseId: string) {
     this.isLoadingReviews.set(true);
     try {
-      const response = await this.nurseService.getNurseReviews(nurseId, 1, 5).toPromise();
+      const response = await this.nurseService.getNurseReviews(nurseId, 1, 3).toPromise();
       this.reviews.set(response?.reviews || []);
     } catch (err) {
       console.error('Error loading reviews:', err);
-      // Don't show error toast for reviews - they're secondary content
       this.reviews.set([]);
     } finally {
       this.isLoadingReviews.set(false);
@@ -90,9 +89,15 @@ export class SearchPage implements OnInit {
     this.showAllReviews.set(!this.showAllReviews());
   }
 
+  viewAllReviews() {
+    const nurseData = this.nurse();
+    if (nurseData) {
+      this.router.navigate(['/nurse', nurseData._id, 'reviews']);
+    }
+  }
+
   getDisplayedReviews(): NurseReview[] {
-    const allReviews = this.reviews();
-    return this.showAllReviews() ? allReviews : allReviews.slice(0, 3);
+    return this.reviews();
   }
 
   formatReviewDate(date: Date | string): string {

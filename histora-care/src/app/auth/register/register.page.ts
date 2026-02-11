@@ -57,16 +57,16 @@ export class RegisterPage implements OnInit, OnDestroy {
 
   // CEP specialties options
   specialtiesOptions = [
+    'Cardiología',
     'Cuidados Generales',
     'Cuidados Intensivos',
-    'Pediatría',
-    'Geriatría',
-    'Oncología',
-    'Cardiología',
-    'Heridas y Curaciones',
-    'Terapia IV',
     'Diabetes',
+    'Geriatría',
+    'Heridas y Curaciones',
+    'Oncología',
+    'Pediatría',
     'Rehabilitación',
+    'Terapia IV',
   ];
 
   constructor() {
@@ -216,6 +216,17 @@ export class RegisterPage implements OnInit, OnDestroy {
       this.cepLoadingInterval = null;
     }
     this.showCepLoading.set(false);
+  }
+
+  cancelCepValidation() {
+    this.stopCepLoadingMessages();
+    this.isSubmitting.set(false);
+    this.destroy$.next(); // Cancel the in-flight request
+    this.destroy$.complete();
+    // Re-create destroy$ and re-setup handlers
+    this.destroy$ = new Subject<void>();
+    this.setupNurseRegistrationHandler();
+    this.setupPatientRegistrationHandler();
   }
 
   selectUserType(type: UserType) {

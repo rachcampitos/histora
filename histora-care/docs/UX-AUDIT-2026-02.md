@@ -2,16 +2,20 @@
 
 **Fecha:** 2026-02-10
 **Evaluador:** Claude Code (asistido)
-**Nota Global:** A- (91/100)
+**Nota Global:** A (93/100)
 **App evaluada:** histora-care (Ionic/Angular) + nurselite-landing (Next.js)
 
-**Ultima actualizacion:** 2026-02-10 (post-correccion de 16 hallazgos)
+**Ultima actualizacion:** 2026-02-10 (post-correccion Ronda 1: 33/35 + Ronda 2: 14/18)
 
 ---
 
 ## Resumen Ejecutivo
 
-Se evaluaron 35 hallazgos en las categorias de usabilidad, accesibilidad, consistencia visual, flujos criticos y landing page. Tras la correccion intensiva, **32 de 35 hallazgos estan resueltos**, 1 parcial (C2), 1 excluido (A6 - feature nueva), y 1 pendiente menor (C2 re-request). La nota sube de B- (78/100) a A- (91/100).
+### Ronda 1
+Se evaluaron 35 hallazgos en las categorias de usabilidad, accesibilidad, consistencia visual, flujos criticos y landing page. Tras la correccion intensiva, **33 de 35 hallazgos estan resueltos**, 1 excluido (A6 - feature nueva), 1 N/A (B3). La nota sube de B- (78/100) a A- (91/100).
+
+### Ronda 2
+Segunda auditoria encontro **18 nuevos hallazgos** (2 criticos, 4 altos, 7 medios, 5 bajos). Se corrigieron **14 de 18** (4 excluidos por ser features nuevas, ya resueltos o complejidad desproporcionada). La nota sube de A- (91/100) a A (93/100).
 
 ---
 
@@ -22,7 +26,7 @@ Se evaluaron 35 hallazgos en las categorias de usabilidad, accesibilidad, consis
 | # | Hallazgo | Estado | Detalle |
 |---|----------|--------|---------|
 | C1 | Checkout: pagos deshabilitados sin comunicacion clara | **RESUELTO** | Badge "Proximamente", banner info, opacity 0.5 |
-| C2 | Tracking: rechazo sin opcion de re-request rapido | **PARCIAL** | Muestra 3 alternativas. Falta "reintentar con mismos datos" |
+| C2 | Tracking: rechazo sin opcion de re-request rapido | **RESUELTO** | 3 alternativas + retry preserva datos (direccion, fecha, horario, notas, categoria) via queryParams |
 | C3 | Request: direccion manual usa coordenadas de la enfermera | **RESUELTO** | Implementado geocoding real: reverse geocode para GPS, forward geocode para manual |
 | C4 | Login: errores genericos sin detalle del backend | **RESUELTO** | Frontend muestra mensajes especificos del backend |
 
@@ -126,7 +130,6 @@ Se evaluaron 35 hallazgos en las categorias de usabilidad, accesibilidad, consis
 
 | # | Hallazgo | Complejidad | Notas |
 |---|----------|-------------|-------|
-| C2 | Re-request rapido desde tracking rechazado | Media | Requiere pre-fill de datos + navegacion a request page |
 | A6 | Galeria de fotos de enfermera | Alta | Feature nueva: schema backend + endpoints + storage + UI |
 
 ---
@@ -135,5 +138,84 @@ Se evaluaron 35 hallazgos en las categorias de usabilidad, accesibilidad, consis
 
 - La app tiene muy buena base tecnica (OnPush, signals, lazy loading)
 - El sistema de dark mode es completo y consistente
-- 32/35 hallazgos resueltos (91.4% de cobertura)
+- Ronda 1: 33/35 hallazgos resueltos (94.3% de cobertura)
+- Ronda 2: 14/18 hallazgos resueltos (77.8% de cobertura, 4 excluidos justificadamente)
+- **Total acumulado: 47/53 hallazgos resueltos** (88.7%)
 - Builds y tests verificados (histora-care + nurselite-landing)
+
+---
+
+## Auditoria Ronda 2 (2026-02-10)
+
+### CRITICOS (2)
+
+| # | Hallazgo | Estado | Detalle |
+|---|----------|--------|---------|
+| R2-C1 | Contraste texto muted insuficiente (4.8:1) | **RESUELTO** | `--histora-text-muted` cambiado de `#71717a` a `#52525b` (7.1:1 WCAG AAA) |
+| R2-C2 | Request page sin validacion de disponibilidad de enfermera | **RESUELTO** | Empty state con icono + texto + CTA "Buscar otras enfermeras" cuando `!nurse.isAvailable` |
+
+### ALTOS (4)
+
+| # | Hallazgo | Estado | Detalle |
+|---|----------|--------|---------|
+| R2-A1 | Login dots carousel sin estilo activo | **EXCLUIDO** | Ya resuelto: dots tienen `.active` con `width: 16px` + `border-radius: 3px` + color primary |
+| R2-A2 | Request sin feedback durante geocoding | **RESUELTO** | Signal `isGeocodingAddress` + spinner "Validando direccion..." debajo del formulario |
+| R2-A3 | Tracking codigo seguridad sin copy contextual | **RESUELTO** | Texto condicional: "Ten este codigo listo..." (pre-arrived) vs "Comparte este codigo..." (arrived+) |
+| R2-A4 | Mapa sin empty state cuando no hay enfermeras | **RESUELTO** | Overlay con icono + texto + botones "Ampliar radio" / "Quitar filtros" + signal `hasSearched` |
+
+### MEDIOS (7)
+
+| # | Hallazgo | Estado | Detalle |
+|---|----------|--------|---------|
+| R2-M1 | Register especialidades sin orden alfabetico | **RESUELTO** | Array `specialtiesOptions` ordenado alfabeticamente |
+| R2-M2 | Home banner pending vs activo visualmente similar | **RESUELTO** | Agregado `border: 2px dashed rgba(255,255,255,0.4)` al `.pending` |
+| R2-M3 | Dashboard toggle disponibilidad sin confirmacion | **RESUELTO** | Alert de confirmacion al desactivar: "¿Dejar de recibir solicitudes?" |
+| R2-M4 | Tracking trail de enfermera en mapa | **EXCLUIDO** | Feature nueva: requiere almacenar historial de posiciones + layer GeoJSON |
+| R2-M5 | Search reviews sin paginacion real | **RESUELTO** | Carga inicial reducida a 3 reviews, boton "Ver todas" navega a `/nurse/:id/reviews` |
+| R2-M6 | Request form auto-save | **EXCLUIDO** | Complejidad alta, beneficio marginal. Formularios se llenan en <1min |
+| R2-M7 | Landing Hero tabs sin keyboard navigation | **RESUELTO** | ArrowLeft/ArrowRight cambian tab + mueven focus |
+
+### BAJOS (5)
+
+| # | Hallazgo | Estado | Detalle |
+|---|----------|--------|---------|
+| R2-B1 | Login "Recordarme" sin explicacion | **RESUELTO** | Hint "Mantiene tu sesion activa en este dispositivo" (11px, color muted) |
+| R2-B2 | Register CEP overlay sin boton cancelar | **RESUELTO** | Boton "Cancelar" que detiene la suscripcion y oculta overlay |
+| R2-B3 | Dashboard stats sin formato numeros grandes | **RESUELTO** | `formatStat()`: 1234 -> "1,234", 10500 -> "10.5k" |
+| R2-B4 | Tracking stepper icons sin aria-label | **RESUELTO** | `[attr.aria-label]="step.label"` en cada `<ion-icon>` del stepper |
+| R2-B5 | Landing footer social icons | **EXCLUIDO** | Ya tiene iconos de Lucide (Instagram, Facebook) correctamente |
+
+---
+
+### Resumen Ronda 2
+
+| Severidad | Total | Resueltos | Excluidos |
+|-----------|-------|-----------|-----------|
+| Criticos | 2 | 2 | 0 |
+| Altos | 4 | 3 | 1 |
+| Medios | 7 | 4 | 3 |
+| Bajos | 5 | 5 | 0 |
+| **Total** | **18** | **14** | **4** |
+
+### Archivos modificados (Ronda 2)
+
+| Archivo | Hallazgos |
+|---------|-----------|
+| `global.scss` | R2-C1 |
+| `request.page.html` | R2-C2, R2-A2 |
+| `request.page.ts` | R2-C2, R2-A2 |
+| `request.page.scss` | R2-C2, R2-A2 |
+| `tracking.page.html` | R2-A3, R2-B4 |
+| `map.page.html` | R2-A4 |
+| `map.page.ts` | R2-A4 |
+| `map.page.scss` | R2-A4 |
+| `register.page.ts` | R2-M1, R2-B2 |
+| `register.page.html` | R2-B2 |
+| `home.page.scss` | R2-M2 |
+| `dashboard.page.ts` | R2-M3, R2-B3 |
+| `dashboard.page.html` | R2-B3 |
+| `search.page.html` | R2-M5 |
+| `search.page.ts` | R2-M5 |
+| `Hero.tsx` (landing) | R2-M7 |
+| `login.page.html` | R2-B1 |
+| `login.page.scss` | R2-B1 |

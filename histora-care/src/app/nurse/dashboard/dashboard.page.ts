@@ -623,12 +623,31 @@ export class DashboardPage implements OnInit, OnDestroy {
     const nurse = this.nurse();
     if (!nurse) return;
 
-    this.isTogglingAvailability.set(true);
     const newStatus = !nurse.isAvailable;
+
+    // Confirm when deactivating (M3)
+    if (!newStatus) {
+      const alert = await this.alertCtrl.create({
+        cssClass: 'histora-alert',
+        header: '¿Dejar de recibir solicitudes?',
+        message: 'No recibiras nuevas solicitudes mientras estes inactiva.',
+        buttons: [
+          { text: 'Cancelar', role: 'cancel' },
+          { text: 'Desactivar', handler: () => this.performToggleAvailability(nurse, newStatus) }
+        ]
+      });
+      await alert.present();
+      return;
+    }
+
+    this.performToggleAvailability(nurse, newStatus);
+  }
+
+  private performToggleAvailability(nurse: Nurse, newStatus: boolean) {
+    this.isTogglingAvailability.set(true);
 
     this.nurseApi.setAvailability(newStatus).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updatedNurse) => {
-        // Preserve existing user data (including avatar) if not returned by API
         const mergedNurse = {
           ...updatedNurse,
           user: updatedNurse.user || nurse.user,
@@ -792,6 +811,16 @@ export class DashboardPage implements OnInit, OnDestroy {
       default:
         return null;
     }
+  }
+
+  formatStat(value: number): string {
+    if (value >= 10000) {
+      return (value / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+    }
+    if (value >= 1000) {
+      return value.toLocaleString('es-PE');
+    }
+    return String(value);
   }
 
   private async showToast(message: string, color: string) {

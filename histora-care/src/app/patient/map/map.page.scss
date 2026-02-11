@@ -151,6 +151,54 @@ $primary-gradient: var(--histora-gradient);
   }
 }
 
+// Empty State Overlay (A4)
+.empty-state-overlay {
+  position: absolute;
+  bottom: calc(var(--ion-safe-area-bottom, 0) + 70px);
+  left: tokens.$spacing-3;
+  right: tokens.$spacing-3;
+  z-index: 1000;
+
+  .empty-state-card {
+    background: white;
+    border-radius: tokens.$radius-xl;
+    padding: tokens.$spacing-6;
+    box-shadow: tokens.$shadow-lg;
+    text-align: center;
+
+    ion-icon {
+      font-size: 48px;
+      margin-bottom: tokens.$spacing-3;
+    }
+
+    h3 {
+      margin: 0 0 tokens.$spacing-2;
+      font-size: 17px;
+      font-weight: tokens.$font-weight-semibold;
+      color: var(--text-primary);
+    }
+
+    p {
+      margin: 0 0 tokens.$spacing-4;
+      font-size: tokens.$font-size-sm;
+      color: var(--text-tertiary);
+    }
+
+    .empty-state-actions {
+      display: flex;
+      flex-direction: column;
+      gap: tokens.$spacing-2;
+
+      ion-button {
+        --border-radius: 10px;
+        height: 42px;
+        font-size: tokens.$font-size-sm;
+        text-transform: none;
+      }
+    }
+  }
+}
+
 // Selected Nurse Card
 .nurse-card {
   position: absolute;
@@ -604,6 +652,20 @@ $primary-gradient: var(--histora-gradient);
 
     p {
       color: tokens.$text-dark-secondary;
+    }
+  }
+
+  // Empty state dark mode
+  .empty-state-overlay .empty-state-card {
+    background: tokens.$surface-dark-secondary;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+    h3 {
+      color: tokens.$text-dark-primary;
+    }
+
+    p {
+      color: tokens.$text-dark-tertiary;
     }
   }
 

@@ -72,6 +72,29 @@
     </div>
   }
 
+  <!-- Empty State - No nurses found (A4) -->
+  @if (hasSearched() && nearbyNurses.length === 0 && !isSearching() && !isMapLoading()) {
+    <div class="empty-state-overlay" role="status" aria-live="polite">
+      <div class="empty-state-card">
+        <ion-icon name="search-outline" color="medium"></ion-icon>
+        <h3>No encontramos enfermeras cerca</h3>
+        <p>Intenta ampliar el radio de busqueda o quitar filtros</p>
+        <div class="empty-state-actions">
+          <ion-button expand="block" (click)="expandRadius()">
+            <ion-icon name="resize-outline" slot="start"></ion-icon>
+            Ampliar radio (20 km)
+          </ion-button>
+          @if (selectedCategory) {
+            <ion-button expand="block" fill="outline" (click)="clearFilters()">
+              <ion-icon name="funnel-outline" slot="start"></ion-icon>
+              Quitar filtros
+            </ion-button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Selected Nurse Card -->
   @if (selectedNurse) {
     <div class="nurse-card" [@slideUp] role="dialog" aria-labelledby="nurse-card-title">

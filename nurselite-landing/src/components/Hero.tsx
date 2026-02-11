@@ -103,9 +103,11 @@ export function Hero() {
               >
                 <button
                   onClick={() => setAudience("patient")}
+                  onKeyDown={(e) => { if (e.key === "ArrowRight") { setAudience("nurse"); (e.currentTarget.nextElementSibling as HTMLElement)?.focus(); } }}
                   role="tab"
                   aria-selected={audience === "patient"}
                   aria-controls="hero-content"
+                  tabIndex={audience === "patient" ? 0 : -1}
                   className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
                     audience === "patient"
                       ? "bg-white dark:bg-[#1e293b] text-[#1e3a5f] dark:text-white shadow-md"
@@ -117,9 +119,11 @@ export function Hero() {
                 </button>
                 <button
                   onClick={() => setAudience("nurse")}
+                  onKeyDown={(e) => { if (e.key === "ArrowLeft") { setAudience("patient"); (e.currentTarget.previousElementSibling as HTMLElement)?.focus(); } }}
                   role="tab"
                   aria-selected={audience === "nurse"}
                   aria-controls="hero-content"
+                  tabIndex={audience === "nurse" ? 0 : -1}
                   className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
                     audience === "nurse"
                       ? "bg-white dark:bg-[#1e293b] text-[#1e3a5f] dark:text-white shadow-md"
