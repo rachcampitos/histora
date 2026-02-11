@@ -1187,6 +1187,663 @@ function PatientTrackingScreen({ isDark }: ScreenProps) {
 }
 
 /* ════════════════════════════════════════════════
+   NURSE SCREENS (continued) - Service Cycle
+   ════════════════════════════════════════════════ */
+
+/* Screen 7: Nurse accepts incoming request */
+function NurseAcceptRequestScreen({ isDark }: ScreenProps) {
+  const [countdown, setCountdown] = useState(45);
+  const [accepted, setAccepted] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => (prev > 30 ? prev - 1 : 30));
+    }, 100);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const acceptTimer = setTimeout(() => setAccepted(true), 3000);
+    return () => clearTimeout(acceptTimer);
+  }, []);
+
+  return (
+    <div className={`flex-1 flex flex-col ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#f97316] to-[#f59e0b] px-4 pt-2 pb-3">
+        <div className="flex items-center justify-between">
+          <span className="text-white text-[9px] font-bold">Nueva Solicitud</span>
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+            className="bg-white/20 rounded-full px-2 py-0.5"
+          >
+            <span className="text-white text-[8px] font-mono font-bold">{countdown}s</span>
+          </motion.div>
+        </div>
+      </div>
+
+      <div className={`px-3.5 py-3 flex-1 flex flex-col ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+        {/* Patient info card */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          className={`rounded-xl p-3 border mb-3 ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}
+        >
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]/10", "bg-[#4a9d9a]/20")}`}>
+              <span className={`text-[11px] font-bold ${t(isDark, "text-[#1e3a5f]", "text-[#4a9d9a]")}`}>AR</span>
+            </div>
+            <div className="flex-1">
+              <p className={`text-[9px] font-semibold ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
+                Ana Rodriguez
+              </p>
+              <p className="text-[7px] text-[#64748b]">Paciente verificada</p>
+            </div>
+          </div>
+
+          {/* Service details */}
+          {[
+            { label: "Servicio", value: "Inyeccion Intramuscular", delay: 0.5 },
+            { label: "Ubicacion", value: "Miraflores - 1.2 km", delay: 0.7 },
+            { label: "Horario", value: "Hoy, 14:00 - 16:00", delay: 0.9 },
+            { label: "Pago", value: "S/40 - Yape", delay: 1.1 },
+          ].map((item) => (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: item.delay }}
+              className={`flex items-center justify-between py-1 border-t ${t(isDark, "border-[#f1f5f9]", "border-[#334155]")}`}
+            >
+              <span className="text-[7px] text-[#94a3b8]">{item.label}</span>
+              <span className={`text-[7px] font-medium ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
+                {item.value}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <div className="flex-1" />
+
+        {/* Action buttons */}
+        <AnimatePresence mode="wait">
+          {!accepted ? (
+            <motion.div
+              key="buttons"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: 1.5 }}
+              className="flex gap-2"
+            >
+              <div className="flex-1 rounded-xl py-2.5 text-center bg-[#ef4444]/10 border border-[#ef4444]/20">
+                <span className="text-[#ef4444] text-[9px] font-semibold">Rechazar</span>
+              </div>
+              <motion.div
+                animate={{ scale: [1, 1.03, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                className={`flex-1 rounded-xl py-2.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+              >
+                <span className="text-white text-[9px] font-semibold">Aceptar</span>
+              </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="accepted"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="rounded-xl py-3 text-center bg-[#22c55e]"
+            >
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 1] }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                className="text-white text-[10px] font-bold"
+              >
+                {"\u2713"} Solicitud Aceptada
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* Screen 8: Nurse completes service */
+function NurseCompleteServiceScreen({ isDark }: ScreenProps) {
+  const [step, setStep] = useState(0);
+  const [completed, setCompleted] = useState(false);
+  const serviceSteps = [
+    { label: "En camino", sublabel: "Hacia el paciente" },
+    { label: "Llego", sublabel: "En domicilio" },
+    { label: "En servicio", sublabel: "Atencion en progreso" },
+    { label: "Completado", sublabel: "Servicio finalizado" },
+  ];
+
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setStep(1), 800),
+      setTimeout(() => setStep(2), 1600),
+      setTimeout(() => setStep(3), 2400),
+      setTimeout(() => setCompleted(true), 3200),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div className={`flex-1 flex flex-col ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+      {/* Header */}
+      <div className="bg-[#0f172a] px-4 pt-2 pb-2.5">
+        <div className="flex items-center justify-between">
+          <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-white text-[8px]">&larr;</span>
+          </div>
+          <span className="text-white text-[9px] font-semibold">Servicio Activo</span>
+          <div className="w-5 h-5" />
+        </div>
+      </div>
+
+      <div className={`px-3.5 py-3 flex-1 flex flex-col ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+        {/* Patient card */}
+        <div className={`rounded-xl p-2 flex items-center gap-2 border mb-3 ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}>
+          <div className={`w-7 h-7 rounded-full flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]/10", "bg-[#4a9d9a]/20")}`}>
+            <span className={`text-[7px] font-bold ${t(isDark, "text-[#1e3a5f]", "text-[#4a9d9a]")}`}>AR</span>
+          </div>
+          <div className="flex-1">
+            <p className={`text-[8px] font-semibold ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>Ana R.</p>
+            <p className="text-[6px] text-[#64748b]">Inyeccion IM - S/40</p>
+          </div>
+        </div>
+
+        {/* Service stepper */}
+        <div className="pl-1 mb-3">
+          {serviceSteps.map((s, i) => {
+            const isCompleted = i < step;
+            const isActive = i === step;
+            const color = i === 3 ? "#22c55e" : i === 2 ? "#10b981" : i === 1 ? "#f59e0b" : "#f97316";
+
+            return (
+              <div key={s.label} className="flex items-start gap-2.5">
+                <div className="flex flex-col items-center">
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0.5 }}
+                    animate={{
+                      scale: isCompleted || isActive ? 1 : 0.8,
+                      opacity: isCompleted || isActive ? 1 : 0.5,
+                    }}
+                    className="w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{
+                      background: isCompleted || isActive ? color : isDark ? "#334155" : "#e2e8f0",
+                    }}
+                  >
+                    {isCompleted ? (
+                      <span className="text-white text-[7px] font-bold">{"\u2713"}</span>
+                    ) : isActive ? (
+                      <motion.span
+                        animate={{ opacity: [1, 0.3, 1] }}
+                        transition={{ duration: 0.8, repeat: Infinity }}
+                        className="w-1.5 h-1.5 rounded-full bg-white"
+                      />
+                    ) : (
+                      <span className={`w-1 h-1 rounded-full ${isDark ? "bg-[#64748b]" : "bg-[#94a3b8]"}`} />
+                    )}
+                  </motion.div>
+                  {i < serviceSteps.length - 1 && (
+                    <div className="relative w-0.5 h-4">
+                      <div className={`absolute inset-0 ${isDark ? "bg-[#334155]" : "bg-[#e2e8f0]"}`} />
+                      {isCompleted && (
+                        <motion.div
+                          initial={{ scaleY: 0 }}
+                          animate={{ scaleY: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className="absolute inset-0 origin-top"
+                          style={{ background: color }}
+                        />
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="-mt-0.5 pb-1">
+                  <p className={`text-[8px] font-semibold ${
+                    isCompleted || isActive
+                      ? t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")
+                      : "text-[#94a3b8]"
+                  }`}>
+                    {s.label}
+                  </p>
+                  <p className="text-[6px] text-[#64748b]">{s.sublabel}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex-1" />
+
+        {/* Complete button / success */}
+        <AnimatePresence mode="wait">
+          {!completed ? (
+            <motion.div
+              key="btn"
+              className={`rounded-xl py-2.5 text-center opacity-50 ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+            >
+              <span className="text-white text-[9px] font-semibold">Marcar como Completado</span>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="success"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="rounded-xl py-3 text-center bg-[#22c55e] relative overflow-hidden"
+            >
+              {/* Mini confetti particles */}
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ y: 0, x: 0, opacity: 1 }}
+                  animate={{
+                    y: [0, -30 - Math.random() * 20],
+                    x: [(i - 4) * 15, (i - 4) * 25 + (Math.random() - 0.5) * 20],
+                    opacity: [1, 0],
+                    rotate: [0, Math.random() * 360],
+                  }}
+                  transition={{ duration: 1, delay: 0.1 + i * 0.05 }}
+                  className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full"
+                  style={{
+                    background: ["#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6", "#f43f5e", "#4a9d9a", "#f97316", "#06b6d4"][i],
+                  }}
+                />
+              ))}
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 1] }}
+                transition={{ delay: 0.15, duration: 0.4 }}
+                className="text-white text-[10px] font-bold relative z-10"
+              >
+                {"\u2713"} Servicio Completado
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* Screen 9: Nurse receives review */
+function NurseReceiveReviewScreen({ isDark }: ScreenProps) {
+  const [starsShown, setStarsShown] = useState(0);
+  const [showComment, setShowComment] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showTierUp, setShowTierUp] = useState(false);
+
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setStarsShown(1), 400),
+      setTimeout(() => setStarsShown(2), 700),
+      setTimeout(() => setStarsShown(3), 1000),
+      setTimeout(() => setStarsShown(4), 1300),
+      setTimeout(() => setStarsShown(5), 1600),
+      setTimeout(() => setShowComment(true), 2200),
+      setTimeout(() => setShowConfetti(true), 2800),
+      setTimeout(() => setShowTierUp(true), 3500),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div className={`flex-1 flex flex-col ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+      {/* Header */}
+      <div className="bg-[#0f172a] px-4 pt-2 pb-2.5">
+        <div className="flex items-center justify-between">
+          <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-white text-[8px]">&larr;</span>
+          </div>
+          <span className="text-white text-[9px] font-semibold">Nueva Resena</span>
+          <div className="w-5 h-5" />
+        </div>
+      </div>
+
+      <div className={`px-3.5 py-3 flex-1 flex flex-col items-center relative overflow-hidden ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+        {/* Confetti layer */}
+        {showConfetti && (
+          <div className="absolute inset-0 pointer-events-none z-20">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{
+                  y: -10,
+                  x: 30 + Math.random() * 180,
+                  opacity: 1,
+                  rotate: 0,
+                }}
+                animate={{
+                  y: [0, 250 + Math.random() * 100],
+                  x: 30 + Math.random() * 180 + (Math.random() - 0.5) * 60,
+                  opacity: [1, 1, 0],
+                  rotate: Math.random() * 720 - 360,
+                }}
+                transition={{
+                  duration: 2 + Math.random(),
+                  delay: i * 0.06,
+                  ease: "easeOut",
+                }}
+                className="absolute rounded-sm"
+                style={{
+                  width: `${3 + Math.random() * 4}px`,
+                  height: `${3 + Math.random() * 4}px`,
+                  background: ["#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6", "#f43f5e", "#4a9d9a", "#f97316", "#06b6d4", "#ec4899", "#eab308"][i % 10],
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Patient avatar */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200 }}
+          className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${t(isDark, "bg-[#1e3a5f]/10", "bg-[#4a9d9a]/20")}`}
+        >
+          <span className={`text-sm font-bold ${t(isDark, "text-[#1e3a5f]", "text-[#4a9d9a]")}`}>AR</span>
+        </motion.div>
+
+        <p className={`text-[9px] font-semibold mb-0.5 ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
+          Ana Rodriguez
+        </p>
+        <p className="text-[7px] text-[#64748b] mb-3">Te dejo una resena</p>
+
+        {/* Stars */}
+        <div className="flex items-center gap-1 mb-3">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <motion.div
+              key={star}
+              initial={{ scale: 0, rotate: -30 }}
+              animate={
+                star <= starsShown
+                  ? { scale: [0, 1.4, 1], rotate: 0 }
+                  : { scale: 0.6, rotate: 0 }
+              }
+              transition={{
+                duration: 0.35,
+                type: "spring",
+                stiffness: 300,
+              }}
+            >
+              <svg
+                viewBox="0 0 20 20"
+                fill={star <= starsShown ? "#f59e0b" : isDark ? "#334155" : "#e2e8f0"}
+                className="w-6 h-6"
+              >
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </motion.div>
+          ))}
+        </div>
+
+        {starsShown >= 5 && (
+          <motion.p
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-[#f59e0b] text-[11px] font-bold mb-3"
+          >
+            5.0 Excelente
+          </motion.p>
+        )}
+
+        {/* Comment card */}
+        {showComment && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className={`w-full rounded-xl p-2.5 border mb-3 ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}
+          >
+            <p className={`text-[8px] italic leading-relaxed ${t(isDark, "text-[#475569]", "text-[#94a3b8]")}`}>
+              &ldquo;Excelente servicio, muy profesional y puntual. Maria fue muy amable y explico todo el procedimiento. 100% recomendada.&rdquo;
+            </p>
+          </motion.div>
+        )}
+
+        {/* Tier level up */}
+        {showTierUp && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: [0, 1.1, 1], opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200 }}
+            className={`w-full rounded-xl p-3 border-2 border-[#f59e0b]/40 text-center ${t(isDark, "bg-[#f59e0b]/5", "bg-[#f59e0b]/10")}`}
+          >
+            <motion.div
+              animate={{ rotate: [0, -10, 10, -5, 5, 0] }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="text-lg mb-1"
+            >
+              &#127942;
+            </motion.div>
+            <p className={`text-[9px] font-bold mb-0.5 ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
+              Nivel Actualizado
+            </p>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-[7px] text-[#94a3b8]">Certificada</span>
+              <motion.span
+                animate={{ x: [0, 3, 0] }}
+                transition={{ duration: 0.6, repeat: 2 }}
+                className="text-[#f59e0b] text-[8px]"
+              >
+                &rarr;
+              </motion.span>
+              <span className="text-[8px] font-bold text-[#f59e0b]">Destacada</span>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════
+   PATIENT SCREENS (continued) - Review
+   ════════════════════════════════════════════════ */
+
+/* Screen 7: Patient leaves review */
+function PatientReviewScreen({ isDark }: ScreenProps) {
+  const [rating, setRating] = useState(0);
+  const [showComment, setShowComment] = useState(false);
+  const [showOptIn, setShowOptIn] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const comment = "Excelente servicio, muy profesional y puntual.";
+  const { displayed: typedComment } = useTypingEffect(comment, 40, 2500, !submitted);
+
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setRating(1), 400),
+      setTimeout(() => setRating(2), 650),
+      setTimeout(() => setRating(3), 900),
+      setTimeout(() => setRating(4), 1150),
+      setTimeout(() => setRating(5), 1400),
+      setTimeout(() => setShowComment(true), 1800),
+      setTimeout(() => setShowOptIn(true), 4500),
+      setTimeout(() => setSubmitted(true), 5200),
+      setTimeout(() => setShowConfetti(true), 5400),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div className={`flex-1 flex flex-col ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+      {/* Header */}
+      <div className="bg-[#0f172a] px-4 pt-2 pb-2.5">
+        <div className="flex items-center justify-between">
+          <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-white text-[8px]">&larr;</span>
+          </div>
+          <span className="text-white text-[9px] font-semibold">Calificar Servicio</span>
+          <div className="w-5 h-5" />
+        </div>
+      </div>
+
+      <div className={`px-3.5 py-3 flex-1 flex flex-col items-center relative overflow-hidden ${t(isDark, "bg-[#f8fafc]", "bg-[#0f172a]")}`}>
+        {/* Confetti */}
+        {showConfetti && (
+          <div className="absolute inset-0 pointer-events-none z-20">
+            {[...Array(18)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{
+                  y: -10,
+                  x: 20 + Math.random() * 200,
+                  opacity: 1,
+                  rotate: 0,
+                }}
+                animate={{
+                  y: [0, 250 + Math.random() * 80],
+                  x: 20 + Math.random() * 200 + (Math.random() - 0.5) * 50,
+                  opacity: [1, 1, 0],
+                  rotate: Math.random() * 720 - 360,
+                }}
+                transition={{
+                  duration: 2 + Math.random(),
+                  delay: i * 0.05,
+                  ease: "easeOut",
+                }}
+                className="absolute rounded-sm"
+                style={{
+                  width: `${3 + Math.random() * 4}px`,
+                  height: `${3 + Math.random() * 4}px`,
+                  background: ["#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6", "#f43f5e", "#4a9d9a", "#f97316", "#06b6d4", "#ec4899", "#eab308"][i % 10],
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Nurse avatar */}
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-[#f59e0b] mb-2 shadow-lg">
+          <span className="text-white text-[10px] font-bold">MC</span>
+        </div>
+        <p className={`text-[9px] font-semibold mb-0.5 ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
+          Maria C.
+        </p>
+        <p className="text-[7px] text-[#64748b] mb-3">Como fue tu experiencia?</p>
+
+        {/* Stars */}
+        <div className="flex items-center gap-1.5 mb-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <motion.div
+              key={star}
+              initial={{ scale: 0.6 }}
+              animate={
+                star <= rating
+                  ? { scale: [0.6, 1.4, 1], rotate: [0, -15, 15, 0] }
+                  : { scale: 0.6 }
+              }
+              transition={{
+                duration: 0.3,
+                type: "spring",
+                stiffness: 300,
+              }}
+            >
+              <svg
+                viewBox="0 0 20 20"
+                fill={star <= rating ? "#f59e0b" : isDark ? "#334155" : "#e2e8f0"}
+                className="w-7 h-7"
+              >
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </motion.div>
+          ))}
+        </div>
+
+        {rating >= 5 && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[#f59e0b] text-[8px] font-semibold mb-3"
+          >
+            Excelente
+          </motion.p>
+        )}
+
+        {/* Comment area */}
+        {showComment && !submitted && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`w-full rounded-xl p-2.5 border mb-2 ${t(isDark, "bg-white border-[#e2e8f0]", "bg-[#1e293b] border-[#334155]")}`}
+          >
+            <p className="text-[6px] text-[#94a3b8] mb-1">Tu comentario</p>
+            <p className={`text-[8px] min-h-[24px] leading-relaxed ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
+              {typedComment}
+              {typedComment.length < comment.length && (
+                <span className="inline-block w-[1px] h-[10px] bg-[#4a9d9a] ml-[1px] align-middle animate-[blink_1s_step-end_infinite]" />
+              )}
+            </p>
+          </motion.div>
+        )}
+
+        {/* Opt-in checkbox */}
+        {showOptIn && !submitted && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-2 w-full mb-3"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 300 }}
+              className="w-3.5 h-3.5 rounded border border-[#4a9d9a] bg-[#4a9d9a] flex items-center justify-center flex-shrink-0"
+            >
+              <span className="text-white text-[6px] font-bold">{"\u2713"}</span>
+            </motion.div>
+            <p className="text-[6px] text-[#94a3b8]">Permitir uso publico de mi resena</p>
+          </motion.div>
+        )}
+
+        {/* Submit button / success */}
+        <div className="flex-1" />
+        <AnimatePresence mode="wait">
+          {!submitted ? (
+            <motion.div
+              key="btn"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: showOptIn ? 1 : 0.4 }}
+              className={`w-full rounded-xl py-2.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+            >
+              <span className="text-white text-[9px] font-semibold">Enviar Resena</span>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="thanks"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="w-full rounded-xl py-3 text-center bg-[#22c55e] relative z-10"
+            >
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 1] }}
+                transition={{ delay: 0.15 }}
+                className="text-white text-[10px] font-bold"
+              >
+                {"\u2713"} Gracias por tu resena
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════
    SCREEN REGISTRIES & FLOW CONFIG
    ════════════════════════════════════════════════ */
 
@@ -1207,8 +1864,11 @@ const flows: Record<FlowTab, FlowConfig> = {
       CEPResultScreen,
       NurseSetupScreen,
       NurseDashboardReadyScreen,
+      NurseAcceptRequestScreen,
+      NurseCompleteServiceScreen,
+      NurseReceiveReviewScreen,
     ],
-    durations: [4000, 6000, 5000, 5000, 4500, 5000],
+    durations: [4000, 6000, 5000, 5000, 4500, 5000, 4500, 4500, 5500],
     timelineLabels: [
       "Elige tu rol",
       "Crea tu cuenta",
@@ -1216,6 +1876,9 @@ const flows: Record<FlowTab, FlowConfig> = {
       "Confirma identidad",
       "Configura perfil",
       "Tu dashboard",
+      "Acepta solicitud",
+      "Completa servicio",
+      "Recibe tu resena",
     ],
   },
   patient: {
@@ -1226,8 +1889,9 @@ const flows: Record<FlowTab, FlowConfig> = {
       PatientMapScreen,
       PatientServiceRequestScreen,
       PatientTrackingScreen,
+      PatientReviewScreen,
     ],
-    durations: [4000, 5000, 4500, 5000, 4500, 6000],
+    durations: [4000, 5000, 4500, 5000, 4500, 6000, 6500],
     timelineLabels: [
       "Elige tu rol",
       "Crea tu cuenta",
@@ -1235,6 +1899,7 @@ const flows: Record<FlowTab, FlowConfig> = {
       "Busca enfermera",
       "Solicita servicio",
       "Seguimiento en vivo",
+      "Deja tu resena",
     ],
   },
 };
