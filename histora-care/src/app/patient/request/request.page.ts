@@ -271,6 +271,14 @@ export class RequestPage implements OnInit {
     const nurseData = this.nurse();
     if (!nurseData) return;
 
+    // Validate requested date is not in the past
+    const selectedDate = new Date(this.requestedDate());
+    const now = new Date();
+    if (selectedDate < now && this.requestedTimeSlot() !== 'asap') {
+      await this.showToast('La fecha seleccionada ya paso. Por favor selecciona una fecha futura.', 'warning');
+      return;
+    }
+
     this.isSubmitting.set(true);
 
     const loading = await this.loadingCtrl.create({
@@ -438,10 +446,15 @@ export class RequestPage implements OnInit {
       clearTimeout(this.searchDebounceTimer);
     }
 
-    if (!value || value.length < 3) return;
+    if (!value || value.length < 3) {
+      this.isSearchingAddress.set(false);
+      return;
+    }
+
+    // Show searching indicator immediately during debounce
+    this.isSearchingAddress.set(true);
 
     this.searchDebounceTimer = setTimeout(async () => {
-      this.isSearchingAddress.set(true);
       const proximity = this.currentLocation()
         ? [this.currentLocation()!.longitude, this.currentLocation()!.latitude] as [number, number]
         : this.mapboxService['defaultCenter'];

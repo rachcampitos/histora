@@ -206,7 +206,7 @@
               </ion-input>
               <ion-icon [name]="getCardBrandIcon(getCardBrand())" class="card-brand-icon"></ion-icon>
             </div>
-            @if (cardForm.get('number')?.invalid && cardForm.get('number')?.touched) {
+            @if (cardForm.get('number')?.invalid && cardForm.get('number')?.dirty) {
               <span class="error-text">Numero de tarjeta invalido</span>
             }
           </div>
@@ -220,7 +220,7 @@
               placeholder="JUAN PEREZ"
               class="card-input">
             </ion-input>
-            @if (cardForm.get('name')?.invalid && cardForm.get('name')?.touched) {
+            @if (cardForm.get('name')?.invalid && cardForm.get('name')?.dirty) {
               <span class="error-text">Ingrese el nombre como aparece en la tarjeta</span>
             }
           </div>
@@ -274,7 +274,7 @@
               placeholder="tu@email.com"
               class="card-input">
             </ion-input>
-            @if (cardForm.get('email')?.invalid && cardForm.get('email')?.touched) {
+            @if (cardForm.get('email')?.invalid && cardForm.get('email')?.dirty) {
               <span class="error-text">Ingrese un correo valido</span>
             }
           </div>

@@ -163,22 +163,32 @@
 
   <!-- Stats Cards -->
   <div class="stats-section" id="tour-nurse-stats">
-    <div class="stat-card">
-      <ion-icon name="star" color="warning"></ion-icon>
-      <div class="stat-value">{{ rating() | number:'1.1-1' }}</div>
-      <div class="stat-label">Calificación</div>
-    </div>
-    <div class="stat-card">
-      <ion-icon name="medical" color="primary"></ion-icon>
-      <div class="stat-value">{{ formatStat(totalServices()) }}</div>
-      <div class="stat-label">Servicios</div>
-    </div>
-    <div class="stat-card stat-card-clickable" (click)="goToReviews()">
-      <ion-icon name="chatbubbles" color="tertiary"></ion-icon>
-      <div class="stat-value">{{ formatStat(totalReviews()) }}</div>
-      <div class="stat-label">Reseñas</div>
-      <ion-icon name="chevron-forward-outline" class="stat-arrow"></ion-icon>
-    </div>
+    @if (isLoading()) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="stat-card stat-card-skeleton">
+          <ion-skeleton-text [animated]="true" style="width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 8px"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 40px; height: 24px; margin: 0 auto 4px"></ion-skeleton-text>
+          <ion-skeleton-text [animated]="true" style="width: 60px; height: 12px; margin: 0 auto"></ion-skeleton-text>
+        </div>
+      }
+    } @else {
+      <div class="stat-card">
+        <ion-icon name="star" color="warning"></ion-icon>
+        <div class="stat-value">{{ rating() | number:'1.1-1' }}</div>
+        <div class="stat-label">Calificación</div>
+      </div>
+      <div class="stat-card">
+        <ion-icon name="medical" color="primary"></ion-icon>
+        <div class="stat-value">{{ formatStat(totalServices()) }}</div>
+        <div class="stat-label">Servicios</div>
+      </div>
+      <div class="stat-card stat-card-clickable" (click)="goToReviews()">
+        <ion-icon name="chatbubbles" color="tertiary"></ion-icon>
+        <div class="stat-value">{{ formatStat(totalReviews()) }}</div>
+        <div class="stat-label">Reseñas</div>
+        <ion-icon name="chevron-forward-outline" class="stat-arrow"></ion-icon>
+      </div>
+    }
   </div>
 
   <!-- Quick Actions -->

@@ -201,6 +201,8 @@ $border-color: #e2e8f0;
   overflow-y: auto;
   padding: 16px 0;
   scroll-behavior: smooth;
+  min-height: 0; // Prevent flex child from overflowing
+  -webkit-overflow-scrolling: touch;
 }
 
 // Date Divider

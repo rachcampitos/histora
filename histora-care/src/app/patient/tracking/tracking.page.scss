@@ -693,6 +693,13 @@
       font-size: 22px;
       font-weight: 700;
       letter-spacing: 0;
+      animation: revealDigit 0.3s ease-out backwards;
+
+      @for $i from 1 through 6 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{($i - 1) * 0.08}s;
+        }
+      }
 
       &.patient {
         background: rgba(var(--ion-color-primary-rgb), 0.1);
@@ -733,9 +740,16 @@
 // Status Progress - Rappi-style collapsing track
 .status-progress {
   margin-bottom: 20px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding-top: 35px; // Space between modal handle and progress dots
   padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+
+  // Hide scrollbar
+  &::-webkit-scrollbar { display: none; }
+  scrollbar-width: none;
 }
 
 .progress-track {
@@ -866,6 +880,17 @@
     &[data-status="on_the_way"] .step-label-dot { background: #ea580c; }
     &[data-status="arrived"] .step-label-dot { background: #d97706; }
     &[data-status="in_progress"] .step-label-dot { background: #0891b2; }
+  }
+}
+
+@keyframes revealDigit {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotateY(90deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotateY(0);
   }
 }
 

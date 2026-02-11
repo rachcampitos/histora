@@ -385,6 +385,15 @@ $primary-gradient: var(--histora-gradient);
   padding: tokens.$spacing-3 tokens.$spacing-4;
   box-shadow: tokens.$shadow-lg;
 
+  .list-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--ion-color-medium, #92949c);
+    border-radius: 2px;
+    margin: 0 auto tokens.$spacing-2;
+    opacity: 0.4;
+  }
+
   .list-header {
     display: flex;
     justify-content: space-between;

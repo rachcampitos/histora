@@ -173,6 +173,7 @@
   <!-- Bottom List (collapsed) -->
   @if (nearbyNurses.length > 0 && !selectedNurse) {
     <div class="bottom-list">
+      <div class="list-handle"></div>
       <div class="list-header">
         <span>{{ nearbyNurses.length }} enfermeras cerca de ti</span>
         <ion-button fill="clear" size="small" (click)="viewNurseList()" aria-label="Ver lista completa de enfermeras">

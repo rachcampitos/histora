@@ -202,17 +202,18 @@
     0 4px 20px rgba(217, 119, 6, 0.4),
     0 0 0 2px rgba(255, 255, 255, 0.1) inset;
 
-  // Slower, more subtle shimmer for pending state
+  // Slower, more subtle shimmer for pending state - stops after 3 cycles
   .banner-shimmer {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.1) 40%,
-      rgba(255, 255, 255, 0.18) 50%,
-      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0.08) 40%,
+      rgba(255, 255, 255, 0.14) 50%,
+      rgba(255, 255, 255, 0.08) 60%,
       transparent 100%
     );
-    animation: shimmer-sweep 3.5s ease-in-out infinite;
+    animation: shimmer-sweep 4.5s ease-in-out 3;
+    opacity: 0.6;
   }
 }
 
@@ -397,6 +398,8 @@
     background: #ffffff;
     font-family: inherit;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
 
     // Layout
     display: flex;
@@ -411,6 +414,16 @@
     transition: transform tokens.$duration-normal tokens.$easing-standard,
                 box-shadow tokens.$duration-normal tokens.$easing-standard;
 
+    // Ripple effect
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(30, 58, 95, 0.12) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
     &:focus-visible {
       outline: 3px solid var(--ion-color-primary);
       outline-offset: 2px;
@@ -419,6 +432,10 @@
     &:active {
       transform: translateY(1px);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+      &::after {
+        opacity: 1;
+      }
     }
 
     .quick-icon {
@@ -603,6 +620,10 @@
     .quick-btn {
       background: tokens.$surface-dark-secondary;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+      &::after {
+        background: radial-gradient(circle at center, rgba(107, 181, 179, 0.15) 0%, transparent 70%);
+      }
 
       .quick-icon {
         color: #6bb5b3;

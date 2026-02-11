@@ -950,7 +950,12 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    * QW6: Handle breakpoint change from bottom sheet
    */
   onBreakpointChange(event: CustomEvent) {
-    this.currentBreakpoint.set(event.detail.breakpoint);
+    const prev = this.currentBreakpoint();
+    const next = event.detail.breakpoint;
+    this.currentBreakpoint.set(next);
+    if (prev !== next) {
+      this.haptics.light();
+    }
   }
 
   /**

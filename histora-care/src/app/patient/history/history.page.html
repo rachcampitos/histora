@@ -104,7 +104,7 @@
           <ion-icon name="document-text-outline"></ion-icon>
         </div>
         <h3>Sin servicios</h3>
-        <p>Aun no has solicitado ningun servicio de enfermeria.</p>
+        <p>Aun no has solicitado ningun servicio de enfermeria. Encuentra enfermeras verificadas cerca de ti.</p>
         <ion-button (click)="goToSearch()">
           <ion-icon name="search-outline" slot="start"></ion-icon>
           Buscar Enfermera
@@ -114,19 +114,23 @@
           <ion-icon name="pulse-outline"></ion-icon>
         </div>
         <h3>Sin servicios activos</h3>
-        <p>No tienes servicios en progreso en este momento.</p>
+        <p>No tienes servicios en progreso. Cuando solicites uno, podras hacer seguimiento aqui.</p>
+        <ion-button fill="outline" (click)="goToSearch()">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          Solicitar Servicio
+        </ion-button>
       } @else if (selectedTab() === 'completed') {
         <div class="empty-icon completed">
           <ion-icon name="checkmark-done-outline"></ion-icon>
         </div>
         <h3>Sin servicios completados</h3>
-        <p>Los servicios finalizados apareceran aqui.</p>
+        <p>Tus servicios finalizados apareceran aqui con la opcion de dejar una resena.</p>
       } @else {
         <div class="empty-icon cancelled">
           <ion-icon name="close-circle-outline"></ion-icon>
         </div>
         <h3>Sin cancelaciones</h3>
-        <p>No tienes servicios cancelados.</p>
+        <p>No tienes servicios cancelados o rechazados. Excelente historial.</p>
       }
     </div>
   }
