@@ -10,6 +10,7 @@ import { WebSocketService } from '../../core/services/websocket.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ChatService } from '../../core/services/chat.service';
 import { VirtualEscortService, ActiveShare } from '../../core/services/virtual-escort.service';
+import { CelebrationService } from '../../core/services/celebration.service';
 import { ServiceRequest, Nurse } from '../../core/models';
 import { environment } from '../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
@@ -35,6 +36,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
   private modalCtrl = inject(ModalController);
   private toastCtrl = inject(ToastController);
   private destroyRef = inject(DestroyRef);
+  private celebrationService = inject(CelebrationService);
 
   // State
   request = signal<ServiceRequest | null>(null);
@@ -385,6 +387,7 @@ export class ActiveServicePage implements OnInit, OnDestroy {
                 next: () => {
                   this.wsService.notifyServiceCompleted(req._id);
                   this.stopTimer();
+                  this.celebrationService.triggerConfetti();
                   this.showToast('Servicio completado!', 'success');
                   this.virtualEscortService.clearShares();
                   // Navigate back to dashboard

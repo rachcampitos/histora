@@ -459,9 +459,9 @@ function NurseSetupScreen({ isDark }: ScreenProps) {
             initial={{ scale: 0 }}
             animate={{ scale: [0, 1.15, 1] }}
             transition={{ delay: 2.3, type: "spring" }}
-            className="px-2 py-1 rounded-lg bg-[#4a9d9a]/15 border border-[#4a9d9a]/30"
+            className="px-2 py-1 rounded-lg bg-[#4a9d9a]/15 border border-[#4a9d9a]/30 flex items-center justify-center"
           >
-            <span className="text-[7px] font-bold text-[#4a9d9a]">Basico - Gratis</span>
+            <span className="text-[7px] font-bold text-[#4a9d9a] leading-none">Basico - Gratis</span>
           </motion.div>
           <span className="text-[6px] text-[#94a3b8]">Comienza sin costo</span>
         </div>
@@ -561,7 +561,7 @@ function NurseDashboardReadyScreen({ isDark }: ScreenProps) {
           {[
             { label: "Servicios", color: "#4a9d9a" },
             { label: "Ganancias", color: "#f59e0b" },
-            { label: "Resenas", color: "#8b5cf6" },
+            { label: "Reseñas", color: "#8b5cf6" },
             { label: "Perfil", color: "#3b82f6" },
           ].map((a, i) => (
             <motion.div
@@ -1508,7 +1508,7 @@ function NurseReceiveReviewScreen({ isDark }: ScreenProps) {
           <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
             <span className="text-white text-[8px]">&larr;</span>
           </div>
-          <span className="text-white text-[9px] font-semibold">Nueva Resena</span>
+          <span className="text-white text-[9px] font-semibold">Nueva Reseña</span>
           <div className="w-5 h-5" />
         </div>
       </div>
@@ -1561,7 +1561,7 @@ function NurseReceiveReviewScreen({ isDark }: ScreenProps) {
         <p className={`text-[9px] font-semibold mb-0.5 ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
           Ana Rodriguez
         </p>
-        <p className="text-[7px] text-[#64748b] mb-3">Te dejo una resena</p>
+        <p className="text-[7px] text-[#64748b] mb-3">Te dejo una reseña</p>
 
         {/* Stars */}
         <div className="flex items-center gap-1 mb-3">
@@ -1628,7 +1628,7 @@ function NurseReceiveReviewScreen({ isDark }: ScreenProps) {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-lg mb-1"
             >
-              &#127942;
+              &#11088;
             </motion.div>
             <p className={`text-[9px] font-bold mb-0.5 ${t(isDark, "text-[#1a1a2e]", "text-[#f1f5f9]")}`}>
               Nivel Actualizado
@@ -1807,7 +1807,7 @@ function PatientReviewScreen({ isDark }: ScreenProps) {
             >
               <span className="text-white text-[6px] font-bold">{"\u2713"}</span>
             </motion.div>
-            <p className="text-[6px] text-[#94a3b8]">Permitir uso publico de mi resena</p>
+            <p className="text-[6px] text-[#94a3b8]">Permitir uso publico de mi reseña</p>
           </motion.div>
         )}
 
@@ -1821,7 +1821,7 @@ function PatientReviewScreen({ isDark }: ScreenProps) {
               animate={{ opacity: showOptIn ? 1 : 0.4 }}
               className={`w-full rounded-xl py-2.5 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
             >
-              <span className="text-white text-[9px] font-semibold">Enviar Resena</span>
+              <span className="text-white text-[9px] font-semibold">Enviar Reseña</span>
             </motion.div>
           ) : (
             <motion.div
@@ -1837,7 +1837,7 @@ function PatientReviewScreen({ isDark }: ScreenProps) {
                 transition={{ delay: 0.15 }}
                 className="text-white text-[10px] font-bold"
               >
-                {"\u2713"} Gracias por tu resena
+                {"\u2713"} Gracias por tu reseña
               </motion.span>
             </motion.div>
           )}
@@ -1882,7 +1882,7 @@ const flows: Record<FlowTab, FlowConfig> = {
       "Tu dashboard",
       "Acepta solicitud",
       "Completa servicio",
-      "Recibe tu resena",
+      "Recibe tu reseña",
     ],
   },
   patient: {
@@ -1903,7 +1903,7 @@ const flows: Record<FlowTab, FlowConfig> = {
       "Busca enfermera",
       "Solicita servicio",
       "Seguimiento en vivo",
-      "Deja tu resena",
+      "Deja tu reseña",
     ],
   },
 };

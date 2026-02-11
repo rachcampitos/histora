@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit, signal, computed, effect, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { MapboxService, WebSocketService, GeolocationService, ServiceRequestService, AuthService, NurseApiService, ThemeService, HapticsService } from '../../core/services';
+import { CelebrationService } from '../../core/services/celebration.service';
 import { ChatService } from '../../core/services/chat.service';
 import { ServiceRequest } from '../../core/models';
 import { ReviewModalComponent, ReviewSubmitData } from '../../shared/components/review-modal';
@@ -126,7 +127,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     private modalController: ModalController,
     public themeService: ThemeService,
     private chatService: ChatService,
-    private haptics: HapticsService
+    private haptics: HapticsService,
+    private celebrationService: CelebrationService
   ) {
     // React to WebSocket location updates
     effect(() => {
@@ -1151,6 +1153,14 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     // Evaluate results
     if (nurseReviewSuccess || serviceRateSuccess) {
       this.hasReviewed.set(true);
+
+      // Celebration confetti based on rating
+      if (reviewData.rating >= 5) {
+        this.celebrationService.startContinuousConfetti();
+        setTimeout(() => this.celebrationService.stopContinuousConfetti(), 3000);
+      } else if (reviewData.rating >= 4) {
+        this.celebrationService.triggerConfetti();
+      }
 
       // Show success toast and navigate to home
       const toast = await this.toastController.create({
