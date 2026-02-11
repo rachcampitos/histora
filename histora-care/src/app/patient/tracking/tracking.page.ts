@@ -1030,8 +1030,19 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
    * Request service from an alternative nurse
    */
   requestAlternativeNurse(nurseId: string) {
+    const req = this.request();
     this.router.navigate(['/patient/request'], {
-      queryParams: { nurseId }
+      queryParams: {
+        nurseId,
+        retryRequestId: req?._id,
+        serviceCategory: req?.service?.category,
+        address: req?.location?.address,
+        district: req?.location?.district,
+        city: req?.location?.city,
+        date: req?.requestedDate,
+        timeSlot: req?.requestedTimeSlot,
+        notes: req?.patientNotes,
+      }
     });
   }
 

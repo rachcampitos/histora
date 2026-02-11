@@ -57,6 +57,9 @@ export class RequestPage implements OnInit {
   resolvedDistrict = signal<string>('');
   resolvedCity = signal<string>('');
 
+  // Retry service category (for auto-select after retry)
+  private retryServiceCategory = signal<string>('');
+
   // Address autocomplete
   addressSuggestions = signal<AddressSuggestion[]>([]);
   isSearchingAddress = signal(false);
@@ -145,6 +148,16 @@ export class RequestPage implements OnInit {
       if (services.length === 1 && services[0]._id) {
         this.selectedServiceId.set(services[0]._id);
         this.showToast('Servicio seleccionado automaticamente', 'success');
+      }
+
+      // Auto-select service by category when retrying a rejected request
+      const retryCategory = this.retryServiceCategory();
+      if (retryCategory && services.length > 1 && !this.selectedServiceId()) {
+        const match = services.find(s => s.category === retryCategory);
+        if (match?._id) {
+          this.selectedServiceId.set(match._id);
+          this.showToast('Servicio seleccionado automaticamente', 'success');
+        }
       }
 
       this.error.set(null);
@@ -453,6 +466,7 @@ export class RequestPage implements OnInit {
     if (params['date']) this.requestedDate.set(params['date']);
     if (params['timeSlot']) this.requestedTimeSlot.set(params['timeSlot']);
     if (params['notes']) this.patientNotes.set(params['notes']);
+    if (params['serviceCategory']) this.retryServiceCategory.set(params['serviceCategory']);
   }
 
   private async showToast(message: string, color: 'success' | 'warning' | 'danger') {

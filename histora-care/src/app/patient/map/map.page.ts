@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, AfterViewInit, effect, ChangeDetectionStrategy, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, ToastController, ModalController } from '@ionic/angular';
 import { GeolocationService } from '../../core/services/geolocation.service';
 import { MapboxService } from '../../core/services/mapbox.service';
@@ -20,6 +20,7 @@ import { getSpecialtyConfig, getSpecialtyColors } from '../../shared/config/spec
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapPage implements OnInit, AfterViewInit, OnDestroy {
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private loadingCtrl = inject(LoadingController);
   private toastCtrl = inject(ToastController);
@@ -70,6 +71,9 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   isSearching = signal(false);
   isMapLoading = signal(true);
 
+  // Retry params from rejected tracking page
+  private retryParams = signal<Record<string, string>>({});
+
   // Clustering
   private usesClustering = false;
 
@@ -102,6 +106,23 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
    * Called every time the view enters (including when returning from other tabs)
    */
   async ionViewDidEnter() {
+    // Capture retry queryParams if navigated from rejected tracking
+    this.route.queryParams.subscribe(params => {
+      if (params['retryRequestId']) {
+        const { retryRequestId, serviceCategory, address, district, city, date, timeSlot, notes } = params;
+        this.retryParams.set({
+          ...(retryRequestId && { retryRequestId }),
+          ...(serviceCategory && { serviceCategory }),
+          ...(address && { address }),
+          ...(district && { district }),
+          ...(city && { city }),
+          ...(date && { date }),
+          ...(timeSlot && { timeSlot }),
+          ...(notes && { notes }),
+        });
+      }
+    });
+
     const mapContainer = document.getElementById('map');
     const currentMap = this.mapboxService.getMap();
 
@@ -600,8 +621,10 @@ export class MapPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   requestService(nurseId: string) {
-    // Navigate outside tabs to the request form
-    this.router.navigate(['/patient/request'], { queryParams: { nurseId } });
+    // Navigate outside tabs to the request form, forwarding retry params if present
+    this.router.navigate(['/patient/request'], {
+      queryParams: { nurseId, ...this.retryParams() }
+    });
   }
 
   getChipIcon(specialty: string): string {
