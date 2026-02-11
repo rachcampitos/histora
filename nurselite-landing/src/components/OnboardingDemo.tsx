@@ -1084,8 +1084,8 @@ function PatientTrackingScreen({ isDark }: ScreenProps) {
                 <div className="relative">
                   {i === activeStep && (
                     <motion.div
-                      animate={{ scale: [1, 2.5], opacity: [0.4, 0] }}
-                      transition={{ duration: 1.4, ease: "easeOut", repeat: Infinity }}
+                      animate={{ scale: [0, 2.5], opacity: [0.5, 0] }}
+                      transition={{ duration: 1.5, ease: "easeOut", repeat: Infinity, repeatDelay: 0.3 }}
                       className="absolute inset-0 rounded-full"
                       style={{ background: s.color }}
                     />
@@ -1358,8 +1358,8 @@ export function OnboardingDemo() {
                     <div className="relative flex-shrink-0">
                       {isActive && (
                         <motion.div
-                          animate={{ scale: [1, 1.8], opacity: [0.3, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                          animate={{ scale: [0, 1.8], opacity: [0.4, 0] }}
+                          transition={{ duration: 1.5, ease: "easeOut", repeat: Infinity, repeatDelay: 0.3 }}
                           className="absolute inset-0 rounded-full bg-[#4a9d9a]"
                         />
                       )}
