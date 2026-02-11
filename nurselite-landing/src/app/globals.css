@@ -515,6 +515,12 @@ section {
   50% { opacity: 0.35; transform: scale(1.1); }
 }
 
+/* Typing cursor blink animation (OnboardingDemo) */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* Hide scrollbar utility (mobile feature chips) */
 .scrollbar-hide {
   -ms-overflow-style: none;

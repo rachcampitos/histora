@@ -6,6 +6,7 @@ import { AppFeatures } from "@/components/AppFeatures";
 import { SearchSection } from "@/components/SearchSection";
 import { Segments } from "@/components/Segments";
 import { HowItWorks } from "@/components/HowItWorks";
+import { OnboardingDemo } from "@/components/OnboardingDemo";
 import { Services } from "@/components/Services";
 import { Security } from "@/components/Security";
 import { CEPVerification } from "@/components/CEPVerification";
@@ -30,6 +31,7 @@ export default function Home() {
         <SearchSection />
         <Segments />
         <HowItWorks />
+        <OnboardingDemo />
         <Services />
         <Security />
         <CEPVerification />
