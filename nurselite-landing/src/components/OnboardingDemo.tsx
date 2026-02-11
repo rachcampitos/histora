@@ -2042,88 +2042,100 @@ export function OnboardingDemo() {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-12 items-start max-w-4xl mx-auto">
           {/* Timeline - Desktop */}
           <div className="hidden lg:block order-1">
-            <div className="space-y-0.5 sticky top-28">
+            <div className="sticky top-28">
               {flow.timelineLabels.map((label, i) => {
                 const isCompleted = i < activeScreen;
                 const isActive = i === activeScreen;
-                const isPending = i > activeScreen;
+                const isLast = i === totalScreens - 1;
 
                 return (
-                  <button
-                    key={`${activeTab}-${i}`}
-                    onClick={() => {
-                      setActiveScreen(i);
-                      setFinished(i >= totalScreens - 1);
-                    }}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 text-left ${
-                      isActive
-                        ? "bg-white dark:bg-[#1e293b] shadow-sm"
-                        : "hover:bg-white/50 dark:hover:bg-[#1e293b]/30"
-                    }`}
-                  >
-                    {/* Step indicator */}
-                    <div className="relative flex-shrink-0">
-                      {isActive && (
-                        <motion.div
-                          animate={{ scale: [0, 1.8], opacity: [0.4, 0] }}
-                          transition={{ duration: 1.5, ease: "easeOut", repeat: Infinity, repeatDelay: 0.3 }}
-                          className="absolute inset-0 rounded-full bg-[#4a9d9a]"
-                        />
-                      )}
-                      <div
-                        className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                          isCompleted
-                            ? "bg-[#22c55e]"
-                            : isActive
-                              ? "bg-[#4a9d9a]"
-                              : isDark
-                                ? "bg-[#334155]"
-                                : "bg-[#e2e8f0]"
-                        }`}
-                      >
-                        {isCompleted ? (
-                          <span className="text-white text-xs font-bold">{"\u2713"}</span>
-                        ) : (
-                          <span
-                            className={`text-xs font-bold ${
-                              isActive ? "text-white" : isDark ? "text-[#64748b]" : "text-[#94a3b8]"
-                            }`}
-                          >
-                            {i + 1}
-                          </span>
+                  <div key={`${activeTab}-${i}`} className="relative">
+                    {/* Step button */}
+                    <button
+                      onClick={() => {
+                        setActiveScreen(i);
+                        setFinished(i >= totalScreens - 1);
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 text-left relative ${
+                        isActive
+                          ? "bg-white dark:bg-[#1e293b] shadow-sm"
+                          : "hover:bg-white/50 dark:hover:bg-[#1e293b]/30"
+                      }`}
+                    >
+                      {/* Step indicator */}
+                      <div className="relative flex-shrink-0">
+                        {isActive && (
+                          <motion.div
+                            animate={{ scale: [0, 1.8], opacity: [0.4, 0] }}
+                            transition={{ duration: 1.5, ease: "easeOut", repeat: Infinity, repeatDelay: 0.3 }}
+                            className="absolute inset-0 rounded-full bg-[#4a9d9a]"
+                          />
+                        )}
+                        <div
+                          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                            isCompleted
+                              ? "bg-[#22c55e]"
+                              : isActive
+                                ? "bg-[#4a9d9a]"
+                                : isDark
+                                  ? "bg-[#334155]"
+                                  : "bg-[#e2e8f0]"
+                          }`}
+                        >
+                          {isCompleted ? (
+                            <span className="text-white text-xs font-bold">{"\u2713"}</span>
+                          ) : (
+                            <span
+                              className={`text-xs font-bold ${
+                                isActive ? "text-white" : isDark ? "text-[#64748b]" : "text-[#94a3b8]"
+                              }`}
+                            >
+                              {i + 1}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Label */}
+                      <div className="flex-1">
+                        <p
+                          className={`text-sm font-medium transition-colors duration-300 ${
+                            isActive
+                              ? "text-[#1a1a2e] dark:text-white font-semibold"
+                              : isCompleted
+                                ? "text-[#22c55e]"
+                                : "text-[#94a3b8]"
+                          }`}
+                        >
+                          {label}
+                        </p>
+                      </div>
+                    </button>
+
+                    {/* Connector line between steps */}
+                    {!isLast && (
+                      <div className="ml-[27px] h-4 w-0.5 relative">
+                        {/* Base line */}
+                        <div className={`absolute inset-0 rounded-full ${isDark ? "bg-[#334155]" : "bg-[#e2e8f0]"}`} />
+                        {/* Filled portion: completed = full, active = animated */}
+                        {isCompleted && (
+                          <div className="absolute inset-0 rounded-full bg-[#22c55e]" />
+                        )}
+                        {isActive && !isPaused && !finished && (
+                          <motion.div
+                            key={`connector-${activeTab}-${activeScreen}`}
+                            initial={{ scaleY: 0 }}
+                            animate={{ scaleY: 1 }}
+                            transition={{
+                              duration: flow.durations[i] / 1000,
+                              ease: "linear",
+                            }}
+                            className="absolute inset-0 rounded-full origin-top bg-[#4a9d9a]"
+                          />
                         )}
                       </div>
-                    </div>
-
-                    {/* Label */}
-                    <div className="flex-1">
-                      <p
-                        className={`text-sm font-medium transition-colors duration-300 ${
-                          isActive
-                            ? "text-[#1a1a2e] dark:text-white font-semibold"
-                            : isCompleted
-                              ? "text-[#22c55e]"
-                              : "text-[#94a3b8]"
-                        }`}
-                      >
-                        {label}
-                      </p>
-                    </div>
-
-                    {/* Progress bar for active step */}
-                    {isActive && !isPaused && !finished && (
-                      <motion.div
-                        key={`progress-${activeTab}-${activeScreen}`}
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{
-                          duration: flow.durations[i] / 1000,
-                          ease: "linear",
-                        }}
-                        className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full origin-left bg-[#4a9d9a]"
-                      />
                     )}
-                  </button>
+                  </div>
                 );
               })}
 
