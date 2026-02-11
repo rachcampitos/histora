@@ -713,6 +713,36 @@ export function HorizontalStepper({
   );
 }
 
+/* ── Interstitial Screen (chapter divider for TikTok demos) ── */
+export function InterstitialScreen({
+  icon: Icon,
+  text,
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
+  text: string;
+}) {
+  return (
+    <FullScreen className="bg-gradient-to-br from-[#0f172a] to-[#1e293b]">
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.1, type: "spring", stiffness: 200, damping: 20 }}
+        className="mb-8"
+      >
+        <Icon size={72} className="text-[#4a9d9a]" strokeWidth={2} />
+      </motion.div>
+      <motion.h2
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+        className="text-[40px] font-bold text-white text-center leading-tight px-12"
+      >
+        {text}
+      </motion.h2>
+    </FullScreen>
+  );
+}
+
 /* ── Final Screen ── */
 export function FinalScreen({ tagline }: { tagline: string }) {
   return (

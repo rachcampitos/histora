@@ -23,21 +23,28 @@ import {
   FinalScreen,
   RoleLanding,
   HorizontalStepper,
+  InterstitialScreen,
 } from "../components";
+import { UserPlus, ShieldCheck, Briefcase, Bell, Star } from "lucide-react";
 
 /* ── Steps Definition ── */
 const steps: DemoStep[] = [
   { id: "intro", duration: 4000, isFullScreen: true },
   { id: "landing", duration: 5000, isFullScreen: true },
+  { id: "i_registro", duration: 1500, isFullScreen: true },
   { id: "registro", duration: 7000, title: "Registro Profesional" },
+  { id: "i_validacion", duration: 1500, isFullScreen: true },
   { id: "validacion", duration: 6000, title: "Verificacion CEP" },
   { id: "resultado", duration: 5000, title: "Resultado de Verificacion" },
+  { id: "i_servicios", duration: 1500, isFullScreen: true },
   { id: "servicios", duration: 7000, title: "Mis Servicios" },
   { id: "perfil", duration: 7000, title: "Configurar Perfil" },
+  { id: "i_dashboard", duration: 1500, isFullScreen: true },
   { id: "dashboard", duration: 6000, title: "Dashboard" },
   { id: "solicitud", duration: 6000, title: "Nueva Solicitud" },
   { id: "encamino", duration: 13000, title: "Servicio Activo" },
   { id: "completado", duration: 5000, title: "Servicio Completado" },
+  { id: "i_resena", duration: 1500, isFullScreen: true },
   { id: "resena", duration: 9000, title: "Dashboard" },
   { id: "final", duration: null, isFullScreen: true },
 ];
@@ -61,6 +68,11 @@ export default function DemoEnfermera() {
           >
             {active("intro") && <LogoIntro subtitle="Para profesionales de enfermeria" />}
             {active("landing") && <RoleLanding activeRole="nurse" active={true} />}
+            {active("i_registro") && <InterstitialScreen icon={UserPlus} text="Registrate como enfermera" />}
+            {active("i_validacion") && <InterstitialScreen icon={ShieldCheck} text="Verificamos tu cedula profesional" />}
+            {active("i_servicios") && <InterstitialScreen icon={Briefcase} text="Configura tus servicios" />}
+            {active("i_dashboard") && <InterstitialScreen icon={Bell} text="Recibe solicitudes en tiempo real" />}
+            {active("i_resena") && <InterstitialScreen icon={Star} text="Recibe calificaciones y sube de nivel" />}
             {active("final") && <FinalScreen tagline="Gana dinero con tu profesion" />}
           </motion.div>
         ) : (

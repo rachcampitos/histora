@@ -19,18 +19,24 @@ import {
   FinalScreen,
   RoleLanding,
   HorizontalStepper,
+  InterstitialScreen,
 } from "../components";
 import { useTypingEffect } from "../hooks";
+import { UserPlus, MapPin, Lock, Radio } from "lucide-react";
 
 const steps: DemoStep[] = [
   { id: "intro", duration: 4000, isFullScreen: true },
   { id: "landing", duration: 5000, isFullScreen: true },
+  { id: "i_registro", duration: 1500, isFullScreen: true },
   { id: "registro", duration: 6500, title: "Crear Cuenta" },
+  { id: "i_mapa", duration: 1500, isFullScreen: true },
   { id: "mapa", duration: 9000, title: "Enfermeras Cerca" },
   { id: "perfil", duration: 6000, title: "Perfil de Enfermera" },
   { id: "solicitar", duration: 6000, title: "Solicitar Servicio" },
+  { id: "i_pago", duration: 1500, isFullScreen: true },
   { id: "pago", duration: 6000, title: "Metodo de Pago" },
   { id: "esperando", duration: 4000, title: "Confirmando" },
+  { id: "i_tracking", duration: 1500, isFullScreen: true },
   { id: "tracking", duration: 9000, title: "Seguimiento en Vivo" },
   { id: "review", duration: 7000, title: "Califica el Servicio" },
   { id: "final", duration: null, isFullScreen: true },
@@ -54,6 +60,10 @@ export default function DemoPaciente() {
           >
             {active("intro") && <LogoIntro subtitle="Disponible en Lima" />}
             {active("landing") && <RoleLanding activeRole="patient" active={true} />}
+            {active("i_registro") && <InterstitialScreen icon={UserPlus} text="Crea tu cuenta" />}
+            {active("i_mapa") && <InterstitialScreen icon={MapPin} text="Encuentra enfermeras cerca de ti" />}
+            {active("i_pago") && <InterstitialScreen icon={Lock} text="Pago 100% seguro" />}
+            {active("i_tracking") && <InterstitialScreen icon={Radio} text="Seguimiento en tiempo real" />}
             {active("final") && (
               <FinalScreen tagline="Cuidado profesional en tu hogar" />
             )}
