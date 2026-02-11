@@ -262,9 +262,9 @@ $border-radius: 12px;
 
 // Login Button
 .login-btn {
-  --background: #{$primary-gradient};
-  --background-hover: #{$primary-gradient};
-  --background-activated: #{$primary-gradient};
+  --background: #1e3a5f;
+  --background-hover: #1e3a5f;
+  --background-activated: #1e3a5f;
   --color: var(--ion-color-primary-contrast, #ffffff);
   --color-hover: var(--ion-color-primary-contrast, #ffffff);
   --color-activated: var(--ion-color-primary-contrast, #ffffff);
@@ -521,9 +521,9 @@ $border-radius: 12px;
   }
 
   .login-btn {
-    --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
-    --background-hover: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
-    --background-activated: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-tertiary, #4a9d9a) 100%);
+    --background: #4a9d9a;
+    --background-hover: #4a9d9a;
+    --background-activated: #4a9d9a;
     --color: white;
     --color-hover: white;
     --color-activated: white;

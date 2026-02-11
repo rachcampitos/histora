@@ -340,14 +340,14 @@ $border-radius: tokens.$radius-lg;
   gap: tokens.$spacing-3;
 
   .primary-btn {
-    --background: #{$primary-gradient};
-    --background-hover: #{$primary-gradient};
-    --background-activated: #{$primary-gradient};
+    --background: #1e3a5f;
+    --background-hover: #1e3a5f;
+    --background-activated: #1e3a5f;
     --color: #ffffff;
     --color-hover: #ffffff;
     --color-activated: #ffffff;
     --border-radius: 26px;
-    --box-shadow: 0 8px 24px rgba(74, 157, 154, 0.35);
+    --box-shadow: 0 8px 24px rgba(30, 58, 95, 0.35);
     height: 52px;
     font-size: tokens.$font-size-base;
     font-weight: tokens.$font-weight-semibold;
@@ -356,9 +356,9 @@ $border-radius: tokens.$radius-lg;
   }
 
   .nurse-btn {
-    --background: #{$nurse-gradient};
-    --background-hover: #{$nurse-gradient};
-    --background-activated: #{$nurse-gradient};
+    --background: #16a34a;
+    --background-hover: #16a34a;
+    --background-activated: #16a34a;
     --color: #ffffff;
     --color-hover: #ffffff;
     --color-activated: #ffffff;
@@ -528,16 +528,16 @@ $border-radius: tokens.$radius-lg;
 
   .cta-section {
     .primary-btn {
-      --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
-      --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
-      --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+      --background: #4a9d9a;
+      --background-hover: #4a9d9a;
+      --background-activated: #4a9d9a;
       --box-shadow: 0 8px 24px rgba(74, 157, 154, 0.25);
     }
 
     .nurse-btn {
-      --background: linear-gradient(135deg, #166534 0%, #15803d 100%);
-      --background-hover: linear-gradient(135deg, #166534 0%, #15803d 100%);
-      --background-activated: linear-gradient(135deg, #166534 0%, #15803d 100%);
+      --background: #15803d;
+      --background-hover: #15803d;
+      --background-activated: #15803d;
       --box-shadow: 0 8px 24px rgba(22, 163, 74, 0.25);
     }
 

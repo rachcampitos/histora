@@ -540,9 +540,9 @@ $border-radius: 12px;
 
 // Submit Button
 .submit-btn {
-  --background: #{$primary-gradient};
-  --background-hover: #{$primary-gradient};
-  --background-activated: #{$primary-gradient};
+  --background: #1e3a5f;
+  --background-hover: #1e3a5f;
+  --background-activated: #1e3a5f;
   --border-radius: #{$border-radius};
   --box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.4);
   height: 52px;

@@ -356,9 +356,9 @@ $border-radius: 12px;
 }
 
 .register-btn {
-  --background: #{$primary-gradient};
-  --background-hover: #{$primary-gradient};
-  --background-activated: #{$primary-gradient};
+  --background: #1e3a5f;
+  --background-hover: #1e3a5f;
+  --background-activated: #1e3a5f;
   --border-radius: #{$border-radius};
   --box-shadow: 0 4px 16px rgba(var(--ion-color-primary-rgb, 30, 58, 95), 0.4);
   height: 48px;
@@ -479,9 +479,9 @@ $border-radius: 12px;
 
   // Register button dark mode
   .register-btn {
-    --background: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
-    --background-hover: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
-    --background-activated: linear-gradient(135deg, #2d5f8a 0%, #1e3a5f 100%);
+    --background: #4a9d9a;
+    --background-hover: #4a9d9a;
+    --background-activated: #4a9d9a;
     --color: white;
     --color-hover: white;
     --color-activated: white;
@@ -827,8 +827,8 @@ $border-radius: 12px;
 }
 
 .continue-btn {
-  --background: linear-gradient(135deg, var(--ion-color-success, #16a34a) 0%, var(--ion-color-success-shade, #15803d) 100%);
-  --background-hover: linear-gradient(135deg, var(--ion-color-success, #16a34a) 0%, var(--ion-color-success-shade, #15803d) 100%);
+  --background: #16a34a;
+  --background-hover: #16a34a;
   --border-radius: 12px;
   --box-shadow: 0 4px 16px rgba(var(--ion-color-success-rgb, 22, 163, 74), 0.4);
   height: 50px;
