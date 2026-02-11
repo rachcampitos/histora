@@ -191,7 +191,7 @@ function NurseLandingScreen({ isDark }: ScreenProps) {
         <motion.div
           animate={{ scale: [1, 1.04, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className={`w-full rounded-xl py-2.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+          className={`w-full rounded-xl py-2.5 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
         >
           <span className="text-white text-[9px] font-semibold">Empezar a ganar hoy</span>
         </motion.div>
@@ -238,7 +238,7 @@ function NurseRegistrationScreen({ isDark }: ScreenProps) {
         initial={{ opacity: 0.4 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 5.0, duration: 0.5 }}
-        className={`rounded-xl py-2 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+        className={`rounded-xl py-2 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
       >
         <span className="text-white text-[9px] font-semibold">Crear Cuenta</span>
       </motion.div>
@@ -377,7 +377,7 @@ function CEPResultScreen({ isDark }: ScreenProps) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2.6, duration: 0.3 }}
-        className="w-full rounded-xl py-2 text-center bg-[#22c55e]"
+        className="w-full rounded-xl py-2 flex items-center justify-center bg-[#22c55e]"
       >
         <span className="text-white text-[9px] font-semibold">Si, soy yo</span>
       </motion.div>
@@ -473,7 +473,7 @@ function NurseSetupScreen({ isDark }: ScreenProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 3.0 }}
-        className={`rounded-xl py-2 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+        className={`rounded-xl py-2 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
       >
         <span className="text-white text-[9px] font-semibold">Continuar</span>
       </motion.div>
@@ -661,7 +661,7 @@ function PatientLandingScreen({ isDark }: ScreenProps) {
         <motion.div
           animate={{ scale: [1, 1.04, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className={`w-full rounded-xl py-2.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+          className={`w-full rounded-xl py-2.5 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
         >
           <span className="text-white text-[9px] font-semibold">Encontrar enfermera cerca</span>
         </motion.div>
@@ -707,7 +707,7 @@ function PatientRegistrationScreen({ isDark }: ScreenProps) {
         initial={{ opacity: 0.4 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 4.0, duration: 0.5 }}
-        className={`rounded-xl py-2 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+        className={`rounded-xl py-2 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
       >
         <span className="text-white text-[9px] font-semibold">Crear Cuenta</span>
       </motion.div>
@@ -894,7 +894,7 @@ function PatientMapScreen({ isDark }: ScreenProps) {
             </div>
           </div>
         </div>
-        <div className={`rounded-xl py-2 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}>
+        <div className={`rounded-xl py-2 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}>
           <span className="text-white text-[8px] font-semibold">Solicitar Servicio</span>
         </div>
       </motion.div>
@@ -996,7 +996,7 @@ function PatientServiceRequestScreen({ isDark }: ScreenProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.2 }}
-        className={`rounded-xl py-2.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+        className={`rounded-xl py-2.5 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
       >
         <span className="text-white text-[9px] font-semibold">Confirmar Solicitud</span>
       </motion.div>
@@ -1282,13 +1282,13 @@ function NurseAcceptRequestScreen({ isDark }: ScreenProps) {
               transition={{ delay: 1.5 }}
               className="flex gap-2"
             >
-              <div className="flex-1 rounded-xl py-2.5 text-center bg-[#ef4444]/10 border border-[#ef4444]/20">
+              <div className="flex-1 rounded-xl py-2.5 flex items-center justify-center bg-[#ef4444]/10 border border-[#ef4444]/20">
                 <span className="text-[#ef4444] text-[9px] font-semibold">Rechazar</span>
               </div>
               <motion.div
                 animate={{ scale: [1, 1.03, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                className={`flex-1 rounded-xl py-2.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+                className={`flex-1 rounded-xl py-2.5 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
               >
                 <span className="text-white text-[9px] font-semibold">Aceptar</span>
               </motion.div>
@@ -1299,7 +1299,7 @@ function NurseAcceptRequestScreen({ isDark }: ScreenProps) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="rounded-xl py-3 text-center bg-[#22c55e]"
+              className="rounded-xl py-3 flex items-center justify-center bg-[#22c55e]"
             >
               <motion.span
                 initial={{ scale: 0 }}
@@ -1433,7 +1433,7 @@ function NurseCompleteServiceScreen({ isDark }: ScreenProps) {
           {!completed ? (
             <motion.div
               key="btn"
-              className={`rounded-xl py-2.5 text-center opacity-50 ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+              className={`rounded-xl py-2.5 flex items-center justify-center opacity-50 ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
             >
               <span className="text-white text-[9px] font-semibold">Marcar como Completado</span>
             </motion.div>
@@ -1443,7 +1443,7 @@ function NurseCompleteServiceScreen({ isDark }: ScreenProps) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="rounded-xl py-3 text-center bg-[#22c55e] relative overflow-hidden"
+              className="rounded-xl py-3 flex items-center justify-center bg-[#22c55e] relative overflow-hidden"
             >
               {/* Mini confetti particles */}
               {[...Array(8)].map((_, i) => (
@@ -1819,7 +1819,7 @@ function PatientReviewScreen({ isDark }: ScreenProps) {
               key="btn"
               initial={{ opacity: 0 }}
               animate={{ opacity: showOptIn ? 1 : 0.4 }}
-              className={`w-full rounded-xl py-2.5 text-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
+              className={`w-full rounded-xl py-2.5 flex items-center justify-center ${t(isDark, "bg-[#1e3a5f]", "bg-[#4a9d9a]")}`}
             >
               <span className="text-white text-[9px] font-semibold">Enviar Resena</span>
             </motion.div>
@@ -1829,7 +1829,7 @@ function PatientReviewScreen({ isDark }: ScreenProps) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="w-full rounded-xl py-3 text-center bg-[#22c55e] relative z-10"
+              className="w-full rounded-xl py-3 flex items-center justify-center bg-[#22c55e] relative z-10"
             >
               <motion.span
                 initial={{ scale: 0 }}
