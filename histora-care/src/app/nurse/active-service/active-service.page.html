@@ -26,7 +26,7 @@
     </div>
 
     <!-- Map Preview -->
-    @if (mapUrl()) {
+    @if (mapUrl() && request()?.status !== 'arrived' && request()?.status !== 'in_progress' && request()?.status !== 'completed') {
       <div class="map-container" (click)="openNavigation()">
         <img [src]="mapUrl()" alt="Ubicacion del paciente" class="map-image">
         <div class="map-overlay">

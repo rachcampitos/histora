@@ -105,7 +105,7 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     return !this.isLoading() && !this.loadError() && !this.isRejected()
       && !this.isCancelled() && this.currentStatus() !== 'pending';
   });
-  sheetBreakpoints = [0.15, 0.35, 0.75, 1];
+  sheetBreakpoints = [0.15, 0.35, 0.85, 1];
   initialBreakpoint = 0.35;
 
   private mapInitialized = false;
@@ -304,10 +304,8 @@ export class TrackingPage implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       if (!this.trackingSheet) return;
       try {
-        if (status === 'arrived' || status === 'completed') {
-          this.trackingSheet.setCurrentBreakpoint(0.75);
-        } else if (status === 'in_progress') {
-          this.trackingSheet.setCurrentBreakpoint(0.35);
+        if (status === 'arrived' || status === 'in_progress' || status === 'completed') {
+          this.trackingSheet.setCurrentBreakpoint(0.85);
         }
       } catch (e) {
         // Sheet may not be ready yet
