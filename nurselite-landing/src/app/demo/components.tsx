@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTypingEffect } from "./hooks";
+import type { DemoStep } from "./hooks";
 import Image from "next/image";
 
 /* ── iOS Status Bar ── */
@@ -272,22 +273,18 @@ export function TypingField({
   const showCursor = active && displayed.length > 0 && !done;
 
   return (
-    <div className="mb-5">
-      <label className="block text-[20px] font-medium text-[#475569] mb-2 ml-1">
-        {label}
-      </label>
-      <div className="border-2 border-transparent rounded-[12px] px-4 bg-[#f8fafc] h-[48px] flex items-center transition-colors"
-        style={{ borderColor: displayed ? '#1e3a5f' : 'transparent' }}>
-        {icon && <span className="mr-3 text-[20px] text-[#94a3b8] shrink-0">{icon}</span>}
-        <span className="text-[22px] text-[#1e293b]">
+    <div
+      className="rounded-xl px-4 py-3 border bg-white border-[#e2e8f0] mb-4"
+    >
+      <p className="text-[16px] text-[#94a3b8] mb-1">{label}</p>
+      <div className="flex items-center gap-2">
+        {icon && <span className="text-[20px] shrink-0">{icon}</span>}
+        <p className="text-[20px] font-medium min-h-[28px] text-[#1a1a2e]">
           {displayed}
-        </span>
-        {showCursor && (
-          <span className="inline-block w-[2px] h-[24px] bg-[#1e3a5f] ml-1 animate-pulse" />
-        )}
-        {!displayed && (
-          <span className="text-[22px] text-[#a0aec0]">{label}...</span>
-        )}
+          {showCursor && (
+            <span className="inline-block w-[2px] h-[22px] bg-[#4a9d9a] ml-[2px] align-middle animate-[blink_1s_step-end_infinite]" />
+          )}
+        </p>
       </div>
     </div>
   );
@@ -442,26 +439,26 @@ export function RoleLanding({
           initial={{ opacity: 0, y: 20 }}
           animate={active ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3, duration: 0.4 }}
-          className="flex gap-3 p-2 bg-black/[0.08] rounded-full mb-8"
+          className="flex gap-2 p-2 bg-black/[0.08] rounded-full mb-8"
         >
           <div
-            className={`flex items-center gap-4 px-8 py-5 rounded-full text-[28px] font-medium transition-all ${
+            className={`flex items-center gap-3 px-6 py-4 rounded-full text-[22px] font-medium whitespace-nowrap transition-all ${
               isPatient
                 ? "bg-gradient-to-r from-[#4a9d9a] to-[#5fb3b0] text-white shadow-lg"
                 : "bg-white/70 text-[#64748b]"
             }`}
           >
-            <span className="text-[30px]">🔍</span>
+            <span className="text-[24px]">🔍</span>
             <span>Busco Enfermera</span>
           </div>
           <div
-            className={`flex items-center gap-4 px-8 py-5 rounded-full text-[28px] font-medium transition-all ${
+            className={`flex items-center gap-3 px-6 py-4 rounded-full text-[22px] font-medium whitespace-nowrap transition-all ${
               !isPatient
                 ? "bg-gradient-to-r from-[#15803d] to-[#16a34a] text-white shadow-lg"
                 : "bg-white/70 text-[#64748b]"
             }`}
           >
-            <span className="text-[30px]">🩺</span>
+            <span className="text-[24px]">🩺</span>
             <span>Soy Enfermera</span>
           </div>
         </motion.div>
@@ -525,10 +522,10 @@ export function RoleLanding({
           initial={{ opacity: 0, y: 20 }}
           animate={active ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 1.1, duration: 0.4 }}
-          className={`w-full max-w-[460px] h-[76px] text-white text-[30px] font-semibold rounded-[12px] shadow-[0_4px_16px_rgba(30,58,95,0.3)] ${
+          className={`w-full max-w-[460px] h-[76px] text-white text-[30px] font-semibold rounded-[16px] shadow-[0_4px_16px_rgba(30,58,95,0.3)] ${
             isPatient
               ? "bg-[#1e3a5f]"
-              : "bg-gradient-to-r from-[#15803d] to-[#16a34a]"
+              : "bg-[#16a34a]"
           }`}
         >
           {isPatient ? "Encontrar enfermera cerca" : "Empezar a ganar hoy"}
@@ -550,7 +547,7 @@ export function RoleLanding({
 
 /* ── Stepper Icons (match Ionicons: checkmark-circle, navigate, location, medical, checkmark-done) ── */
 function StepStatusIcon({ status }: { status: string }) {
-  const common = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  const common = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   switch (status) {
     case "accepted":
       return <svg {...common}><circle cx="12" cy="12" r="10" /><path d="M8 12l3 3 5-5" /></svg>;
@@ -570,7 +567,7 @@ function StepStatusIcon({ status }: { status: string }) {
 /* Checkmark icon for completed steps (replaces status icon) */
 function CheckmarkIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 6L9 17l-5-5" />
     </svg>
   );
@@ -593,121 +590,103 @@ export function HorizontalStepper({
   steps: { label: string; status: string }[];
   activeIndex: number;
 }) {
-  // Build alternating [step, line, step, line, ..., step] items
-  const items: React.ReactNode[] = [];
-
-  steps.forEach((step, i) => {
-    const completed = i < activeIndex;
-    const isActive = i === activeIndex;
-    const color = TRACKING_COLORS[step.status] || "#94a3b8";
-
-    // ── Step item (always flex: 1 0 0 → equidistant) ──
-    items.push(
-      <div
-        key={`s${i}`}
-        className="flex flex-col items-center"
-        style={{
-          flex: "1 0 0",
-          minWidth: 0,
-          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-        }}
-      >
-        {/* Dot */}
-        <div className="relative">
-          <div
-            className="w-[32px] h-[32px] rounded-full flex items-center justify-center"
-            style={{
-              background: completed || isActive ? color : "#e0e0e0",
-              color: completed || isActive ? "#fff" : "#999",
-              transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
-          >
-            {completed ? <CheckmarkIcon /> : <StepStatusIcon status={step.status} />}
-          </div>
-          {/* Pulse ring on active dot */}
-          {isActive && (
-            <motion.div
-              animate={{
-                boxShadow: [
-                  `0 0 0 4px ${color}33`,
-                  `0 0 0 8px ${color}1a`,
-                  `0 0 0 4px ${color}33`,
-                ],
-              }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 rounded-full"
-            />
-          )}
-        </div>
-        {/* Label (visible) or label-dot (completed) */}
-        {completed ? (
-          <div
-            className="mt-[6px] w-[8px] h-[8px] rounded-full"
-            style={{
-              background: color,
-              transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
-          />
-        ) : (
-          <span
-            className="mt-[6px] text-center leading-tight whitespace-nowrap"
-            style={{
-              fontSize: "12px",
-              fontWeight: isActive ? 600 : 400,
-              color: isActive ? color : "#999",
-              maxWidth: "70px",
-              transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
-          >
-            {step.label}
-          </span>
-        )}
-      </div>
-    );
-
-    // ── Line between step[i] and step[i+1] ──
-    if (i < steps.length - 1) {
-      const lineCompleted = i < activeIndex;
-      const lineActive = i === activeIndex;
-      const lineColor = TRACKING_COLORS[step.status] || "#94a3b8";
-
-      items.push(
-        <div
-          key={`l${i}`}
-          className="relative overflow-hidden rounded-sm self-start"
-          style={{
-            height: "3px",
-            marginTop: "15px", // centers with 32px dot
-            marginLeft: "4px",
-            marginRight: "4px",
-            flex: lineCompleted ? "0 0 16px" : "1 1 auto",
-            minWidth: lineActive ? "80px" : lineCompleted ? "16px" : "20px",
-            background: lineCompleted ? lineColor : "#e0e0e0",
-            borderRadius: "2px",
-            transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-        >
-          {/* Shimmer sweep on active line (matches fillLine keyframes from real app) */}
-          {lineActive && (
-            <motion.div
-              animate={{ x: ["-100%", "100%"], opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(90deg, transparent 0%, ${lineColor} 50%, transparent 100%)`,
-                width: "100%",
-              }}
-            />
-          )}
-        </div>
-      );
-    }
-  });
-
   return (
-    <div className="bg-white rounded-[16px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] px-3 pt-4 pb-5 mb-5">
-      <div className="flex items-start">
-        {items}
+    <div className="bg-white rounded-[16px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] px-5 pt-4 pb-3 mb-5">
+      {/* Dots + lines row */}
+      <div className="flex items-center">
+        {steps.map((step, i) => {
+          const completed = i < activeIndex;
+          const isActive = i === activeIndex;
+          const color = TRACKING_COLORS[step.status] || "#94a3b8";
+
+          return (
+            <React.Fragment key={i}>
+              {/* Dot */}
+              <div className="relative shrink-0">
+                <div
+                  className="w-[36px] h-[36px] rounded-full flex items-center justify-center"
+                  style={{
+                    background: completed || isActive ? color : "#e2e8f0",
+                    color: completed || isActive ? "#fff" : "#94a3b8",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  {completed ? <CheckmarkIcon /> : <StepStatusIcon status={step.status} />}
+                </div>
+                {isActive && (
+                  <motion.div
+                    animate={{
+                      boxShadow: [
+                        `0 0 0 4px ${color}33`,
+                        `0 0 0 8px ${color}1a`,
+                        `0 0 0 4px ${color}33`,
+                      ],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 rounded-full"
+                  />
+                )}
+              </div>
+              {/* Line */}
+              {i < steps.length - 1 && (
+                <div
+                  className="relative overflow-hidden mx-1"
+                  style={{
+                    height: "3px",
+                    flex: "1 1 0",
+                    background: i < activeIndex ? TRACKING_COLORS[step.status] || "#94a3b8" : "#e2e8f0",
+                    borderRadius: "2px",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  {i === activeIndex && (
+                    <motion.div
+                      animate={{ x: ["-100%", "100%"], opacity: [0, 1, 1, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute inset-0"
+                      style={{
+                        background: `linear-gradient(90deg, transparent 0%, ${color} 50%, transparent 100%)`,
+                        width: "100%",
+                      }}
+                    />
+                  )}
+                </div>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+      {/* Labels row */}
+      <div className="flex items-start mt-2">
+        {steps.map((step, i) => {
+          const completed = i < activeIndex;
+          const isActive = i === activeIndex;
+          const color = TRACKING_COLORS[step.status] || "#94a3b8";
+          return (
+            <React.Fragment key={i}>
+              <div className="shrink-0 flex justify-center" style={{ width: "36px" }}>
+                {completed ? (
+                  <div
+                    className="w-[7px] h-[7px] rounded-full"
+                    style={{ background: color }}
+                  />
+                ) : (
+                  <span
+                    className="text-center leading-tight whitespace-nowrap"
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: isActive ? 600 : 400,
+                      color: isActive ? color : "#94a3b8",
+                    }}
+                  >
+                    {step.label}
+                  </span>
+                )}
+              </div>
+              {i < steps.length - 1 && <div className="mx-1" style={{ flex: "1 1 0" }} />}
+            </React.Fragment>
+          );
+        })}
       </div>
     </div>
   );
@@ -765,5 +744,156 @@ export function FinalScreen({ tagline }: { tagline: string }) {
         Disponible en app.nurse-lite.com
       </p>
     </FullScreen>
+  );
+}
+
+/* ── Phone Mockup (iPhone frame) ── */
+export function PhoneMockup({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative flex items-center justify-center h-[86vh] px-4">
+      {/* Glow behind phone */}
+      <div className="absolute w-[60%] h-[50%] bg-gradient-to-br from-[#4a9d9a]/30 to-[#1e3a5f]/30 blur-[60px] rounded-full" />
+
+      {/* Phone frame */}
+      <div
+        className="relative bg-[#0f172a] rounded-[3.5rem] p-3 h-full"
+        style={{
+          aspectRatio: "10 / 20.5",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.5)",
+        }}
+      >
+        {/* Screen */}
+        <div className="relative rounded-[2.5rem] w-full h-full overflow-hidden bg-[#f8fafc]">
+          {/* Dynamic Island */}
+          <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-50" />
+          {/* Content */}
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Caption Header (text above mockup) ── */
+export function CaptionHeader({
+  caption,
+}: {
+  caption?: { step: string; title: string; subtitle?: string };
+}) {
+  return (
+    <div className="shrink-0 h-[12vh] flex items-center justify-center">
+      <AnimatePresence mode="wait">
+        {caption && (
+          <motion.div
+            key={caption.step + caption.title}
+            initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+            transition={{ duration: 0.4 }}
+            className="text-center"
+          >
+            {caption.step && (
+              <p className="text-[24px] font-semibold tracking-widest text-[#4a9d9a] uppercase mb-1">
+                {caption.step}
+              </p>
+            )}
+            <p className="text-[42px] font-bold text-white leading-tight">
+              {caption.title}
+            </p>
+            {caption.subtitle && (
+              <p className="text-[28px] text-slate-300 mt-1">
+                {caption.subtitle}
+              </p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── Progress Dots ── */
+export function ProgressDots({
+  total,
+  current,
+}: {
+  total: number;
+  current: number;
+}) {
+  if (total > 10) {
+    const pct = ((current + 1) / total) * 100;
+    return (
+      <div className="shrink-0 flex flex-col items-center justify-center gap-2 py-[2vh]">
+        <div className="w-[400px] h-[10px] bg-white/10 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-[#4a9d9a] rounded-full"
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          />
+        </div>
+        <p className="text-[24px] text-white/70 font-medium">
+          {current + 1} de {total}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="shrink-0 flex items-center justify-center gap-3 py-[2vh]">
+      {Array.from({ length: total }).map((_, i) => {
+        const isActive = i === current;
+        const isCompleted = i < current;
+        return (
+          <motion.div
+            key={i}
+            animate={{
+              width: isActive ? 44 : 16,
+              opacity: isActive ? 1 : isCompleted ? 0.5 : 0.2,
+            }}
+            transition={{ duration: 0.3 }}
+            className="h-[16px] rounded-full"
+            style={{
+              backgroundColor: isActive || isCompleted ? "#4a9d9a" : "#ffffff",
+              boxShadow: isActive ? "0 0 16px rgba(74,157,154,0.6)" : "none",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── TikTok Demo Layout Wrapper ── */
+export function TikTokDemo({
+  steps,
+  currentStep,
+  children,
+}: {
+  steps: DemoStep[];
+  currentStep: number;
+  children: React.ReactNode;
+}) {
+  const step = steps[currentStep];
+  const caption = step?.caption;
+
+  return (
+    <div className="w-full h-screen flex flex-col overflow-hidden">
+      <CaptionHeader caption={caption} />
+
+      <PhoneMockup>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </PhoneMockup>
+    </div>
   );
 }

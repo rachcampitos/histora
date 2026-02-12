@@ -19,78 +19,54 @@ import {
   FinalScreen,
   RoleLanding,
   HorizontalStepper,
-  InterstitialScreen,
+  TikTokDemo,
 } from "../components";
 import { useTypingEffect } from "../hooks";
-import { UserPlus, MapPin, Lock, Radio } from "lucide-react";
 
 const steps: DemoStep[] = [
-  { id: "intro", duration: 4000, isFullScreen: true },
-  { id: "landing", duration: 5000, isFullScreen: true },
-  { id: "i_registro", duration: 1500, isFullScreen: true },
-  { id: "registro", duration: 6500, title: "Crear Cuenta" },
-  { id: "i_mapa", duration: 1500, isFullScreen: true },
-  { id: "mapa", duration: 9000, title: "Enfermeras Cerca" },
-  { id: "perfil", duration: 6000, title: "Perfil de Enfermera" },
-  { id: "solicitar", duration: 6000, title: "Solicitar Servicio" },
-  { id: "i_pago", duration: 1500, isFullScreen: true },
-  { id: "pago", duration: 6000, title: "Metodo de Pago" },
-  { id: "esperando", duration: 4000, title: "Confirmando" },
-  { id: "i_tracking", duration: 1500, isFullScreen: true },
-  { id: "tracking", duration: 9000, title: "Seguimiento en Vivo" },
-  { id: "review", duration: 7000, title: "Califica el Servicio" },
+  { id: "intro", duration: 4000, isFullScreen: true, caption: { step: "", title: "Enfermeria a domicilio, asi de facil", subtitle: "Verificadas, cerca de ti, pago seguro" } },
+  { id: "landing", duration: 5000, isFullScreen: true, caption: { step: "", title: "Descarga la app" } },
+  { id: "registro", duration: 6500, title: "Crear Cuenta", caption: { step: "1 de 9", title: "Crea tu cuenta" } },
+  { id: "mapa", duration: 9000, title: "Enfermeras Cerca", caption: { step: "2 de 9", title: "Encuentra enfermeras cerca" } },
+  { id: "perfil", duration: 6000, title: "Perfil de Enfermera", caption: { step: "3 de 9", title: "Ve perfiles verificados" } },
+  { id: "solicitar", duration: 6000, title: "Solicitar Servicio", caption: { step: "4 de 9", title: "Solicita tu servicio" } },
+  { id: "pago", duration: 6000, title: "Metodo de Pago", caption: { step: "5 de 9", title: "Pago 100% seguro" } },
+  { id: "esperando", duration: 4000, title: "Confirmando", caption: { step: "6 de 9", title: "Esperando confirmacion" } },
+  { id: "tracking", duration: 9000, title: "Seguimiento en Vivo", caption: { step: "7 de 9", title: "Seguimiento en tiempo real" } },
+  { id: "review", duration: 7000, title: "Califica el Servicio", caption: { step: "8 de 9", title: "Califica tu experiencia" } },
   { id: "final", duration: null, isFullScreen: true },
 ];
 
 export default function DemoPaciente() {
-  const { currentStep, step, restart } = useStepEngine(steps);
+  const { currentStep, step } = useStepEngine(steps);
   const active = (id: string) => step.id === id;
 
+  const renderContent = () => {
+    if (step.isFullScreen) {
+      if (active("intro")) return <LogoIntro subtitle="Disponible en Lima" />;
+      if (active("landing")) return <RoleLanding activeRole="patient" active={true} />;
+      if (active("final")) return <FinalScreen tagline="Cuidado profesional en tu hogar" />;
+      return null;
+    }
+
+    return (
+      <DemoShell title={step.title!}>
+        {active("registro") && <RegistroStep active={true} />}
+        {active("mapa") && <MapaStep active={true} />}
+        {active("perfil") && <PerfilEnfermeraStep active={true} />}
+        {active("solicitar") && <SolicitarStep active={true} />}
+        {active("pago") && <PagoStep active={true} />}
+        {active("esperando") && <EsperandoStep active={true} />}
+        {active("tracking") && <TrackingStep active={true} />}
+        {active("review") && <ReviewStep active={true} />}
+      </DemoShell>
+    );
+  };
+
   return (
-    <div className="w-screen h-screen overflow-hidden">
-      <AnimatePresence mode="wait">
-        {step.isFullScreen ? (
-          <motion.div
-            key={step.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-full h-full"
-          >
-            {active("intro") && <LogoIntro subtitle="Disponible en Lima" />}
-            {active("landing") && <RoleLanding activeRole="patient" active={true} />}
-            {active("i_registro") && <InterstitialScreen icon={UserPlus} text="Crea tu cuenta" />}
-            {active("i_mapa") && <InterstitialScreen icon={MapPin} text="Encuentra enfermeras cerca de ti" />}
-            {active("i_pago") && <InterstitialScreen icon={Lock} text="Pago 100% seguro" />}
-            {active("i_tracking") && <InterstitialScreen icon={Radio} text="Seguimiento en tiempo real" />}
-            {active("final") && (
-              <FinalScreen tagline="Cuidado profesional en tu hogar" />
-            )}
-          </motion.div>
-        ) : (
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="w-full h-full"
-          >
-            <DemoShell title={step.title!}>
-              {active("registro") && <RegistroStep active={true} />}
-              {active("mapa") && <MapaStep active={true} />}
-              {active("perfil") && <PerfilEnfermeraStep active={true} />}
-              {active("solicitar") && <SolicitarStep active={true} />}
-              {active("pago") && <PagoStep active={true} />}
-              {active("esperando") && <EsperandoStep active={true} />}
-              {active("tracking") && <TrackingStep active={true} />}
-              {active("review") && <ReviewStep active={true} />}
-            </DemoShell>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    <TikTokDemo steps={steps} currentStep={currentStep}>
+      {renderContent()}
+    </TikTokDemo>
   );
 }
 

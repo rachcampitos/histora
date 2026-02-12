@@ -23,84 +23,59 @@ import {
   FinalScreen,
   RoleLanding,
   HorizontalStepper,
-  InterstitialScreen,
+  TikTokDemo,
 } from "../components";
-import { UserPlus, ShieldCheck, Briefcase, Bell, Star } from "lucide-react";
 
 /* ── Steps Definition ── */
 const steps: DemoStep[] = [
-  { id: "intro", duration: 4000, isFullScreen: true },
-  { id: "landing", duration: 5000, isFullScreen: true },
-  { id: "i_registro", duration: 1500, isFullScreen: true },
-  { id: "registro", duration: 7000, title: "Registro Profesional" },
-  { id: "i_validacion", duration: 1500, isFullScreen: true },
-  { id: "validacion", duration: 6000, title: "Verificacion CEP" },
-  { id: "resultado", duration: 5000, title: "Resultado de Verificacion" },
-  { id: "i_servicios", duration: 1500, isFullScreen: true },
-  { id: "servicios", duration: 7000, title: "Mis Servicios" },
-  { id: "perfil", duration: 7000, title: "Configurar Perfil" },
-  { id: "i_dashboard", duration: 1500, isFullScreen: true },
-  { id: "dashboard", duration: 6000, title: "Dashboard" },
-  { id: "solicitud", duration: 6000, title: "Nueva Solicitud" },
-  { id: "encamino", duration: 13000, title: "Servicio Activo" },
-  { id: "completado", duration: 5000, title: "Servicio Completado" },
-  { id: "i_resena", duration: 1500, isFullScreen: true },
-  { id: "resena", duration: 9000, title: "Dashboard" },
+  { id: "intro", duration: 4000, isFullScreen: true, caption: { step: "", title: "Cada paciente que cuidas merece ser contado", subtitle: "NurseLite convierte tu dedicacion en reconocimiento" } },
+  { id: "landing", duration: 5000, isFullScreen: true, caption: { step: "", title: "Descarga la app" } },
+  { id: "registro", duration: 7000, title: "Registro Profesional", caption: { step: "1 de 11", title: "Registrate como enfermera" } },
+  { id: "validacion", duration: 6000, title: "Verificacion CEP", caption: { step: "2 de 11", title: "Verificamos tu cedula profesional" } },
+  { id: "resultado", duration: 5000, title: "Resultado de Verificacion", caption: { step: "3 de 11", title: "Validacion automatica" } },
+  { id: "servicios", duration: 7000, title: "Mis Servicios", caption: { step: "4 de 11", title: "Configura tus servicios" } },
+  { id: "perfil", duration: 7000, title: "Configurar Perfil", caption: { step: "5 de 11", title: "Personaliza tu perfil" } },
+  { id: "dashboard", duration: 6000, title: "Dashboard", caption: { step: "6 de 11", title: "Tu panel profesional" } },
+  { id: "solicitud", duration: 6000, title: "Nueva Solicitud", caption: { step: "7 de 11", title: "Recibe solicitudes en tiempo real" } },
+  { id: "encamino", duration: 13000, title: "Servicio Activo", caption: { step: "8 de 11", title: "Servicio en progreso" } },
+  { id: "completado", duration: 5000, title: "Servicio Completado", caption: { step: "9 de 11", title: "Servicio completado" } },
+  { id: "resena", duration: 9000, title: "Dashboard", caption: { step: "10 de 11", title: "Recibe calificaciones y sube de nivel" } },
   { id: "final", duration: null, isFullScreen: true },
 ];
 
 /* ── Main Component ── */
 export default function DemoEnfermera() {
-  const { currentStep, step, restart } = useStepEngine(steps);
+  const { currentStep, step } = useStepEngine(steps);
   const active = (id: string) => step.id === id;
 
+  const renderContent = () => {
+    if (step.isFullScreen) {
+      if (active("intro")) return <LogoIntro subtitle="Para profesionales de enfermeria" />;
+      if (active("landing")) return <RoleLanding activeRole="nurse" active={true} />;
+      if (active("final")) return <FinalScreen tagline="Gana dinero con tu profesion" />;
+      return null;
+    }
+
+    return (
+      <DemoShell title={step.title!}>
+        {active("registro") && <RegistroStep active={true} />}
+        {active("validacion") && <ValidacionStep active={true} />}
+        {active("resultado") && <ResultadoStep active={true} />}
+        {active("servicios") && <ServiciosStep active={true} />}
+        {active("perfil") && <PerfilStep active={true} />}
+        {active("dashboard") && <DashboardStep active={true} />}
+        {active("solicitud") && <SolicitudStep active={true} />}
+        {active("encamino") && <EnCaminoStep active={true} />}
+        {active("completado") && <CompletadoStep active={true} />}
+        {active("resena") && <ResenaStep active={true} />}
+      </DemoShell>
+    );
+  };
+
   return (
-    <div className="w-screen h-screen overflow-hidden bg-[#f8fafc]">
-      <AnimatePresence mode="wait">
-        {step.isFullScreen ? (
-          <motion.div
-            key={step.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full h-full"
-          >
-            {active("intro") && <LogoIntro subtitle="Para profesionales de enfermeria" />}
-            {active("landing") && <RoleLanding activeRole="nurse" active={true} />}
-            {active("i_registro") && <InterstitialScreen icon={UserPlus} text="Registrate como enfermera" />}
-            {active("i_validacion") && <InterstitialScreen icon={ShieldCheck} text="Verificamos tu cedula profesional" />}
-            {active("i_servicios") && <InterstitialScreen icon={Briefcase} text="Configura tus servicios" />}
-            {active("i_dashboard") && <InterstitialScreen icon={Bell} text="Recibe solicitudes en tiempo real" />}
-            {active("i_resena") && <InterstitialScreen icon={Star} text="Recibe calificaciones y sube de nivel" />}
-            {active("final") && <FinalScreen tagline="Gana dinero con tu profesion" />}
-          </motion.div>
-        ) : (
-          <DemoShell title={step.title!}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4 }}
-              >
-                {active("registro") && <RegistroStep active={active("registro")} />}
-                {active("validacion") && <ValidacionStep active={active("validacion")} />}
-                {active("resultado") && <ResultadoStep active={active("resultado")} />}
-                {active("servicios") && <ServiciosStep active={active("servicios")} />}
-                {active("perfil") && <PerfilStep active={active("perfil")} />}
-                {active("dashboard") && <DashboardStep active={active("dashboard")} />}
-                {active("solicitud") && <SolicitudStep active={active("solicitud")} />}
-                {active("encamino") && <EnCaminoStep active={active("encamino")} />}
-                {active("completado") && <CompletadoStep active={active("completado")} />}
-                {active("resena") && <ResenaStep active={active("resena")} />}
-              </motion.div>
-            </AnimatePresence>
-          </DemoShell>
-        )}
-      </AnimatePresence>
-    </div>
+    <TikTokDemo steps={steps} currentStep={currentStep}>
+      {renderContent()}
+    </TikTokDemo>
   );
 }
 
@@ -1073,17 +1048,29 @@ function EnCaminoStep({ active }: { active: boolean }) {
 }
 
 function CompletadoStep({ active }: { active: boolean }) {
-  const showStats = useDelayedShow(2000, active);
-  const earnings = useCounter(0, 40, 50, active);
+  const showDetails = useDelayedShow(1500, active);
 
   return (
     <div>
       <Confetti active={active} />
 
+      {/* Success badge */}
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={active ? { scale: 1, opacity: 1 } : {}}
+        transition={{ delay: 0.3, duration: 0.5, type: "spring", stiffness: 300 }}
+        className="flex flex-col items-center mb-6"
+      >
+        <div className="w-[100px] h-[100px] rounded-full bg-[#16a34a] flex items-center justify-center mb-4">
+          <span className="text-white text-[52px] font-bold">✓</span>
+        </div>
+        <p className="text-[32px] font-bold text-[#16a34a]">Servicio completado</p>
+      </motion.div>
+
       {/* Timer display */}
-      <div className="bg-white rounded-[16px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6 mb-6 text-center">
-        <p className="text-[22px] text-[#64748b] mb-2">Tiempo total</p>
-        <p className="text-[48px] font-extrabold text-[#1a1a2e] leading-none">
+      <div className="bg-white rounded-[16px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-5 mb-5 text-center">
+        <p className="text-[20px] text-[#64748b] mb-1">Duracion total</p>
+        <p className="text-[40px] font-extrabold text-[#1a1a2e] leading-none">
           00:08:23
         </p>
       </div>
@@ -1099,40 +1086,30 @@ function CompletadoStep({ active }: { active: boolean }) {
         activeIndex={4}
       />
 
-      {/* Earnings card with count-up */}
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={active ? { scale: 1, opacity: 1 } : { scale: 0.9, opacity: 0 }}
-        transition={{ delay: 0.5, duration: 0.6, type: "spring" }}
-      >
-        <Card className="border-[3px] border-[#f59e0b] text-center">
-          <p className="text-[28px] text-[#64748b] mb-4">Ganaste</p>
-          <motion.p
-            className="text-[72px] font-extrabold text-[#f59e0b] leading-none mb-4"
-            animate={{ scale: active ? [1, 1.1, 1] : 1 }}
-            transition={{ delay: 1.5, duration: 0.5 }}
-          >
-            S/{earnings}.00
-          </motion.p>
-          <p className="text-[24px] text-[#64748b]">
-            Depositado en tu cuenta Yape
-          </p>
-        </Card>
-      </motion.div>
-
-      {/* Stats update */}
-      {showStats && (
+      {/* Service summary */}
+      {showDetails && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <Card>
-            <p className="text-[26px] font-semibold text-[#1a1a2e] mb-4">
-              Servicios completados: 1
-            </p>
-            <p className="text-[26px] font-semibold text-[#1a1a2e]">
-              Rating: 4.8 ⭐
-            </p>
+            <div className="flex items-center gap-4 mb-4">
+              <Avatar initials="AR" size="sm" />
+              <div>
+                <p className="text-[24px] font-bold text-[#1a1a2e]">Ana Rodriguez</p>
+                <p className="text-[20px] text-[#64748b]">Inyeccion IM</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-4 border-t border-[#f1f5f9]">
+              <div>
+                <p className="text-[18px] text-[#64748b]">Monto acordado</p>
+                <p className="text-[28px] font-bold text-[#1a1a2e]">S/ 40</p>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-[#f0fdf4] rounded-full">
+                <span className="text-[18px]">📱</span>
+                <span className="text-[18px] font-semibold text-[#16a34a]">Yape</span>
+              </div>
+            </div>
           </Card>
         </motion.div>
       )}

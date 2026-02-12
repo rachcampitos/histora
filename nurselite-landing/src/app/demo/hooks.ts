@@ -8,6 +8,7 @@ export interface DemoStep {
   duration: number | null;
   title?: string;
   isFullScreen?: boolean;
+  caption?: { step: string; title: string; subtitle?: string };
 }
 
 export function useStepEngine(steps: DemoStep[]) {

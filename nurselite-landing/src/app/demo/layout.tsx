@@ -10,7 +10,7 @@ export default function DemoLayout({
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-[#f8fafc]">
+    <div className="w-full h-dvh overflow-hidden bg-gradient-to-b from-[#0f1419] to-[#1e293b]">
       {children}
     </div>
   );
