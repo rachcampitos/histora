@@ -16,7 +16,6 @@ import {
   StarRating,
   Confetti,
   TypingField,
-  GradientHeader,
   Card,
   Toggle,
   LogoIntro,
@@ -24,22 +23,25 @@ import {
   RoleLanding,
   HorizontalStepper,
   TikTokDemo,
+  MapBackground,
+  ChatScreen,
 } from "../components";
 
 /* ── Steps Definition ── */
 const steps: DemoStep[] = [
   { id: "intro", duration: 4000, isFullScreen: true, caption: { step: "", title: "Cada paciente que cuidas merece ser contado", subtitle: "NurseLite convierte tu dedicacion en reconocimiento" } },
   { id: "landing", duration: 5000, isFullScreen: true, caption: { step: "", title: "Descarga la app" } },
-  { id: "registro", duration: 7000, title: "Registro Profesional", caption: { step: "1 de 11", title: "Registrate como enfermera" } },
-  { id: "validacion", duration: 6000, title: "Verificacion CEP", caption: { step: "2 de 11", title: "Verificamos tu cedula profesional" } },
-  { id: "resultado", duration: 5000, title: "Resultado de Verificacion", caption: { step: "3 de 11", title: "Validacion automatica" } },
-  { id: "servicios", duration: 7000, title: "Mis Servicios", caption: { step: "4 de 11", title: "Configura tus servicios" } },
-  { id: "perfil", duration: 7000, title: "Configurar Perfil", caption: { step: "5 de 11", title: "Personaliza tu perfil" } },
-  { id: "dashboard", duration: 6000, title: "Dashboard", caption: { step: "6 de 11", title: "Tu panel profesional" } },
-  { id: "solicitud", duration: 6000, title: "Nueva Solicitud", caption: { step: "7 de 11", title: "Recibe solicitudes en tiempo real" } },
-  { id: "encamino", duration: 13000, title: "Servicio Activo", caption: { step: "8 de 11", title: "Servicio en progreso" } },
-  { id: "completado", duration: 5000, title: "Servicio Completado", caption: { step: "9 de 11", title: "Servicio completado" } },
-  { id: "resena", duration: 9000, title: "Dashboard", caption: { step: "10 de 11", title: "Recibe calificaciones y sube de nivel" } },
+  { id: "registro", duration: 7000, title: "Registro Profesional", caption: { step: "", title: "Registrate como enfermera" } },
+  { id: "validacion", duration: 6000, title: "Verificacion CEP", caption: { step: "", title: "Verificamos tu cedula profesional" } },
+  { id: "resultado", duration: 5000, title: "Resultado de Verificacion", caption: { step: "", title: "Validacion automatica" } },
+  { id: "servicios", duration: 7000, title: "Mis Servicios", caption: { step: "", title: "Configura tus servicios" } },
+  { id: "perfil", duration: 7000, title: "Configurar Perfil", caption: { step: "", title: "Personaliza tu perfil" } },
+  { id: "dashboard", duration: 6000, title: "Dashboard", caption: { step: "", title: "Tu panel profesional" } },
+  { id: "solicitud", duration: 6000, title: "Nueva Solicitud", caption: { step: "", title: "Recibe solicitudes en tiempo real" } },
+  { id: "chat", duration: 6000, title: "Chat", caption: { step: "", title: "Chat en tiempo real" } },
+  { id: "encamino", duration: 13000, title: "Servicio Activo", caption: { step: "", title: "Servicio en progreso" } },
+  { id: "completado", duration: 5000, title: "Servicio Completado", caption: { step: "", title: "Servicio completado" } },
+  { id: "resena", duration: 9000, title: "Dashboard", caption: { step: "", title: "Recibe calificaciones y sube de nivel" } },
   { id: "final", duration: null, isFullScreen: true },
 ];
 
@@ -56,6 +58,11 @@ export default function DemoEnfermera() {
       return null;
     }
 
+    // Screens with custom full-height layouts (no DemoShell)
+    if (active("dashboard")) return <DashboardStep active={true} />;
+    if (active("resena")) return <ResenaStep active={true} />;
+    if (active("chat")) return <ChatEnfermeraStep active={true} />;
+
     return (
       <DemoShell title={step.title!}>
         {active("registro") && <RegistroStep active={true} />}
@@ -63,11 +70,9 @@ export default function DemoEnfermera() {
         {active("resultado") && <ResultadoStep active={true} />}
         {active("servicios") && <ServiciosStep active={true} />}
         {active("perfil") && <PerfilStep active={true} />}
-        {active("dashboard") && <DashboardStep active={true} />}
         {active("solicitud") && <SolicitudStep active={true} />}
         {active("encamino") && <EnCaminoStep active={true} />}
         {active("completado") && <CompletadoStep active={true} />}
-        {active("resena") && <ResenaStep active={true} />}
       </DemoShell>
     );
   };
@@ -560,73 +565,80 @@ function DashboardStep({ active }: { active: boolean }) {
   }, [active]);
 
   return (
-    <div>
-      <GradientHeader subtitle="Bienvenida" title="Hola, Maria Elena" />
-
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="text-center">
-            <p className="text-[56px] font-extrabold text-[#1a1a2e] mb-1">⭐ 4.8</p>
-            <p className="text-[20px] text-[#64748b]">Rating</p>
-          </Card>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card className="text-center">
-            <p className="text-[56px] font-extrabold text-[#1a1a2e] mb-1">0</p>
-            <p className="text-[20px] text-[#64748b]">Servicios</p>
-          </Card>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Card className="text-center">
-            <p className="text-[56px] font-extrabold text-[#1a1a2e] mb-1">S/0</p>
-            <p className="text-[20px] text-[#64748b]">Ganancias</p>
-          </Card>
-        </motion.div>
+    <div className="w-full h-full flex flex-col bg-[#f8fafc]">
+      {/* Gradient header */}
+      <div className="bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a] shrink-0 pt-[44px] px-8 pb-10">
+        <p className="text-[22px] text-white/90 mb-2">Bienvenida</p>
+        <p className="text-[48px] font-extrabold text-white">Hola, Maria Elena</p>
       </div>
 
-      {/* Availability */}
-      <Card>
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[24px] font-semibold text-[#1a1a2e]">Disponibilidad</p>
-          <Toggle on={disponible} />
-        </div>
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={disponible ? "on" : "off"}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={`text-[24px] font-medium ${
-              disponible ? "text-[#22c55e]" : "text-[#64748b]"
-            }`}
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-7 -mt-4">
+        {/* Stats row */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ delay: 0.2 }}
           >
-            {disponible ? "Disponible para solicitudes" : "No disponible"}
-          </motion.p>
-        </AnimatePresence>
-      </Card>
+            <Card className="text-center !mb-0 !p-4">
+              <p className="text-[40px] font-extrabold text-[#1a1a2e]">⭐ 4.8</p>
+              <p className="text-[18px] text-[#64748b]">Rating</p>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card className="text-center !mb-0 !p-4">
+              <p className="text-[40px] font-extrabold text-[#1a1a2e]">0</p>
+              <p className="text-[18px] text-[#64748b]">Servicios</p>
+            </Card>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Card className="text-center !mb-0 !p-4">
+              <p className="text-[40px] font-extrabold text-[#1a1a2e]">S/0</p>
+              <p className="text-[18px] text-[#64748b]">Ganancias</p>
+            </Card>
+          </motion.div>
+        </div>
 
-      {/* Historial section */}
-      <h3 className="text-[32px] font-bold text-[#1a1a2e] mb-6">
-        Historial de Servicios
-      </h3>
-      <Card>
-        <p className="text-[26px] text-[#94a3b8] text-center py-8">
-          Aun no tienes servicios completados
-        </p>
-      </Card>
+        {/* Availability */}
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[24px] font-semibold text-[#1a1a2e]">Disponibilidad</p>
+            <Toggle on={disponible} />
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={disponible ? "on" : "off"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={`text-[24px] font-medium ${
+                disponible ? "text-[#22c55e]" : "text-[#64748b]"
+              }`}
+            >
+              {disponible ? "Disponible para solicitudes" : "No disponible"}
+            </motion.p>
+          </AnimatePresence>
+        </Card>
+
+        {/* Historial section */}
+        <h3 className="text-[32px] font-bold text-[#1a1a2e] mb-6">
+          Historial de Servicios
+        </h3>
+        <Card>
+          <p className="text-[26px] text-[#94a3b8] text-center py-8">
+            Aun no tienes servicios completados
+          </p>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -806,25 +818,9 @@ function EnCaminoStep({ active }: { active: boolean }) {
       <motion.div
         animate={{ height: hasArrived ? 180 : 380 }}
         transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-        className="relative bg-[#e2e8f0] rounded-[16px] mb-5 overflow-hidden"
+        className="relative rounded-[16px] mb-5 overflow-hidden"
       >
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-20">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={`v${i}`}
-              className="absolute h-full border-l border-[#94a3b8]"
-              style={{ left: `${(i + 1) * 10}%` }}
-            />
-          ))}
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={`h${i}`}
-              className="absolute w-full border-t border-[#94a3b8]"
-              style={{ top: `${(i + 1) * 10}%` }}
-            />
-          ))}
-        </div>
+        <MapBackground lng={-77.04} lat={-12.11} zoom={15} />
 
         {/* Dashed route polyline */}
         <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
@@ -1117,6 +1113,20 @@ function CompletadoStep({ active }: { active: boolean }) {
   );
 }
 
+/* ── Chat Enfermera Step ── */
+function ChatEnfermeraStep({ active }: { active: boolean }) {
+  const messages: { from: "me" | "other" | "system"; text: string; delay: number }[] = [
+    { from: "system", text: "Servicio aceptado", delay: 300 },
+    { from: "me", text: "Hola Ana, soy Maria Elena. Ya estoy en camino 🙂", delay: 800 },
+    { from: "other", text: "Hola! Perfecto, te espero", delay: 2000 },
+    { from: "me", text: "Llego en aprox 8 minutos", delay: 3000 },
+    { from: "other", text: "Genial, la puerta es la azul del segundo piso", delay: 4200 },
+    { from: "me", text: "Entendido, ya estoy cerca! 📍", delay: 5200 },
+  ];
+
+  return <ChatScreen active={active} role="nurse" messages={messages} />;
+}
+
 function ResenaStep({ active }: { active: boolean }) {
   const showModal = useDelayedShow(1500, active);
   const comment = "Excelente servicio, muy profesional y puntual";
@@ -1126,36 +1136,42 @@ function ResenaStep({ active }: { active: boolean }) {
   const showConfetti = useDelayedShow(7500, active);
 
   return (
-    <div className="relative min-h-full">
+    <div className="w-full h-full flex flex-col bg-[#f8fafc] relative">
       <Confetti active={showConfetti} />
 
-      {/* Dashboard background */}
-      <GradientHeader subtitle="Bienvenida" title="Hola, Maria Elena" />
-
-      {/* Updated stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <Card className="text-center !mb-0 !p-4">
-          <p className="text-[40px] font-extrabold text-[#1a1a2e]">⭐ 4.9</p>
-          <p className="text-[18px] text-[#64748b]">Rating</p>
-        </Card>
-        <Card className="text-center !mb-0 !p-4">
-          <p className="text-[40px] font-extrabold text-[#1a1a2e]">1</p>
-          <p className="text-[18px] text-[#64748b]">Servicios</p>
-        </Card>
-        <Card className="text-center !mb-0 !p-4">
-          <p className="text-[40px] font-extrabold text-[#4a9d9a]">S/40</p>
-          <p className="text-[18px] text-[#64748b]">Ganancias</p>
-        </Card>
+      {/* Gradient header */}
+      <div className="bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a] shrink-0 pt-[44px] px-8 pb-10">
+        <p className="text-[22px] text-white/90 mb-2">Bienvenida</p>
+        <p className="text-[48px] font-extrabold text-white">Hola, Maria Elena</p>
       </div>
 
-      {/* Disponibilidad */}
-      <Card>
-        <div className="flex items-center justify-between">
-          <p className="text-[26px] font-semibold text-[#1a1a2e]">Disponibilidad</p>
-          <Toggle on={true} />
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-7 -mt-4">
+        {/* Updated stats */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <Card className="text-center !mb-0 !p-4">
+            <p className="text-[40px] font-extrabold text-[#1a1a2e]">⭐ 4.9</p>
+            <p className="text-[18px] text-[#64748b]">Rating</p>
+          </Card>
+          <Card className="text-center !mb-0 !p-4">
+            <p className="text-[40px] font-extrabold text-[#1a1a2e]">1</p>
+            <p className="text-[18px] text-[#64748b]">Servicios</p>
+          </Card>
+          <Card className="text-center !mb-0 !p-4">
+            <p className="text-[40px] font-extrabold text-[#4a9d9a]">S/40</p>
+            <p className="text-[18px] text-[#64748b]">Ganancias</p>
+          </Card>
         </div>
-        <p className="text-[22px] font-medium text-[#22c55e] mt-2">Disponible para solicitudes</p>
-      </Card>
+
+        {/* Disponibilidad */}
+        <Card>
+          <div className="flex items-center justify-between">
+            <p className="text-[26px] font-semibold text-[#1a1a2e]">Disponibilidad</p>
+            <Toggle on={true} />
+          </div>
+          <p className="text-[22px] font-medium text-[#22c55e] mt-2">Disponible para solicitudes</p>
+        </Card>
+      </div>
 
       {/* Review Modal - Centered floating (like real app review-modal-floating) */}
       <AnimatePresence>
@@ -1165,11 +1181,11 @@ function ResenaStep({ active }: { active: boolean }) {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="fixed inset-0 bg-black/50 z-40"
+              className="absolute inset-0 bg-black/50 z-40"
             />
 
             {/* Centered Modal Container */}
-            <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
+            <div className="absolute inset-0 flex items-center justify-center z-50 px-4">
               <motion.div
                 initial={{ scale: 0.85, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}

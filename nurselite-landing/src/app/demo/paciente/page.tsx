@@ -20,20 +20,23 @@ import {
   RoleLanding,
   HorizontalStepper,
   TikTokDemo,
+  MapBackground,
+  ChatScreen,
 } from "../components";
 import { useTypingEffect } from "../hooks";
 
 const steps: DemoStep[] = [
   { id: "intro", duration: 4000, isFullScreen: true, caption: { step: "", title: "Enfermeria a domicilio, asi de facil", subtitle: "Verificadas, cerca de ti, pago seguro" } },
   { id: "landing", duration: 5000, isFullScreen: true, caption: { step: "", title: "Descarga la app" } },
-  { id: "registro", duration: 6500, title: "Crear Cuenta", caption: { step: "1 de 9", title: "Crea tu cuenta" } },
-  { id: "mapa", duration: 9000, title: "Enfermeras Cerca", caption: { step: "2 de 9", title: "Encuentra enfermeras cerca" } },
-  { id: "perfil", duration: 6000, title: "Perfil de Enfermera", caption: { step: "3 de 9", title: "Ve perfiles verificados" } },
-  { id: "solicitar", duration: 6000, title: "Solicitar Servicio", caption: { step: "4 de 9", title: "Solicita tu servicio" } },
-  { id: "pago", duration: 6000, title: "Metodo de Pago", caption: { step: "5 de 9", title: "Pago 100% seguro" } },
-  { id: "esperando", duration: 4000, title: "Confirmando", caption: { step: "6 de 9", title: "Esperando confirmacion" } },
-  { id: "tracking", duration: 9000, title: "Seguimiento en Vivo", caption: { step: "7 de 9", title: "Seguimiento en tiempo real" } },
-  { id: "review", duration: 7000, title: "Califica el Servicio", caption: { step: "8 de 9", title: "Califica tu experiencia" } },
+  { id: "registro", duration: 6500, title: "Crear Cuenta", caption: { title: "Crea tu cuenta" } },
+  { id: "mapa", duration: 9000, title: "Enfermeras Cerca", caption: { title: "Encuentra enfermeras cerca" } },
+  { id: "perfil", duration: 6000, title: "Perfil de Enfermera", caption: { title: "Ve perfiles verificados" } },
+  { id: "solicitar", duration: 6000, title: "Solicitar Servicio", caption: { title: "Solicita tu servicio" } },
+  { id: "pago", duration: 6000, title: "Metodo de Pago", caption: { title: "Pago 100% seguro" } },
+  { id: "esperando", duration: 4000, title: "Confirmando", caption: { title: "Esperando confirmacion" } },
+  { id: "chat", duration: 6000, title: "Chat", caption: { title: "Chat en tiempo real" } },
+  { id: "tracking", duration: 9000, title: "Seguimiento en Vivo", caption: { title: "Seguimiento en tiempo real" } },
+  { id: "review", duration: 7000, title: "Califica el Servicio", caption: { title: "Califica tu experiencia" } },
   { id: "final", duration: null, isFullScreen: true },
 ];
 
@@ -49,11 +52,14 @@ export default function DemoPaciente() {
       return null;
     }
 
+    // Screens with custom full-height layouts (no DemoShell)
+    if (active("mapa")) return <MapaStep active={true} />;
+    if (active("perfil")) return <PerfilEnfermeraStep active={true} />;
+    if (active("chat")) return <ChatPacienteStep active={true} />;
+
     return (
       <DemoShell title={step.title!}>
         {active("registro") && <RegistroStep active={true} />}
-        {active("mapa") && <MapaStep active={true} />}
-        {active("perfil") && <PerfilEnfermeraStep active={true} />}
         {active("solicitar") && <SolicitarStep active={true} />}
         {active("pago") && <PagoStep active={true} />}
         {active("esperando") && <EsperandoStep active={true} />}
@@ -140,7 +146,7 @@ function RegistroStep({ active }: { active: boolean }) {
   );
 }
 
-/* ── Mapa Step (with service bottom sheet) ── */
+/* ── Mapa Step (full-bleed map with bottom sheet) ── */
 function MapaStep({ active }: { active: boolean }) {
   const showSheet = useDelayedShow(2000, active);
   const showServiceSelected = useDelayedShow(4000, active);
@@ -148,10 +154,10 @@ function MapaStep({ active }: { active: boolean }) {
   const showSolicitar = useDelayedShow(7000, active);
 
   const nurses = [
-    { initials: "MG", rating: "4.9★", top: "20%", left: "25%" },
-    { initials: "LP", rating: "4.7★", top: "40%", left: "55%" },
-    { initials: "RS", rating: "4.5★", top: "55%", left: "20%" },
-    { initials: "AT", rating: "4.8★", top: "30%", left: "70%" },
+    { initials: "MG", rating: "4.9", top: "30%", left: "25%" },
+    { initials: "LP", rating: "4.7", top: "45%", left: "60%" },
+    { initials: "RS", rating: "4.5", top: "55%", left: "18%" },
+    { initials: "AT", rating: "4.8", top: "35%", left: "72%" },
   ];
 
   const services = [
@@ -162,22 +168,10 @@ function MapaStep({ active }: { active: boolean }) {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="relative"
-    >
-      {/* Map - taller to fill screen */}
-      <div className="h-[600px] bg-gradient-to-br from-[#e2e8f0] to-[#cbd5e1] rounded-[16px] mb-4 relative overflow-hidden">
-        <svg className="absolute inset-0 w-full h-full opacity-20">
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#94a3b8" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+    <div className="w-full h-full flex flex-col bg-[#f8fafc]">
+      {/* Full-bleed map */}
+      <div className="relative flex-1 overflow-hidden">
+        <MapBackground lng={-77.03} lat={-12.12} zoom={14} />
 
         {/* Your location pin */}
         <motion.div
@@ -185,21 +179,19 @@ function MapaStep({ active }: { active: boolean }) {
           animate={active ? { scale: 1 } : { scale: 0 }}
           transition={{ delay: 0.3, duration: 0.4, type: "spring", stiffness: 300 }}
           className="absolute"
-          style={{ top: "45%", left: "45%" }}
+          style={{ top: "50%", left: "48%" }}
         >
-          <div className="flex flex-col items-center">
-            <div className="w-[44px] h-[44px] bg-[#3b82f6] rounded-full flex items-center justify-center shadow-lg border-4 border-white">
-              <span className="text-white text-[20px] font-bold">Tu</span>
-            </div>
-            <motion.div
-              animate={{ scale: [0, 2, 2], opacity: [0.5, 0.5, 0] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 0.3 }}
-              className="absolute w-[44px] h-[44px] rounded-full bg-[#3b82f6]"
-            />
+          <div className="w-[44px] h-[44px] bg-[#3b82f6] rounded-full flex items-center justify-center shadow-lg border-4 border-white">
+            <span className="text-white text-[20px] font-bold">Tu</span>
           </div>
+          <motion.div
+            animate={{ scale: [0, 2, 2], opacity: [0.5, 0.5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 0.3 }}
+            className="absolute inset-0 w-[44px] h-[44px] rounded-full bg-[#3b82f6]"
+          />
         </motion.div>
 
-        {/* Nurse markers */}
+        {/* Nurse markers - matching OnboardingDemo style */}
         {nurses.map((nurse, i) => (
           <motion.div
             key={i}
@@ -209,43 +201,41 @@ function MapaStep({ active }: { active: boolean }) {
             className="absolute"
             style={{ top: nurse.top, left: nurse.left }}
           >
-            <div className="bg-white rounded-2xl shadow-lg p-3 flex items-center gap-3 border-2 border-[#4a9d9a]">
-              <Avatar initials={nurse.initials} size="sm" />
-              <span className="text-[22px] font-bold text-[#1a1a2e] whitespace-nowrap">
-                {nurse.rating}
-              </span>
+            <div className="flex flex-col items-center">
+              <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-white shadow-lg">
+                <span className="text-white text-[20px] font-bold">{nurse.initials}</span>
+              </div>
+              <div className="bg-white rounded-full px-3 py-1 shadow-md mt-1 border border-[#e2e8f0]">
+                <span className="text-[16px] font-bold text-[#1a1a2e]">⭐ {nurse.rating}</span>
+              </div>
             </div>
           </motion.div>
         ))}
 
-        {/* Badge overlay on map */}
+        {/* Badge overlay */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={active ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 1.8, duration: 0.4 }}
-          className="absolute top-4 left-1/2 -translate-x-1/2 bg-[#1e3a5f] text-white rounded-full px-6 py-3 shadow-lg"
+          className="absolute top-[50px] left-1/2 -translate-x-1/2 bg-[#1e3a5f] text-white rounded-full px-6 py-3 shadow-lg"
         >
           <span className="text-[22px] font-semibold">4 enfermeras cerca</span>
         </motion.div>
       </div>
 
-      {/* Bottom Sheet - Service Selection */}
-      {showSheet && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, type: "spring", stiffness: 200, damping: 25 }}
-        >
-          <div className="bg-white rounded-t-[24px] border border-[#f1f5f9] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] p-6">
-            {/* Handle */}
+      {/* Bottom Sheet */}
+      <AnimatePresence>
+        {showSheet && (
+          <motion.div
+            initial={{ y: 300 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.5, type: "spring", stiffness: 200, damping: 25 }}
+            className="bg-white rounded-t-[28px] shadow-[0_-8px_32px_rgba(0,0,0,0.12)] px-7 py-5 shrink-0"
+          >
             <div className="w-[40px] h-[5px] bg-[#d1d5db] rounded-full mx-auto mb-5" />
+            <p className="text-[28px] font-bold text-[#1a1a2e] mb-4">¿Que servicio necesitas?</p>
 
-            <p className="text-[28px] font-bold text-[#1a1a2e] mb-5">
-              ¿Que servicio necesitas?
-            </p>
-
-            {/* Service pills */}
-            <div className="flex flex-wrap gap-3 mb-5">
+            <div className="flex flex-wrap gap-3 mb-4">
               {services.map((service, i) => (
                 <motion.div
                   key={i}
@@ -261,202 +251,217 @@ function MapaStep({ active }: { active: boolean }) {
                   <span className="text-[24px]">{service.icon}</span>
                   <span className="text-[22px] font-medium text-[#1a1a2e]">{service.name}</span>
                   {service.selected && showServiceSelected && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="text-[18px] text-[#4a9d9a]"
-                    >
-                      ✓
-                    </motion.span>
+                    <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-[18px] text-[#4a9d9a]">✓</motion.span>
                   )}
                 </motion.div>
               ))}
             </div>
 
-            {/* Nurse card after service selected */}
             {showNurseCard && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-[#f8fafc] rounded-2xl p-5 border border-[#e2e8f0]"
+                className="bg-[#f8fafc] rounded-2xl p-5 border border-[#e2e8f0] mb-4"
               >
-                <p className="text-[20px] text-[#64748b] mb-3">Enfermera mas cercana</p>
+                <p className="text-[18px] text-[#64748b] mb-3">Enfermera mas cercana</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <Avatar initials="MG" size="sm" />
+                    <div className="w-[48px] h-[48px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-[#4a9d9a]/30">
+                      <span className="text-white text-[18px] font-bold">MG</span>
+                    </div>
                     <div>
-                      <p className="text-[26px] font-bold text-[#1a1a2e]">Maria Elena G.</p>
+                      <p className="text-[24px] font-bold text-[#1a1a2e]">Maria Elena G.</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-[18px]">⭐</span>
-                        <span className="text-[20px] text-[#64748b]">4.9 • 1.2 km</span>
+                        <span className="text-[16px]">⭐</span>
+                        <span className="text-[18px] text-[#64748b]">4.9 • 1.2 km</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[16px]">🛡️</span>
-                    <span className="text-[18px] text-[#4a9d9a] font-semibold">CEP</span>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#22c55e]/10 rounded-full">
+                    <span className="text-[14px]">🛡️</span>
+                    <span className="text-[16px] text-[#22c55e] font-bold">CEP</span>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* Solicitar button */}
             {showSolicitar && (
               <motion.button
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
-                className="w-full h-[56px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)] mt-5"
+                className="w-full h-[52px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)]"
               >
                 Solicitar Servicio
               </motion.button>
             )}
-          </div>
-        </motion.div>
-      )}
-    </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
-/* ── Perfil Enfermera Step ── */
+/* ── Perfil Enfermera Step (gradient header like OnboardingDemo) ── */
 function PerfilEnfermeraStep({ active }: { active: boolean }) {
   const showServices = useDelayedShow(1200, active);
   const showReviews = useDelayedShow(2500, active);
   const showButton = useDelayedShow(4000, active);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Header with avatar and name */}
-      <div className="flex flex-col items-center mb-8">
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5, type: "spring", stiffness: 300 }}
-        >
-          <Avatar initials="MG" size="lg" ring="ring-4 ring-[#4a9d9a] ring-offset-4" />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-          className="text-center mt-6"
-        >
-          <p className="text-[36px] font-bold text-[#1a1a2e]">Maria Elena Garcia L.</p>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <span className="text-[20px]">🛡️</span>
-            <span className="text-[24px] text-[#4a9d9a] font-semibold">Verificada CEP 125430</span>
+    <div className="w-full h-full flex flex-col bg-[#f8fafc]">
+      {/* Gradient header with profile info */}
+      <div className="bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a] shrink-0 pt-[44px] px-8 pb-10">
+        <div className="mb-4">
+          <div className="w-[32px] h-[32px] rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-white text-[20px] leading-none">&#8249;</span>
           </div>
-        </motion.div>
+        </div>
+        <div className="flex flex-col items-center">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, type: "spring", stiffness: 300 }}
+          >
+            <Avatar initials="MG" size="lg" ring="ring-4 ring-white/30" />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="text-center mt-4"
+          >
+            <p className="text-[32px] font-bold text-white">Maria Elena Garcia L.</p>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <div className="flex items-center gap-1.5 px-4 py-1.5 bg-[#22c55e] rounded-full">
+                <span className="text-white text-[16px] font-bold">✓</span>
+                <span className="text-white text-[18px] font-bold">HABIL</span>
+              </div>
+              <span className="text-white/80 text-[20px]">CEP 125430</span>
+            </div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="mt-3 px-5 py-2 bg-white/15 backdrop-blur-sm rounded-full inline-flex"
+            >
+              <span className="text-white text-[18px] font-semibold">⭐ Destacada - Nivel 2</span>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Stats row */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        className="grid grid-cols-3 gap-4 mb-8"
-      >
-        <Card className="text-center !mb-0 !p-4">
-          <p className="text-[40px] font-extrabold text-[#f59e0b]">⭐ 4.9</p>
-          <p className="text-[18px] text-[#64748b]">Rating</p>
-        </Card>
-        <Card className="text-center !mb-0 !p-4">
-          <p className="text-[40px] font-extrabold text-[#1a1a2e]">127</p>
-          <p className="text-[18px] text-[#64748b]">Servicios</p>
-        </Card>
-        <Card className="text-center !mb-0 !p-4">
-          <p className="text-[40px] font-extrabold text-[#1a1a2e]">48</p>
-          <p className="text-[18px] text-[#64748b]">Resenas</p>
-        </Card>
-      </motion.div>
-
-      {/* Tier badge */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7, duration: 0.4 }}
-        className="flex items-center justify-center mb-8"
-      >
-        <div className="px-6 py-3 bg-gradient-to-r from-[#1e3a5f] to-[#4a9d9a] text-white text-[22px] font-bold rounded-full shadow-lg">
-          Destacada - Nivel 2
-        </div>
-      </motion.div>
-
-      {/* Services offered */}
-      {showServices && (
+      {/* Content area */}
+      <div className="flex-1 overflow-y-auto px-7 -mt-4">
+        {/* Stats overlapping gradient */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="grid grid-cols-3 gap-3 mb-6"
         >
-          <Card>
-            <p className="text-[26px] font-bold text-[#1a1a2e] mb-4">Servicios que ofrece</p>
-            <div className="flex flex-wrap gap-3">
-              {["Inyeccion IM", "Curaciones", "Control vital", "Medicacion"].map((s, i) => (
-                <span
-                  key={i}
-                  className={`px-5 py-3 rounded-full text-[22px] font-medium border ${
-                    i === 0
-                      ? "bg-[#4a9d9a]/10 border-[#4a9d9a] text-[#4a9d9a]"
-                      : "bg-[#f8fafc] border-[#e2e8f0] text-[#64748b]"
-                  }`}
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
+          <Card className="text-center !mb-0 !p-4">
+            <p className="text-[36px] font-extrabold text-[#f59e0b]">⭐ 4.9</p>
+            <p className="text-[16px] text-[#64748b]">Rating</p>
+          </Card>
+          <Card className="text-center !mb-0 !p-4">
+            <p className="text-[36px] font-extrabold text-[#1a1a2e]">127</p>
+            <p className="text-[16px] text-[#64748b]">Servicios</p>
+          </Card>
+          <Card className="text-center !mb-0 !p-4">
+            <p className="text-[36px] font-extrabold text-[#1a1a2e]">48</p>
+            <p className="text-[16px] text-[#64748b]">Resenas</p>
           </Card>
         </motion.div>
-      )}
 
-      {/* Recent review */}
-      {showReviews && (
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Card>
-            <p className="text-[26px] font-bold text-[#1a1a2e] mb-4">Ultima resena</p>
-            <div className="flex items-start gap-4">
-              <Avatar initials="CP" size="sm" />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[22px] font-semibold text-[#1a1a2e]">Carmen P.</span>
-                  <span className="text-[18px] text-[#64748b]">hace 3 dias</span>
-                </div>
-                <div className="flex gap-1 mb-2">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <span key={i} className="text-[18px]">⭐</span>
-                  ))}
-                </div>
-                <p className="text-[22px] text-[#64748b] leading-relaxed">
-                  &ldquo;Muy profesional, llego puntual y fue muy amable&rdquo;
-                </p>
+        {/* Services offered */}
+        {showServices && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Card>
+              <p className="text-[24px] font-bold text-[#1a1a2e] mb-4">Servicios que ofrece</p>
+              <div className="flex flex-wrap gap-3">
+                {["Inyeccion IM", "Curaciones", "Control vital", "Medicacion"].map((s, i) => (
+                  <span
+                    key={i}
+                    className={`px-5 py-3 rounded-full text-[20px] font-medium border ${
+                      i === 0
+                        ? "bg-[#4a9d9a]/10 border-[#4a9d9a] text-[#4a9d9a]"
+                        : "bg-[#f8fafc] border-[#e2e8f0] text-[#64748b]"
+                    }`}
+                  >
+                    {s}
+                  </span>
+                ))}
               </div>
-            </div>
-          </Card>
-        </motion.div>
-      )}
+            </Card>
+          </motion.div>
+        )}
 
-      {/* CTA */}
-      {showButton && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="w-full h-[56px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)]"
-        >
-          Solicitar Servicio
-        </motion.button>
-      )}
-    </motion.div>
+        {/* Recent review */}
+        {showReviews && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Card>
+              <p className="text-[24px] font-bold text-[#1a1a2e] mb-4">Ultima resena</p>
+              <div className="flex items-start gap-4">
+                <div className="w-[44px] h-[44px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center shrink-0">
+                  <span className="text-white text-[18px] font-bold">CP</span>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[20px] font-semibold text-[#1a1a2e]">Carmen P.</span>
+                    <span className="text-[16px] text-[#64748b]">hace 3 dias</span>
+                  </div>
+                  <div className="flex gap-1 mb-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <span key={i} className="text-[16px]">⭐</span>
+                    ))}
+                  </div>
+                  <p className="text-[20px] text-[#64748b] leading-relaxed">
+                    &ldquo;Muy profesional, llego puntual y fue muy amable&rdquo;
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* CTA */}
+        {showButton && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-[52px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)] mb-6"
+          >
+            Solicitar Servicio
+          </motion.button>
+        )}
+      </div>
+    </div>
   );
+}
+
+/* ── Chat Paciente Step ── */
+function ChatPacienteStep({ active }: { active: boolean }) {
+  const messages: { from: "me" | "other" | "system"; text: string; delay: number }[] = [
+    { from: "system", text: "Servicio confirmado", delay: 300 },
+    { from: "other", text: "Hola Ana, soy Maria Elena. Ya estoy en camino 🙂", delay: 800 },
+    { from: "me", text: "Hola! Perfecto, te espero", delay: 2000 },
+    { from: "other", text: "Llego en aprox 8 minutos", delay: 3000 },
+    { from: "me", text: "Genial, la puerta es la azul del segundo piso", delay: 4200 },
+    { from: "other", text: "Entendido, ya estoy cerca! 📍", delay: 5200 },
+  ];
+
+  return <ChatScreen active={active} role="patient" messages={messages} />;
 }
 
 /* ── Solicitar Step ── */
@@ -709,25 +714,8 @@ function TrackingStep({ active }: { active: boolean }) {
       transition={{ duration: 0.5 }}
     >
       {/* Mini Map */}
-      <div className="h-[500px] bg-gradient-to-br from-[#e2e8f0] to-[#cbd5e1] rounded-[16px] mb-6 relative overflow-hidden">
-        <svg className="absolute inset-0 w-full h-full opacity-20">
-          <defs>
-            <pattern
-              id="grid-tracking"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 40 0 L 0 0 0 40"
-                fill="none"
-                stroke="#94a3b8"
-                strokeWidth="1"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid-tracking)" />
-        </svg>
+      <div className="h-[500px] rounded-[16px] mb-6 relative overflow-hidden">
+        <MapBackground lng={-77.025} lat={-12.115} zoom={15} />
 
         {/* Route line - viewBox maps to % so path matches nurse movement */}
         <svg

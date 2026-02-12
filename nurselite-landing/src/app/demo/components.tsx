@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTypingEffect } from "./hooks";
+import { useTypingEffect, useDelayedShow } from "./hooks";
 import type { DemoStep } from "./hooks";
 import Image from "next/image";
 
@@ -51,24 +51,70 @@ export function Toolbar({ title }: { title: string }) {
   );
 }
 
-/* ── Demo Shell ── */
+/* ── Demo Shell (compact dark header matching OnboardingDemo) ── */
 export function DemoShell({
   title,
   children,
+  gradient = false,
 }: {
   title: string;
   children: React.ReactNode;
+  gradient?: boolean;
 }) {
   return (
     <div className="w-full h-full flex flex-col bg-[#f8fafc]">
-      <StatusBar />
-      <Toolbar title={title} />
-      <div className="flex-1 overflow-y-auto px-8 py-8">{children}</div>
+      <div
+        className={`shrink-0 pt-[44px] pb-4 px-8 ${
+          gradient
+            ? "bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a]"
+            : "bg-[#0f172a]"
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="w-[32px] h-[32px] rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-white text-[20px] leading-none">
+              &#8249;
+            </span>
+          </div>
+          <span className="text-white text-[28px] font-bold">{title}</span>
+          <div className="w-[32px]" />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto px-8 py-6">{children}</div>
     </div>
   );
 }
 
 /* ── Full Screen Step ── */
+/* ── Mapbox Static Map Background ── */
+const MAPBOX_TOKEN = "pk.eyJ1IjoicmFjaGNhbXBpdG9zIiwiYSI6ImNta2FxdDN6ZTI0YWwzY291Nm5ya2ZvbTcifQ.FdliekF2uQU0FC8jPUQFRA";
+
+export function MapBackground({
+  lng = -77.035,
+  lat = -12.12,
+  zoom = 14,
+  width = 600,
+  height = 800,
+  className = "",
+}: {
+  lng?: number;
+  lat?: number;
+  zoom?: number;
+  width?: number;
+  height?: number;
+  className?: string;
+}) {
+  const url = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/${lng},${lat},${zoom},0/${width}x${height}@2x?access_token=${MAPBOX_TOKEN}`;
+  return (
+    <img
+      src={url}
+      alt="Mapa"
+      className={`absolute inset-0 w-full h-full object-cover ${className}`}
+      loading="eager"
+    />
+  );
+}
+
 export function FullScreen({ children, className = "bg-white" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`w-full h-full flex flex-col items-center justify-center ${className}`}>
@@ -274,15 +320,15 @@ export function TypingField({
 
   return (
     <div
-      className="rounded-xl px-4 py-3 border bg-white border-[#e2e8f0] mb-4"
+      className="rounded-2xl px-5 py-4 border bg-white border-[#e2e8f0] mb-5"
     >
-      <p className="text-[16px] text-[#94a3b8] mb-1">{label}</p>
+      <p className="text-[18px] text-[#94a3b8] mb-1.5">{label}</p>
       <div className="flex items-center gap-2">
-        {icon && <span className="text-[20px] shrink-0">{icon}</span>}
-        <p className="text-[20px] font-medium min-h-[28px] text-[#1a1a2e]">
+        {icon && <span className="text-[24px] shrink-0">{icon}</span>}
+        <p className="text-[26px] font-medium min-h-[34px] text-[#1a1a2e]">
           {displayed}
           {showCursor && (
-            <span className="inline-block w-[2px] h-[22px] bg-[#4a9d9a] ml-[2px] align-middle animate-[blink_1s_step-end_infinite]" />
+            <span className="inline-block w-[2px] h-[28px] bg-[#4a9d9a] ml-[2px] align-middle animate-[blink_1s_step-end_infinite]" />
           )}
         </p>
       </div>
@@ -301,7 +347,7 @@ export function GradientHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a] text-white px-8 pt-8 pb-10 rounded-b-[32px] -mx-8 -mt-8 mb-8">
+    <div className="bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a] text-white px-8 pt-8 pb-10 rounded-b-[32px] -mx-8 -mt-6 mb-8">
       <p className="text-[22px] opacity-90 mb-2">{subtitle}</p>
       <p className="text-[48px] font-extrabold">{title}</p>
       {children}
@@ -756,14 +802,14 @@ export function PhoneMockup({ children }: { children: React.ReactNode }) {
 
       {/* Phone frame */}
       <div
-        className="relative bg-[#0f172a] rounded-[3.5rem] p-3 h-full"
+        className="relative bg-[#0f172a] rounded-[3.5rem] p-3.5 h-full"
         style={{
           aspectRatio: "10 / 20.5",
           boxShadow: "0 40px 80px rgba(0,0,0,0.5)",
         }}
       >
         {/* Screen */}
-        <div className="relative rounded-[2.5rem] w-full h-full overflow-hidden bg-[#f8fafc]">
+        <div className="relative rounded-[3rem] w-full h-full overflow-hidden bg-[#f8fafc]">
           {/* Dynamic Island */}
           <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-50" />
           {/* Content */}
@@ -778,25 +824,20 @@ export function PhoneMockup({ children }: { children: React.ReactNode }) {
 export function CaptionHeader({
   caption,
 }: {
-  caption?: { step: string; title: string; subtitle?: string };
+  caption?: { step?: string; title: string; subtitle?: string };
 }) {
   return (
-    <div className="shrink-0 h-[12vh] flex items-center justify-center">
+    <div className="shrink-0 h-[12vh] flex items-end justify-center pb-2">
       <AnimatePresence mode="wait">
         {caption && (
           <motion.div
-            key={caption.step + caption.title}
+            key={caption.title}
             initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
             transition={{ duration: 0.4 }}
             className="text-center"
           >
-            {caption.step && (
-              <p className="text-[24px] font-semibold tracking-widest text-[#4a9d9a] uppercase mb-1">
-                {caption.step}
-              </p>
-            )}
             <p className="text-[42px] font-bold text-white leading-tight">
               {caption.title}
             </p>
@@ -859,6 +900,146 @@ export function ProgressDots({
           />
         );
       })}
+    </div>
+  );
+}
+
+/* ── Chat Bubble (internal) ── */
+function ChatBubble({
+  from,
+  text,
+  delay,
+  active,
+}: {
+  from: "me" | "other" | "system";
+  text: string;
+  delay: number;
+  active: boolean;
+}) {
+  const show = useDelayedShow(delay, active);
+  if (!show) return null;
+
+  if (from === "system") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex justify-center my-4"
+      >
+        <span className="text-[18px] text-[#64748b] bg-[#f1f5f9] px-5 py-2 rounded-full font-medium">
+          {text}
+        </span>
+      </motion.div>
+    );
+  }
+
+  const isOwn = from === "me";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className={`flex mb-4 ${isOwn ? "justify-end" : "justify-start"}`}
+    >
+      <div
+        className={`max-w-[75%] rounded-2xl px-5 py-3 shadow-sm ${
+          isOwn
+            ? "bg-[#1e3a5f] text-white rounded-br-md"
+            : "bg-white border border-[#e2e8f0] text-[#1a1a2e] rounded-bl-md"
+        }`}
+      >
+        <p className="text-[22px] leading-relaxed">{text}</p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Chat Screen ── */
+export function ChatScreen({
+  active,
+  role,
+  messages,
+}: {
+  active: boolean;
+  role: "patient" | "nurse";
+  messages: {
+    from: "me" | "other" | "system";
+    text: string;
+    delay: number;
+  }[];
+}) {
+  const otherName = role === "patient" ? "Maria Elena G." : "Ana Rodriguez";
+  const otherInitials = role === "patient" ? "MG" : "AR";
+
+  return (
+    <div className="w-full h-full flex flex-col bg-[#f8fafc]">
+      {/* Header */}
+      <div className="bg-[#0f172a] pt-[44px] pb-4 px-6 shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="w-[32px] h-[32px] rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <span className="text-white text-[20px] leading-none">
+              &#8249;
+            </span>
+          </div>
+          <div className="w-[48px] h-[48px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center shrink-0">
+            <span className="text-white text-[20px] font-bold">
+              {otherInitials}
+            </span>
+          </div>
+          <div className="flex-1">
+            <p className="text-white text-[24px] font-bold">{otherName}</p>
+            <div className="flex items-center gap-2">
+              <div className="w-[8px] h-[8px] rounded-full bg-[#22c55e]" />
+              <span className="text-[#22c55e] text-[16px] font-medium">
+                En linea
+              </span>
+            </div>
+          </div>
+          {role === "patient" && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[16px]">🛡️</span>
+              <span className="text-[#4a9d9a] text-[16px] font-medium">
+                CEP
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col justify-end">
+        {messages.map((msg, i) => (
+          <ChatBubble key={i} {...msg} active={active} />
+        ))}
+      </div>
+
+      {/* Input bar */}
+      <div className="shrink-0 bg-white border-t border-[#e2e8f0] px-5 py-3 flex items-center gap-3">
+        <div className="w-[40px] h-[40px] rounded-full bg-[#f1f5f9] flex items-center justify-center shrink-0">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#94a3b8"
+            strokeWidth="2"
+            strokeLinecap="round"
+          >
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+          </svg>
+        </div>
+        <div className="flex-1 h-[44px] bg-[#f8fafc] border border-[#e2e8f0] rounded-full px-5 flex items-center">
+          <span className="text-[20px] text-[#94a3b8]">
+            Escribe un mensaje...
+          </span>
+        </div>
+        <div className="w-[40px] h-[40px] rounded-full bg-[#4a9d9a] flex items-center justify-center shrink-0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }

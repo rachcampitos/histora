@@ -1181,7 +1181,7 @@ export function AppFeatures() {
             id="features-title"
             className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a1a2e] dark:text-white mb-6"
           >
-            Una app disenada para{" "}
+            Una app diseñada para{" "}
             <span className="gradient-text">tu tranquilidad</span>
           </h2>
           <p className="text-lg text-[#64748b] dark:text-[#94a3b8]">
