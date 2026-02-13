@@ -1,9 +1,1 @@
 @use '../legal-shared' as *;
-
-.faq-item {
-  transition: all 0.2s ease;
-
-  &.expanded {
-    --background: var(--ion-color-primary-tint);
-  }
-}
