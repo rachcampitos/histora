@@ -2,6 +2,14 @@
 @use '../../theme/design-tokens' as tokens;
 
 // =============================================================================
+// PAGE BACKGROUND (prevents see-through during page transition)
+// =============================================================================
+
+:host {
+  background: var(--surface-secondary, #f8fafc);
+}
+
+// =============================================================================
 // TOOLBAR STYLING
 // =============================================================================
 
@@ -267,6 +275,9 @@ ion-header {
 
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
+  // Page background
+  background: #{tokens.$surface-dark-primary};
+
   // Toolbar
   ion-header {
     ion-toolbar {

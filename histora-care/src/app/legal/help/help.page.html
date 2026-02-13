@@ -33,6 +33,7 @@
           @for (faq of category.faqs; track faq.question; let i = $index) {
             <ion-item
               button
+              detail="false"
               (click)="toggleFaq(category.id, i)"
               class="faq-item"
               [class.expanded]="faq.expanded">
