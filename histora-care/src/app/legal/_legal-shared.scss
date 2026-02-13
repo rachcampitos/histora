@@ -2,6 +2,26 @@
 @use '../../theme/design-tokens' as tokens;
 
 // =============================================================================
+// TOOLBAR STYLING
+// =============================================================================
+
+ion-header {
+  ion-toolbar {
+    --background: #ffffff;
+    --color: #1e293b;
+    --border-color: #e5e7eb;
+  }
+
+  ion-button {
+    --color: #1e293b;
+
+    ion-icon {
+      color: #1e293b;
+    }
+  }
+}
+
+// =============================================================================
 // LEGAL PAGES (Terms, Privacy)
 // =============================================================================
 
@@ -247,6 +267,23 @@
 
 :host-context(body.dark),
 :host-context(body.ion-palette-dark) {
+  // Toolbar
+  ion-header {
+    ion-toolbar {
+      --background: #0f172a;
+      --color: #f1f5f9;
+      --border-color: #334155;
+    }
+
+    ion-button {
+      --color: #f1f5f9;
+
+      ion-icon {
+        color: #f1f5f9;
+      }
+    }
+  }
+
   // Legal pages
   .legal-content,
   .help-content {

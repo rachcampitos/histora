@@ -606,6 +606,18 @@ export class ProfilePage implements OnInit {
     this.showToast('El tutorial comenzará en el dashboard', 'primary');
   }
 
+  openHelp() {
+    this.router.navigate(['/legal/help']);
+  }
+
+  openPrivacy() {
+    this.router.navigate(['/legal/privacy']);
+  }
+
+  openTerms() {
+    this.router.navigate(['/legal/terms']);
+  }
+
   scrollToPaymentMethods() {
     this.scrollToSection('payment');
   }

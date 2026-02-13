@@ -444,6 +444,36 @@
         </ion-item>
       </ion-list>
     </div>
+    <!-- Legal & Info Section -->
+    <div class="section settings-section">
+      <div class="section-header">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <h2>Informacion</h2>
+      </div>
+      <ion-list lines="none" class="settings-list">
+        <ion-item button (click)="openHelp()" detail="true">
+          <ion-icon name="help-circle-outline" slot="start" class="setting-icon"></ion-icon>
+          <ion-label>
+            <h3>Centro de Ayuda</h3>
+            <p>Preguntas frecuentes y soporte</p>
+          </ion-label>
+        </ion-item>
+        <ion-item button (click)="openPrivacy()" detail="true">
+          <ion-icon name="shield-outline" slot="start" class="setting-icon"></ion-icon>
+          <ion-label>
+            <h3>Politica de Privacidad</h3>
+            <p>Como protegemos tus datos</p>
+          </ion-label>
+        </ion-item>
+        <ion-item button (click)="openTerms()" detail="true">
+          <ion-icon name="document-text-outline" slot="start" class="setting-icon"></ion-icon>
+          <ion-label>
+            <h3>Terminos y Condiciones</h3>
+            <p>Condiciones de uso de la plataforma</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
     <!-- Logout Section -->
     <div class="logout-section">
       <ion-button
