@@ -206,7 +206,15 @@ export class OnboardingPage implements OnInit, OnDestroy {
   onDistritoSearchInput(event: CustomEvent) {
     const value = event.detail.value || '';
     this.distritoSearch.set(value);
-    this.showDistritoResults.set(value.length >= 2);
+    const show = value.length >= 2;
+    this.showDistritoResults.set(show);
+
+    if (show) {
+      setTimeout(() => {
+        const container = document.querySelector('.search-container');
+        container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
+    }
   }
 
   onDistritoSearchFocus() {
@@ -216,8 +224,8 @@ export class OnboardingPage implements OnInit, OnDestroy {
   }
 
   onDistritoSearchBlur() {
-    // Delay to allow click on result
-    setTimeout(() => this.showDistritoResults.set(false), 200);
+    // Longer delay on mobile to allow touch on result before hiding
+    setTimeout(() => this.showDistritoResults.set(false), 400);
   }
 
   selectDistrito(distrito: Distrito) {

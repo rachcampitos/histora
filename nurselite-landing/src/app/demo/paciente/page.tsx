@@ -1,42 +1,29 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   useStepEngine,
+  useTypingEffect,
   useDelayedShow,
   useCounter,
   type DemoStep,
 } from "../hooks";
 import {
-  DemoShell,
-  Avatar,
-  StarRating,
-  SecurityCode,
-  Confetti,
-  TypingField,
-  Card,
   LogoIntro,
   FinalScreen,
-  RoleLanding,
-  HorizontalStepper,
   TikTokDemo,
-  MapBackground,
-  ChatScreen,
 } from "../components";
-import { useTypingEffect } from "../hooks";
+
+/* ── SVG Star path (reusable) ── */
+const STAR_PATH = "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z";
+const CONFETTI_COLORS = ["#f59e0b", "#22c55e", "#3b82f6", "#8b5cf6", "#f43f5e", "#4a9d9a", "#f97316", "#06b6d4", "#ec4899", "#eab308"];
 
 const steps: DemoStep[] = [
-  { id: "intro", duration: 4000, isFullScreen: true, caption: { step: "", title: "Enfermeria a domicilio, asi de facil", subtitle: "Verificadas, cerca de ti, pago seguro" } },
-  { id: "landing", duration: 5000, isFullScreen: true, caption: { step: "", title: "Descarga la app" } },
-  { id: "registro", duration: 6500, title: "Crear Cuenta", caption: { title: "Crea tu cuenta" } },
-  { id: "mapa", duration: 9000, title: "Enfermeras Cerca", caption: { title: "Encuentra enfermeras cerca" } },
-  { id: "perfil", duration: 6000, title: "Perfil de Enfermera", caption: { title: "Ve perfiles verificados" } },
-  { id: "solicitar", duration: 6000, title: "Solicitar Servicio", caption: { title: "Solicita tu servicio" } },
-  { id: "pago", duration: 6000, title: "Metodo de Pago", caption: { title: "Pago 100% seguro" } },
-  { id: "esperando", duration: 4000, title: "Confirmando", caption: { title: "Esperando confirmacion" } },
-  { id: "chat", duration: 6000, title: "Chat", caption: { title: "Chat en tiempo real" } },
-  { id: "tracking", duration: 9000, title: "Seguimiento en Vivo", caption: { title: "Seguimiento en tiempo real" } },
-  { id: "review", duration: 7000, title: "Califica el Servicio", caption: { title: "Califica tu experiencia" } },
+  { id: "intro", duration: 3000, isFullScreen: true, caption: { title: "Enfermeria a domicilio, asi de facil", subtitle: "Verificadas, cerca de ti, pago seguro" } },
+  { id: "mapa", duration: 5000, caption: { title: "Encuentra enfermeras cerca" } },
+  { id: "tracking", duration: 7000, caption: { title: "Seguimiento en tiempo real" } },
+  { id: "review", duration: 6000, caption: { title: "Califica tu experiencia" } },
   { id: "final", duration: null, isFullScreen: true },
 ];
 
@@ -45,28 +32,12 @@ export default function DemoPaciente() {
   const active = (id: string) => step.id === id;
 
   const renderContent = () => {
-    if (step.isFullScreen) {
-      if (active("intro")) return <LogoIntro subtitle="Disponible en Lima" />;
-      if (active("landing")) return <RoleLanding activeRole="patient" active={true} />;
-      if (active("final")) return <FinalScreen tagline="Cuidado profesional en tu hogar" />;
-      return null;
-    }
-
-    // Screens with custom full-height layouts (no DemoShell)
-    if (active("mapa")) return <MapaStep active={true} />;
-    if (active("perfil")) return <PerfilEnfermeraStep active={true} />;
-    if (active("chat")) return <ChatPacienteStep active={true} />;
-
-    return (
-      <DemoShell title={step.title!}>
-        {active("registro") && <RegistroStep active={true} />}
-        {active("solicitar") && <SolicitarStep active={true} />}
-        {active("pago") && <PagoStep active={true} />}
-        {active("esperando") && <EsperandoStep active={true} />}
-        {active("tracking") && <TrackingStep active={true} />}
-        {active("review") && <ReviewStep active={true} />}
-      </DemoShell>
-    );
+    if (active("intro")) return <LogoIntro subtitle="Disponible en Lima" />;
+    if (active("final")) return <FinalScreen tagline="Cuidado profesional en tu hogar" />;
+    if (active("mapa")) return <MapaScreen />;
+    if (active("tracking")) return <TrackingScreen />;
+    if (active("review")) return <ReviewScreen />;
+    return null;
   };
 
   return (
@@ -76,226 +47,94 @@ export default function DemoPaciente() {
   );
 }
 
-/* ── Registro Step ── */
-function RegistroStep({ active }: { active: boolean }) {
-  const showCheckbox = useDelayedShow(5500, active);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-[680px] mx-auto"
-    >
-      <TypingField
-        label="Nombre"
-        value="Ana"
-        speed={80}
-        startDelay={300}
-        active={active}
-      />
-      <TypingField
-        label="Apellido"
-        value="Rodriguez"
-        speed={80}
-        startDelay={1300}
-        active={active}
-      />
-      <TypingField
-        label="Email"
-        value="ana.rodriguez@gmail.com"
-        speed={50}
-        startDelay={2600}
-        active={active}
-      />
-      <TypingField
-        label="Telefono"
-        value="999888777"
-        speed={80}
-        startDelay={4200}
-        active={active}
-      />
-
-      {showCheckbox && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex items-center gap-4 mb-10"
-        >
-          <div className="w-9 h-9 rounded-lg bg-[#4a9d9a] flex items-center justify-center shrink-0">
-            <span className="text-white text-[26px] font-bold">✓</span>
-          </div>
-          <span className="text-[24px] text-[#1a1a2e]">
-            Acepto terminos y condiciones
-          </span>
-        </motion.div>
-      )}
-
-      {showCheckbox && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-          className="w-full h-[56px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)]"
-        >
-          Crear Cuenta
-        </motion.button>
-      )}
-    </motion.div>
-  );
-}
-
-/* ── Mapa Step (full-bleed map with bottom sheet) ── */
-function MapaStep({ active }: { active: boolean }) {
-  const showSheet = useDelayedShow(2000, active);
-  const showServiceSelected = useDelayedShow(4000, active);
-  const showNurseCard = useDelayedShow(5500, active);
-  const showSolicitar = useDelayedShow(7000, active);
+/* ════════════════════════════════════════════════
+   SCREEN 1: Mapa (based on PatientMapScreen)
+   ════════════════════════════════════════════════ */
+function MapaScreen() {
+  const showCard = useDelayedShow(1800, true);
 
   const nurses = [
-    { initials: "MG", rating: "4.9", top: "30%", left: "25%" },
-    { initials: "LP", rating: "4.7", top: "45%", left: "60%" },
-    { initials: "RS", rating: "4.5", top: "55%", left: "18%" },
-    { initials: "AT", rating: "4.8", top: "35%", left: "72%" },
-  ];
-
-  const services = [
-    { icon: "💉", name: "Inyeccion IM", selected: true },
-    { icon: "🩹", name: "Curaciones", selected: false },
-    { icon: "❤️", name: "Control vital", selected: false },
-    { icon: "💊", name: "Medicacion", selected: false },
+    { top: "25%", left: "30%", initials: "MG", delay: 0.3 },
+    { top: "40%", left: "60%", initials: "LP", delay: 0.5 },
+    { top: "55%", left: "25%", initials: "RS", delay: 0.7 },
+    { top: "35%", left: "75%", initials: "AT", delay: 0.9 },
   ];
 
   return (
     <div className="w-full h-full flex flex-col bg-[#f8fafc]">
-      {/* Full-bleed map */}
-      <div className="relative flex-1 overflow-hidden">
-        <MapBackground lng={-77.03} lat={-12.12} zoom={14} />
-
-        {/* Your location pin */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={active ? { scale: 1 } : { scale: 0 }}
-          transition={{ delay: 0.3, duration: 0.4, type: "spring", stiffness: 300 }}
-          className="absolute"
-          style={{ top: "50%", left: "48%" }}
-        >
-          <div className="w-[44px] h-[44px] bg-[#3b82f6] rounded-full flex items-center justify-center shadow-lg border-4 border-white">
-            <span className="text-white text-[20px] font-bold">Tu</span>
+      {/* Simulated map */}
+      <div className="flex-1 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#e2e8f0] via-[#f1f5f9] to-[#e2e8f0]">
+          {/* Grid lines for map feel */}
+          <div className="absolute inset-0 opacity-20">
+            {[...Array(8)].map((_, i) => (
+              <div key={`h-${i}`} className="absolute w-full h-px bg-[#94a3b8]" style={{ top: `${(i + 1) * 12}%` }} />
+            ))}
+            {[...Array(6)].map((_, i) => (
+              <div key={`v-${i}`} className="absolute h-full w-px bg-[#94a3b8]" style={{ left: `${(i + 1) * 16}%` }} />
+            ))}
           </div>
-          <motion.div
-            animate={{ scale: [0, 2, 2], opacity: [0.5, 0.5, 0] }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 0.3 }}
-            className="absolute inset-0 w-[44px] h-[44px] rounded-full bg-[#3b82f6]"
-          />
-        </motion.div>
 
-        {/* Nurse markers - matching OnboardingDemo style */}
-        {nurses.map((nurse, i) => (
-          <motion.div
-            key={i}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={active ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-            transition={{ delay: 0.5 + i * 0.3, duration: 0.4, type: "spring", stiffness: 300 }}
-            className="absolute"
-            style={{ top: nurse.top, left: nurse.left }}
-          >
-            <div className="flex flex-col items-center">
+          {/* Nurse markers */}
+          {nurses.map((marker, i) => (
+            <motion.div
+              key={i}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: marker.delay, duration: 0.4, type: "spring", stiffness: 300, damping: 12 }}
+              className="absolute"
+              style={{ top: marker.top, left: marker.left }}
+            >
               <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-white shadow-lg">
-                <span className="text-white text-[20px] font-bold">{nurse.initials}</span>
+                <span className="text-white text-[20px] font-bold">{marker.initials}</span>
               </div>
-              <div className="bg-white rounded-full px-3 py-1 shadow-md mt-1 border border-[#e2e8f0]">
-                <span className="text-[16px] font-bold text-[#1a1a2e]">⭐ {nurse.rating}</span>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
 
-        {/* Badge overlay */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={active ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.8, duration: 0.4 }}
-          className="absolute top-[50px] left-1/2 -translate-x-1/2 bg-[#1e3a5f] text-white rounded-full px-6 py-3 shadow-lg"
-        >
-          <span className="text-[22px] font-semibold">4 enfermeras cerca</span>
-        </motion.div>
+          {/* Badge: enfermeras cerca */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
+            className="absolute top-[50px] left-1/2 -translate-x-1/2 px-8 py-4 rounded-full bg-[#1e3a5f] shadow-lg"
+          >
+            <span className="text-white text-[24px] font-semibold">4 enfermeras cerca</span>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Bottom Sheet */}
+      {/* Bottom card */}
       <AnimatePresence>
-        {showSheet && (
+        {showCard && (
           <motion.div
-            initial={{ y: 300 }}
-            animate={{ y: 0 }}
+            initial={{ y: 200, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, type: "spring", stiffness: 200, damping: 25 }}
-            className="bg-white rounded-t-[28px] shadow-[0_-8px_32px_rgba(0,0,0,0.12)] px-7 py-5 shrink-0"
+            className="bg-white px-7 py-5 border-t border-[#e2e8f0] shrink-0"
           >
-            <div className="w-[40px] h-[5px] bg-[#d1d5db] rounded-full mx-auto mb-5" />
-            <p className="text-[28px] font-bold text-[#1a1a2e] mb-4">¿Que servicio necesitas?</p>
-
-            <div className="flex flex-wrap gap-3 mb-4">
-              {services.map((service, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.1, duration: 0.3 }}
-                  className={`flex items-center gap-3 px-5 py-3 rounded-full border-2 transition-all ${
-                    service.selected && showServiceSelected
-                      ? "border-[#4a9d9a] bg-[#4a9d9a]/10"
-                      : "border-[#e2e8f0] bg-white"
-                  }`}
-                >
-                  <span className="text-[24px]">{service.icon}</span>
-                  <span className="text-[22px] font-medium text-[#1a1a2e]">{service.name}</span>
-                  {service.selected && showServiceSelected && (
-                    <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-[18px] text-[#4a9d9a]">✓</motion.span>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-
-            {showNurseCard && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="bg-[#f8fafc] rounded-2xl p-5 border border-[#e2e8f0] mb-4"
-              >
-                <p className="text-[18px] text-[#64748b] mb-3">Enfermera mas cercana</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-[48px] h-[48px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-[#4a9d9a]/30">
-                      <span className="text-white text-[18px] font-bold">MG</span>
-                    </div>
-                    <div>
-                      <p className="text-[24px] font-bold text-[#1a1a2e]">Maria Elena G.</p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[16px]">⭐</span>
-                        <span className="text-[18px] text-[#64748b]">4.9 • 1.2 km</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#22c55e]/10 rounded-full">
-                    <span className="text-[14px]">🛡️</span>
-                    <span className="text-[16px] text-[#22c55e] font-bold">CEP</span>
+            <div className="flex items-center gap-5 mb-5">
+              <div className="w-[60px] h-[60px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-[#f59e0b] shadow-md">
+                <span className="text-white text-[24px] font-bold">MC</span>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-3">
+                  <p className="text-[26px] font-semibold text-[#1a1a2e]">Maria C.</p>
+                  <div className="flex items-center gap-1">
+                    <svg viewBox="0 0 20 20" fill="#f59e0b" className="w-[20px] h-[20px]">
+                      <path d={STAR_PATH} />
+                    </svg>
+                    <span className="text-[20px] text-[#f59e0b] font-semibold">4.9</span>
                   </div>
                 </div>
-              </motion.div>
-            )}
-
-            {showSolicitar && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-[52px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)]"
-              >
-                Solicitar Servicio
-              </motion.button>
-            )}
+                <div className="flex items-center gap-4">
+                  <span className="text-[18px] text-[#22c55e] font-medium">CEP Verificada</span>
+                  <span className="text-[18px] text-[#94a3b8]">1.2 km</span>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[16px] py-5 flex items-center justify-center bg-[#1e3a5f] shadow-[0_4px_16px_rgba(30,58,95,0.3)]">
+              <span className="text-white text-[24px] font-semibold">Solicitar Servicio</span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -303,641 +142,362 @@ function MapaStep({ active }: { active: boolean }) {
   );
 }
 
-/* ── Perfil Enfermera Step (gradient header like OnboardingDemo) ── */
-function PerfilEnfermeraStep({ active }: { active: boolean }) {
-  const showServices = useDelayedShow(1200, active);
-  const showReviews = useDelayedShow(2500, active);
-  const showButton = useDelayedShow(4000, active);
+/* ════════════════════════════════════════════════
+   SCREEN 2: Tracking (based on PatientTrackingScreen)
+   ════════════════════════════════════════════════ */
+function TrackingScreen() {
+  const [activeStep, setActiveStep] = useState(0);
+  const eta = useCounter(8, 1, 800, true);
+
+  const trackingSteps = [
+    { label: "Aceptado", color: "#22c55e" },
+    { label: "En camino", color: "#f97316" },
+    { label: "Llego", color: "#f59e0b" },
+    { label: "En servicio", color: "#10b981" },
+    { label: "Completado", color: "#22c55e" },
+  ];
+
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setActiveStep(1), 1200),
+      setTimeout(() => setActiveStep(2), 2400),
+      setTimeout(() => setActiveStep(3), 3600),
+      setTimeout(() => setActiveStep(4), 5000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col bg-[#f8fafc]">
-      {/* Gradient header with profile info */}
-      <div className="bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a] shrink-0 pt-[44px] px-8 pb-10">
-        <div className="mb-4">
-          <div className="w-[32px] h-[32px] rounded-full bg-white/20 flex items-center justify-center">
-            <span className="text-white text-[20px] leading-none">&#8249;</span>
-          </div>
-        </div>
-        <div className="flex flex-col items-center">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, type: "spring", stiffness: 300 }}
-          >
-            <Avatar initials="MG" size="lg" ring="ring-4 ring-white/30" />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="text-center mt-4"
-          >
-            <p className="text-[32px] font-bold text-white">Maria Elena Garcia L.</p>
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <div className="flex items-center gap-1.5 px-4 py-1.5 bg-[#22c55e] rounded-full">
-                <span className="text-white text-[16px] font-bold">✓</span>
-                <span className="text-white text-[18px] font-bold">HABIL</span>
-              </div>
-              <span className="text-white/80 text-[20px]">CEP 125430</span>
-            </div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="mt-3 px-5 py-2 bg-white/15 backdrop-blur-sm rounded-full inline-flex"
-            >
-              <span className="text-white text-[18px] font-semibold">⭐ Destacada - Nivel 2</span>
-            </motion.div>
-          </motion.div>
-        </div>
+      {/* Mini map area */}
+      <div className="h-[35%] relative overflow-hidden bg-[#e2e8f0]">
+        {/* Dotted route line */}
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 80">
+          <motion.path
+            d="M 30 60 Q 80 20 120 40 Q 160 60 180 25"
+            fill="none"
+            stroke="#4a9d9a"
+            strokeWidth="2"
+            strokeDasharray="4 4"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 3, delay: 0.5 }}
+          />
+          <circle cx="30" cy="60" r="5" fill="#4a9d9a" />
+          <circle cx="180" cy="25" r="5" fill="#1e3a5f" />
+          {/* Moving nurse dot */}
+          <motion.circle
+            r="6"
+            fill="#f97316"
+            initial={{ cx: 30, cy: 60 }}
+            animate={{ cx: 120, cy: 40 }}
+            transition={{ duration: 5, delay: 0.5, ease: "easeInOut" }}
+          />
+        </svg>
+
+        {/* ETA badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.0 }}
+          className="absolute top-5 right-5 bg-[#1e3a5f] rounded-[16px] px-5 py-3 flex items-center gap-3 shadow-lg"
+        >
+          <span className="text-[24px]">&#128337;</span>
+          <span className="text-white text-[24px] font-bold">{eta} min</span>
+        </motion.div>
       </div>
 
-      {/* Content area */}
-      <div className="flex-1 overflow-y-auto px-7 -mt-4">
-        {/* Stats overlapping gradient */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.4 }}
-          className="grid grid-cols-3 gap-3 mb-6"
-        >
-          <Card className="text-center !mb-0 !p-4">
-            <p className="text-[36px] font-extrabold text-[#f59e0b]">⭐ 4.9</p>
-            <p className="text-[16px] text-[#64748b]">Rating</p>
-          </Card>
-          <Card className="text-center !mb-0 !p-4">
-            <p className="text-[36px] font-extrabold text-[#1a1a2e]">127</p>
-            <p className="text-[16px] text-[#64748b]">Servicios</p>
-          </Card>
-          <Card className="text-center !mb-0 !p-4">
-            <p className="text-[36px] font-extrabold text-[#1a1a2e]">48</p>
-            <p className="text-[16px] text-[#64748b]">Resenas</p>
-          </Card>
-        </motion.div>
+      {/* Vertical stepper */}
+      <div className="flex-1 px-8 py-6 overflow-y-auto">
+        <div className="pl-3 mb-6">
+          {trackingSteps.map((s, i) => {
+            const isCompleted = i < activeStep;
+            const isActive = i === activeStep;
 
-        {/* Services offered */}
-        {showServices && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Card>
-              <p className="text-[24px] font-bold text-[#1a1a2e] mb-4">Servicios que ofrece</p>
-              <div className="flex flex-wrap gap-3">
-                {["Inyeccion IM", "Curaciones", "Control vital", "Medicacion"].map((s, i) => (
-                  <span
-                    key={i}
-                    className={`px-5 py-3 rounded-full text-[20px] font-medium border ${
-                      i === 0
-                        ? "bg-[#4a9d9a]/10 border-[#4a9d9a] text-[#4a9d9a]"
-                        : "bg-[#f8fafc] border-[#e2e8f0] text-[#64748b]"
-                    }`}
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Recent review */}
-        {showReviews && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Card>
-              <p className="text-[24px] font-bold text-[#1a1a2e] mb-4">Ultima resena</p>
-              <div className="flex items-start gap-4">
-                <div className="w-[44px] h-[44px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center shrink-0">
-                  <span className="text-white text-[18px] font-bold">CP</span>
+            return (
+              <div key={s.label} className="flex items-start gap-6">
+                <div className="flex flex-col items-center">
+                  <div className="relative">
+                    {isActive && (
+                      <motion.div
+                        animate={{ scale: [0, 2.5], opacity: [0.5, 0] }}
+                        transition={{ duration: 1.5, ease: "easeOut", repeat: Infinity, repeatDelay: 0.3 }}
+                        className="absolute inset-0 rounded-full"
+                        style={{ background: s.color }}
+                      />
+                    )}
+                    <div
+                      className="relative w-[36px] h-[36px] rounded-full flex items-center justify-center transition-all duration-400"
+                      style={{
+                        background: isCompleted || isActive ? s.color : "#e2e8f0",
+                      }}
+                    >
+                      {isCompleted ? (
+                        <span className="text-white text-[18px] font-bold">{"\u2713"}</span>
+                      ) : isActive ? (
+                        <motion.span
+                          animate={{ opacity: [1, 0.3, 1] }}
+                          transition={{ duration: 0.8, repeat: Infinity }}
+                          className="w-[10px] h-[10px] rounded-full bg-white"
+                        />
+                      ) : (
+                        <span className="w-[8px] h-[8px] rounded-full bg-[#94a3b8]" />
+                      )}
+                    </div>
+                  </div>
+                  {i < trackingSteps.length - 1 && (
+                    <div className="relative w-[4px] h-[32px]">
+                      <div className="absolute inset-0 bg-[#e2e8f0]" />
+                      {isCompleted && (
+                        <motion.div
+                          initial={{ scaleY: 0 }}
+                          animate={{ scaleY: 1 }}
+                          transition={{ duration: 0.3 }}
+                          className="absolute inset-0 origin-top"
+                          style={{ background: s.color }}
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[20px] font-semibold text-[#1a1a2e]">Carmen P.</span>
-                    <span className="text-[16px] text-[#64748b]">hace 3 dias</span>
-                  </div>
-                  <div className="flex gap-1 mb-2">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <span key={i} className="text-[16px]">⭐</span>
-                    ))}
-                  </div>
-                  <p className="text-[20px] text-[#64748b] leading-relaxed">
-                    &ldquo;Muy profesional, llego puntual y fue muy amable&rdquo;
+                <div className="-mt-1 pb-3">
+                  <p className={`text-[24px] font-semibold ${
+                    isCompleted || isActive ? "text-[#1a1a2e]" : "text-[#94a3b8]"
+                  }`}>
+                    {s.label}
                   </p>
                 </div>
               </div>
-            </Card>
-          </motion.div>
-        )}
+            );
+          })}
+        </div>
 
-        {/* CTA */}
-        {showButton && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="w-full h-[52px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)] mb-6"
-          >
-            Solicitar Servicio
-          </motion.button>
-        )}
+        {/* Nurse card */}
+        <div className="rounded-[16px] p-5 flex items-center gap-5 border bg-white border-[#e2e8f0] mb-5">
+          <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-[#f59e0b]">
+            <span className="text-white text-[18px] font-bold">MC</span>
+          </div>
+          <div className="flex-1">
+            <p className="text-[24px] font-semibold text-[#1a1a2e]">Maria C.</p>
+            <p className="text-[18px] text-[#4a9d9a]">Enfermera Certificada</p>
+          </div>
+          <div className="flex gap-3">
+            <div className="rounded-[12px] px-4 py-3 bg-[#f1f5f9]">
+              <span className="text-[20px]">&#128222;</span>
+            </div>
+            <div className="rounded-[12px] px-4 py-3 bg-[#f1f5f9]">
+              <span className="text-[20px]">&#128172;</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Security code */}
+        <div className="rounded-[16px] p-5 border bg-white border-[#e2e8f0] text-center">
+          <p className="text-[18px] text-[#94a3b8] mb-3">Codigo de Seguridad</p>
+          <div className="flex justify-center gap-3">
+            {["4", "8", "2", "7", "1", "5"].map((digit, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2.5 + i * 0.15 }}
+                className="w-[52px] h-[64px] rounded-[12px] flex items-center justify-center text-[28px] font-bold border-2 bg-[#f8fafc] border-[#e2e8f0] text-[#1a1a2e]"
+              >
+                {digit}
+              </motion.span>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ── Chat Paciente Step ── */
-function ChatPacienteStep({ active }: { active: boolean }) {
-  const messages: { from: "me" | "other" | "system"; text: string; delay: number }[] = [
-    { from: "system", text: "Servicio confirmado", delay: 300 },
-    { from: "other", text: "Hola Ana, soy Maria Elena. Ya estoy en camino 🙂", delay: 800 },
-    { from: "me", text: "Hola! Perfecto, te espero", delay: 2000 },
-    { from: "other", text: "Llego en aprox 8 minutos", delay: 3000 },
-    { from: "me", text: "Genial, la puerta es la azul del segundo piso", delay: 4200 },
-    { from: "other", text: "Entendido, ya estoy cerca! 📍", delay: 5200 },
-  ];
+/* ════════════════════════════════════════════════
+   SCREEN 3: Review (based on PatientReviewScreen)
+   ════════════════════════════════════════════════ */
+function ReviewScreen() {
+  const [rating, setRating] = useState(0);
+  const [showComment, setShowComment] = useState(false);
+  const [showOptIn, setShowOptIn] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const comment = "Excelente servicio, muy profesional y puntual.";
+  const { displayed: typedComment } = useTypingEffect(comment, 40, 2500, !submitted);
 
-  return <ChatScreen active={active} role="patient" messages={messages} />;
-}
-
-/* ── Solicitar Step ── */
-function SolicitarStep({ active }: { active: boolean }) {
-  const showButton = useDelayedShow(2000, active);
-
-  const details = [
-    { icon: "💉", label: "Servicio", value: "Inyeccion Intramuscular" },
-    { icon: "📍", label: "Ubicacion", value: "Miraflores, Lima" },
-    { icon: "🕐", label: "Fecha", value: "Hoy, 15:30" },
-  ];
+  useEffect(() => {
+    const timers = [
+      setTimeout(() => setRating(1), 400),
+      setTimeout(() => setRating(2), 650),
+      setTimeout(() => setRating(3), 900),
+      setTimeout(() => setRating(4), 1150),
+      setTimeout(() => setRating(5), 1400),
+      setTimeout(() => setShowComment(true), 1800),
+      setTimeout(() => setShowOptIn(true), 4200),
+      setTimeout(() => setSubmitted(true), 4800),
+      setTimeout(() => setShowConfetti(true), 5000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Card className="mb-6">
-        <div className="flex items-center gap-5 mb-6">
-          <Avatar initials="MG" size="md" />
-          <div>
-            <p className="text-[32px] font-bold text-[#1a1a2e]">
-              Maria Elena Garcia L.
-            </p>
-            <p className="text-[24px] text-[#64748b]">⭐ 4.9 • CEP 125430</p>
+    <div className="w-full h-full flex flex-col bg-[#f8fafc]">
+      {/* Header */}
+      <div className="bg-[#0f172a] pt-[44px] pb-5 px-8 shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="w-[36px] h-[36px] rounded-full bg-white/20 flex items-center justify-center">
+            <span className="text-white text-[22px] leading-none">&#8249;</span>
           </div>
+          <span className="text-white text-[26px] font-semibold">Calificar Servicio</span>
+          <div className="w-[36px]" />
         </div>
-      </Card>
-
-      <Card>
-        {details.map((detail, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 + i * 0.2, duration: 0.3 }}
-            className="flex items-start gap-5 mb-6 last:mb-0"
-          >
-            <div className="text-[48px] shrink-0">{detail.icon}</div>
-            <div className="flex-1">
-              <p className="text-[22px] text-[#64748b] mb-1">{detail.label}</p>
-              <p className="text-[24px] font-semibold text-[#1a1a2e]">
-                {detail.value}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </Card>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.3, duration: 0.4 }}
-        className="my-10 text-center"
-      >
-        <p className="text-[24px] text-[#64748b] mb-3">Total</p>
-        <p className="text-[72px] font-extrabold text-[#4a9d9a]">S/40.00</p>
-      </motion.div>
-
-      {showButton && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="w-full h-[56px] bg-[#22c55e] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_12px_rgba(34,197,94,0.3)]"
-        >
-          Confirmar Solicitud
-        </motion.button>
-      )}
-    </motion.div>
-  );
-}
-
-/* ── Pago Step ── */
-function PagoStep({ active }: { active: boolean }) {
-  const showSummary = useDelayedShow(1500, active);
-  const showButton = useDelayedShow(2500, active);
-
-  const methods = [
-    { id: "yape", name: "Yape", icon: "Y", color: "#6b21a8", selected: true },
-    { id: "card", name: "Tarjeta de Credito", icon: "💳", color: "#3b82f6", selected: false },
-    { id: "cash", name: "Efectivo", icon: "💵", color: "#22c55e", selected: false },
-  ];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h3 className="text-[32px] font-bold text-[#1a1a2e] mb-6">
-        Metodo de Pago
-      </h3>
-
-      <div className="space-y-5 mb-10">
-        {methods.map((method, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 + i * 0.2, duration: 0.4 }}
-            className={`bg-white rounded-[16px] border-2 p-5 flex items-center justify-between transition-all ${
-              method.selected
-                ? "border-[#4a9d9a] shadow-[0_2px_12px_rgba(74,157,154,0.15)]"
-                : "border-[#e2e8f0]"
-            }`}
-          >
-            <div className="flex items-center gap-5">
-              <div
-                className="w-[70px] h-[70px] rounded-xl flex items-center justify-center text-white text-[36px] font-bold shrink-0"
-                style={{ backgroundColor: method.color }}
-              >
-                {method.icon}
-              </div>
-              <span className="text-[24px] font-semibold text-[#1a1a2e]">
-                {method.name}
-              </span>
-            </div>
-            {method.selected && (
-              <div className="w-[48px] h-[48px] rounded-full bg-[#4a9d9a] flex items-center justify-center">
-                <span className="text-white text-[32px]">✓</span>
-              </div>
-            )}
-          </motion.div>
-        ))}
       </div>
 
-      {showSummary && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Card>
-            <h4 className="text-[28px] font-bold text-[#1a1a2e] mb-6">
-              Resumen
-            </h4>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-[24px] text-[#64748b]">
-                  Inyeccion Intramuscular
-                </span>
-                <span className="text-[26px] font-semibold text-[#1a1a2e]">
-                  S/40.00
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[24px] text-[#64748b]">
-                  Comision de servicio
-                </span>
-                <span className="text-[26px] font-semibold text-[#1a1a2e]">
-                  S/0.00
-                </span>
-              </div>
-              <div className="h-[2px] bg-[#e2e8f0] my-4" />
-              <div className="flex justify-between items-center">
-                <span className="text-[32px] font-bold text-[#1a1a2e]">
-                  Total
-                </span>
-                <span className="text-[36px] font-extrabold text-[#4a9d9a]">
-                  S/40.00
-                </span>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-      )}
-
-      {showButton && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="w-full h-[56px] bg-[#6b21a8] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(107,33,168,0.3)]"
-        >
-          Pagar con Yape S/40.00
-        </motion.button>
-      )}
-    </motion.div>
-  );
-}
-
-/* ── Esperando Step ── */
-function EsperandoStep({ active }: { active: boolean }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col items-center justify-center min-h-[800px]"
-    >
-      <motion.div
-        animate={{
-          rotate: 360,
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        className="w-[120px] h-[120px] border-8 border-[#e2e8f0] border-t-[#4a9d9a] rounded-full mb-10"
-      />
-
-      <p className="text-[32px] font-semibold text-[#1a1a2e] text-center mb-6 px-10">
-        Esperando respuesta de Maria Elena
-      </p>
-
-      <motion.div
-        initial={{ opacity: 0.3 }}
-        animate={{ opacity: [0.3, 1, 0.3] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-        className="flex gap-3"
-      >
-        <span className="text-[48px]">•</span>
-        <span className="text-[48px]">•</span>
-        <span className="text-[48px]">•</span>
-      </motion.div>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        className="text-[24px] text-[#64748b] mt-10"
-      >
-        Tiempo de espera promedio: 2 min
-      </motion.p>
-    </motion.div>
-  );
-}
-
-/* ── Tracking Step ── */
-function TrackingStep({ active }: { active: boolean }) {
-  const eta = useCounter(8, 1, 1000, active);
-  const stepperIndex = Math.floor(useCounter(0, 4, 1800, active));
-  const showToast = useDelayedShow(6000, active);
-
-  const trackingSteps = [
-    { label: "Aceptado", status: "accepted" },
-    { label: "En camino", status: "on_the_way" },
-    { label: "Llego", status: "arrived" },
-    { label: "En servicio", status: "in_progress" },
-    { label: "Completado", status: "completed" },
-  ];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Mini Map */}
-      <div className="h-[500px] rounded-[16px] mb-6 relative overflow-hidden">
-        <MapBackground lng={-77.025} lat={-12.115} zoom={15} />
-
-        {/* Route line - viewBox maps to % so path matches nurse movement */}
-        <svg
-          className="absolute inset-0 w-full h-full"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-        >
-          <motion.path
-            d="M 20 80 Q 48 46 78 20"
-            stroke="#4a9d9a"
-            strokeWidth="4"
-            strokeDasharray="3 2"
-            fill="none"
-            vectorEffect="non-scaling-stroke"
-            initial={{ pathLength: 0 }}
-            animate={active ? { pathLength: 1 } : { pathLength: 0 }}
-            transition={{ duration: 5, ease: "easeInOut" }}
-          />
-        </svg>
-
-        {/* Destination marker */}
-        <div className="absolute top-[17%] left-[78%] -translate-x-1/2 -translate-y-1/2">
-          <div className="w-[50px] h-[50px] bg-[#22c55e] rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-white text-[26px]">🏠</span>
-          </div>
-        </div>
-
-        {/* Nurse marker with pulsing ring */}
-        <motion.div
-          initial={{ top: "80%", left: "20%" }}
-          animate={
-            active ? { top: "20%", left: "78%" } : { top: "80%", left: "20%" }
-          }
-          transition={{ duration: 5, ease: "easeInOut" }}
-          className="absolute -translate-x-1/2 -translate-y-1/2"
-        >
-          {/* Pulsing ring */}
-          <motion.div
-            animate={{
-              scale: [0, 2.5, 2.5],
-              opacity: [0.6, 0.6, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatDelay: 0.3,
-              ease: "easeOut",
-            }}
-            className="absolute inset-0 w-[70px] h-[70px] rounded-full bg-[#3b82f6]"
-          />
-          {/* Avatar marker */}
-          <div className="relative w-[70px] h-[70px] rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-br from-[#1e3a5f] to-[#4a9d9a]">
-            <div className="w-full h-full flex items-center justify-center text-white text-[32px] font-bold">
-              MG
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ETA Badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5, duration: 0.3 }}
-          className="absolute top-6 right-6 bg-white rounded-xl shadow-lg px-6 py-4"
-        >
-          <p className="text-[20px] text-[#64748b] mb-1">Llega en</p>
-          <p className="text-[36px] font-extrabold text-[#4a9d9a]">
-            {eta} min
-          </p>
-        </motion.div>
-
-        {/* Toast notification */}
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#1e3a5f] text-white rounded-2xl px-8 py-5 shadow-2xl flex items-center gap-4"
-          >
-            <span className="text-[32px]">📍</span>
-            <span className="text-[24px] font-semibold">
-              Maria Elena esta cerca
-            </span>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Horizontal Stepper */}
-      <HorizontalStepper steps={trackingSteps} activeIndex={stepperIndex} />
-
-      {/* Security Code Section */}
-      <Card>
-        <div className="flex items-center justify-center gap-3 mb-5">
-          <span className="text-[32px]">🛡️</span>
-          <p className="text-[26px] font-bold text-[#1a1a2e]">
-            Comparte este codigo con tu enfermera
-          </p>
-        </div>
-        <SecurityCode digits={["4", "8", "2", "7", "1", "5"]} active={active} />
-      </Card>
-
-      {/* Nurse Info Card - Bottom Sheet Style */}
-      <Card className="border-t-4 border-t-[#4a9d9a]">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-5">
-            <Avatar initials="MG" size="md" />
-            <div>
-              <p className="text-[32px] font-bold text-[#1a1a2e]">
-                Maria Elena G.
-              </p>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[18px]">🛡️</span>
-                <span className="text-[20px] text-[#4a9d9a] font-semibold">
-                  Verificada CEP
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Rating and service count */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <span key={i} className="text-[22px]">⭐</span>
+      <div className="flex-1 px-8 py-6 flex flex-col items-center relative overflow-hidden">
+        {/* Confetti layer */}
+        {showConfetti && (
+          <div className="absolute inset-0 pointer-events-none z-20">
+            {[...Array(18)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{
+                  y: -10,
+                  x: 20 + Math.random() * 300,
+                  opacity: 1,
+                  rotate: 0,
+                }}
+                animate={{
+                  y: [0, 300 + Math.random() * 100],
+                  x: 20 + Math.random() * 300 + (Math.random() - 0.5) * 80,
+                  opacity: [1, 1, 0],
+                  rotate: Math.random() * 720 - 360,
+                }}
+                transition={{
+                  duration: 2 + Math.random(),
+                  delay: i * 0.05,
+                  ease: "easeOut",
+                }}
+                className="absolute rounded-sm"
+                style={{
+                  width: `${5 + Math.random() * 6}px`,
+                  height: `${5 + Math.random() * 6}px`,
+                  background: CONFETTI_COLORS[i % 10],
+                }}
+              />
             ))}
           </div>
-          <span className="text-[24px] text-[#64748b] font-medium">
-            4.9 • 127 servicios
-          </span>
+        )}
+
+        {/* Nurse avatar */}
+        <div className="w-[88px] h-[88px] rounded-full bg-gradient-to-br from-[#4a9d9a] to-[#1e3a5f] flex items-center justify-center ring-2 ring-[#f59e0b] mb-5 shadow-lg">
+          <span className="text-white text-[36px] font-bold">MC</span>
+        </div>
+        <p className="text-[26px] font-semibold text-[#1a1a2e] mb-1">Maria C.</p>
+        <p className="text-[20px] text-[#64748b] mb-7">Como fue tu experiencia?</p>
+
+        {/* Stars */}
+        <div className="flex items-center gap-4 mb-3">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <motion.div
+              key={star}
+              initial={{ scale: 0.6 }}
+              animate={
+                star <= rating
+                  ? { scale: [0.6, 1.4, 1], rotate: [0, -15, 15, 0] }
+                  : { scale: 0.6 }
+              }
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+              <svg
+                viewBox="0 0 20 20"
+                fill={star <= rating ? "#f59e0b" : "#e2e8f0"}
+                className="w-[52px] h-[52px]"
+              >
+                <path d={STAR_PATH} />
+              </svg>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Action buttons - circular like real app */}
-        <div className="flex gap-4">
-          <button className="w-[60px] h-[60px] rounded-full bg-[#22c55e] text-white flex items-center justify-center shadow-md shrink-0">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
-            </svg>
-          </button>
-          <button className="w-[60px] h-[60px] rounded-full bg-[#3b82f6] text-white flex items-center justify-center shadow-md shrink-0 relative">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-            </svg>
-            <div className="absolute -top-1 -right-1 w-[22px] h-[22px] bg-[#dc2626] rounded-full flex items-center justify-center text-white text-[12px] font-bold">
-              2
-            </div>
-          </button>
-        </div>
-      </Card>
-    </motion.div>
-  );
-}
+        {rating >= 5 && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[#f59e0b] text-[24px] font-semibold mb-6"
+          >
+            Excelente
+          </motion.p>
+        )}
 
-/* ── Review Step ── */
-function ReviewStep({ active }: { active: boolean }) {
-  const { displayed, done } = useTypingEffect(
-    "Excelente servicio, muy profesional y puntual",
-    40,
-    1500,
-    active
-  );
-  const showCheckbox = useDelayedShow(4500, active);
-  const showButton = useDelayedShow(5000, active);
-  const showConfetti = useDelayedShow(5500, active);
+        {/* Comment area */}
+        {showComment && !submitted && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full rounded-[16px] p-5 border bg-white border-[#e2e8f0] mb-5"
+          >
+            <p className="text-[18px] text-[#94a3b8] mb-2">Tu comentario</p>
+            <p className="text-[22px] min-h-[48px] leading-relaxed text-[#1a1a2e]">
+              {typedComment}
+              {typedComment.length < comment.length && (
+                <span className="inline-block w-[2px] h-[24px] bg-[#4a9d9a] ml-[1px] align-middle animate-[blink_1s_step-end_infinite]" />
+              )}
+            </p>
+          </motion.div>
+        )}
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="flex flex-col items-center mb-8">
-        <Avatar initials="MG" size="lg" ring="ring-4 ring-[#4a9d9a] ring-offset-4" />
-        <p className="text-[36px] font-bold text-[#1a1a2e] mt-6">
-          Maria Elena Garcia L.
-        </p>
+        {/* Opt-in checkbox */}
+        {showOptIn && !submitted && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-4 w-full mb-6"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 300 }}
+              className="w-[32px] h-[32px] rounded-[8px] border border-[#4a9d9a] bg-[#4a9d9a] flex items-center justify-center flex-shrink-0"
+            >
+              <span className="text-white text-[18px] font-bold">{"\u2713"}</span>
+            </motion.div>
+            <p className="text-[20px] text-[#94a3b8]">Permitir uso publico de mi resena</p>
+          </motion.div>
+        )}
+
+        <div className="flex-1" />
+
+        {/* Submit / success */}
+        <AnimatePresence mode="wait">
+          {!submitted ? (
+            <motion.div
+              key="btn"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: showOptIn ? 1 : 0.4 }}
+              className="w-full rounded-[16px] py-5 flex items-center justify-center bg-[#1e3a5f]"
+            >
+              <span className="text-white text-[24px] font-semibold">Enviar Resena</span>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="thanks"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="w-full rounded-[16px] py-5 flex items-center justify-center bg-[#22c55e] relative z-10"
+            >
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 1] }}
+                transition={{ delay: 0.15 }}
+                className="text-white text-[26px] font-bold"
+              >
+                {"\u2713"} Gracias por tu resena
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      <StarRating count={5} active={active} staggerDelay={200} />
-
-      <Card>
-        <label className="block text-[24px] font-semibold text-[#1a1a2e] mb-3">
-          Tu opinion
-        </label>
-        <div className="bg-[#f8fafc] border-2 border-[#e2e8f0] rounded-[12px] px-4 py-4 min-h-[120px]">
-          <p className="text-[22px] text-[#1a1a2e] leading-relaxed">
-            {displayed}
-            {active && !done && (
-              <span className="inline-block w-[2px] h-[24px] bg-[#1e3a5f] ml-1 animate-pulse" />
-            )}
-          </p>
-        </div>
-      </Card>
-
-      {showCheckbox && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex items-center gap-4 mb-8"
-        >
-          <div className="w-9 h-9 rounded-lg bg-[#4a9d9a] flex items-center justify-center shrink-0">
-            <span className="text-white text-[26px] font-bold">✓</span>
-          </div>
-          <span className="text-[24px] text-[#1a1a2e]">
-            Permitir uso en testimonios
-          </span>
-        </motion.div>
-      )}
-
-      {showButton && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="w-full h-[56px] bg-[#1e3a5f] text-white rounded-[12px] text-[24px] font-semibold shadow-[0_4px_16px_rgba(30,58,95,0.3)]"
-        >
-          Enviar Resena
-        </motion.button>
-      )}
-
-      <Confetti active={showConfetti} count={40} />
-    </motion.div>
+    </div>
   );
 }
