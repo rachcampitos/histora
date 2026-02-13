@@ -46,11 +46,9 @@
                 color="medium">
               </ion-icon>
             </ion-item>
-            @if (faq.expanded) {
-              <div class="faq-answer">
-                <p>{{ faq.answer }}</p>
-              </div>
-            }
+            <div class="faq-answer" [class.open]="faq.expanded">
+              <p>{{ faq.answer }}</p>
+            </div>
           }
         </div>
       }

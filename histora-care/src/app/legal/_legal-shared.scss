@@ -222,35 +222,29 @@ ion-header {
 }
 
 .faq-answer {
-  padding: tokens.$spacing-3 tokens.$spacing-4;
   background: var(--surface-primary);
   border: 1px solid rgba(30, 58, 95, 0.08);
   border-top: none;
   border-radius: 0 0 tokens.$radius-md tokens.$radius-md;
   margin-top: 0;
   margin-bottom: tokens.$spacing-2;
-  animation: faqSlideDown 0.25s ease-out;
+  max-height: 0;
+  padding: 0 tokens.$spacing-4;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.25s ease;
+
+  &.open {
+    max-height: 500px;
+    padding: tokens.$spacing-3 tokens.$spacing-4;
+    opacity: 1;
+  }
 
   p {
     font-size: tokens.$font-size-sm;
     line-height: 1.6;
     color: var(--text-secondary);
     margin: 0;
-  }
-}
-
-@keyframes faqSlideDown {
-  from {
-    opacity: 0;
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  to {
-    opacity: 1;
-    max-height: 500px;
-    padding-top: tokens.$spacing-3;
-    padding-bottom: tokens.$spacing-3;
   }
 }
 
