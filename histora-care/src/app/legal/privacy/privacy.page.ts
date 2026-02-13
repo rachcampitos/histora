@@ -30,12 +30,12 @@ Esta politica describe como recopilamos, usamos, almacenamos y protegemos tu inf
       title: '2. Responsable del Tratamiento',
       content: `El responsable del tratamiento de tus datos personales es:
 
-• Razon Social: NurseLite S.A.C.
+• Razon Social: Code Media EIRL (nombre comercial: NurseLite)
 • RUC: [Pendiente de registro]
 • Domicilio: Lima, Peru
 • Email: privacidad@nurselite.pe
 
-Contamos con un banco de datos personales registrado ante la Autoridad Nacional de Proteccion de Datos Personales del Ministerio de Justicia y Derechos Humanos.`
+El registro del banco de datos personales ante la Autoridad Nacional de Proteccion de Datos Personales se encuentra en tramite conforme a la Ley N 29733.`
     },
     {
       title: '3. Datos que Recopilamos',
