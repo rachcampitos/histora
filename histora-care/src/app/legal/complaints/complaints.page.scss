@@ -1,0 +1,106 @@
+@use '../legal-shared' as *;
+@use '../../../theme/design-tokens' as tokens;
+
+.form-section {
+  margin-bottom: tokens.$spacing-4;
+
+  .form-label {
+    display: block;
+    font-size: tokens.$font-size-sm;
+    font-weight: tokens.$font-weight-semibold;
+    color: var(--text-primary);
+    margin-bottom: tokens.$spacing-2;
+  }
+
+  ion-input,
+  ion-textarea {
+    --background: var(--surface-primary);
+    --color: var(--text-primary);
+    --placeholder-color: var(--text-tertiary);
+    font-size: tokens.$font-size-sm;
+  }
+
+  ion-segment {
+    --background: var(--surface-primary);
+    margin-bottom: tokens.$spacing-2;
+  }
+
+  ion-segment-button {
+    --indicator-color: #{tokens.$color-brand-primary};
+    --color-checked: white;
+    --color: var(--text-secondary);
+    font-size: tokens.$font-size-sm;
+    text-transform: none;
+  }
+
+  .form-hint {
+    font-size: tokens.$font-size-xs;
+    color: var(--text-tertiary);
+    margin: tokens.$spacing-1 0 0;
+    line-height: 1.5;
+  }
+
+  .char-count {
+    text-align: right;
+  }
+}
+
+.submit-btn {
+  margin-top: tokens.$spacing-6;
+  --background: #{tokens.$color-brand-primary};
+  --border-radius: #{tokens.$radius-md};
+  --color: white;
+  font-weight: tokens.$font-weight-semibold;
+  text-transform: none;
+  height: 48px;
+}
+
+.view-complaints-link {
+  text-align: center;
+  margin-top: tokens.$spacing-3;
+
+  ion-button {
+    --color: #{tokens.$color-brand-primary};
+    font-size: tokens.$font-size-sm;
+    text-transform: none;
+  }
+}
+
+// Dark mode
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .form-section {
+    .form-label {
+      color: tokens.$text-dark-primary;
+    }
+
+    ion-input,
+    ion-textarea {
+      --background: #{tokens.$surface-dark-secondary};
+      --color: #{tokens.$text-dark-primary};
+      --placeholder-color: #{tokens.$text-dark-tertiary};
+    }
+
+    ion-segment {
+      --background: #{tokens.$surface-dark-secondary};
+    }
+
+    ion-segment-button {
+      --indicator-color: #4a9d9a;
+      --color-checked: white;
+      --color: #{tokens.$text-dark-secondary};
+    }
+
+    .form-hint {
+      color: tokens.$text-dark-tertiary;
+    }
+  }
+
+  .submit-btn {
+    --background: #4a9d9a;
+  }
+
+  .view-complaints-link ion-button {
+    --color: #6bb5b3;
+  }
+}

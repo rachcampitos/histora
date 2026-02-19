@@ -282,6 +282,39 @@ ion-header {
   }
 }
 
+.complaints-link-section {
+  margin-top: tokens.$spacing-6;
+  margin-bottom: tokens.$spacing-2;
+
+  .complaints-item {
+    --background: var(--surface-primary);
+    --border-radius: #{tokens.$radius-lg};
+    --padding-start: #{tokens.$spacing-4};
+    --padding-end: #{tokens.$spacing-4};
+    box-shadow: tokens.$shadow-sm;
+
+    ion-icon[slot="start"] {
+      font-size: 24px;
+      margin-right: tokens.$spacing-3;
+    }
+
+    ion-label {
+      h3 {
+        font-size: tokens.$font-size-sm;
+        font-weight: tokens.$font-weight-semibold;
+        color: var(--text-primary);
+        margin: 0 0 2px 0;
+      }
+
+      p {
+        font-size: tokens.$font-size-xs;
+        color: var(--text-tertiary);
+        margin: 0;
+      }
+    }
+  }
+}
+
 .no-results {
   text-align: center;
   padding: tokens.$spacing-10 tokens.$spacing-5;
@@ -427,6 +460,21 @@ ion-header {
     ion-button {
       --background: white;
       --color: #{tokens.$color-brand-primary};
+    }
+  }
+
+  .complaints-link-section .complaints-item {
+    --background: #{tokens.$surface-dark-secondary};
+    box-shadow: none;
+
+    ion-label {
+      h3 {
+        color: tokens.$text-dark-primary;
+      }
+
+      p {
+        color: tokens.$text-dark-tertiary;
+      }
     }
   }
 

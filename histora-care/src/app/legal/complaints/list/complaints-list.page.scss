@@ -1,0 +1,164 @@
+@use '../../legal-shared' as *;
+@use '../../../../theme/design-tokens' as tokens;
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: tokens.$spacing-10 tokens.$spacing-5;
+
+  ion-icon {
+    font-size: 48px;
+    color: var(--text-tertiary);
+    margin-bottom: tokens.$spacing-3;
+  }
+
+  ion-spinner {
+    margin-bottom: tokens.$spacing-3;
+  }
+
+  h3 {
+    font-size: tokens.$font-size-lg;
+    font-weight: tokens.$font-weight-semibold;
+    color: var(--text-primary);
+    margin: 0 0 tokens.$spacing-2 0;
+  }
+
+  p {
+    color: var(--text-tertiary);
+    font-size: tokens.$font-size-sm;
+    margin: 0 0 tokens.$spacing-4 0;
+  }
+
+  ion-button {
+    text-transform: none;
+    --border-color: #{tokens.$color-brand-primary};
+    --color: #{tokens.$color-brand-primary};
+  }
+}
+
+.complaint-card {
+  background: var(--surface-primary);
+  border-radius: tokens.$radius-lg;
+  padding: tokens.$spacing-4;
+  margin-bottom: tokens.$spacing-3;
+  box-shadow: tokens.$shadow-sm;
+
+  .complaint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: tokens.$spacing-2;
+  }
+
+  .claim-number {
+    font-size: tokens.$font-size-sm;
+    font-weight: tokens.$font-weight-bold;
+    color: tokens.$color-brand-primary;
+  }
+
+  .complaint-type {
+    font-size: tokens.$font-size-xs;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: tokens.$spacing-2;
+  }
+
+  .complaint-description {
+    font-size: tokens.$font-size-sm;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 tokens.$spacing-2 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .complaint-date {
+    font-size: tokens.$font-size-xs;
+    color: var(--text-tertiary);
+  }
+
+  .complaint-response {
+    margin-top: tokens.$spacing-3;
+    padding-top: tokens.$spacing-3;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+    strong {
+      font-size: tokens.$font-size-xs;
+      color: #16a34a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      font-size: tokens.$font-size-sm;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: tokens.$spacing-1 0 0;
+    }
+
+    .response-date {
+      font-size: tokens.$font-size-xs;
+      color: var(--text-tertiary);
+    }
+  }
+}
+
+// Dark mode
+:host-context(body.dark),
+:host-context(body.ion-palette-dark) {
+  .empty-state,
+  .loading-state {
+    ion-icon {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    h3 {
+      color: tokens.$text-dark-primary;
+    }
+
+    p {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    ion-button {
+      --border-color: #6bb5b3;
+      --color: #6bb5b3;
+    }
+  }
+
+  .complaint-card {
+    background: tokens.$surface-dark-secondary;
+    box-shadow: none;
+
+    .claim-number {
+      color: #6bb5b3;
+    }
+
+    .complaint-type {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    .complaint-description {
+      color: tokens.$text-dark-secondary;
+    }
+
+    .complaint-date {
+      color: tokens.$text-dark-tertiary;
+    }
+
+    .complaint-response {
+      border-top-color: rgba(255, 255, 255, 0.08);
+
+      p {
+        color: tokens.$text-dark-secondary;
+      }
+
+      .response-date {
+        color: tokens.$text-dark-tertiary;
+      }
+    }
+  }
+}

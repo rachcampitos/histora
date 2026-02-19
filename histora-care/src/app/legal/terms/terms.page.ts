@@ -17,14 +17,33 @@ interface Section {
 export class TermsPage implements OnInit {
   private location = inject(Location);
 
-  lastUpdated = signal('19 de enero de 2026');
+  lastUpdated = signal('18 de febrero de 2026');
 
   sections = signal<Section[]>([
     {
-      title: '1. Naturaleza del Servicio',
-      content: `NurseLite es una plataforma tecnológica de intermediación que conecta a pacientes con profesionales de enfermería independientes debidamente certificados. NurseLite NO es un prestador directo de servicios de salud, sino un facilitador tecnológico que permite la conexión entre usuarios y profesionales.
+      title: '1. Identificacion y Naturaleza del Servicio',
+      content: `Code Media Empresa Individual de Responsabilidad Limitada (Code Media EIRL), constituida al amparo del Decreto Ley N° 21621, con RUC 20615496074, inscrita en la Partida N° 16142535 de la Zona Registral N° IX - Sede Lima de SUNARP, con domicilio fiscal en Cal. Tiahuanaco 145, Dpto 201, Urb. Portada del Sol Et. Dos, La Molina, Lima, opera bajo el nombre comercial "NurseLite".
 
-Los profesionales de enfermería que ofrecen sus servicios a través de la plataforma son independientes y responsables de sus propias acciones, decisiones clínicas y cumplimiento de las normativas aplicables a su profesión.`
+NurseLite es una plataforma tecnologica de intermediacion que conecta a pacientes con profesionales de enfermeria independientes debidamente certificados.
+
+Code Media EIRL (NurseLite) NO es:
+• Establecimiento de salud (clinica, hospital, centro medico)
+• Prestador directo de servicios de enfermeria
+• Empleador de los profesionales registrados en la plataforma
+• Responsable de decisiones clinicas, diagnosticos o tratamientos
+
+Code Media EIRL (NurseLite) SI es:
+• Plataforma tecnologica de intermediacion entre pacientes y profesionales
+• Facilitador del contacto y la contratacion de servicios
+• Procesador de pagos por cuenta de las partes
+• Verificador de credenciales CEP al momento del registro del profesional
+
+Los profesionales de enfermeria que ofrecen sus servicios a traves de la plataforma son independientes y responsables de sus propias acciones, decisiones clinicas y cumplimiento de las normativas aplicables a su profesion. Cada profesional es responsable de mantener vigente su colegiatura CEP y cumplir los protocolos del Colegio de Enfermeros del Peru.
+
+Marco normativo aplicable:
+• Plataforma digital: Ley N° 29571 (Proteccion al Consumidor), Ley N° 29733 (Datos Personales)
+• Profesionales de enfermeria: Ley N° 27669 (Trabajo de la Enfermera/o), Codigo de Etica del CEP
+• Relacion terapeutica: Ley N° 26842 (Ley General de Salud), Ley N° 29414 (Derechos del Usuario de Servicios de Salud)`
     },
     {
       title: '2. Requisitos de Uso',
@@ -94,16 +113,29 @@ Responsabilidades del Paciente:
 • Tratar con respeto al profesional`
     },
     {
-      title: '7. Limitación de Responsabilidad',
-      content: `NurseLite no será responsable por:
+      title: '7. Responsabilidades y Limitaciones',
+      content: `7.1 Naturaleza de la Relacion
+NurseLite actua exclusivamente como plataforma tecnologica de intermediacion. Los servicios de enfermeria son prestados de manera independiente por profesionales licenciados con quienes NurseLite no mantiene relacion laboral.
 
-• Daños derivados de la prestación de servicios de salud por parte de los profesionales
-• Decisiones médicas o de enfermería tomadas por los profesionales
-• Complicaciones de salud preexistentes o derivadas del tratamiento
-• Pérdidas económicas indirectas
-• Interrupciones del servicio por causas de fuerza mayor
+7.2 Responsabilidad de NurseLite
+Como plataforma, NurseLite es responsable de:
+• Verificar la vigencia de la colegiatura CEP al momento del registro del profesional
+• Garantizar la operatividad de la plataforma tecnologica
+• Procesar pagos de manera segura a traves de pasarelas certificadas
+• Atender reclamos en un plazo maximo de 30 dias calendario (D.S. 011-2011-PCM)
+• Facilitar el acceso al Libro de Reclamaciones virtual
 
-La responsabilidad máxima de NurseLite se limita al monto de las comisiones cobradas en los últimos 12 meses.`
+7.3 Limitacion de Responsabilidad por Actos de Terceros
+Conforme al Art. 50 de la Ley N° 29571, NurseLite NO es responsable por:
+• Decisiones clinicas, diagnosticos o tratamientos realizados por los profesionales
+• Complicaciones medicas derivadas de condiciones preexistentes del paciente
+• Danos causados por negligencia profesional del enfermero(a), sin perjuicio del derecho del usuario de reclamar directamente al profesional responsable
+
+7.4 Responsabilidad Maxima
+En caso de fallas en la plataforma tecnologica atribuibles a NurseLite, la responsabilidad maxima sera equivalente al monto total de las comisiones cobradas al usuario afectado en los ultimos 12 meses.
+
+7.5 Obligacion de Cooperacion
+NurseLite facilitara la identificacion del profesional responsable y cooperara con las autoridades competentes (SUSALUD, Colegio de Enfermeros del Peru, Fiscalia, INDECOPI) en caso de investigaciones o procedimientos derivados de la prestacion de servicios.`
     },
     {
       title: '8. Propiedad Intelectual',
@@ -131,14 +163,54 @@ El uso continuado de la plataforma después de los cambios implica la aceptació
       content: `Estos términos se rigen por las leyes de la República del Perú. Cualquier controversia será sometida a los tribunales competentes de Lima, Perú, renunciando las partes a cualquier otro fuero que pudiera corresponderles.`
     },
     {
-      title: '12. Contacto',
-      content: `Para consultas sobre estos términos:
+      title: '12. Derechos del Paciente',
+      content: `Conforme a la Ley N° 29414 (Derechos de los Usuarios de Servicios de Salud) y la Ley N° 29571 (Codigo de Proteccion y Defensa del Consumidor), los pacientes que contratan servicios a traves de NurseLite tienen derecho a:
 
-• Email: legal@nurselite.pe
-• Teléfono: +51 1 XXX-XXXX
-• Dirección: Lima, Perú
+a) Atencion oportuna: Recibir el servicio en el horario y condiciones pactadas
+b) Informacion: Conocer datos completos del profesional (nombre, numero CEP, especialidad) antes de contratar
+c) Consentimiento informado: Otorgar o denegar consentimiento antes de cualquier procedimiento
+d) Confidencialidad: Proteccion de su informacion medica y datos personales
+e) Trato digno: Recibir un trato respetuoso y sin discriminacion
+f) Reclamos: Presentar reclamos ante NurseLite, SUSALUD o INDECOPI por deficiencias en la calidad del servicio
+g) Documentacion: Solicitar copia de cualquier registro o reporte elaborado por el profesional
 
-Libro de Reclamaciones disponible en la aplicación.`
+NurseLite garantiza el acceso a estos derechos facilitando:
+• Perfil verificado del profesional visible antes de la contratacion
+• Canal de reclamos: admin@nurselite.com
+• Acceso al Libro de Reclamaciones virtual en la aplicacion
+• Cooperacion con investigaciones de SUSALUD o el Colegio de Enfermeros del Peru`
+    },
+    {
+      title: '13. Contacto y Libro de Reclamaciones',
+      content: `Para consultas sobre estos terminos:
+
+• Email: admin@nurselite.com
+• Telefono: +51 939 175 392
+• Direccion: Cal. Tiahuanaco 145, Dpto 201, Urb. Portada del Sol Et. Dos, La Molina, Lima
+• Horario de atencion: Lunes a sabado, 8:00 a.m. a 8:00 p.m.
+
+LIBRO DE RECLAMACIONES VIRTUAL
+
+Conforme al D.S. 011-2011-PCM y al Art. 25 de la Ley N° 29571 (Codigo de Proteccion y Defensa del Consumidor), Code Media EIRL pone a disposicion de sus usuarios un Libro de Reclamaciones Virtual accesible en:
+
+a) Aplicacion movil: Ayuda > Libro de Reclamaciones
+b) Correo electronico: admin@nurselite.com (asunto: "LIBRO DE RECLAMACIONES")
+
+Diferencia entre Reclamo y Queja:
+• RECLAMO: Disconformidad relacionada con los servicios contratados a traves de la plataforma (ej: profesional no se presento, cobro indebido, servicio defectuoso)
+• QUEJA: Disconformidad respecto a la atencion al usuario por parte de NurseLite (ej: demora en responder, mala atencion de soporte)
+
+Procedimiento:
+1. El usuario completa el formulario con el detalle del reclamo o queja
+2. Recibe un numero de seguimiento automatico
+3. NurseLite responde en un plazo maximo de 30 dias calendario
+4. Si no se alcanza una solucion satisfactoria, el usuario puede acudir a INDECOPI
+
+El acceso al Libro de Reclamaciones es GRATUITO y no requiere ser usuario registrado.
+
+INDECOPI - Servicio de Atencion al Ciudadano:
+• Telefono: 224-7777 (Lima) / 0-800-4-4040 (provincias, gratuito)
+• Web: www.indecopi.gob.pe`
     }
   ]);
 

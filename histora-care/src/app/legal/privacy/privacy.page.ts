@@ -17,7 +17,7 @@ interface Section {
 export class PrivacyPage implements OnInit {
   private location = inject(Location);
 
-  lastUpdated = signal('19 de enero de 2026');
+  lastUpdated = signal('18 de febrero de 2026');
 
   sections = signal<Section[]>([
     {
@@ -30,12 +30,16 @@ Esta politica describe como recopilamos, usamos, almacenamos y protegemos tu inf
       title: '2. Responsable del Tratamiento',
       content: `El responsable del tratamiento de tus datos personales es:
 
-• Razon Social: Code Media EIRL (nombre comercial: NurseLite)
-• RUC: [Pendiente de registro]
-• Domicilio: Lima, Peru
-• Email: privacidad@nurselite.pe
+• Razon Social: Code Media Empresa Individual de Responsabilidad Limitada (Code Media EIRL), constituida al amparo del Decreto Ley N° 21621
+• Nombre Comercial: NurseLite
+• RUC: 20615496074
+• Partida Registral: N° 16142535, Zona Registral N° IX - Sede Lima, SUNARP
+• Fecha de Constitucion: 10 de febrero de 2026
+• Domicilio Fiscal: Cal. Tiahuanaco 145, Dpto 201, Urb. Portada del Sol Et. Dos, La Molina, Lima
+• Titular-Gerente: Raul Abraham Campos Huambachano
+• Email de Privacidad: admin@nurselite.com
 
-El registro del banco de datos personales ante la Autoridad Nacional de Proteccion de Datos Personales se encuentra en tramite conforme a la Ley N 29733.`
+El registro del banco de datos personales ante la Autoridad Nacional de Proteccion de Datos Personales (ANPDP) se encuentra en tramite conforme al Art. 31 de la Ley N° 29733.`
     },
     {
       title: '3. Datos que Recopilamos',
@@ -196,13 +200,16 @@ La fecha de ultima actualizacion se indica al inicio del documento.`
     },
     {
       title: '14. Contacto',
-      content: `Para consultas sobre privacidad:
+      content: `Para consultas sobre privacidad o ejercer tus derechos ARCO:
 
-• Email: privacidad@nurselite.pe
-• Telefono: +51 1 XXX-XXXX
-• Direccion: Lima, Peru
+• Email: admin@nurselite.com
+• Telefono: +51 939 175 392
+• Direccion: Cal. Tiahuanaco 145, Dpto 201, Urb. Portada del Sol Et. Dos, La Molina, Lima
+• Horario de atencion: Lunes a sabado, 8:00 a.m. a 8:00 p.m.
 
-Tambien puedes presentar un reclamo ante la Autoridad Nacional de Proteccion de Datos Personales (ANPDP) del Ministerio de Justicia:
+Plazo de respuesta para solicitudes ARCO: 10 dias habiles contados desde la recepcion de la solicitud, conforme al Art. 23 de la Ley N° 29733.
+
+Si consideras que tus derechos no han sido atendidos adecuadamente, puedes presentar un reclamo ante la Autoridad Nacional de Proteccion de Datos Personales (ANPDP) del Ministerio de Justicia y Derechos Humanos:
 • Web: www.minjus.gob.pe/proteccion-de-datos-personales`
     }
   ]);

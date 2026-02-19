@@ -26,6 +26,7 @@ import { HealthModule } from './health/health.module';
 import { CacheModule } from './common/cache';
 import { EncryptionModule } from './common/encryption';
 import { WhatsAppModule } from './whatsapp/whatsapp.module';
+import { ComplaintsModule } from './complaints/complaints.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
     CacheModule,
     EncryptionModule,
     WhatsAppModule,
+    ComplaintsModule,
   ],
   controllers: [AppController],
   providers: [

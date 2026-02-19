@@ -1,9 +1,9 @@
 # Auditoria Legal - NurseLite App (Paginas Legales)
 
-> Fecha: 2026-02-12
-> Status: PENDIENTE DE CORRECCION
+> Fecha: 2026-02-18 (actualizado)
+> Status: ERRORES CRITICOS CORREGIDOS
 > Archivos auditados: terms.page.ts, privacy.page.ts, help.page.ts
-> Empresa real: Code Media EIRL (en proceso de constitucion)
+> Empresa: Code Media EIRL (RUC 20615496074, constituida 10/02/2026)
 
 ---
 
@@ -401,15 +401,15 @@ d) Libro de Reclamaciones disponible en la app"
 ## 7. CHECKLIST PRE-LANZAMIENTO
 
 ### Antes de lanzar (obligatorio):
-- [ ] Corregir "NurseLite S.A.C." → "Code Media EIRL" en los 3 documentos
-- [ ] Eliminar/corregir afirmacion falsa de registro ANPDP
-- [ ] Completar datos placeholder (RUC, domicilio, telefono) post-constitucion
-- [ ] Reescribir seccion 7 de T&C (limitacion de responsabilidad)
-- [ ] Agregar procedimiento Libro de Reclamaciones
-- [ ] Agregar seccion Derechos del Paciente (Ley 29414)
-- [ ] Agregar aclaracion regulatoria de intermediario
-- [ ] Implementar Libro de Reclamaciones virtual en la app
-- [ ] Fix toolbar dark mode en paginas legales
+- [x] Corregir "NurseLite S.A.C." → "Code Media EIRL" en los 3 documentos (corregido 12/02/2026)
+- [x] Eliminar/corregir afirmacion falsa de registro ANPDP (corregido 12/02/2026)
+- [x] Completar datos placeholder (RUC, domicilio, telefono) post-constitucion (completado 18/02/2026)
+- [x] Reescribir seccion 7 de T&C (limitacion de responsabilidad) (reescrito 18/02/2026)
+- [x] Agregar procedimiento Libro de Reclamaciones (agregado en T&C seccion 13, 18/02/2026)
+- [x] Agregar seccion Derechos del Paciente (Ley 29414) (agregado en T&C seccion 12, 18/02/2026)
+- [x] Agregar aclaracion regulatoria de intermediario (integrado en T&C seccion 1, 18/02/2026)
+- [x] Implementar Libro de Reclamaciones virtual en la app (modulo complaints backend + frontend, 18/02/2026)
+- [x] Fix toolbar dark mode en paginas legales (corregido en _legal-shared.scss, 12/02/2026)
 
 ### Primeros 30 dias post-lanzamiento:
 - [ ] Agregar protocolo de emergencias medicas

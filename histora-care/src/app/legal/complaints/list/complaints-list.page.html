@@ -1,0 +1,61 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="Volver">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Mis Reclamos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="legal-content">
+  <div class="legal-container">
+
+    @if (loading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando reclamos...</p>
+      </div>
+    } @else if (complaints().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <h3>Sin reclamos</h3>
+        <p>No has presentado ningun reclamo o queja.</p>
+        <ion-button fill="outline" routerLink="/legal/complaints">
+          Presentar reclamo
+        </ion-button>
+      </div>
+    } @else {
+      @for (complaint of complaints(); track complaint._id) {
+        <div class="complaint-card">
+          <div class="complaint-header">
+            <span class="claim-number">{{ complaint.claimNumber }}</span>
+            <ion-badge [color]="getStatusColor(complaint.status)">
+              {{ getStatusLabel(complaint.status) }}
+            </ion-badge>
+          </div>
+          <div class="complaint-type">
+            {{ complaint.type === 'reclamo' ? 'Reclamo' : 'Queja' }}
+          </div>
+          <p class="complaint-description">{{ complaint.description }}</p>
+          <div class="complaint-date">
+            {{ complaint.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+
+          @if (complaint.response) {
+            <div class="complaint-response">
+              <strong>Respuesta:</strong>
+              <p>{{ complaint.response }}</p>
+              @if (complaint.respondedAt) {
+                <span class="response-date">
+                  {{ complaint.respondedAt | date:'dd/MM/yyyy' }}
+                </span>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</ion-content>

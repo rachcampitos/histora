@@ -1,0 +1,141 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="Volver">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Libro de Reclamaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="legal-content">
+  <div class="legal-container">
+    <div class="legal-header">
+      <h1>Libro de Reclamaciones</h1>
+      <p class="last-updated">D.S. 011-2011-PCM | Ley N° 29571</p>
+    </div>
+
+    <div class="legal-intro">
+      <p>
+        Conforme al Codigo de Proteccion y Defensa del Consumidor,
+        Code Media EIRL (NurseLite) pone a tu disposicion este
+        Libro de Reclamaciones Virtual. Tu reclamo o queja sera
+        atendido en un plazo maximo de 30 dias calendario.
+      </p>
+    </div>
+
+    <!-- Tipo -->
+    <div class="form-section">
+      <label class="form-label">Tipo</label>
+      <ion-segment [value]="type()" (ionChange)="type.set($any($event).detail.value)">
+        <ion-segment-button value="reclamo">
+          <ion-label>Reclamo</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="queja">
+          <ion-label>Queja</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <p class="form-hint">
+        @if (type() === 'reclamo') {
+          <strong>Reclamo:</strong> Disconformidad con el servicio contratado
+          (ej: cobro indebido, servicio defectuoso).
+        } @else {
+          <strong>Queja:</strong> Disconformidad con la atencion recibida
+          (ej: demora en respuesta, mala atencion de soporte).
+        }
+      </p>
+    </div>
+
+    <!-- Datos del reclamante -->
+    <div class="form-section">
+      <label class="form-label">Nombre completo</label>
+      <ion-input
+        type="text"
+        [value]="fullName()"
+        (ionInput)="fullName.set($any($event).detail.value || '')"
+        placeholder="Ingresa tu nombre completo"
+        fill="outline">
+      </ion-input>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">DNI</label>
+      <ion-input
+        type="text"
+        [value]="dni()"
+        (ionInput)="dni.set($any($event).detail.value || '')"
+        placeholder="Numero de DNI"
+        fill="outline"
+        maxlength="8">
+      </ion-input>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Correo electronico</label>
+      <ion-input
+        type="email"
+        [value]="email()"
+        (ionInput)="email.set($any($event).detail.value || '')"
+        placeholder="tu@correo.com"
+        fill="outline">
+      </ion-input>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Telefono</label>
+      <ion-input
+        type="tel"
+        [value]="phone()"
+        (ionInput)="phone.set($any($event).detail.value || '')"
+        placeholder="+51 999 888 777"
+        fill="outline">
+      </ion-input>
+    </div>
+
+    <!-- Descripcion -->
+    <div class="form-section">
+      <label class="form-label">Descripcion del {{ type() }}</label>
+      <ion-textarea
+        [value]="description()"
+        (ionInput)="description.set($any($event).detail.value || '')"
+        placeholder="Describe detalladamente tu {{ type() }} (minimo 20 caracteres)"
+        fill="outline"
+        [autoGrow]="true"
+        rows="4"
+        maxlength="2000">
+      </ion-textarea>
+      <p class="form-hint char-count">{{ description().length }} / 2000</p>
+    </div>
+
+    <!-- Submit -->
+    <ion-button
+      expand="block"
+      class="submit-btn"
+      [disabled]="!isValid || submitting()"
+      (click)="onSubmit()">
+      @if (submitting()) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner>
+        Enviando...
+      } @else {
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
+        Enviar {{ type() === 'reclamo' ? 'Reclamo' : 'Queja' }}
+      }
+    </ion-button>
+
+    <!-- Link to my complaints -->
+    <div class="view-complaints-link">
+      <ion-button fill="clear" routerLink="/legal/complaints/list">
+        Ver mis reclamos anteriores
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div class="legal-footer">
+      <p>
+        El acceso al Libro de Reclamaciones es GRATUITO.
+        INDECOPI: 224-7777 (Lima) / 0-800-4-4040 (provincias).
+      </p>
+    </div>
+  </div>
+</ion-content>

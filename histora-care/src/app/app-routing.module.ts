@@ -67,6 +67,10 @@ const routes: Routes = [
         path: 'help',
         loadChildren: () => import('./legal/help/help.module').then(m => m.HelpPageModule),
       },
+      {
+        path: 'complaints',
+        loadChildren: () => import('./legal/complaints/complaints.module').then(m => m.ComplaintsPageModule),
+      },
     ],
   },
 

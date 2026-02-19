@@ -170,7 +170,7 @@ export class HelpPage implements OnInit {
         },
         {
           question: 'Como contacto al soporte de NurseLite?',
-          answer: 'Puedes contactarnos por: Email (soporte@nurselite.pe), WhatsApp (+51 XXX XXX XXX), o a traves del chat de ayuda en la app. Nuestro horario de atencion es de lunes a sabado, 8am a 8pm.'
+          answer: 'Puedes contactarnos por: Email (admin@nurselite.com), WhatsApp (+51 939 175 392), o a traves del chat de ayuda en la app. Nuestro horario de atencion es de lunes a sabado, 8am a 8pm.'
         },
         {
           question: 'Donde encuentro el Libro de Reclamaciones?',
@@ -228,10 +228,10 @@ export class HelpPage implements OnInit {
   }
 
   contactSupport() {
-    window.open('mailto:soporte@nurselite.pe', '_blank');
+    window.open('mailto:admin@nurselite.com', '_blank');
   }
 
   openWhatsApp() {
-    window.open('https://wa.me/51XXXXXXXXX', '_blank');
+    window.open('https://wa.me/51939175392', '_blank');
   }
 }
