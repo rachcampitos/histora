@@ -11,7 +11,7 @@ import {
 @Injectable()
 export class MetaApiService {
   private readonly logger = new Logger(MetaApiService.name);
-  private readonly apiUrl = 'https://graph.facebook.com/v18.0';
+  private readonly apiUrl = 'https://graph.facebook.com/v21.0';
   private readonly phoneNumberId: string;
   private readonly accessToken: string;
 
