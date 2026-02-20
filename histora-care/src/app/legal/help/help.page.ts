@@ -42,7 +42,7 @@ export class HelpPage implements OnInit {
         },
         {
           question: 'Puedo cancelar un servicio ya solicitado?',
-          answer: 'Si, puedes cancelar. Si cancelas con mas de 24 horas de anticipacion, recibiras reembolso completo. Entre 12-24 horas, reembolso del 50%. Con menos de 12 horas, no hay reembolso. Esto protege a los profesionales que reservaron su tiempo para atenderte.'
+          answer: 'Si, puedes cancelar. Si cancelas con mas de 4 horas de anticipacion, no hay cargo. Entre 1 y 4 horas, se cobra S/15 por gestion. Con menos de 1 hora, se retiene el 50% del servicio. Si el profesional ya esta en camino, 75%. Esto protege a los profesionales que reservaron su tiempo para atenderte.'
         },
         {
           question: 'Como se que el profesional es confiable?',
@@ -77,7 +77,7 @@ export class HelpPage implements OnInit {
         },
         {
           question: 'Como funciona el sistema de pagos?',
-          answer: 'Tu estableces el precio de tus servicios. Cuando un paciente paga con tarjeta o Yape, el dinero se procesa a traves de la plataforma. NurseLite cobra una comision del 15% y el resto se transfiere a tu cuenta. Para pagos en efectivo, recibes el pago directamente del paciente.'
+          answer: 'Tu estableces el precio de tus servicios y recibes el 100% del pago. No cobramos comision por servicio. Cuando un paciente paga con tarjeta o Yape, el dinero se procesa a traves de la plataforma y se te transfiere una vez completado el servicio. Para pagos en efectivo, recibes el pago directamente del paciente.'
         },
         {
           question: 'Cuando recibo mis pagos?',
@@ -166,7 +166,7 @@ export class HelpPage implements OnInit {
         },
         {
           question: 'Cuanto cuesta usar NurseLite?',
-          answer: 'Para pacientes, no hay costo de registro ni comisiones adicionales - solo pagas el precio del servicio establecido por el profesional. Para profesionales, NurseLite cobra una comision del 15% sobre cada servicio completado.'
+          answer: 'Para pacientes, es totalmente gratis - solo pagas el precio del servicio establecido por el profesional, sin cargos adicionales. Para profesionales, NurseLite funciona con suscripcion mensual: Plan Basico (gratis, hasta 10 solicitudes/mes), Plan Pro (S/39/mes, ilimitado) y Plan Premium (S/79/mes, maxima visibilidad). No cobramos comision por servicio.'
         },
         {
           question: 'Como contacto al soporte de NurseLite?',

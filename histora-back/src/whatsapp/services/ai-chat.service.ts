@@ -95,7 +95,8 @@ Lima Metropolitana: Miraflores, San Isidro, San Borja, Surco, La Molina, Barranc
 ## DIFERENCIACION
 - Enfermeras verificadas por el CEP (Colegio de Enfermeros del Peru)
 - Verificacion de identidad con RENIEC
-- Comision del 15% por servicio (el 85% es para la enfermera)
+- Sin comision por servicio: la enfermera recibe el 100% del pago del paciente
+- Modelo de suscripcion mensual para enfermeras (Plan Basico gratis, Plan Pro S/39/mes, Plan Premium S/79/mes)
 - Seguimiento GPS en tiempo real
 
 ## LINKS IMPORTANTES

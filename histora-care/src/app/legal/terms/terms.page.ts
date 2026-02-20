@@ -71,26 +71,47 @@ Para profesionales de enfermería:
 6. Evaluación: Ambas partes pueden evaluar la experiencia`
     },
     {
-      title: '4. Pagos y Comisiones',
-      content: `Los pagos se procesan a través de la plataforma utilizando métodos seguros (tarjetas, Yape, efectivo).
+      title: '4. Pagos y Modelo de Suscripcion',
+      content: `4.1 Pagos por servicios
+Los pagos por servicios de enfermeria se procesan a traves de la plataforma utilizando metodos seguros (tarjetas de credito/debito, Yape, efectivo).
 
 • El precio del servicio es establecido por el profesional
-• NurseLite cobra una comisión del 15% sobre el precio del servicio, la cual es asumida por el profesional
-• Los pagos a profesionales se liberan una vez completado el servicio satisfactoriamente
-• En caso de pago en efectivo, el profesional recibe el pago directamente del paciente`
+• El paciente paga el precio del servicio sin cargos adicionales de la plataforma
+• Los pagos electronicos se procesan a traves de pasarelas certificadas
+• En caso de pago en efectivo, el paciente paga directamente al profesional al finalizar el servicio
+
+4.2 Suscripcion para profesionales
+NurseLite opera bajo un modelo de suscripcion mensual para profesionales de enfermeria:
+
+• Plan Basico (Gratuito): Hasta 10 solicitudes al mes, perfil verificado, notificaciones en tiempo real
+• Plan Pro (S/39/mes): Solicitudes ilimitadas, mayor visibilidad en busquedas, estadisticas avanzadas, soporte prioritario
+• Plan Premium (S/79/mes): Todo del Plan Pro mas perfil destacado, maxima visibilidad, dashboard profesional, soporte por WhatsApp
+
+NurseLite NO cobra comision por servicio realizado. El profesional recibe el 100% del precio del servicio.
+
+4.3 Forma de pago de la suscripcion
+El pago de la suscripcion se realiza por Yape. La activacion del plan se confirma en un plazo maximo de 24 horas habiles.
+
+4.4 Cancelacion de la suscripcion
+El profesional puede cancelar su suscripcion en cualquier momento. La cancelacion se hace efectiva al termino del periodo pagado. No se realizan reembolsos parciales por periodos no utilizados.`
     },
     {
-      title: '5. Cancelaciones y Reembolsos',
-      content: `Política de cancelación para pacientes:
+      title: '5. Cancelaciones y Reembolsos de Servicios',
+      content: `Politica de cancelacion para pacientes:
 
-• Cancelación con más de 24 horas de anticipación: Reembolso completo
-• Cancelación entre 12-24 horas: Reembolso del 50%
-• Cancelación con menos de 12 horas: Sin reembolso
-• No presentarse sin aviso: Sin reembolso y posible suspensión
+• Cancelacion con mas de 4 horas de anticipacion: Sin cargo
+• Cancelacion entre 1 y 4 horas antes del servicio: Cargo de S/15 por gestion
+• Cancelacion con menos de 1 hora: 50% del precio del servicio
+• Profesional en camino (confirmado por GPS): 75% del precio del servicio
+• No presentarse sin aviso: 100% del precio del servicio y posible suspension
 
-Política de cancelación para profesionales:
-• Cancelaciones repetidas pueden resultar en suspensión de la cuenta
-• Debe notificar al paciente con la mayor anticipación posible`
+Politica de cancelacion para profesionales:
+• Cancelacion con mas de 4 horas de anticipacion y motivo valido: Sin penalidad
+• Cancelacion con menos de 4 horas: Penalidad en reputacion
+• No presentarse sin aviso: Suspension temporal de 72 horas
+• Patron de cancelaciones (mas de 2 en 30 dias): Revision administrativa
+
+Los cargos por cancelacion protegen a los profesionales que reservaron su tiempo para atenderte. En caso de pagos electronicos, los montos retenidos se liberan o cobran segun la politica aplicable.`
     },
     {
       title: '6. Responsabilidades',
