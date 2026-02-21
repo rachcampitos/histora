@@ -2,8 +2,9 @@
 ## Documentación Legal - NurseLite
 
 **Para:** Stakeholders, Directorio, Inversores
-**Fecha:** 19 de enero de 2026
-**Versión:** 1.0
+**Fecha:** 18 de febrero de 2026
+**Version:** 1.1
+**Empresa:** Code Media EIRL (RUC 20615496074)
 
 ---
 
@@ -78,7 +79,7 @@ Se han desarrollado **7 documentos legales completos** que suman más de **4,900
 ### Términos y Condiciones
 
 **Aspectos destacados:**
-- Define claramente que Histora es **intermediario tecnológico**, no prestador directo de servicios de salud
+- Define claramente que Code Media EIRL (NurseLite) es **intermediario tecnologico**, no prestador directo de servicios de salud
 - Establece proceso de **triple verificación** de enfermeras (CEP + RENIEC + Biometría IA)
 - Detalla responsabilidades de cada parte (plataforma, profesional, paciente)
 - Políticas de cancelación escalonadas según anticipación
@@ -176,27 +177,20 @@ Se han desarrollado **7 documentos legales completos** que suman más de **4,900
 
 ## 7. TIMELINE DE IMPLEMENTACIÓN
 
-### Fase 1: Pre-Lanzamiento (2-3 semanas) 🔴 CRÍTICO
+### Fase 1: Pre-Lanzamiento - COMPLETADO 18/02/2026
 
-**Semana 1-2:**
-- [ ] Completar datos de la empresa en documentos
-- [ ] Revisión legal profesional
-- [ ] Inscripción en RNPDP
-- [ ] Configurar correos (privacidad@, reclamos@, legal@)
-- [ ] Implementación técnica básica (checkboxes, modals)
+**Completado:**
+- [x] Datos de la empresa en todos los documentos (Code Media EIRL, RUC 20615496074)
+- [x] Terminos y Condiciones reescritos (13 secciones, incluye derechos del paciente, aclaracion regulatoria)
+- [x] Politica de Privacidad actualizada con datos reales
+- [x] Libro de Reclamaciones digital implementado (backend + frontend)
+- [x] Centro de Ayuda con datos de contacto reales
+- [x] Seccion 7 T&C reescrita (limitacion de responsabilidad conforme Art. 50 Ley 29571)
 
-**Semana 2-3:**
-- [ ] Implementar Libro de Reclamaciones digital
-- [ ] Publicar documentos en care.nurselite.pe
-- [ ] Implementar consentimiento para datos de salud
-- [ ] Capacitar equipo de soporte
-- [ ] Testing completo
-
-**Entregables:**
-- ✅ Documentos legales publicados y accesibles
-- ✅ App con todos los consentimientos implementados
-- ✅ RNPDP inscrito
-- ✅ Equipo capacitado
+**Pendiente:**
+- [ ] Revision legal profesional
+- [ ] Inscripcion en RNPDP
+- [ ] Configurar correos especificos (privacidad@, reclamos@, legal@)
 
 ### Fase 2: Post-Lanzamiento (Mes 1) 🟡 IMPORTANTE
 
@@ -470,23 +464,23 @@ Se ha desarrollado un **paquete completo de documentación legal** de nivel prof
 
 ```
 APROBACIONES REQUERIDAS
-[ ] Aprobar documentación legal presentada
-[ ] Aprobar presupuesto de implementación (S/. 23K-51K)
-[ ] Designar responsable de protección de datos
-[ ] Autorizar contratación de abogado especializado
+[ ] Aprobar presupuesto de implementacion (S/. 23K-51K)
+[ ] Designar responsable de proteccion de datos
+[ ] Autorizar contratacion de abogado especializado
 
 DECISIONES INMEDIATAS
-[ ] Nivel de inversión (Básico vs. Completo)
 [ ] DPO interno vs. externo
 [ ] Contratar seguros (RC + Ciberseguro)
-[ ] Timeline de lanzamiento (considerar 4-6 semanas)
+[ ] Timeline de lanzamiento
 
-DOCUMENTACIÓN PENDIENTE
-[ ] Completar RUC en documentos
-[ ] Completar razón social
-[ ] Completar dirección fiscal
-[ ] Completar teléfonos de contacto
-[ ] Firmas de representantes legales
+DOCUMENTACION - COMPLETADO 18/02/2026
+[x] RUC completado: 20615496074
+[x] Razon social: Code Media EIRL
+[x] Direccion fiscal: Cal. Tiahuanaco 145, Dpto 201, La Molina
+[x] Telefonos: +51 939 175 392
+[x] Libro de Reclamaciones digital implementado
+[x] T&C reescritos con marco legal completo
+[x] Politica de Privacidad actualizada
 ```
 
 ### Anexo B: Contactos Clave
@@ -519,13 +513,13 @@ Este resumen ejecutivo fue preparado el 19 de enero de 2026 y requiere aprobaci�
 
 ---
 
-**Preparado por:** Equipo de Desarrollo NurseLite
-**Contacto:** legal@nurselite.pe
-**Fecha:** 19 de enero de 2026
-**Versión:** 1.0
+**Preparado por:** Code Media EIRL - NurseLite
+**Contacto:** admin@nurselite.com
+**Fecha:** 18 de febrero de 2026
+**Version:** 1.1
 
 ---
 
-© 2026 Histora Health. Todos los derechos reservados.
+2026 Code Media EIRL. Todos los derechos reservados.
 
 **Confidencial - Solo para uso interno**

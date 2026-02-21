@@ -189,39 +189,39 @@ Total: 4,988 líneas | 165 KB
 
 ---
 
-## TAREAS CRÍTICAS ANTES DEL LANZAMIENTO
+## TAREAS CRITICAS ANTES DEL LANZAMIENTO
 
-### 🔴 URGENTE - Completar AHORA
+### 🔴 URGENTE
 
-1. **Datos de la empresa**
-   - [ ] Completar razón social en todos los documentos
-   - [ ] Completar RUC en todos los documentos
-   - [ ] Completar domicilio fiscal completo
-   - [ ] Completar teléfonos de contacto
-   - [ ] Buscar `[Completar con...]` y reemplazar
+1. **Datos de la empresa** - COMPLETADO 18/02/2026
+   - [x] Completar razon social en todos los documentos (Code Media EIRL)
+   - [x] Completar RUC en todos los documentos (20615496074)
+   - [x] Completar domicilio fiscal completo
+   - [x] Completar telefonos de contacto (+51 939 175 392)
+   - [x] Buscar `[Completar con...]` y reemplazar
 
-2. **Inscripción RNPDP**
+2. **Inscripcion RNPDP** - PENDIENTE
    - [ ] Inscribir Banco de Datos "Usuarios NurseLite"
-   - [ ] Actualizar número de inscripción en Política de Privacidad
-   - [ ] Conservar certificado de inscripción
+   - [ ] Actualizar numero de inscripcion en Politica de Privacidad
+   - [ ] Conservar certificado de inscripcion
 
-3. **Libro de Reclamaciones**
-   - [ ] Implementar Libro Digital en la app
-   - [ ] Crear formulario web en care.nurselite.pe/reclamos
-   - [ ] Imprimir Libro físico (si hay oficina física)
+3. **Libro de Reclamaciones** - COMPLETADO 18/02/2026
+   - [x] Implementar Libro Digital en la app (modulo complaints backend + frontend)
+   - [x] Formulario accesible en app: Ayuda > Libro de Reclamaciones
+   - [ ] Imprimir Libro fisico (si hay oficina fisica)
    - [ ] Configurar correo reclamos@nurselite.pe
 
-4. **Correos específicos**
+4. **Correos especificos** - PENDIENTE
    - [ ] privacidad@nurselite.pe
    - [ ] reclamos@nurselite.pe
    - [ ] legal@nurselite.pe
    - [ ] seguridad@nurselite.pe
 
-5. **Publicación de documentos**
-   - [ ] Subir documentos a care.nurselite.pe/terminos
-   - [ ] Subir a care.nurselite.pe/privacidad
-   - [ ] Subir a care.nurselite.pe/ayuda
-   - [ ] Accesibles SIN login
+5. **Publicacion de documentos** - COMPLETADO (in-app)
+   - [x] Terminos y Condiciones accesibles en app
+   - [x] Politica de Privacidad accesible en app
+   - [x] Centro de Ayuda accesible en app
+   - [x] Accesibles SIN login (paginas legales publicas)
 
 ### 🟡 IMPORTANTE - Primera semana
 
@@ -275,15 +275,15 @@ Cuando actualices documentos:
 ## CONTACTO PARA TEMAS LEGALES
 
 ### Internos
-- **Oficial de Protección de Datos:** privacidad@nurselite.pe
-- **Asuntos Legales Generales:** legal@nurselite.pe
-- **Seguridad:** seguridad@nurselite.pe
-- **Reclamos:** reclamos@nurselite.pe
+- **Contacto general:** admin@nurselite.com
+- **WhatsApp:** +51 939 175 392
+- **Oficial de Proteccion de Datos:** privacidad@nurselite.pe (pendiente configurar)
+- **Reclamos:** Via Libro de Reclamaciones en la app o admin@nurselite.com
 
 ### Externos (Proveedores recomendados)
 - **Estudio Legal:** [A contratar - especializado en healthtech]
 - **DPO externo:** [A contratar - certificado en Ley 29733]
-- **Auditoría de Seguridad:** [A contratar - ISO 27001]
+- **Auditoria de Seguridad:** [A contratar - ISO 27001]
 
 ---
 
@@ -346,15 +346,15 @@ Próximos a expirar (30d):   45
 
 ---
 
-## VERSIÓN Y MANTENIMIENTO
+## VERSION Y MANTENIMIENTO
 
-**Versión de documentación:** 1.0
-**Fecha de creación:** 19 de enero de 2026
-**Última actualización:** 19 de enero de 2026
-**Próxima revisión:** 19 de julio de 2026
+**Version de documentacion:** 1.1
+**Fecha de creacion:** 19 de enero de 2026
+**Ultima actualizacion:** 18 de febrero de 2026
+**Proxima revision:** 18 de agosto de 2026
 
-**Responsable:** Equipo Legal y Compliance NurseLite
-**Contacto:** legal@nurselite.pe
+**Responsable:** Code Media EIRL - NurseLite
+**Contacto:** admin@nurselite.com
 
 ---
 
@@ -374,15 +374,12 @@ Próximos a expirar (30d):   45
 
 ---
 
-**¿Tienes dudas sobre estos documentos?**
+**Dudas sobre estos documentos?**
 
 Contacta a:
-- **Email:** legal@nurselite.pe
-- **Para implementación técnica:** dev@nurselite.pe
-- **Para consultas de privacidad:** privacidad@nurselite.pe
+- **Email:** admin@nurselite.com
+- **WhatsApp:** +51 939 175 392
 
 ---
 
-© 2026 Histora Health. Todos los derechos reservados.
-
-**Hecho con ❤️ en Lima, Perú**
+2026 Code Media EIRL. Todos los derechos reservados.

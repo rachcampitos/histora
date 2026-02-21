@@ -45,13 +45,21 @@ NurseLite es una plataforma que conecta pacientes con enfermeras profesionales p
 
 ## Arquitectura Tecnica
 
+### Empresa
+
+**Code Media Empresa Individual de Responsabilidad Limitada (Code Media EIRL)**
+- RUC: 20615496074
+- Nombre comercial: NurseLite
+- Partida SUNARP: 16142535
+- Domicilio fiscal: Cal. Tiahuanaco 145, Dpto 201, Urb. Portada del Sol Et. Dos, La Molina, Lima
+- Titular-Gerente: Raul Abraham Campos Huambachano
+
 ### Estructura del Monorepo
 
 ```
 histora/
 ├── histora-back/        # Backend NestJS
 ├── histora-care/        # App Ionic/Angular
-├── histora-admin/       # Panel admin Next.js
 ├── nurselite-landing/   # Landing page Next.js
 └── docs/                # Documentacion
 ```
@@ -68,6 +76,7 @@ histora-back/src/
 │   └── nurse-review.schema.ts
 ├── service-requests/    # Solicitudes de servicio
 ├── service-payments/    # Pagos (Culqi)
+├── complaints/          # Libro de Reclamaciones virtual
 ├── admin/               # Endpoints admin
 └── notifications/       # Push + Email
 ```
@@ -86,6 +95,11 @@ histora-care/src/app/
 │   ├── verification/    # Verificacion CEP
 │   ├── profile/         # Mi perfil
 │   └── onboarding/      # Onboarding 4 pantallas
+├── legal/               # Paginas legales
+│   ├── terms/           # Terminos y condiciones
+│   ├── privacy/         # Politica de privacidad
+│   ├── help/            # Centro de ayuda + FAQ
+│   └── complaints/      # Libro de Reclamaciones
 ├── shared/              # Componentes compartidos
 └── core/                # Servicios, guards, interceptors
 ```
@@ -611,7 +625,31 @@ Ver detalles en: `docs/CEP-API.md`
 
 ---
 
-## Consideraciones Legales Peru
+## Marco Legal y Cumplimiento
+
+### Empresa y Aclaracion Regulatoria
+
+Code Media EIRL (NurseLite) es una **plataforma tecnologica de intermediacion**. NO es establecimiento de salud, prestador directo de servicios de enfermeria, ni empleador de los profesionales registrados. Los servicios de enfermeria son prestados por profesionales independientes licenciados.
+
+### Legislacion Aplicable
+
+| Ley | Que regula | Aplicacion en NurseLite |
+|-----|-----------|------------------------|
+| Ley 29733 | Proteccion Datos Personales | Banco datos, consentimiento, derechos ARCO |
+| D.S. 003-2013-JUS | Reglamento Ley 29733 | Obligaciones de tratamiento de datos |
+| Ley 29571 | Proteccion al Consumidor | Clausulas abusivas, Libro Reclamaciones, info veraz |
+| D.S. 011-2011-PCM | Libro de Reclamaciones | Obligatorio para todo proveedor |
+| Ley 29414 | Derechos Usuarios Salud | Consentimiento informado, derechos del paciente |
+| Ley 26842 | Ley General de Salud | Consentimiento, emergencias |
+| Ley 27669 | Trabajo de la Enfermera | Autonomia profesional, deberes |
+| Ley 31814 | IA responsable | Prohibe discriminacion algoritmica |
+
+### Documentos Legales Implementados
+
+- **Terminos y Condiciones** (13 secciones): Incluye identificacion, aclaracion regulatoria, derechos del paciente (Ley 29414), limitacion de responsabilidad (Art. 50 Ley 29571), procedimiento Libro de Reclamaciones
+- **Politica de Privacidad** (14 secciones): Datos reales de Code Media EIRL, derechos ARCO con plazo 10 dias habiles, datos de contacto
+- **Centro de Ayuda**: +30 FAQs organizadas por tipo de usuario
+- **Libro de Reclamaciones Virtual**: Formulario reclamo/queja, numero correlativo automatico (LR-YYYY-NNNN), lista de reclamos del usuario, respuesta admin
 
 ### Ley de Proteccion de Datos (Ley N° 29733)
 
@@ -629,23 +667,25 @@ Ver detalles en: `docs/CEP-API.md`
 - Ubicaciones GPS → Retenidas 30 dias, luego anonimizadas
 - Grabaciones de audio → Retenidas 90 dias
 
-### Ley N° 31814 (IA responsable)
+### Libro de Reclamaciones (D.S. 011-2011-PCM)
 
-- Prohibe discriminacion algoritmica
-- Por esto usamos badges transparentes, NO score numerico
-- Explicabilidad: usuario puede saber por que aparece cierto resultado
+**Backend:** Modulo `complaints/` con endpoints REST
+- `POST /complaints` - Crear reclamo/queja (auth required)
+- `GET /complaints/mine` - Mis reclamos
+- `GET /complaints` - Todos (admin)
+- `PATCH /complaints/:id/respond` - Responder (admin)
+
+**Frontend:** Modulo `legal/complaints/` con formulario y lista
+- Acceso desde Centro de Ayuda
+- Numero correlativo automatico
+- Plazo maximo respuesta: 30 dias calendario
 
 ### INDECOPI
 
 - Transparencia en precios y comisiones
 - Politica de cancelaciones clara
 - Derecho a replica ante calificaciones
-
-### Contratos Requeridos
-
-- Terminos y condiciones para usuarios
-- Politica de privacidad
-- Contrato de servicios enfermera-plataforma
+- Libro de Reclamaciones virtual accesible
 
 ---
 
@@ -683,9 +723,10 @@ Ver detalles en: `docs/CEP-API.md`
 
 | Version | Fecha | Cambios |
 |---------|-------|---------|
+| 1.1.0 | 2026-02-18 | Datos empresa, marco legal completo, modulo complaints, seccion legal reescrita |
 | 1.0.0 | 2026-02 | Documento inicial consolidado |
 
 ---
 
-*Documento generado para NurseLite - Plataforma de Enfermeria a Domicilio*
+*Documento generado para NurseLite (Code Media EIRL) - Plataforma de Enfermeria a Domicilio*
 *Peru, Febrero 2026*

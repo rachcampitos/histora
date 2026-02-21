@@ -57,37 +57,39 @@ FAQs completas organizadas en 3 secciones principales con más de 60 preguntas r
 
 ---
 
-## TAREAS PENDIENTES ANTES DEL LANZAMIENTO
+## TAREAS ANTES DEL LANZAMIENTO
 
-### 🔴 CRÍTICO - Completar antes del lanzamiento
+### COMPLETADO (18/02/2026)
 
-1. **Datos de la empresa:**
-   - [ ] Completar razón social
-   - [ ] Completar RUC
-   - [ ] Completar domicilio fiscal completo
-   - [ ] Completar teléfono de contacto
-   - [ ] Buscar y reemplazar `[Completar con...]` en todos los documentos
+1. **Datos de la empresa:** COMPLETADO
+   - [x] Razon social: Code Media EIRL (RUC 20615496074)
+   - [x] Domicilio fiscal: Cal. Tiahuanaco 145, Dpto 201, Urb. Portada del Sol Et. Dos, La Molina
+   - [x] Telefono: +51 939 175 392 / Email: admin@nurselite.com
+   - [x] Placeholders reemplazados en todos los documentos
 
-2. **Inscripción RNPDP:**
-   - [ ] Inscribir el Banco de Datos "Usuarios NurseLite" en el Registro Nacional de Protección de Datos Personales
-   - [ ] Actualizar el número de inscripción en `POLITICA-DE-PRIVACIDAD.md`
-   - [ ] Más información: www.minjus.gob.pe
+2. **Libro de Reclamaciones:** COMPLETADO
+   - [x] Libro de Reclamaciones digital en la app (modulo complaints)
+   - [x] Formulario reclamo/queja con numero correlativo
+   - [x] Lista de reclamos del usuario
+   - [x] Backend con endpoints REST + admin
+   - [ ] Configurar correo reclamos@nurselite.pe (pendiente)
 
-3. **Libro de Reclamaciones:**
-   - [ ] Habilitar Libro de Reclamaciones digital en la app
-   - [ ] Crear formulario web en care.nurselite.pe/reclamos
-   - [ ] Imprimir Libro de Reclamaciones físico para oficinas (si las hay)
-   - [ ] Configurar correo reclamos@nurselite.pe
+3. **Paginas legales en la app:** COMPLETADO
+   - [x] Terminos y Condiciones (13 secciones, incluye derechos paciente)
+   - [x] Politica de Privacidad (datos reales, ARCO 10 dias)
+   - [x] Centro de Ayuda (+30 FAQs)
+   - [x] Accesibles sin login
 
-4. **Correos específicos:**
+### PENDIENTE
+
+4. **Inscripcion RNPDP:**
+   - [ ] Inscribir Banco de Datos "Usuarios NurseLite" en RNPDP
+   - [ ] Actualizar numero de inscripcion en Politica de Privacidad
+   - [ ] Mas informacion: www.minjus.gob.pe
+
+5. **Correos especificos:**
    - [ ] Configurar privacidad@nurselite.pe
    - [ ] Configurar reclamos@nurselite.pe
-   - [ ] Configurar hola@nurselite.pe (ya existe)
-
-5. **Versiones en la app:**
-   - [ ] Subir versiones HTML de los documentos legales
-   - [ ] Crear páginas en care.nurselite.pe/terminos, /privacidad, /ayuda
-   - [ ] Asegurar que sean accesibles sin login
 
 ### 🟡 IMPORTANTE - Completar en las primeras semanas
 
@@ -183,22 +185,24 @@ Términos y Condiciones | Política de Privacidad |
 Centro de Ayuda | Libro de Reclamaciones
 ```
 
-### Endpoints de API necesarios
+### Endpoints de API
 
 ```typescript
-// Consentimientos
+// Consentimientos (pendiente)
 POST /api/users/consent
 GET /api/users/consent/history
 PUT /api/users/consent/revoke
 
-// Ejercicio de derechos
+// Ejercicio de derechos (pendiente)
 POST /api/users/data-export
 POST /api/users/data-rectification
 DELETE /api/users/account
 
-// Libro de Reclamaciones
-POST /api/complaints
-GET /api/complaints/:id
+// Libro de Reclamaciones - IMPLEMENTADO 18/02/2026
+POST /complaints          // Crear reclamo/queja (auth)
+GET /complaints/mine      // Mis reclamos (auth)
+GET /complaints           // Todos los reclamos (admin)
+PATCH /complaints/:id/respond  // Responder reclamo (admin)
 ```
 
 ---
@@ -227,7 +231,7 @@ GET /api/complaints/:id
 
 ## CONSULTORÍA LEGAL
 
-**IMPORTANTE:** Estos documentos fueron elaborados con base en las mejores prácticas y el conocimiento de la legislación peruana al 19 de enero de 2026.
+**IMPORTANTE:** Estos documentos fueron elaborados con base en las mejores practicas y el conocimiento de la legislacion peruana al 18 de febrero de 2026.
 
 **Recomendamos encarecidamente:**
 1. Revisión por un abogado especializado en:
@@ -250,11 +254,12 @@ GET /api/complaints/:id
 
 ## CONTACTO PARA TEMAS LEGALES
 
-**Responsable de Protección de Datos:**
-- Correo: privacidad@nurselite.pe
+**Contacto general:**
+- Email: admin@nurselite.com
+- WhatsApp: +51 939 175 392
 
-**Asuntos legales generales:**
-- Correo: legal@nurselite.pe [Crear este correo]
+**Proteccion de datos (pendiente configurar):**
+- Correo: privacidad@nurselite.pe
 
 **Autoridad competente:**
 - Autoridad Nacional de Protección de Datos Personales
@@ -293,44 +298,44 @@ GET /api/complaints/:id
 ## CHECKLIST FINAL ANTES DEL LANZAMIENTO
 
 ```
-DOCUMENTACIÓN LEGAL
-[ ] Todos los [Completar con...] fueron reemplazados
+DOCUMENTACION LEGAL
+[x] Todos los placeholders fueron reemplazados (18/02/2026)
 [ ] Documentos revisados por abogado
-[ ] Versiones HTML creadas y subidas al servidor
-[ ] URLs públicas funcionando (sin requerir login)
+[x] Paginas legales implementadas en la app (18/02/2026)
+[x] Accesibles sin login
 
 INSCRIPCIONES Y REGISTROS
 [ ] Banco de Datos inscrito en RNPDP
-[ ] Libro de Reclamaciones físico impreso (si aplica)
-[ ] Libro de Reclamaciones digital funcional
-[ ] Correos específicos configurados y funcionando
+[ ] Libro de Reclamaciones fisico impreso (si aplica)
+[x] Libro de Reclamaciones digital funcional (18/02/2026)
+[ ] Correos especificos configurados
 
-IMPLEMENTACIÓN TÉCNICA
-[ ] Checkboxes de aceptación en registro
+IMPLEMENTACION TECNICA
+[ ] Checkboxes de aceptacion en registro
 [ ] Consentimiento expreso para datos sensibles
 [ ] Banner de cookies funcional
 [ ] Exportar datos implementado
 [ ] Eliminar cuenta implementado
-[ ] Botón de pánico implementado
-[ ] Sistema de notificación de cambios
+[ ] Boton de panico implementado
+[ ] Sistema de notificacion de cambios
 [ ] Logs de consentimientos con timestamp
 
 PROCESOS INTERNOS
 [ ] Protocolo de respuesta a solicitudes ARCO
 [ ] Protocolo de respuesta a emergencias
-[ ] Protocolo de notificación de brechas de seguridad
-[ ] Capacitación del equipo completada
+[ ] Protocolo de notificacion de brechas de seguridad
+[ ] Capacitacion del equipo completada
 
 SEGURIDAD
-[ ] Encriptación SSL/TLS activa
-[ ] Contraseñas hasheadas (bcrypt)
+[x] Encriptacion SSL/TLS activa
+[x] Contrasenas hasheadas (bcrypt)
 [ ] Datos sensibles encriptados en reposo
-[ ] Auditoría de seguridad realizada
+[ ] Auditoria de seguridad realizada
 [ ] Plan de respuesta a incidentes documentado
 ```
 
 ---
 
-**Última actualización:** 19 de enero de 2026
+**Ultima actualizacion:** 18 de febrero de 2026
 
-© 2026 Histora Health. Todos los derechos reservados.
+2026 Code Media EIRL. Todos los derechos reservados.

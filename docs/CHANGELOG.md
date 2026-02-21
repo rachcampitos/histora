@@ -2,6 +2,38 @@
 
 Historial de cambios del proyecto Histora.
 
+## [v0.13.0] - 2026-02-18
+
+### Marco Legal Completo y Libro de Reclamaciones
+
+#### Actualizacion de Paginas Legales
+- **Politica de Privacidad:** Datos reales de Code Media EIRL (RUC, SUNARP, domicilio fiscal), contacto actualizado, plazo ARCO 10 dias habiles (Art. 23 Ley 29733)
+- **Terminos y Condiciones:** Seccion 1 reescrita con identificacion completa y aclaracion regulatoria (intermediario tecnologico, NO establecimiento de salud)
+- **Seccion 7 reescrita:** Limitacion de responsabilidad conforme Art. 50 Ley 29571 (distingue plataforma vs profesional)
+- **Nueva seccion 12:** Derechos del Paciente (Ley 29414 + Ley 29571)
+- **Nueva seccion 13:** Contacto + procedimiento completo Libro de Reclamaciones (D.S. 011-2011-PCM)
+
+#### Libro de Reclamaciones Virtual (Backend)
+- **Modulo complaints:** Schema MongoDB con tipo (reclamo/queja), numero correlativo (LR-YYYY-NNNN), estados (pending/in_review/resolved)
+- **Endpoints:** POST /complaints (crear), GET /complaints/mine (mis reclamos), GET /complaints (admin), PATCH /complaints/:id/respond (responder)
+- **Seguridad:** JwtAuthGuard + RolesGuard para endpoints admin
+
+#### Libro de Reclamaciones Virtual (Frontend)
+- **Formulario:** Selector reclamo/queja, datos auto-llenados del usuario, validacion, confirmacion con numero de seguimiento
+- **Lista de reclamos:** Mis reclamos con estado, respuesta, badges de color por estado
+- **Acceso:** Link desde Centro de Ayuda, routing `/legal/complaints` y `/legal/complaints/list`
+- **Dark mode:** Estilos completos en ambos modos
+
+#### Centro de Ayuda
+- Datos de contacto actualizados (admin@nurselite.com, WhatsApp +51 939 175 392)
+- Link directo al Libro de Reclamaciones
+
+#### Auditoria Legal
+- 9 items pre-lanzamiento marcados como completados
+- Documento actualizado con fecha y estado de empresa
+
+---
+
 ## [v0.12.0] - 2026-01-29
 
 ### Onboarding y Perfil de Enfermeras (NurseLite)
@@ -267,15 +299,15 @@ Historial de cambios del proyecto Histora.
 
 ---
 
-## Próximas Versiones
+## Proximas Versiones
 
-### v0.13.0 (Planificado)
+### v0.14.0 (Planificado)
 - [ ] Google Sign-In para NurseLite
 - [ ] Notificaciones push para enfermeras
 - [ ] Historial de ganancias detallado
 
 ### v1.0.0 (Planificado)
-- [ ] App móvil con Capacitor
-- [ ] Exportación PDF de reportes
+- [ ] App movil con Capacitor
+- [ ] Exportacion PDF de reportes
 - [ ] Sistema de videoconsultas
-- [ ] Integración WhatsApp Business completa
+- [ ] Integracion WhatsApp Business completa
