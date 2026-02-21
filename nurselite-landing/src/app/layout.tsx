@@ -17,9 +17,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://nurse-lite.com"),
   title: "NurseLite - Enfermeras a Domicilio en Lima | CEP Verificadas",
   description: "Conectamos pacientes con enfermeras profesionales verificadas por el CEP. Atención médica de calidad en la comodidad de tu hogar. Inyecciones, curaciones, control de signos vitales y más.",
-  authors: [{ name: "Histora Health" }],
-  creator: "Histora Health",
-  publisher: "Histora Health",
+  authors: [{ name: "Code Media EIRL" }],
+  creator: "Code Media EIRL",
+  publisher: "Code Media EIRL",
   openGraph: {
     title: "NurseLite - Enfermeras a Domicilio en Lima",
     description: "Conectamos pacientes con enfermeras profesionales verificadas por el CEP. Tu salud en las mejores manos.",
