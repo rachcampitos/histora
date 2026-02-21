@@ -1,0 +1,83 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/patient/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Notificaciones</ion-title>
+    <ion-buttons slot="end">
+      @if (notificationService.unreadCount() > 0) {
+        <ion-button (click)="markAllRead()" aria-label="Marcar todas como leidas">
+          <ion-icon name="checkmark-done-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      }
+      <ion-button (click)="goToSettings()" aria-label="Configuracion de notificaciones">
+        <ion-icon name="settings-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      refreshingText="Actualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  @if (notificationService.notifications().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="notifications-off-outline"></ion-icon>
+      <h3>Sin notificaciones</h3>
+      <p>Tus notificaciones de servicios, pagos y mensajes apareceran aqui.</p>
+    </div>
+  }
+
+  @if (notificationService.notifications().length > 0) {
+    <ion-list lines="none" class="notification-list">
+      @for (notification of notificationService.notifications(); track notification.id) {
+        <ion-item-sliding>
+          <ion-item
+            button
+            detail="false"
+            (click)="onNotificationTap(notification)"
+            [class.unread]="!notification.read">
+            <div class="notification-content">
+              <div class="notification-icon" [attr.data-color]="getIconColor(notification.type)">
+                <ion-icon [name]="getIcon(notification.type)" [color]="getIconColor(notification.type)"></ion-icon>
+              </div>
+              <div class="notification-body">
+                <div class="notification-header">
+                  <span class="notification-title">{{ notification.title }}</span>
+                  <span class="notification-time">{{ formatTimeAgo(notification.createdAt) }}</span>
+                </div>
+                <p class="notification-message">{{ notification.body }}</p>
+              </div>
+              @if (!notification.read) {
+                <span class="unread-dot"></span>
+              }
+            </div>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="deleteNotification(notification, $event)">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+
+    @if (notificationService.notifications().length > 3) {
+      <div class="clear-all">
+        <ion-button fill="clear" color="danger" size="small" (click)="confirmClearAll()">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Borrar todas
+        </ion-button>
+      </div>
+    }
+  }
+
+  <div class="bottom-spacer"></div>
+</ion-content>

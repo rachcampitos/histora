@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { AIResponse } from '../dto/message.dto';
+import { ToolHandlerService } from './tool-handler.service';
 
 interface MessageHistory {
   direction: 'inbound' | 'outbound';
@@ -13,13 +14,120 @@ interface SessionData {
   userType?: string;
 }
 
+const TOOL_DEFINITIONS: Anthropic.Tool[] = [
+  {
+    name: 'buscar_enfermeras',
+    description:
+      'Busca enfermeras disponibles por distrito y categoria de servicio en Lima. Usa esta herramienta cuando el usuario quiera encontrar enfermeras cercanas.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        distrito: {
+          type: 'string',
+          description:
+            'Distrito de Lima (ej: Miraflores, San Isidro, Surco, La Molina, San Borja, etc.)',
+        },
+        categoria: {
+          type: 'string',
+          description:
+            'Categoria del servicio: elderly_care, injection, vital_signs, wound_care, catheter, iv_therapy, blood_draw, medication, post_surgery',
+          enum: [
+            'elderly_care',
+            'injection',
+            'vital_signs',
+            'wound_care',
+            'catheter',
+            'iv_therapy',
+            'blood_draw',
+            'medication',
+            'post_surgery',
+          ],
+        },
+      },
+      required: ['distrito'],
+    },
+  },
+  {
+    name: 'ver_servicios',
+    description:
+      'Lista todos los servicios de enfermeria disponibles con precios y duracion. Usa esta herramienta cuando el usuario pregunte que servicios ofrecemos.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {},
+      required: [],
+    },
+  },
+  {
+    name: 'crear_solicitud',
+    description:
+      'Crea una solicitud de servicio de enfermeria a domicilio. Solo usar cuando el usuario ha confirmado enfermera, servicio, distrito y fecha.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        telefono_usuario: {
+          type: 'string',
+          description: 'Numero de telefono del usuario (proporcionado por el sistema)',
+        },
+        nurse_id: {
+          type: 'string',
+          description: 'ID de la enfermera seleccionada',
+        },
+        service_id: {
+          type: 'string',
+          description: 'ID del servicio seleccionado',
+        },
+        distrito: {
+          type: 'string',
+          description: 'Distrito donde se realizara el servicio',
+        },
+        direccion: {
+          type: 'string',
+          description: 'Direccion exacta (opcional)',
+        },
+        fecha: {
+          type: 'string',
+          description: 'Fecha del servicio en formato YYYY-MM-DD',
+        },
+        horario: {
+          type: 'string',
+          description: 'Horario preferido: morning, afternoon, evening, asap',
+          enum: ['morning', 'afternoon', 'evening', 'asap'],
+        },
+        notas: {
+          type: 'string',
+          description: 'Notas adicionales del paciente',
+        },
+      },
+      required: ['telefono_usuario', 'nurse_id', 'service_id', 'distrito'],
+    },
+  },
+  {
+    name: 'ver_estado_solicitud',
+    description:
+      'Consulta el estado de las solicitudes activas del usuario. Usa cuando el usuario pregunte por el estado de su servicio.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        telefono_usuario: {
+          type: 'string',
+          description: 'Numero de telefono del usuario (proporcionado por el sistema)',
+        },
+      },
+      required: ['telefono_usuario'],
+    },
+  },
+];
+
 @Injectable()
 export class AIChatService {
   private readonly logger = new Logger(AIChatService.name);
   private readonly client: Anthropic;
   private readonly model = 'claude-sonnet-4-20250514';
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly toolHandler: ToolHandlerService,
+  ) {
     this.client = new Anthropic({
       apiKey: this.configService.get<string>('ANTHROPIC_API_KEY'),
     });
@@ -32,22 +140,15 @@ export class AIChatService {
     userMessage: string,
     history: MessageHistory[],
     session: SessionData,
+    phoneNumber?: string,
   ): Promise<AIResponse> {
-    const systemPrompt = this.buildSystemPrompt(session);
+    const systemPrompt = this.buildSystemPrompt(session, phoneNumber);
     const messages = this.formatMessages(history, userMessage);
 
     try {
-      const response = await this.client.messages.create({
-        model: this.model,
-        max_tokens: 500,
-        system: systemPrompt,
-        messages,
-      });
+      const assistantMessage = await this.runWithTools(systemPrompt, messages);
 
-      const assistantMessage =
-        response.content[0].type === 'text' ? response.content[0].text : '';
-
-      this.logger.debug(`AI Response generated (${response.usage?.output_tokens} tokens)`);
+      this.logger.debug('AI Response generated with tool support');
 
       return this.parseResponse(assistantMessage);
     } catch (error) {
@@ -59,14 +160,91 @@ export class AIChatService {
   }
 
   /**
+   * Run Claude with tool calling loop
+   * Handles tool_use → tool_result → text response cycle
+   */
+  private async runWithTools(
+    systemPrompt: string,
+    messages: { role: 'user' | 'assistant'; content: string | Anthropic.ContentBlockParam[] }[],
+  ): Promise<string> {
+    const maxIterations = 5;
+    let currentMessages = [...messages];
+
+    for (let i = 0; i < maxIterations; i++) {
+      const response = await this.client.messages.create({
+        model: this.model,
+        max_tokens: 1024,
+        system: systemPrompt,
+        tools: TOOL_DEFINITIONS,
+        messages: currentMessages,
+      });
+
+      // If the response is a normal text, return it
+      if (response.stop_reason === 'end_turn') {
+        const textBlock = response.content.find((block) => block.type === 'text');
+        return textBlock?.type === 'text' ? textBlock.text : '';
+      }
+
+      // If the model wants to use a tool
+      if (response.stop_reason === 'tool_use') {
+        // Add the assistant's response (with tool_use blocks) to messages
+        currentMessages.push({
+          role: 'assistant',
+          content: response.content as Anthropic.ContentBlockParam[],
+        });
+
+        // Execute each tool call and collect results
+        const toolResults: Anthropic.ToolResultBlockParam[] = [];
+
+        for (const block of response.content) {
+          if (block.type === 'tool_use') {
+            this.logger.log(`Tool call: ${block.name}`);
+            const result = await this.toolHandler.executeTool(
+              block.name,
+              block.input as Record<string, any>,
+            );
+
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: block.id,
+              content: JSON.stringify(result),
+            });
+          }
+        }
+
+        // Add tool results as user message
+        currentMessages.push({
+          role: 'user',
+          content: toolResults,
+        });
+
+        // Continue the loop so Claude can process the tool results
+        continue;
+      }
+
+      // Fallback: extract any text from the response
+      const textBlock = response.content.find((block) => block.type === 'text');
+      return textBlock?.type === 'text' ? textBlock.text : '';
+    }
+
+    // Safety: if we exceed max iterations
+    this.logger.warn('Exceeded max tool iterations');
+    return 'Disculpa, no pude completar tu solicitud. ¿Puedes intentar de nuevo?';
+  }
+
+  /**
    * Build the system prompt with context
    */
-  private buildSystemPrompt(session: SessionData): string {
+  private buildSystemPrompt(session: SessionData, phoneNumber?: string): string {
     const capturedInfo = session.capturedData
       ? Object.entries(session.capturedData)
           .map(([k, v]) => `- ${k}: ${v}`)
           .join('\n')
       : 'Sin datos capturados aun';
+
+    const phoneContext = phoneNumber
+      ? `\n## TELEFONO DEL USUARIO\n${phoneNumber}\nIMPORTANTE: Cuando uses las herramientas crear_solicitud o ver_estado_solicitud, pasa este numero como telefono_usuario.\n`
+      : '';
 
     return `
 Eres el asistente virtual de NurseLite, plataforma de enfermeras a domicilio en Lima, Peru.
@@ -78,6 +256,23 @@ Operado por Code Media EIRL (RUC 20615496074).
 - Si ofreces opciones, usa el formato: [Opcion 1] [Opcion 2] [Opcion 3]
 - Maximo 3 opciones por mensaje
 - NO uses emojis excesivos (maximo 1 por mensaje si es necesario)
+
+## HERRAMIENTAS DISPONIBLES
+Tienes acceso a herramientas para buscar enfermeras, ver servicios, crear solicitudes y consultar estados.
+
+### Cuando usar las herramientas:
+- **buscar_enfermeras**: Cuando el usuario mencione que necesita una enfermera, especifique un distrito, o pregunte por disponibilidad
+- **ver_servicios**: Cuando pregunte que servicios ofrecemos, precios o duracion
+- **crear_solicitud**: SOLO cuando el usuario haya confirmado: enfermera, servicio, distrito y fecha. Siempre confirma antes de crear
+- **ver_estado_solicitud**: Cuando pregunte por el estado de un servicio pendiente
+
+### Flujo de reserva:
+1. Pregunta que necesita (servicio) y donde (distrito)
+2. Usa buscar_enfermeras para mostrar opciones
+3. El usuario elige una enfermera
+4. Confirma fecha y horario
+5. Usa crear_solicitud para crear la reserva
+6. Si el usuario no tiene cuenta, indicale que se registre primero
 
 ## SERVICIOS
 1. Cuidado Adulto Mayor - Desde S/.120 (2-12h)
@@ -110,23 +305,22 @@ Lima Metropolitana: Miraflores, San Isidro, San Borja, Surco, La Molina, Barranc
 - WhatsApp soporte: +51 939 175 392
 - Horario de atencion: Lunes a Sabado, 8:00 a.m. - 8:00 p.m.
 - Domicilio fiscal: Cal. Tiahuanaco 145, Dpto 201, Urb. Portada del Sol Et. Dos, La Molina, Lima
-
+${phoneContext}
 ## DATOS DEL USUARIO ACTUAL
 ${capturedInfo}
 
 ## INSTRUCCIONES ESPECIALES
 1. Si preguntan por emergencias medicas: sugiere llamar al 106 (SAMU) o ir a emergencias
-2. Si piden agendar directamente: envia link de la app
-3. Intenta capturar naturalmente: nombre, distrito, tipo de servicio que necesita
-4. Si capturas datos, incluyelos asi al FINAL de tu respuesta:
+2. Intenta capturar naturalmente: nombre, distrito, tipo de servicio que necesita
+3. Si capturas datos, incluyelos asi al FINAL de tu respuesta:
    [CAPTURED:nombre=X,distrito=Y,servicio=Z]
    (esto sera procesado internamente y no se mostrara al usuario)
-5. Si el usuario parece frustrado o pide hablar con humano, responde con:
+4. Si el usuario parece frustrado o pide hablar con humano, responde con:
    [ESCALATE:razon aqui]
-6. NUNCA inventes nombres de enfermeras especificas
-7. NUNCA des consejos medicos ni diagnosticos
-8. Si no entiendes algo, pide aclaracion de forma amable
-9. Si el usuario quiere presentar un reclamo, indicale que puede hacerlo desde la app en el Libro de Reclamaciones o enviar un correo a admin@nurselite.com
+5. NUNCA des consejos medicos ni diagnosticos
+6. Si no entiendes algo, pide aclaracion de forma amable
+7. Si el usuario quiere presentar un reclamo, indicale que puede hacerlo desde la app en el Libro de Reclamaciones o enviar un correo a admin@nurselite.com
+8. Cuando muestres enfermeras del resultado de buscar_enfermeras, presenta la info de forma clara y concisa
 `;
   }
 

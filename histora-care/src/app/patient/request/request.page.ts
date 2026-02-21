@@ -3,9 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { ServiceRequestService } from '../../core/services/service-request.service';
+import { UploadsService } from '../../core/services/uploads.service';
 import { GeolocationService, LocationCoordinates } from '../../core/services/geolocation.service';
 import { MapboxService, AddressSuggestion } from '../../core/services/mapbox.service';
-import { Nurse, NurseService, CreateServiceRequest } from '../../core/models';
+import { Nurse, NurseService, CreateServiceRequest, ServiceAttachment } from '../../core/models';
 
 interface TimeSlotOption {
   value: string;
@@ -28,6 +29,7 @@ export class RequestPage implements OnInit {
   private alertCtrl = inject(AlertController);
   private nurseService = inject(NurseApiService);
   private serviceRequestService = inject(ServiceRequestService);
+  private uploadsService = inject(UploadsService);
   private geolocationService = inject(GeolocationService);
   private mapboxService = inject(MapboxService);
 
@@ -48,6 +50,10 @@ export class RequestPage implements OnInit {
   requestedDate = signal<string>(this.getMinDate());
   requestedTimeSlot = signal<string>('asap');
   patientNotes = signal('');
+
+  // Attachments
+  attachments = signal<ServiceAttachment[]>([]);
+  isUploadingAttachment = signal(false);
 
   // Location state
   currentLocation = signal<LocationCoordinates | null>(null);
@@ -124,8 +130,8 @@ export class RequestPage implements OnInit {
         this.loadNurseData(nurseId);
         this.loadCurrentLocation();
 
-        // Pre-fill from retry params if present
-        if (params['retryRequestId']) {
+        // Pre-fill from retry or rebook params if present
+        if (params['retryRequestId'] || params['serviceCategory']) {
           this.prefillFromRetry(params);
         }
       } else {
@@ -330,7 +336,8 @@ export class RequestPage implements OnInit {
         location: locationData,
         requestedDate: this.formatDateForApi(this.requestedDate()),
         requestedTimeSlot: this.requestedTimeSlot(),
-        patientNotes: this.patientNotes() || undefined
+        patientNotes: this.patientNotes() || undefined,
+        attachments: this.attachments().length > 0 ? this.attachments() : undefined,
       };
 
       const result = await this.serviceRequestService.create(requestData).toPromise();
@@ -489,6 +496,50 @@ export class RequestPage implements OnInit {
     if (params['timeSlot']) this.requestedTimeSlot.set(params['timeSlot']);
     if (params['notes']) this.patientNotes.set(params['notes']);
     if (params['serviceCategory']) this.retryServiceCategory.set(params['serviceCategory']);
+  }
+
+  async addAttachment() {
+    if (this.attachments().length >= 3) {
+      await this.showToast('Maximo 3 archivos adjuntos', 'warning');
+      return;
+    }
+
+    const photo = await this.uploadsService.promptAndGetPhoto();
+    if (!photo) return;
+
+    this.isUploadingAttachment.set(true);
+
+    try {
+      const fileData = `data:${photo.mimeType};base64,${photo.base64}`;
+      const filename = `receta_${Date.now()}.${photo.mimeType.split('/')[1]}`;
+
+      const result = await this.uploadsService
+        .uploadServiceAttachment(fileData, photo.mimeType, filename)
+        .toPromise();
+
+      if (result?.success && result.url && result.publicId) {
+        const attachment: ServiceAttachment = {
+          url: result.url,
+          publicId: result.publicId,
+          type: 'image',
+          name: filename,
+        };
+        this.attachments.set([...this.attachments(), attachment]);
+        await this.showToast('Archivo adjuntado', 'success');
+      } else {
+        await this.showToast('Error al subir el archivo', 'danger');
+      }
+    } catch (err) {
+      console.error('Error uploading attachment:', err);
+      await this.showToast('Error al subir el archivo', 'danger');
+    } finally {
+      this.isUploadingAttachment.set(false);
+    }
+  }
+
+  removeAttachment(index: number) {
+    const updated = this.attachments().filter((_, i) => i !== index);
+    this.attachments.set(updated);
   }
 
   private async showToast(message: string, color: 'success' | 'warning' | 'danger') {

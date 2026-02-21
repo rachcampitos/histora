@@ -18,6 +18,7 @@ import {
   UploadProfilePhotoDto,
   UploadSelfieDto,
   UploadDniPhotoDto,
+  UploadServiceAttachmentDto,
   FileResponseDto,
 } from './dto/upload-file.dto';
 import { NursesService } from '../nurses/nurses.service';
@@ -106,6 +107,27 @@ export class UploadsController {
       success: true,
       url: result.url,
       thumbnailUrl: result.thumbnailUrl,
+      publicId: result.publicId,
+    };
+  }
+
+  @Post('service-attachment')
+  @Roles(UserRole.PATIENT)
+  @ApiOperation({ summary: 'Upload service request attachment (prescription/document)' })
+  async uploadServiceAttachment(
+    @CurrentUser() user: CurrentUserData,
+    @Body() dto: UploadServiceAttachmentDto,
+  ): Promise<FileResponseDto> {
+    const result = await this.uploadsService.uploadServiceAttachment(
+      dto.fileData,
+      dto.mimeType,
+      dto.filename,
+      user.userId,
+    );
+
+    return {
+      success: true,
+      url: result.url,
       publicId: result.publicId,
     };
   }

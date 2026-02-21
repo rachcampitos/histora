@@ -69,6 +69,25 @@ export class RequestLocation {
 export const RequestLocationSchema =
   SchemaFactory.createForClass(RequestLocation);
 
+// Attachment sub-schema (prescriptions, documents)
+@Schema({ _id: false })
+export class RequestAttachment {
+  @Prop({ required: true })
+  url: string;
+
+  @Prop({ required: true })
+  publicId: string;
+
+  @Prop({ required: true, enum: ['image', 'pdf'] })
+  type: string;
+
+  @Prop({ required: true })
+  name: string;
+}
+
+export const RequestAttachmentSchema =
+  SchemaFactory.createForClass(RequestAttachment);
+
 @Schema({ timestamps: true })
 export class ServiceRequest extends Document {
   // Participants
@@ -125,6 +144,10 @@ export class ServiceRequest extends Document {
 
   @Prop()
   nurseNotes?: string;
+
+  // Attachments (prescriptions, documents)
+  @Prop({ type: [RequestAttachmentSchema], default: [] })
+  attachments: RequestAttachment[];
 
   // Payment
   @Prop({

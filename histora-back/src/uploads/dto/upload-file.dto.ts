@@ -93,6 +93,22 @@ export class UploadDniPhotoDto {
   side: 'front' | 'back';
 }
 
+export class UploadServiceAttachmentDto {
+  @ApiProperty({ description: 'Base64 encoded file data (image or PDF)' })
+  @IsString()
+  @MaxLength(7 * 1024 * 1024) // ~5MB decoded
+  fileData: string;
+
+  @ApiProperty({ description: 'Original filename', example: 'receta-medica.jpg' })
+  @IsString()
+  @MaxLength(255)
+  filename: string;
+
+  @ApiProperty({ description: 'MIME type', example: 'image/jpeg' })
+  @IsString()
+  mimeType: string;
+}
+
 export class DeleteFileDto {
   @ApiProperty({ description: 'Public ID of the file to delete' })
   @IsString()

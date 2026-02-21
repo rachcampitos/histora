@@ -23,6 +23,8 @@ export enum NotificationType {
   NEW_NURSE_REGISTERED = 'new_nurse_registered',
   // Nurse notifications (Histora Care)
   NEW_NURSE_REVIEW = 'new_nurse_review',
+  // Reminders (Histora Care)
+  SERVICE_REMINDER = 'service_reminder',
 }
 
 export enum NotificationChannel {

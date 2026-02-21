@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServiceRequestsController } from './service-requests.controller';
 import { ServiceRequestsService } from './service-requests.service';
+import { ServiceReminderScheduler } from './service-reminder.scheduler';
 import {
   ServiceRequest,
   ServiceRequestSchema,
@@ -24,7 +25,7 @@ import { User, UserSchema } from '../users/schema/user.schema';
     TrackingModule,
   ],
   controllers: [ServiceRequestsController],
-  providers: [ServiceRequestsService],
+  providers: [ServiceRequestsService, ServiceReminderScheduler],
   exports: [ServiceRequestsService],
 })
 export class ServiceRequestsModule {}

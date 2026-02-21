@@ -78,6 +78,11 @@ const routes: Routes = [
   // SHARED ROUTES (requires auth)
   // ============================================================
   {
+    path: 'notifications',
+    canActivate: [authGuard],
+    loadChildren: () => import('./shared/notifications/notifications-list/notifications-list.module').then(m => m.NotificationsListPageModule),
+  },
+  {
     path: 'notifications/settings',
     canActivate: [authGuard],
     loadChildren: () => import('./shared/notifications/notification-settings.module').then(m => m.NotificationSettingsPageModule),

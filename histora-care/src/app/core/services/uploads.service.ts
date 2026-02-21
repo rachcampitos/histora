@@ -90,6 +90,17 @@ export class UploadsService {
   }
 
   /**
+   * Upload a service request attachment (prescription/document)
+   */
+  uploadServiceAttachment(fileData: string, mimeType: string, filename: string): Observable<UploadResponse> {
+    return this.api.post<UploadResponse>('/uploads/service-attachment', {
+      fileData,
+      mimeType,
+      filename,
+    });
+  }
+
+  /**
    * Prompt user to choose photo source and upload
    * Uses Camera Capacitor plugin with prompt for source selection
    */

@@ -123,6 +123,23 @@ ion-header {
         color: $text-dark;
       }
 
+      .cep-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 10px;
+        background: #d1fae5;
+        color: #047857;
+        white-space: nowrap;
+
+        ion-icon {
+          font-size: 12px;
+        }
+      }
+
       .availability-badge {
         font-size: 12px;
         font-weight: 600;
@@ -290,6 +307,11 @@ ion-header {
       .nurse-header {
         h3 {
           color: #f1f5f9;
+        }
+
+        .cep-badge {
+          background: #064e3b;
+          color: #6ee7b7;
         }
 
         .availability-badge {

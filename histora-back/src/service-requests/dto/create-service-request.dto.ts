@@ -38,6 +38,27 @@ export class RequestLocationDto {
   city: string;
 }
 
+export class AttachmentDto {
+  @ApiProperty({ example: 'https://res.cloudinary.com/...' })
+  @IsString()
+  @IsNotEmpty()
+  url: string;
+
+  @ApiProperty({ example: 'histora/service-requests/abc123/attachment_1' })
+  @IsString()
+  @IsNotEmpty()
+  publicId: string;
+
+  @ApiProperty({ enum: ['image', 'pdf'] })
+  @IsEnum(['image', 'pdf'])
+  type: string;
+
+  @ApiProperty({ example: 'receta-medica.jpg' })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}
+
 export class CreateServiceRequestDto {
   @ApiProperty({ example: '507f1f77bcf86cd799439011' })
   @IsString()
@@ -66,4 +87,11 @@ export class CreateServiceRequestDto {
   @IsOptional()
   @IsString()
   patientNotes?: string;
+
+  @ApiPropertyOptional({ type: [AttachmentDto], description: 'Prescriptions/documents (max 3)' })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AttachmentDto)
+  attachments?: AttachmentDto[];
 }

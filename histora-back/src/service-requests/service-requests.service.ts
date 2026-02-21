@@ -76,6 +76,7 @@ export class ServiceRequestsService {
       requestedDate: new Date(createDto.requestedDate),
       requestedTimeSlot: createDto.requestedTimeSlot,
       patientNotes: createDto.patientNotes,
+      attachments: createDto.attachments || [],
       status: 'pending',
       statusHistory: [
         {

@@ -35,6 +35,12 @@
               <div class="nurse-details">
                 <div class="nurse-header">
                   <h3>{{ result.nurse.user?.firstName }} {{ result.nurse.user?.lastName }}</h3>
+                  @if (result.nurse.cepVerified) {
+                    <span class="cep-badge">
+                      <ion-icon name="shield-checkmark"></ion-icon>
+                      Verificada
+                    </span>
+                  }
                   <span class="availability-badge" [class.available]="result.nurse.isAvailable">
                     {{ result.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
                   </span>
@@ -101,6 +107,12 @@
             <div class="nurse-details">
               <div class="nurse-header">
                 <h3>{{ result.nurse.user?.firstName }} {{ result.nurse.user?.lastName }}</h3>
+                @if (result.nurse.cepVerified) {
+                  <span class="cep-badge">
+                    <ion-icon name="shield-checkmark"></ion-icon>
+                    Verificada
+                  </span>
+                }
                 <span class="availability-badge" [class.available]="result.nurse.isAvailable">
                   {{ result.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
                 </span>

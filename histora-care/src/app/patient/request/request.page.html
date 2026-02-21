@@ -344,6 +344,58 @@
         </ion-card-content>
       </ion-card>
 
+      <!-- Attachments Section -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="attach-outline"></ion-icon>
+            Adjuntar receta o documento (opcional)
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="section-helper">Adjunta recetas medicas o documentos para que la enfermera pueda prepararse mejor.</p>
+
+          @if (attachments().length < 3) {
+            <ion-button
+              fill="outline"
+              expand="block"
+              (click)="addAttachment()"
+              [disabled]="isUploadingAttachment()"
+              class="attachment-btn">
+              @if (isUploadingAttachment()) {
+                <ion-spinner name="dots" slot="start"></ion-spinner>
+                Subiendo...
+              } @else {
+                <ion-icon name="camera-outline" slot="start"></ion-icon>
+                Adjuntar foto o documento
+              }
+            </ion-button>
+          }
+
+          @if (attachments().length > 0) {
+            <div class="attachments-list">
+              @for (attachment of attachments(); track attachment.publicId; let i = $index) {
+                <div class="attachment-item">
+                  @if (attachment.type === 'image') {
+                    <img [src]="attachment.url" [alt]="attachment.name" class="attachment-thumb" />
+                  } @else {
+                    <div class="attachment-pdf-icon">
+                      <ion-icon name="document-outline"></ion-icon>
+                    </div>
+                  }
+                  <span class="attachment-name">{{ attachment.name }}</span>
+                  <ion-button fill="clear" size="small" color="danger" (click)="removeAttachment(i)">
+                    <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+              }
+            </div>
+          }
+
+          <p class="attachment-hint">Maximo 3 archivos (JPEG, PNG o PDF, 5MB c/u)</p>
+        </ion-card-content>
+      </ion-card>
+
       <!-- Summary Card -->
       @if (selectedService()) {
         <ion-card class="summary-card">

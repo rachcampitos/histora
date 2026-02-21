@@ -446,6 +446,19 @@ export class HistoryPage implements OnInit {
   }
 
   /**
+   * Navigate to request page with pre-filled data from a completed service
+   */
+  rebookService(request: ServiceRequest, event: Event) {
+    event.stopPropagation();
+    this.router.navigate(['/patient/request'], {
+      queryParams: {
+        nurseId: request.nurseId,
+        serviceCategory: request.service.category,
+      }
+    });
+  }
+
+  /**
    * Navigate to search for a new service
    */
   goToSearch() {

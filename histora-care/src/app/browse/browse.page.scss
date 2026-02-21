@@ -203,6 +203,45 @@ ion-toolbar {
         }
       }
 
+      .nurse-badges {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+
+        .cep-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          font-size: 11px;
+          font-weight: tokens.$font-weight-semibold;
+          padding: 2px 8px;
+          border-radius: tokens.$radius-lg;
+          background: #d1fae5;
+          color: #047857;
+          white-space: nowrap;
+
+          ion-icon {
+            font-size: 12px;
+          }
+        }
+
+        .tier-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          font-size: 11px;
+          font-weight: tokens.$font-weight-semibold;
+          padding: 2px 8px;
+          border-radius: tokens.$radius-lg;
+          white-space: nowrap;
+
+          ion-icon {
+            font-size: 12px;
+          }
+        }
+      }
+
       .nurse-meta {
         display: flex;
         gap: tokens.$spacing-3;
@@ -543,6 +582,11 @@ ion-toolbar {
     .nurse-header .nurse-info {
       h3 {
         color: tokens.$text-dark-primary !important;
+      }
+
+      .nurse-badges .cep-badge {
+        background: #064e3b;
+        color: #6ee7b7;
       }
 
       .nurse-meta {

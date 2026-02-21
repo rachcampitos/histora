@@ -117,6 +117,14 @@
                 <ion-icon name="information-circle-outline" class="info-icon"></ion-icon>
               </ion-badge>
             }
+            @if (nurseTierInfo(); as tierInfo) {
+              @if (tierInfo.tier !== 'certified') {
+                <span class="tier-badge" [style.background]="tierInfo.color + '1a'" [style.color]="tierInfo.color">
+                  <ion-icon [name]="tierInfo.icon"></ion-icon>
+                  {{ tierInfo.label }}
+                </span>
+              }
+            }
           </div>
         </div>
       </ion-card>

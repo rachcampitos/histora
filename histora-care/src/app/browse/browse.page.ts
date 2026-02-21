@@ -6,7 +6,8 @@ import { MapboxService } from '../core/services/mapbox.service';
 import { NurseApiService } from '../core/services/nurse.service';
 import { ThemeService } from '../core/services/theme.service';
 import { AuthService } from '../core/services/auth.service';
-import { NurseSearchResult } from '../core/models';
+import { NurseSearchResult, Nurse } from '../core/models';
+import { calculateNurseTier, NurseTierInfo } from '../core/utils/nurse-tier.util';
 
 @Component({
   selector: 'app-browse',
@@ -363,5 +364,13 @@ export class BrowsePage implements OnInit, AfterViewInit, OnDestroy {
 
   goToLogin() {
     this.router.navigate(['/auth/login']);
+  }
+
+  getNurseTier(nurse: Nurse): NurseTierInfo {
+    return calculateNurseTier({
+      totalServicesCompleted: nurse.totalServicesCompleted || 0,
+      averageRating: nurse.averageRating || 0,
+      totalReviews: nurse.totalReviews || 0,
+    });
   }
 }

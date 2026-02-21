@@ -210,6 +210,21 @@ ion-header ion-toolbar {
         }
       }
     }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      margin-top: 6px;
+
+      ion-icon {
+        font-size: 14px;
+      }
+    }
   }
 }
 

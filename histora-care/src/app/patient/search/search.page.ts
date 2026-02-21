@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { NurseApiService } from '../../core/services/nurse.service';
 import { Nurse, NurseReview } from '../../core/models';
+import { calculateNurseTier, NurseTierInfo } from '../../core/utils/nurse-tier.util';
 
 @Component({
   selector: 'app-search',
@@ -26,6 +27,16 @@ export class SearchPage implements OnInit {
   error = signal<string | null>(null);
   showAllReviews = signal(false);
   private origin = signal<string | null>(null);
+
+  nurseTierInfo = computed<NurseTierInfo | null>(() => {
+    const n = this.nurse();
+    if (!n) return null;
+    return calculateNurseTier({
+      totalServicesCompleted: n.totalServicesCompleted || 0,
+      averageRating: n.averageRating || 0,
+      totalReviews: n.totalReviews || 0,
+    });
+  });
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {

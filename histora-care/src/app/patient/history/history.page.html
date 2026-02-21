@@ -230,6 +230,18 @@
                   </ion-button>
                 }
 
+                <!-- Re-book button for completed services -->
+                @if (request.status === 'completed') {
+                  <ion-button
+                    fill="outline"
+                    size="small"
+                    color="primary"
+                    (click)="rebookService(request, $event)">
+                    <ion-icon name="repeat-outline" slot="start"></ion-icon>
+                    Solicitar de nuevo
+                  </ion-button>
+                }
+
                 <!-- Track button for active services -->
                 @if (isActive(request)) {
                   <ion-button fill="solid" size="small" color="primary">

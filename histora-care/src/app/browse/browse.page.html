@@ -98,6 +98,22 @@
               {{ selectedNurse.nurse.isAvailable ? 'Disponible' : 'No disponible' }}
             </div>
           </div>
+          <div class="nurse-badges">
+            @if (selectedNurse.nurse.cepVerified) {
+              <span class="cep-badge" aria-label="CEP Verificada">
+                <ion-icon name="shield-checkmark" aria-hidden="true"></ion-icon>
+                Verificada
+              </span>
+            }
+            @if (getNurseTier(selectedNurse.nurse); as tierInfo) {
+              @if (tierInfo.tier !== 'certified') {
+                <span class="tier-badge" [style.background]="tierInfo.color + '1a'" [style.color]="tierInfo.color" [attr.aria-label]="'Nivel: ' + tierInfo.label">
+                  <ion-icon [name]="tierInfo.icon" aria-hidden="true"></ion-icon>
+                  {{ tierInfo.label }}
+                </span>
+              }
+            }
+          </div>
           <div class="nurse-meta">
             <span class="distance">
               <ion-icon name="location-outline" aria-hidden="true"></ion-icon>

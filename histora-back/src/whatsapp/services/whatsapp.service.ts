@@ -114,11 +114,16 @@ export class WhatsAppService {
         text: m.text,
       }));
 
-      // Generate AI response
-      const aiResponse = await this.aiChatService.chat(parsed.text, history, {
-        capturedData: session.capturedData,
-        userType: session.userType,
-      });
+      // Generate AI response (pass phone number for tool calling context)
+      const aiResponse = await this.aiChatService.chat(
+        parsed.text,
+        history,
+        {
+          capturedData: session.capturedData,
+          userType: session.userType,
+        },
+        parsed.from,
+      );
 
       // Update session with captured data
       if (aiResponse.capturedData) {

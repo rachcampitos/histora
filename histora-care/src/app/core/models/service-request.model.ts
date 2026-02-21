@@ -49,6 +49,9 @@ export interface ServiceRequest {
   patientNotes?: string;
   nurseNotes?: string;
 
+  // Attachments (prescriptions, documents)
+  attachments?: ServiceAttachment[];
+
   // Payment
   paymentStatus: PaymentStatus;
   paymentMethod?: string;
@@ -95,6 +98,13 @@ export interface StatusChange {
   note?: string;
 }
 
+export interface ServiceAttachment {
+  url: string;
+  publicId: string;
+  type: 'image' | 'pdf';
+  name: string;
+}
+
 export interface CreateServiceRequest {
   nurseId: string;
   serviceId: string;
@@ -108,4 +118,5 @@ export interface CreateServiceRequest {
   requestedDate: string; // ISO date
   requestedTimeSlot: string;
   patientNotes?: string;
+  attachments?: ServiceAttachment[];
 }

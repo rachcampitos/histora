@@ -370,6 +370,57 @@ export class UploadsService {
     };
   }
 
+  // Upload service request attachment (prescription, document)
+  async uploadServiceAttachment(
+    fileData: string,
+    mimeType: string,
+    filename: string,
+    userId: string
+  ): Promise<{ url: string; publicId: string; type: string }> {
+    const base64Data = this.extractBase64Data(fileData);
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > this.maxImageSize) {
+      throw new BadRequestException('El archivo excede el limite de 5MB');
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowedTypes.includes(mimeType)) {
+      throw new BadRequestException('Formato no permitido. Permitidos: JPEG, PNG, PDF');
+    }
+
+    const isPdf = mimeType === 'application/pdf';
+    const ext = isPdf ? 'pdf' : mimeType.split('/')[1];
+    const safeFilename = `attachment_${userId}_${Date.now()}.${ext}`;
+    const folder = `histora/service-requests/${userId}/attachments`;
+
+    const result = await this.cloudinaryProvider.uploadBase64(base64Data, safeFilename, {
+      folder,
+      resourceType: isPdf ? 'raw' : 'image',
+      ...(!isPdf && {
+        transformation: {
+          width: 1200,
+          height: 1200,
+          crop: 'fit',
+          quality: 'auto',
+          format: 'auto',
+        },
+      }),
+    });
+
+    if (!result.success) {
+      throw new BadRequestException(`Upload failed: ${result.error}`);
+    }
+
+    this.logger.log(`Service attachment uploaded for user ${userId}`);
+
+    return {
+      url: result.secureUrl!,
+      publicId: result.publicId!,
+      type: isPdf ? 'pdf' : 'image',
+    };
+  }
+
   // Delete file
   async deleteFile(publicId: string): Promise<{ success: boolean }> {
     const result = await this.cloudinaryProvider.delete(publicId);

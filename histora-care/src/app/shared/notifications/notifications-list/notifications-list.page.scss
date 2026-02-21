@@ -1,0 +1,197 @@
+ion-toolbar {
+  --background: #ffffff;
+  --color: #1e293b;
+
+  ion-buttons ion-button {
+    --color: #1e293b;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 64px;
+    color: #94a3b8;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+    max-width: 280px;
+  }
+}
+
+.notification-list {
+  background: transparent;
+  padding: 8px 0;
+
+  ion-item {
+    --background: transparent;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --inner-padding-end: 0;
+    --min-height: auto;
+    margin-bottom: 2px;
+
+    &.unread {
+      --background: rgba(30, 58, 95, 0.04);
+    }
+  }
+}
+
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  width: 100%;
+
+  .notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #f1f5f9;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  .notification-body {
+    flex: 1;
+    min-width: 0;
+
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+
+      .notification-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+        flex: 1;
+      }
+
+      .notification-time {
+        font-size: 12px;
+        color: #94a3b8;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+    }
+
+    .notification-message {
+      margin: 0;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1e3a5f;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+}
+
+.clear-all {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 24px;
+
+  ion-button {
+    text-transform: none;
+    font-size: 13px;
+  }
+}
+
+.bottom-spacer {
+  height: 100px;
+}
+
+// Dark mode
+:host-context(body.ion-palette-dark),
+:host-context(body.dark) {
+  ion-toolbar {
+    --background: #0f172a;
+    --color: #f1f5f9;
+
+    ion-buttons ion-button {
+      --color: #f1f5f9;
+    }
+  }
+
+  .empty-state {
+    ion-icon {
+      color: #475569;
+    }
+
+    h3 {
+      color: #f1f5f9;
+    }
+
+    p {
+      color: #94a3b8;
+    }
+  }
+
+  .notification-list ion-item {
+    &.unread {
+      --background: rgba(74, 157, 154, 0.08);
+    }
+  }
+
+  .notification-content {
+    .notification-icon {
+      background: #1e293b;
+    }
+
+    .notification-body {
+      .notification-header .notification-title {
+        color: #f1f5f9;
+      }
+
+      .notification-header .notification-time {
+        color: #64748b;
+      }
+
+      .notification-message {
+        color: #94a3b8;
+      }
+    }
+
+    .unread-dot {
+      background: #4a9d9a;
+    }
+  }
+}
