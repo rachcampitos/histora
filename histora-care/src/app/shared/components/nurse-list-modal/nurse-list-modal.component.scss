@@ -270,6 +270,10 @@ ion-header {
   ion-header ion-toolbar {
     --background: #0f172a;
     --color: #f1f5f9;
+
+    ion-button {
+      --color: #f1f5f9;
+    }
   }
 
   .nurses-count {

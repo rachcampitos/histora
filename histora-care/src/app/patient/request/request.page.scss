@@ -918,9 +918,14 @@ ion-content {
     }
   }
 
+  .attachment-btn {
+    --color: #6bb5b3;
+    --border-color: #6bb5b3;
+  }
+
   // Summary card in dark mode
   .summary-card {
-    background: #1a1a2e;
+    background: #1a202e;
     border-color: #4a9d9a;
 
     ion-card-header {

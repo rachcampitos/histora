@@ -521,7 +521,7 @@ export class RequestPage implements OnInit {
         const attachment: ServiceAttachment = {
           url: result.url,
           publicId: result.publicId,
-          type: 'image',
+          type: photo.mimeType === 'application/pdf' ? 'pdf' : 'image',
           name: filename,
         };
         this.attachments.set([...this.attachments(), attachment]);
